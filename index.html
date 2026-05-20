@@ -86,6 +86,21 @@
   .badge-mini { font-size: 9px; padding: 2px 6px; border-radius: 9px; font-weight: 700; }
   .badge-mini.star { background: #f59e0b; color: #fff; }
   .badge-mini.absent { background: #64748b; color: #fff; }
+  .badge-mini.birthday { background: #ec4899; color: #fff; animation: bdPulse 1.6s ease-in-out infinite; }
+  @keyframes bdPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(236,72,153,.6); } 50% { box-shadow: 0 0 0 4px rgba(236,72,153,0); } }
+  .card.birthday-month { background: linear-gradient(135deg, #1e293b 60%, #4c1d95 130%); border-color: rgba(236,72,153,.4); }
+  .card.birthday-month::after { content: '🎂'; position: absolute; top: -10px; left: -8px; font-size: 14px; background: #ec4899; color: #fff; border-radius: 50%; width: 22px; height: 22px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 6px rgba(236,72,153,.5); }
+
+  /* 상단 생일 알림 박스 */
+  .bd-banner { background: linear-gradient(90deg, #4c1d95 0%, #831843 100%); padding: 10px 16px; border-bottom: 1px solid #6b21a8; color: #fce7f3; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; }
+  .bd-banner .bd-icon { font-size: 18px; }
+  .bd-banner .bd-title { font-weight: 700; color: #fff; font-size: 13px; }
+  .bd-banner .bd-list { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+  .bd-banner .bd-item { background: rgba(255,255,255,.13); padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+  .bd-banner .bd-item:hover, .bd-banner .bd-item:active { background: rgba(255,255,255,.25); transform: translateY(-1px); }
+  .bd-banner .bd-item .d-day { color: #fbcfe8; font-weight: 700; margin-left: 4px; }
+  .bd-banner .bd-item.today { background: #ec4899; color: #fff; font-weight: 700; }
+  .bd-banner .bd-empty { color: #fbcfe8; opacity: 0.7; font-size: 11px; }
   .card.teacher { background: #334155; border: 2px dashed #64748b; }
   .card.teacher .card-att { display: none; }
   .card.teacher .att-strip { display: none; }
@@ -166,6 +181,8 @@
     <span class="subtitle">2026 1학기</span>
   </div>
 </header>
+
+<div class="bd-banner" id="bd-banner"></div>
 
 <div class="search-row">
   <input type="text" id="search" placeholder="이름으로 검색" autocomplete="off" />
@@ -303,92 +320,92 @@ function attLevel(p) {
   return 0;
 }
 
-// students: 교적부 attRate 기반 + 1월 수련회 참석여부
+// students: 교적부 attRate + 생일(MM-DD)
 const students = [
-  {id:'이하준', grade:1, gender:'남', cls:'01', school:'', attRate:'이사', attLevel:4, absent:true, notes:'장기결석. 교적부 비고: 이사'},
-  {id:'이윤서', grade:1, gender:'여', cls:'01', school:'', attRate:'A', attLevel:4, absent:true, notes:'1~2월 교회 떠남. 아버지 돌아가심. 1학년 또래 친한 친구 없어 적응 어려웠음. 가족 전체가 다른 교회로 이동. (작년 등급 A였으나 현재는 장결)'},
-  {id:'김다은', grade:3, gender:'여', cls:'01', school:'안산 동산고', attRate:0.57, faith:'안정', notes:'신앙적 고민 지속. "하나님 안 사랑해" 같은 표현 자주. 의대 관련 궁금증. 어머니 양지현 선생님(08반 담임)'},
-  {id:'나정인', grade:3, gender:'여', cls:'01', school:'동화고', attRate:0.77, faith:'안정', notes:'어머니 수술 잘 끝나 외할머니가 돌봄. 동생 나호윤(02반)'},
-  {id:'서이수', grade:3, gender:'여', cls:'01', school:'홈스쿨링', attRate:0.93, faith:'안정', notes:'홈스쿨링·입시 과외. 논술 점점 어려워 스트레스. "조인상과 한 번도 같은 반 안 됐다" 본인 요청'},
-  {id:'최승아', grade:3, gender:'여', cls:'01', school:'대원여고', attRate:'', attLevel:4, absent:true, notes:'장기결석. 조인상 친구. 부모님 반대'},
-  {id:'나호윤', grade:1, gender:'남', cls:'02', school:'', attRate:'A', notes:'누나 나정인(01반)'},
-  {id:'안민혁', grade:1, gender:'남', cls:'02', school:'', attRate:'B', notes:'부모님과 가끔 결석'},
-  {id:'이주형', grade:1, gender:'여', cls:'02', school:'', attRate:'A', notes:''},
-  {id:'박진서', grade:3, gender:'여', cls:'02', school:'서울여자상업고', attRate:'', attLevel:4, absent:true, notes:'금융권 취업 준비. 출석 거의 없음'},
-  {id:'임소명', grade:3, gender:'여', cls:'02', school:'서울여자상업고', attRate:'', attLevel:4, absent:true, notes:'금융권 취업 준비. 출석 거의 없음'},
-  {id:'박민주', grade:1, gender:'여', cls:'03', school:'', attRate:'', attLevel:0, notes:'발언 없음. 추가 파악 필요'},
-  {id:'이빛가온', grade:1, gender:'남', cls:'03', school:'', attRate:'A', notes:'한 텀 동안 "대답 담당". 단답형. 또래끼리 어울리는 욕구. 대답 좀 덜해도 되는 반으로 이동 권장'},
-  {id:'이서후', grade:1, gender:'여', cls:'03', school:'세화여고', attRate:'A', notes:'첫 주부터 학교 그만두고 싶다. 내신 부담. 부모님 반대. 여름 수련회 안 간다고 함. 예배 끝나면 카페로 공부'},
-  {id:'김주하', grade:2, gender:'여', cls:'03', school:'수주고', attRate:0.68, notes:'부천 거주, 집이 멀어 매주 출석 어려움. 작은 교회 갔다 돌아옴. 얌전·소극적'},
-  {id:'배유나', grade:2, gender:'여', cls:'03', school:'', attRate:0.14, absent:true, notes:'올해 1~2번만 출석. 입시 스트레스. 혼자 옴 (학원·차편 장벽)'},
-  {id:'임태민', grade:2, gender:'남', cls:'03', school:'선정고', attRate:0.64, notes:'체육대회 때 가장 밝은 모습. 공부 욕심, 학원 결석 잦음. 간식 호불호 까다로움'},
-  {id:'김한결', grade:1, gender:'남', cls:'04', school:'중앙고', attRate:'A', notes:'학업 스트레스 매우 심함. 형은 하나고 출신 재수 중. 어머니 교수님. 큐티·기도 꾸준. 둘째. 오은수(09반)와 초등 시절 큰 갈등 → 분리 요청'},
-  {id:'최수지', grade:1, gender:'여', cls:'04', school:'', attRate:'A', notes:'수원 거주. 공부 스트레스 양호. "기도를 왜 해야 되는지 모르겠다" 신앙 상태'},
-  {id:'박근희', grade:1, gender:'여', cls:'04', school:'', attRate:'', attLevel:0, notes:''},
-  {id:'강은교', grade:2, gender:'여', cls:'04', school:'자퇴(검정고시)', attRate:0.39, star:true, faith:'성장중', notes:'성심여고 자퇴. 우울증 약 미성년자 최대치 복용 중. 또래 트라우마 매우 심함. 혜준(연해준)과 친해지고 싶지만 다가가지 못함. 매우 똑똑·지적 욕구 강함. "성경통경" 책 읽고 "성경도 읽을 수 있을 것 같아요". 미소와 절교. 텀 바뀌는 것 자체에 불안'},
-  {id:'연해준', grade:2, gender:'남', cls:'04', school:'충암고', attRate:0.96, star:true, notes:'찬양팀 싱어. 학년장·학교 반장 책임 과중. 누나 작년 재수로 가족 어려움. 전지훈과 관계 갈등. "혜준 오빠가 당연히" 분위기에 부담. 전지훈을 전도. 5/18 별도 만남'},
-  {id:'원대연', grade:2, gender:'남', cls:'04', school:'대성고', attRate:0.32, notes:'부모 이혼·가정폭력 배경(아버지→어머니·본인). 장남. 재정/돈 의식 강함. "기도제목 없다·좋아요"만. 카톡 2주 뒤 확인, 스토리는 매일 봄'},
-  {id:'한미소', grade:2, gender:'여', cls:'04', school:'특성화고', attRate:0, attLevel:4, absent:true, notes:'6월 전도축제 첫 출석. 매우 센시티브. 미술/일러스트. 은교가 데려옴. 미소가 은교 차단'},
-  {id:'김재원', grade:1, gender:'남', cls:'05', school:'', attRate:'D', notes:'특별한 관심·사랑 필요. 어머니도 교회 안 나오심'},
-  {id:'하은유', grade:1, gender:'여', cls:'05', school:'', attRate:'A', notes:'고등부 찬양팀, 제자반. 출석 매우 우수'},
-  {id:'김유진', grade:2, gender:'여', cls:'05', school:'명지고', attRate:0.32, absent:true, notes:'한 번도 출석 안 함, 연락 안 받음'},
-  {id:'민예원', grade:2, gender:'여', cls:'05', school:'배화여고', attRate:0.59, notes:'신앙적 고민. 친해지는데 시간 필요. 이수지 선생님과 매주 소통. 6월 체육대회 계기 친구 1명 합류 예정'},
-  {id:'김도연', grade:2, gender:'여', cls:'05', school:'배화여고', attRate:0.89, notes:'학교 회장. 예원과 친함. 가영(07반)의 자기 얘기에 상처받은 적'},
-  {id:'전지훈', grade:2, gender:'남', cls:'05', school:'충암고', attRate:0.52, notes:'연해준 전도로 교회 옴. 5/17 "교회 안 나가겠어" 통보, 혜준과 싸움 원인. 이수지 선생님과 카톡 친밀. 매일 아침 혜준과 동반 등교 → 차편 분리 필요'},
-  {id:'오현우', grade:1, gender:'남', cls:'06', school:'광신고', attRate:'A', faith:'확신', notes:'반에서 유일 구원 확신 표현. 학업 스트레스 건강하게 풀어내는 편'},
-  {id:'하어림', grade:1, gender:'남', cls:'06', school:'해외유학', attRate:'유학중', attLevel:0, absent:true, notes:'유학 중. 여름방학 한국 들어옴'},
-  {id:'김나현', grade:2, gender:'여', cls:'06', school:'배화여고', attRate:0.14, absent:true, notes:'일요일 학원. 고교 입학 후 거의 안 옴. "교회 안 나갈 것" 표명'},
-  {id:'유재희', grade:2, gender:'여', cls:'06', school:'서울공연예술고', attRate:0.61, notes:'미술전공. 말 매우 많음. 가영과 유사하나 상처 덜 받음. 터프한 성향'},
-  {id:'이준호', grade:2, gender:'남', cls:'06', school:'대원외고', attRate:0.02, notes:'이준성 동생. 일요일 학원. 카톡·연락 잘 응답. 학기 초·방학 출석 양호'},
-  {id:'홍기진', grade:2, gender:'남', cls:'06', school:'행신고', attRate:0.89, notes:'김주영 선생님과 친해 진지한 얘기 시 받쳐주는 분위기. 같은 반 지양. 하나님 존재는 느끼나 확신 없음'},
-  {id:'송준원', grade:1, gender:'남', cls:'07', school:'', attRate:'B', notes:'송예원 동생. 축구로 가끔 결석. 반에서 유일 남학생'},
-  {id:'이주안', grade:1, gender:'남', cls:'07', school:'', attRate:'이사', attLevel:1, notes:'이장규 목사님 자녀. 출석 양호 (1월 수련회 전참)'},
-  {id:'장지현', grade:2, gender:'여', cls:'07', school:'진관고', attRate:0.91, notes:'장성현 동생. 출석 양호. 내성적'},
-  {id:'유나린', grade:2, gender:'여', cls:'07', school:'수주고', attRate:0.48, notes:'유연하게 품을 수 있는 성격. 강은교가 수련회 때 인사받고 좋아함'},
-  {id:'이가영', grade:2, gender:'여', cls:'07', school:'서울예고', attRate:0.55, notes:'본인 얘기 매우 많이 함. 도연·도윤이가 싫어함. 장문 카톡으로 상처 잘 줌(뒤끝 김). 어린 남교사 좋아함'},
-  {id:'박시우', grade:1, gender:'남', cls:'08', school:'', attRate:'C', notes:''},
-  {id:'조한나', grade:1, gender:'여', cls:'08', school:'기독교 대안학교', attRate:'유학중', attLevel:1, faith:'안정', notes:'대안학교 신앙 배경. 출석 양호. 신앙 깊고 고민 깊음. 신규 교사 반 도우미 자원'},
-  {id:'최유현', grade:1, gender:'여', cls:'08', school:'', attRate:'A', notes:'텐션 높은 막내. 스킨십·앵기. 조용한 반에서 잘 안 나옴'},
-  {id:'김라일', grade:2, gender:'남', cls:'08', school:'지산고', attRate:0.84, notes:'김윤일 동생. "하나님 계신 게 잘 안 믿겨진다" 솔직 표현(긍정 신호). 모태신앙'},
-  {id:'김채은', grade:2, gender:'여', cls:'08', school:'이대부고', attRate:0.36, notes:'공부 스트레스로 결석. 말 시키면 잘 함'},
-  {id:'양소희', grade:2, gender:'여', cls:'08', school:'', attRate:0.23, notes:'잠 많음. 모든 게 편하지 않음. 어머니 교회 일로 늦게 옴. 유아부 봉사 중'},
-  {id:'박동하', grade:1, gender:'남', cls:'09', school:'', attRate:'A', absent:true, notes:'기숙사 거주. 거의 못 옴 (실 출석 불참, 교적부 등급 A)'},
-  {id:'오은수', grade:1, gender:'여', cls:'09', school:'', attRate:'A', notes:'오은규(F쌤) 동생. 중등부 때 힘들었음. 동학년 여자애 불편. 09반 3학년 언니들이 적응 도움. 친언니와 같은 반 원치 않음. 김한결(04반)과 초등 시절 큰 갈등 — 분리 요청'},
-  {id:'곽지원', grade:3, gender:'남', cls:'09', school:'중앙고', attRate:0.55, notes:'학기 초 걱정 → 요즘 회복세. 큐티 권유에 따라옴. 인상과 매번 같은 반 본인 투덜'},
-  {id:'박지호', grade:3, gender:'여', cls:'09', school:'이화여고', attRate:0.77, absent:true, notes:'출석 거의 없음'},
-  {id:'정원영', grade:3, gender:'남', cls:'09', school:'중앙고', attRate:0.16, absent:true, notes:'장기결석. 곽지원 친한 그룹'},
-  {id:'조인상', grade:3, gender:'여', cls:'09', school:'대원여고', attRate:0.98, notes:'최승아 친구. 잘 견딤. 김준수 잘 다루는 편. 이수 본인 요청: 한 번이라도 같은 반'},
-  {id:'김강희', grade:1, gender:'여', cls:'10', school:'', attRate:'', attLevel:0, notes:'춘천 거주. 수련회 외 출석 어려움'},
-  {id:'박서연', grade:1, gender:'여', cls:'10', school:'', attRate:'A', notes:'부모님과 인도네시아 선교'},
-  {id:'박지웅', grade:1, gender:'남', cls:'10', school:'', attRate:'A', notes:'보컬 전공'},
-  {id:'백결', grade:3, gender:'남', cls:'10', school:'정발고', attRate:0.16, absent:true, notes:'일요일 학원이라 거의 못 옴'},
-  {id:'조강인', grade:3, gender:'남', cls:'10', school:'용산고', attRate:0.34, star:true, notes:'농구부. 점수제 평가 주전 못 뜀. 학교 옮기거나 유급 고려. 아버지 유명 농구선수 추정. 예배 때 무릎 아파함. 진로 위기'},
-  {id:'조혁준', grade:3, gender:'남', cls:'10', school:'', attRate:'', attLevel:0, notes:'정보 거의 없음'},
-  {id:'고예나', grade:1, gender:'여', cls:'11', school:'드와이트 외국인학교', attRate:'', attLevel:4, absent:true, notes:'이사. 출석 거의 없음'},
-  {id:'김정록', grade:1, gender:'남', cls:'11', school:'', attRate:'A', notes:'강남 거주. 출석 양호'},
-  {id:'김민채', grade:3, gender:'여', cls:'11', school:'', attRate:0.02, notes:'발언 없음'},
-  {id:'송성모', grade:3, gender:'미상', cls:'11', school:'', attRate:'', attLevel:4, absent:true, notes:'불참'},
-  {id:'양인혁', grade:3, gender:'남', cls:'11', school:'영락고 위탁(실용음악)', attRate:0.68, notes:'김준수와 항상 동반 지각이었으나 빈도 줄어드는 중'},
-  {id:'한채은', grade:3, gender:'여', cls:'11', school:'김포고', attRate:0.91, notes:'스포츠·사관학교 진로 고민. 출석 양호'},
-  {id:'정태율', grade:1, gender:'남', cls:'12', school:'', attRate:'A', notes:'드럼치는 학생. 체대 입시. 형들 좋아함'},
-  {id:'최지은', grade:1, gender:'여', cls:'12', school:'춘천여고', attRate:'A', notes:'최가은 동생. 춘천 왔다 갔다. 시험기간 2주 결석. 또래와 거리감'},
-  {id:'김도헌', grade:3, gender:'남', cls:'12', school:'', attRate:'', attLevel:0, notes:'카톡 응답 잘. 학원 겹쳐 결석'},
-  {id:'김준수', grade:3, gender:'남', cls:'12', school:'서인고', attRate:0.66, notes:'김주영(06반 부담임) 동생. 이번 소그룹 마음 엶. 김희원 부담임과 안 맞음. 정승빈과 너무 자주 같은 반'},
-  {id:'정승빈', grade:3, gender:'여', cls:'12', school:'세종고', attRate:0.86, faith:'안정', notes:'정유빈·정효빈 자매. 효빈 재수로 부담. 학업 스트레스. 준수 장난 받아주는 유일. 반에서 영적으로 안정'},
-  {id:'최지윤', grade:3, gender:'여', cls:'12', school:'상명고(노원)', attRate:0.07, absent:true, notes:'최서윤 쌍둥이. 한 번도 출석 안 함'},
-  {id:'권하율', grade:1, gender:'남', cls:'13', school:'대치동 학원가', attRate:'A', star:true, notes:'⚠ 자해 위험 신호. 시험기간 김밥천국에서 손목 그을 정도 스트레스. 공부 욕심·주관 뚜렷. 오덕현 격려도 안 먹힘. 대학부 헬퍼(이승헌) 자청'},
-  {id:'김강은', grade:1, gender:'여', cls:'13', school:'', attRate:'A', notes:'종로 거주. 찬양팀. 밝고 잘 나옴'},
-  {id:'명주원', grade:3, gender:'남', cls:'13', school:'서울예고', attRate:0.80, notes:'바이올린 전공. 반 모임에서 말 많고 자기 얘기 잘 함. 특이 취미 - 히브리어, 이집트 상형문자'},
-  {id:'오희수', grade:3, gender:'여', cls:'13', school:'정의여고', attRate:0.77, absent:true, notes:'출석 없음'},
-  {id:'최가은', grade:3, gender:'여', cls:'13', school:'춘천여고', attRate:0.66, notes:'춘천 거주. 최지은 언니. 출석 양호'},
-  {id:'최서윤', grade:3, gender:'여', cls:'13', school:'상명고', attRate:0.07, absent:true, notes:'최지윤 쌍둥이. 출석 거의 없음'},
-  {id:'윤성하', grade:1, gender:'남', cls:'14', school:'', attRate:'A', notes:'은평 거주. ENTP→INTP. 밴드·록·J-pop 좋아함'},
-  {id:'이서현', grade:1, gender:'여', cls:'14', school:'', attRate:'B', notes:'강서 거주. 오빠 이지환. 늦잠 자는 경우 많아짐'},
-  {id:'김은우', grade:3, gender:'여', cls:'14', school:'덕성여고', attRate:0.75, notes:'심희은 친구. 반응이 극과 극. 격려가 절실. ISTP'},
-  {id:'심희은', grade:3, gender:'여', cls:'14', school:'덕성여고', attRate:0.98, faith:'안정', notes:'마이웨이·페이스 분명. 강남 집회 자주. 초콜릿 좋아하고 밥 잘 안 먹음. ESFP'},
-  {id:'이소민', grade:3, gender:'여', cls:'14', school:'동화고', attRate:0.14, notes:'동대문 거주. 집이 멀어 아쉬움. 밴드·J-pop. 어디든 잘 적응'},
-  {id:'이에녹', grade:3, gender:'남', cls:'14', school:'중앙고', attRate:0.75, star:true, notes:'INFJ. 결이 안 맞는 친구들과는 정색. 진중하게 마음 읽어줄 교사 필요. 형들 좋아함. 석준원과 케미 좋음. 김희원 부담임과 서로 힘들어함'},
-  {id:'장세민', grade:3, gender:'남', cls:'14', school:'성동공고', attRate:0.21, notes:'반에서 가장 안 섞임. 카톡 가장 먼저 답. 곽지원·정원영 친한 그룹'},
+  {id:'이하준', grade:1, gender:'남', cls:'01', school:'', birthday:'01-12', attRate:'이사', attLevel:4, absent:true, notes:'장기결석. 교적부 비고: 이사'},
+  {id:'이윤서', grade:1, gender:'여', cls:'01', school:'', birthday:'07-12', attRate:'A', attLevel:4, absent:true, notes:'1~2월 교회 떠남. 아버지 돌아가심. 1학년 또래 친한 친구 없어 적응 어려웠음. 가족 전체가 다른 교회로 이동. (작년 등급 A였으나 현재는 장결)'},
+  {id:'김다은', grade:3, gender:'여', cls:'01', school:'안산 동산고', birthday:'10-06', attRate:0.57, faith:'안정', notes:'신앙적 고민 지속. "하나님 안 사랑해" 같은 표현 자주. 의대 관련 궁금증. 어머니 양지현 선생님(08반 담임)'},
+  {id:'나정인', grade:3, gender:'여', cls:'01', school:'동화고', birthday:'04-30', attRate:0.77, faith:'안정', notes:'어머니 수술 잘 끝나 외할머니가 돌봄. 동생 나호윤(02반)'},
+  {id:'서이수', grade:3, gender:'여', cls:'01', school:'홈스쿨링', birthday:'08-07', attRate:0.93, faith:'안정', notes:'홈스쿨링·입시 과외. 논술 점점 어려워 스트레스. "조인상과 한 번도 같은 반 안 됐다" 본인 요청'},
+  {id:'최승아', grade:3, gender:'여', cls:'01', school:'대원여고', birthday:'', attRate:'', attLevel:4, absent:true, notes:'장기결석. 조인상 친구. 부모님 반대'},
+  {id:'나호윤', grade:1, gender:'남', cls:'02', school:'', birthday:'10-02', attRate:'A', notes:'누나 나정인(01반)'},
+  {id:'안민혁', grade:1, gender:'남', cls:'02', school:'', birthday:'11-11', attRate:'B', notes:'부모님과 가끔 결석'},
+  {id:'이주형', grade:1, gender:'여', cls:'02', school:'', birthday:'07-01', attRate:'A', notes:''},
+  {id:'박진서', grade:3, gender:'여', cls:'02', school:'서울여자상업고', birthday:'03-29', attRate:'', attLevel:4, absent:true, notes:'금융권 취업 준비. 출석 거의 없음'},
+  {id:'임소명', grade:3, gender:'여', cls:'02', school:'서울여자상업고', birthday:'01-18', attRate:'', attLevel:4, absent:true, notes:'금융권 취업 준비. 출석 거의 없음'},
+  {id:'박민주', grade:1, gender:'여', cls:'03', school:'', birthday:'', attRate:'', attLevel:0, notes:'발언 없음. 추가 파악 필요'},
+  {id:'이빛가온', grade:1, gender:'남', cls:'03', school:'', birthday:'01-10', attRate:'A', notes:'한 텀 동안 "대답 담당". 단답형. 또래끼리 어울리는 욕구. 대답 좀 덜해도 되는 반으로 이동 권장'},
+  {id:'이서후', grade:1, gender:'여', cls:'03', school:'세화여고', birthday:'08-18', attRate:'A', notes:'첫 주부터 학교 그만두고 싶다. 내신 부담. 부모님 반대. 여름 수련회 안 간다고 함. 예배 끝나면 카페로 공부'},
+  {id:'김주하', grade:2, gender:'여', cls:'03', school:'수주고', birthday:'05-28', attRate:0.68, notes:'부천 거주, 집이 멀어 매주 출석 어려움. 작은 교회 갔다 돌아옴. 얌전·소극적'},
+  {id:'배유나', grade:2, gender:'여', cls:'03', school:'', birthday:'07-09', attRate:0.14, absent:true, notes:'올해 1~2번만 출석. 입시 스트레스. 혼자 옴 (학원·차편 장벽)'},
+  {id:'임태민', grade:2, gender:'남', cls:'03', school:'선정고', birthday:'03-23', attRate:0.64, notes:'체육대회 때 가장 밝은 모습. 공부 욕심, 학원 결석 잦음. 간식 호불호 까다로움'},
+  {id:'김한결', grade:1, gender:'남', cls:'04', school:'중앙고', birthday:'01-15', attRate:'A', notes:'학업 스트레스 매우 심함. 형은 하나고 출신 재수 중. 어머니 교수님. 큐티·기도 꾸준. 둘째. 오은수(09반)와 초등 시절 큰 갈등 → 분리 요청'},
+  {id:'최수지', grade:1, gender:'여', cls:'04', school:'', birthday:'04-06', attRate:'A', notes:'수원 거주. 공부 스트레스 양호. "기도를 왜 해야 되는지 모르겠다" 신앙 상태'},
+  {id:'박근희', grade:1, gender:'여', cls:'04', school:'', birthday:'', attRate:'', attLevel:0, notes:''},
+  {id:'강은교', grade:2, gender:'여', cls:'04', school:'자퇴(검정고시)', birthday:'04-04', attRate:0.39, star:true, faith:'성장중', notes:'성심여고 자퇴. 우울증 약 미성년자 최대치 복용 중. 또래 트라우마 매우 심함. 혜준(연해준)과 친해지고 싶지만 다가가지 못함. 매우 똑똑·지적 욕구 강함. "성경통경" 책 읽고 "성경도 읽을 수 있을 것 같아요". 미소와 절교. 텀 바뀌는 것 자체에 불안'},
+  {id:'연해준', grade:2, gender:'남', cls:'04', school:'충암고', birthday:'04-21', attRate:0.96, star:true, notes:'찬양팀 싱어. 학년장·학교 반장 책임 과중. 누나 작년 재수로 가족 어려움. 전지훈과 관계 갈등. "혜준 오빠가 당연히" 분위기에 부담. 전지훈을 전도. 5/18 별도 만남'},
+  {id:'원대연', grade:2, gender:'남', cls:'04', school:'대성고', birthday:'01-21', attRate:0.32, notes:'부모 이혼·가정폭력 배경(아버지→어머니·본인). 장남. 재정/돈 의식 강함. "기도제목 없다·좋아요"만. 카톡 2주 뒤 확인, 스토리는 매일 봄'},
+  {id:'한미소', grade:2, gender:'여', cls:'04', school:'특성화고', birthday:'', attRate:0, attLevel:4, absent:true, notes:'6월 전도축제 첫 출석. 매우 센시티브. 미술/일러스트. 은교가 데려옴. 미소가 은교 차단'},
+  {id:'김재원', grade:1, gender:'남', cls:'05', school:'', birthday:'02-01', attRate:'D', notes:'특별한 관심·사랑 필요. 어머니도 교회 안 나오심'},
+  {id:'하은유', grade:1, gender:'여', cls:'05', school:'', birthday:'02-13', attRate:'A', notes:'고등부 찬양팀, 제자반. 출석 매우 우수'},
+  {id:'김유진', grade:2, gender:'여', cls:'05', school:'명지고', birthday:'04-01', attRate:0.32, absent:true, notes:'한 번도 출석 안 함, 연락 안 받음'},
+  {id:'민예원', grade:2, gender:'여', cls:'05', school:'배화여고', birthday:'12-07', attRate:0.59, notes:'신앙적 고민. 친해지는데 시간 필요. 이수지 선생님과 매주 소통. 6월 체육대회 계기 친구 1명 합류 예정'},
+  {id:'김도연', grade:2, gender:'여', cls:'05', school:'배화여고', birthday:'03-07', attRate:0.89, notes:'학교 회장. 예원과 친함. 가영(07반)의 자기 얘기에 상처받은 적'},
+  {id:'전지훈', grade:2, gender:'남', cls:'05', school:'충암고', birthday:'09-12', attRate:0.52, notes:'연해준 전도로 교회 옴. 5/17 "교회 안 나가겠어" 통보, 혜준과 싸움 원인. 이수지 선생님과 카톡 친밀. 매일 아침 혜준과 동반 등교 → 차편 분리 필요'},
+  {id:'오현우', grade:1, gender:'남', cls:'06', school:'광신고', birthday:'06-08', attRate:'A', faith:'확신', notes:'반에서 유일 구원 확신 표현. 학업 스트레스 건강하게 풀어내는 편'},
+  {id:'하어림', grade:1, gender:'남', cls:'06', school:'해외유학', birthday:'11-18', attRate:'유학중', attLevel:0, absent:true, notes:'유학 중. 여름방학 한국 들어옴'},
+  {id:'김나현', grade:2, gender:'여', cls:'06', school:'배화여고', birthday:'02-14', attRate:0.14, absent:true, notes:'일요일 학원. 고교 입학 후 거의 안 옴. "교회 안 나갈 것" 표명'},
+  {id:'유재희', grade:2, gender:'여', cls:'06', school:'서울공연예술고', birthday:'08-13', attRate:0.61, notes:'미술전공. 말 매우 많음. 가영과 유사하나 상처 덜 받음. 터프한 성향'},
+  {id:'이준호', grade:2, gender:'남', cls:'06', school:'대원외고', birthday:'06-13', attRate:0.02, notes:'이준성 동생. 일요일 학원. 카톡·연락 잘 응답. 학기 초·방학 출석 양호'},
+  {id:'홍기진', grade:2, gender:'남', cls:'06', school:'행신고', birthday:'11-13', attRate:0.89, notes:'김주영 선생님과 친해 진지한 얘기 시 받쳐주는 분위기. 같은 반 지양. 하나님 존재는 느끼나 확신 없음'},
+  {id:'송준원', grade:1, gender:'남', cls:'07', school:'', birthday:'04-25', attRate:'B', notes:'송예원 동생. 축구로 가끔 결석. 반에서 유일 남학생'},
+  {id:'이주안', grade:1, gender:'남', cls:'07', school:'', birthday:'04-01', attRate:'이사', attLevel:1, notes:'이장규 목사님 자녀. 출석 양호 (1월 수련회 전참)'},
+  {id:'장지현', grade:2, gender:'여', cls:'07', school:'진관고', birthday:'11-03', attRate:0.91, notes:'장성현 동생. 출석 양호. 내성적'},
+  {id:'유나린', grade:2, gender:'여', cls:'07', school:'수주고', birthday:'09-14', attRate:0.48, notes:'유연하게 품을 수 있는 성격. 강은교가 수련회 때 인사받고 좋아함'},
+  {id:'이가영', grade:2, gender:'여', cls:'07', school:'서울예고', birthday:'04-19', attRate:0.55, notes:'본인 얘기 매우 많이 함. 도연·도윤이가 싫어함. 장문 카톡으로 상처 잘 줌(뒤끝 김). 어린 남교사 좋아함'},
+  {id:'박시우', grade:1, gender:'남', cls:'08', school:'', birthday:'11-02', attRate:'C', notes:''},
+  {id:'조한나', grade:1, gender:'여', cls:'08', school:'기독교 대안학교', birthday:'05-24', attRate:'유학중', attLevel:1, faith:'안정', notes:'대안학교 신앙 배경. 출석 양호. 신앙 깊고 고민 깊음. 신규 교사 반 도우미 자원'},
+  {id:'최유현', grade:1, gender:'여', cls:'08', school:'', birthday:'05-08', attRate:'A', notes:'텐션 높은 막내. 스킨십·앵기. 조용한 반에서 잘 안 나옴'},
+  {id:'김라일', grade:2, gender:'남', cls:'08', school:'지산고', birthday:'11-10', attRate:0.84, notes:'김윤일 동생. "하나님 계신 게 잘 안 믿겨진다" 솔직 표현(긍정 신호). 모태신앙'},
+  {id:'김채은', grade:2, gender:'여', cls:'08', school:'이대부고', birthday:'03-10', attRate:0.36, notes:'공부 스트레스로 결석. 말 시키면 잘 함'},
+  {id:'양소희', grade:2, gender:'여', cls:'08', school:'', birthday:'03-28', attRate:0.23, notes:'잠 많음. 모든 게 편하지 않음. 어머니 교회 일로 늦게 옴. 유아부 봉사 중'},
+  {id:'박동하', grade:1, gender:'남', cls:'09', school:'', birthday:'06-01', attRate:'A', absent:true, notes:'기숙사 거주. 거의 못 옴 (실 출석 불참, 교적부 등급 A)'},
+  {id:'오은수', grade:1, gender:'여', cls:'09', school:'', birthday:'03-10', attRate:'A', notes:'오은규(F쌤) 동생. 중등부 때 힘들었음. 동학년 여자애 불편. 09반 3학년 언니들이 적응 도움. 친언니와 같은 반 원치 않음. 김한결(04반)과 초등 시절 큰 갈등 — 분리 요청'},
+  {id:'곽지원', grade:3, gender:'남', cls:'09', school:'중앙고', birthday:'12-19', attRate:0.55, notes:'학기 초 걱정 → 요즘 회복세. 큐티 권유에 따라옴. 인상과 매번 같은 반 본인 투덜'},
+  {id:'박지호', grade:3, gender:'여', cls:'09', school:'이화여고', birthday:'01-25', attRate:0.77, absent:true, notes:'출석 거의 없음'},
+  {id:'정원영', grade:3, gender:'남', cls:'09', school:'중앙고', birthday:'', attRate:0.16, absent:true, notes:'장기결석. 곽지원 친한 그룹'},
+  {id:'조인상', grade:3, gender:'여', cls:'09', school:'대원여고', birthday:'04-14', attRate:0.98, notes:'최승아 친구. 잘 견딤. 김준수 잘 다루는 편. 이수 본인 요청: 한 번이라도 같은 반'},
+  {id:'김강희', grade:1, gender:'여', cls:'10', school:'', birthday:'', attRate:'', attLevel:0, notes:'춘천 거주. 수련회 외 출석 어려움'},
+  {id:'박서연', grade:1, gender:'여', cls:'10', school:'', birthday:'02-22', attRate:'A', notes:'부모님과 인도네시아 선교'},
+  {id:'박지웅', grade:1, gender:'남', cls:'10', school:'', birthday:'06-23', attRate:'A', notes:'보컬 전공'},
+  {id:'백결', grade:3, gender:'남', cls:'10', school:'정발고', birthday:'01-28', attRate:0.16, absent:true, notes:'일요일 학원이라 거의 못 옴'},
+  {id:'조강인', grade:3, gender:'남', cls:'10', school:'용산고', birthday:'08-24', attRate:0.34, star:true, notes:'농구부. 점수제 평가 주전 못 뜀. 학교 옮기거나 유급 고려. 아버지 유명 농구선수 추정. 예배 때 무릎 아파함. 진로 위기'},
+  {id:'조혁준', grade:3, gender:'남', cls:'10', school:'', birthday:'', attRate:'', attLevel:0, notes:'정보 거의 없음'},
+  {id:'고예나', grade:1, gender:'여', cls:'11', school:'드와이트 외국인학교', birthday:'03-11', attRate:'', attLevel:4, absent:true, notes:'이사. 출석 거의 없음'},
+  {id:'김정록', grade:1, gender:'남', cls:'11', school:'', birthday:'04-08', attRate:'A', notes:'강남 거주. 출석 양호'},
+  {id:'김민채', grade:3, gender:'여', cls:'11', school:'', birthday:'11-24', attRate:0.02, notes:'발언 없음'},
+  {id:'송성모', grade:3, gender:'미상', cls:'11', school:'', birthday:'', attRate:'', attLevel:4, absent:true, notes:'불참'},
+  {id:'양인혁', grade:3, gender:'남', cls:'11', school:'영락고 위탁(실용음악)', birthday:'01-19', attRate:0.68, notes:'김준수와 항상 동반 지각이었으나 빈도 줄어드는 중'},
+  {id:'한채은', grade:3, gender:'여', cls:'11', school:'김포고', birthday:'05-01', attRate:0.91, notes:'스포츠·사관학교 진로 고민. 출석 양호'},
+  {id:'정태율', grade:1, gender:'남', cls:'12', school:'', birthday:'01-27', attRate:'A', notes:'드럼치는 학생. 체대 입시. 형들 좋아함'},
+  {id:'최지은', grade:1, gender:'여', cls:'12', school:'춘천여고', birthday:'12-19', attRate:'A', notes:'최가은 동생. 춘천 왔다 갔다. 시험기간 2주 결석. 또래와 거리감'},
+  {id:'김도헌', grade:3, gender:'남', cls:'12', school:'', birthday:'', attRate:'', attLevel:0, notes:'카톡 응답 잘. 학원 겹쳐 결석'},
+  {id:'김준수', grade:3, gender:'남', cls:'12', school:'서인고', birthday:'', attRate:0.66, notes:'김주영(06반 부담임) 동생. 이번 소그룹 마음 엶. 김희원 부담임과 안 맞음. 정승빈과 너무 자주 같은 반'},
+  {id:'정승빈', grade:3, gender:'여', cls:'12', school:'세종고', birthday:'06-03', attRate:0.86, faith:'안정', notes:'정유빈·정효빈 자매. 효빈 재수로 부담. 학업 스트레스. 준수 장난 받아주는 유일. 반에서 영적으로 안정'},
+  {id:'최지윤', grade:3, gender:'여', cls:'12', school:'상명고(노원)', birthday:'11-06', attRate:0.07, absent:true, notes:'최서윤 쌍둥이. 한 번도 출석 안 함'},
+  {id:'권하율', grade:1, gender:'남', cls:'13', school:'대치동 학원가', birthday:'02-11', attRate:'A', star:true, notes:'⚠ 자해 위험 신호. 시험기간 김밥천국에서 손목 그을 정도 스트레스. 공부 욕심·주관 뚜렷. 오덕현 격려도 안 먹힘. 대학부 헬퍼(이승헌) 자청'},
+  {id:'김강은', grade:1, gender:'여', cls:'13', school:'', birthday:'12-11', attRate:'A', notes:'종로 거주. 찬양팀. 밝고 잘 나옴'},
+  {id:'명주원', grade:3, gender:'남', cls:'13', school:'서울예고', birthday:'01-19', attRate:0.80, notes:'바이올린 전공. 반 모임에서 말 많고 자기 얘기 잘 함. 특이 취미 - 히브리어, 이집트 상형문자'},
+  {id:'오희수', grade:3, gender:'여', cls:'13', school:'정의여고', birthday:'05-06', attRate:0.77, absent:true, notes:'출석 없음'},
+  {id:'최가은', grade:3, gender:'여', cls:'13', school:'춘천여고', birthday:'08-28', attRate:0.66, notes:'춘천 거주. 최지은 언니. 출석 양호'},
+  {id:'최서윤', grade:3, gender:'여', cls:'13', school:'상명고', birthday:'11-06', attRate:0.07, absent:true, notes:'최지윤 쌍둥이. 출석 거의 없음'},
+  {id:'윤성하', grade:1, gender:'남', cls:'14', school:'', birthday:'11-13', attRate:'A', notes:'은평 거주. ENTP→INTP. 밴드·록·J-pop 좋아함'},
+  {id:'이서현', grade:1, gender:'여', cls:'14', school:'', birthday:'10-26', attRate:'B', notes:'강서 거주. 오빠 이지환. 늦잠 자는 경우 많아짐'},
+  {id:'김은우', grade:3, gender:'여', cls:'14', school:'덕성여고', birthday:'02-15', attRate:0.75, notes:'심희은 친구. 반응이 극과 극. 격려가 절실. ISTP'},
+  {id:'심희은', grade:3, gender:'여', cls:'14', school:'덕성여고', birthday:'12-04', attRate:0.98, faith:'안정', notes:'마이웨이·페이스 분명. 강남 집회 자주. 초콜릿 좋아하고 밥 잘 안 먹음. ESFP'},
+  {id:'이소민', grade:3, gender:'여', cls:'14', school:'동화고', birthday:'09-28', attRate:0.14, notes:'동대문 거주. 집이 멀어 아쉬움. 밴드·J-pop. 어디든 잘 적응'},
+  {id:'이에녹', grade:3, gender:'남', cls:'14', school:'중앙고', birthday:'09-26', attRate:0.75, star:true, notes:'INFJ. 결이 안 맞는 친구들과는 정색. 진중하게 마음 읽어줄 교사 필요. 형들 좋아함. 석준원과 케미 좋음. 김희원 부담임과 서로 힘들어함'},
+  {id:'장세민', grade:3, gender:'남', cls:'14', school:'성동공고', birthday:'', attRate:0.21, notes:'반에서 가장 안 섞임. 카톡 가장 먼저 답. 곽지원·정원영 친한 그룹'},
 ];
 
 const teachers = [
@@ -505,6 +522,39 @@ function attRateText(p) {
   if (typeof r === 'string') return r;
   return (r*100).toFixed(0) + '%';
 }
+/* ===== 생일 유틸 ===== */
+const TODAY = new Date();
+function parseBD(bd) {
+  if (!bd || typeof bd !== 'string' || !/^\d{2}-\d{2}$/.test(bd)) return null;
+  const [m, d] = bd.split('-').map(Number);
+  if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+  return { m, d };
+}
+function isBirthdayThisMonth(bd) {
+  const p = parseBD(bd);
+  if (!p) return false;
+  return p.m === TODAY.getMonth() + 1;
+}
+function isBirthdayToday(bd) {
+  const p = parseBD(bd);
+  if (!p) return false;
+  return p.m === TODAY.getMonth() + 1 && p.d === TODAY.getDate();
+}
+function daysUntilBirthday(bd) {
+  const p = parseBD(bd);
+  if (!p) return null;
+  const y = TODAY.getFullYear();
+  const today0 = new Date(y, TODAY.getMonth(), TODAY.getDate());
+  let target = new Date(y, p.m - 1, p.d);
+  if (target < today0) target = new Date(y + 1, p.m - 1, p.d);
+  return Math.round((target - today0) / (1000*60*60*24));
+}
+function bdLabel(bd) {
+  const p = parseBD(bd);
+  if (!p) return '';
+  return `${p.m}/${p.d}`;
+}
+
 function unionGroups(relType) {
   const parent = {};
   function find(x) { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; }
@@ -577,7 +627,8 @@ function buildIndexInto(containerId, view) {
       el.dataset.id = it.id;
       const dc = it._type==='teacher' ? TEACHER_COLOR : personColor(it);
       const dcls = it._type==='teacher' ? 'dot square' : 'dot';
-      const ic = (it.star?'⭐ ':'') + (it.absent?'🚪 ':'');
+      const bdMark = it._type !== 'teacher' && (isBirthdayToday(it.birthday) ? '🎂 ' : isBirthdayThisMonth(it.birthday) ? '🎂' : '');
+      const ic = bdMark + (it.star?'⭐ ':'') + (it.absent?'🚪 ':'');
       const lvl = attLevel(it);
       const attBar = it._type==='teacher' ? '' : `<span class="att-bar" style="background:${ATT_COLOR[lvl]}"></span>`;
       const meta = it._type==='teacher' ? it.role : (it.grade?it.grade+'학':'')+(it.gender?' '+it.gender[0]:'');
@@ -664,6 +715,10 @@ function buildCard(p) {
   const color = personColor(p);
   const dotCls = isT ? 'dot square' : 'dot';
   const badges = [];
+  const isBdToday = isBirthdayToday(p.birthday);
+  const isBdMonth = isBirthdayThisMonth(p.birthday);
+  if (isBdToday) badges.push('<span class="badge-mini birthday">🎂 오늘!</span>');
+  else if (isBdMonth) badges.push('<span class="badge-mini birthday">🎂 이번달!</span>');
   if (p.star) badges.push('<span class="badge-mini star">⭐</span>');
   if (p.absent) badges.push('<span class="badge-mini absent">🚪</span>');
   const relIcons = [];
@@ -671,8 +726,10 @@ function buildCard(p) {
     const has = edges.some(e => e.rel===r && (e.from===p.id || e.to===p.id));
     if (has) relIcons.push(`<span class="ri" style="background:${REL_STYLE[r].color}"></span>`);
   });
-  const meta = isT ? `${p.cls}반 · ${p.role}` : `${p.cls}반 · ${p.grade}학년${p.gender?' · '+p.gender:''}`;
+  const bdTxt = !isT && p.birthday ? bdLabel(p.birthday) : '';
+  const meta = isT ? `${p.cls}반 · ${p.role}` : `${p.cls}반 · ${p.grade}학년${p.gender?' · '+p.gender:''}${bdTxt?' · 🎂 '+bdTxt:''}`;
   const school = (!isT && p.school) ? `<div class="card-school">${p.school}</div>` : '';
+  if (!isT && (isBdToday || isBdMonth)) card.classList.add('birthday-month');
   const lvl = attLevel(p);
   const attStrip = isT ? '' : `<div class="att-strip" style="background:${ATT_COLOR[lvl]}"></div>`;
   const attBlock = isT ? '' : `<div class="card-att">
@@ -793,6 +850,12 @@ function renderDetailHTML(id, p) {
   if (!isT) {
     const lvl = attLevel(p);
     badges.push(`<span class="badge" style="background:${ATT_COLOR[lvl]}33;color:${ATT_COLOR[lvl]}">출석: ${ATT_LABEL[lvl]} · ${attRateText(p)}</span>`);
+    if (p.birthday) {
+      const d = daysUntilBirthday(p.birthday);
+      const isToday = isBirthdayToday(p.birthday);
+      const tag = isToday ? '🎂 오늘 생일!' : (d <= 14 ? `🎂 D-${d}` : `🎂 ${bdLabel(p.birthday)}`);
+      badges.push(`<span class="badge" style="background:#831843;color:#fce7f3">${tag}</span>`);
+    }
   }
   const connected = edges.filter(e => e.from===id || e.to===id);
   const byRel = { family:[], friend:[], conflict:[], care:[], school:[], ride:[] };
@@ -947,9 +1010,35 @@ document.getElementById('fab-legend').addEventListener('click', () => {
 window.addEventListener('resize', () => requestAnimationFrame(drawRelations));
 document.getElementById('canvas-wrap').addEventListener('scroll', () => requestAnimationFrame(drawRelations));
 
+/* ===== 상단 생일 알림 박스 (D-14 이내) ===== */
+function renderBirthdayBanner() {
+  const banner = document.getElementById('bd-banner');
+  if (!banner) return;
+  const list = students
+    .filter(s => s.birthday)
+    .map(s => ({ s, days: daysUntilBirthday(s.birthday) }))
+    .filter(o => o.days !== null && o.days <= 14)
+    .sort((a,b) => a.days - b.days);
+  const monthName = (TODAY.getMonth()+1) + '월';
+  if (!list.length) {
+    banner.innerHTML = `<span class="bd-icon">🎂</span><span class="bd-title">${monthName}</span><span class="bd-empty">앞으로 2주 안에 생일인 친구가 없어요</span>`;
+    return;
+  }
+  const itemsHTML = list.map(o => {
+    const isToday = o.days === 0;
+    const dLabel = isToday ? '오늘!' : `D-${o.days}`;
+    return `<span class="bd-item${isToday?' today':''}" data-id="${o.s.id}">${o.s.id} <span class="d-day">(${bdLabel(o.s.birthday)} · ${dLabel})</span></span>`;
+  }).join('');
+  banner.innerHTML = `<span class="bd-icon">🎂</span><span class="bd-title">앞으로 2주 안에 생일</span><div class="bd-list">${itemsHTML}</div>`;
+  banner.querySelectorAll('.bd-item').forEach(el => {
+    el.addEventListener('click', () => activateCard(el.dataset.id, true));
+  });
+}
+
 buildIndexInto('index-body', 'class');
 buildIndexInto('index-body-mobile', 'class');
 buildGroups();
+renderBirthdayBanner();
 setTimeout(drawRelations, 150);
 window.activateCard = activateCard;
 </script>
