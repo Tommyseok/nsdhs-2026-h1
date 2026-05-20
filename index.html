@@ -102,6 +102,15 @@
   .bd-banner .bd-item.today { background: #ec4899; color: #fff; font-weight: 700; }
   .bd-banner .bd-empty { color: #fbcfe8; opacity: 0.7; font-size: 11px; }
 
+  /* 국장단 배너 */
+  .ld-banner { background: linear-gradient(90deg, #1e3a8a 0%, #312e81 100%); padding: 8px 16px; border-bottom: 1px solid #3730a3; color: #e0e7ff; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; }
+  .ld-banner .ld-icon { font-size: 16px; }
+  .ld-banner .ld-title { font-weight: 700; color: #fff; font-size: 12px; }
+  .ld-banner .ld-list { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
+  .ld-banner .ld-item { background: rgba(255,255,255,.13); padding: 3px 9px; border-radius: 11px; cursor: pointer; transition: all .15s; white-space: nowrap; font-size: 11px; }
+  .ld-banner .ld-item:hover, .ld-banner .ld-item:active { background: rgba(255,255,255,.25); transform: translateY(-1px); }
+  .ld-banner .ld-item .ld-role { color: #c7d2fe; margin-right: 4px; font-weight: 700; }
+
   /* 심방 마크 */
   .badge-mini.visit { background: #0ea5e9; color: #fff; }
   .card.visited::before { content: '📋'; position: absolute; top: 4px; left: 4px; font-size: 12px; z-index: 3; }
@@ -216,6 +225,7 @@
   <button class="icon-btn" id="visit-btn" aria-label="심방 일지" title="목사 심방 일지" style="width:auto;padding:0 12px;font-size:13px;gap:4px;display:flex">📋 <span class="visit-btn-label">심방 일지</span></button>
 </header>
 
+<div class="ld-banner" id="ld-banner"></div>
 <div class="bd-banner" id="bd-banner"></div>
 
 <div class="search-row">
@@ -454,18 +464,33 @@ const students = [
 ];
 
 const teachers = [
-  {id:'전성희', cls:'01', role:'담임'}, {id:'안강훈', cls:'02', role:'담임'}, {id:'조세경', cls:'02', role:'부담임'},
-  {id:'최희승', cls:'03', role:'담임'}, {id:'곽현', cls:'03', role:'부담임'},
-  {id:'이윤정', cls:'04', role:'담임'}, {id:'정명경', cls:'04', role:'부담임'}, {id:'이수지', cls:'05', role:'담임'},
-  {id:'이유성', cls:'06', role:'담임'}, {id:'김주영', cls:'06', role:'부담임'},
-  {id:'박진호', cls:'07', role:'담임'}, {id:'이승헌', cls:'07', role:'부담임/헬퍼'},
-  {id:'양지현', cls:'08', role:'담임'}, {id:'김광현', cls:'08', role:'부담임'},
-  {id:'이규리', cls:'09', role:'담임'}, {id:'오은규', cls:'09', role:'부담임 (=F쌤, 오은수의 친언니)'},
-  {id:'박정향', cls:'10', role:'담임/총무'}, {id:'정유빈', cls:'10', role:'부담임'},
+  {id:'전성희', cls:'01', role:'담임'},
+  {id:'안강훈', cls:'02', role:'담임'},
+  {id:'조세경', cls:'02', role:'부담임'},
+  {id:'최희승', cls:'03', role:'담임'},
+  {id:'곽현',   cls:'03', role:'부담임'},
+  {id:'이윤정', cls:'04', role:'담임'},
+  {id:'정명경', cls:'04', role:'부담임'},
+  {id:'이수지', cls:'05', role:'담임'},
+  {id:'이유성', cls:'06', role:'담임 · 홍보국장', position:'홍보국장'},
+  {id:'김주영', cls:'06', role:'부담임'},
+  {id:'박진호', cls:'07', role:'담임'},
+  {id:'이승헌', cls:'07', role:'부담임/헬퍼'},
+  {id:'양지현', cls:'08', role:'담임'},
+  {id:'김광현', cls:'08', role:'부담임 · 교육국장', position:'교육국장'},
+  {id:'이규리', cls:'09', role:'담임'},
+  {id:'오은규', cls:'09', role:'부담임 (=F쌤, 오은수의 친언니)'},
+  {id:'박정향', cls:'10', role:'담임'},
+  {id:'정유빈', cls:'10', role:'부담임'},
   {id:'우서현', cls:'11', role:'담임(다음 텀 부재)'},
-  {id:'박대철', cls:'12', role:'담임'}, {id:'김희원', cls:'12', role:'부담임'},
-  {id:'오덕현', cls:'13', role:'담임'},
-  {id:'석준원', cls:'14', role:'담임'}, {id:'고은솔', cls:'14', role:'부담임'},
+  {id:'박대철', cls:'12', role:'담임'},
+  {id:'김희원', cls:'12', role:'부담임'},
+  {id:'오덕현', cls:'13', role:'담임 · 미디어국장', position:'미디어국장'},
+  {id:'석준원', cls:'14', role:'담임 · 총무', position:'총무'},
+  {id:'고은솔', cls:'14', role:'부담임'},
+  {id:'안종범', cls:'국장단', role:'부장집사', position:'부장집사'},
+  {id:'송진우', cls:'국장단', role:'예배국장', position:'예배국장'},
+  {id:'오신영', cls:'국장단', role:'담당 목사', position:'담당 목사'},
 ];
 
 const edges = [
@@ -676,7 +701,7 @@ function buildIndexInto(containerId, view) {
   ];
   let groups = {}, order = [];
   if (view === 'class') {
-    const co = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14'];
+    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14'];
     co.forEach(c => { groups[c]=[]; order.push(c); });
     all.forEach(p => { const c = p.cls; if (!groups[c]) return; groups[c].push(p); });
     order = order.filter(c => groups[c] && groups[c].length);
@@ -695,7 +720,7 @@ function buildIndexInto(containerId, view) {
     if (!items || !items.length) return;
     const wrap = document.createElement('div'); wrap.className='index-class';
     const head = document.createElement('div'); head.className='index-class-header';
-    const headLabel = view==='class' ? g+'반' : view==='grade' ? (g==='T'?'교사':g+'학년') : '전체';
+    const headLabel = view==='class' ? (g==='국장단'?'👑 국장단':g+'반') : view==='grade' ? (g==='T'?'교사':g+'학년') : '전체';
     head.innerHTML = `<span>${headLabel}</span><span class="count">${items.length}</span>`;
     wrap.appendChild(head);
     const list = document.createElement('div'); list.className='index-class-list';
@@ -727,10 +752,10 @@ function buildGroups() {
   let blocks = [];
 
   if (state.mode === 'class') {
-    const co = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14'];
+    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14'];
     co.forEach(c => {
       const items = all.filter(p => p.cls === c);
-      if (items.length) blocks.push({ title: c+'반', items, sub:'' });
+      if (items.length) blocks.push({ title: c==='국장단'?'👑 국장단':c+'반', items, sub:'' });
     });
   } else if (state.mode === 'grade') {
     [['T','교사'],['1','1학년'],['2','2학년'],['3','3학년']].forEach(([k, label]) => {
@@ -1109,6 +1134,20 @@ document.getElementById('fab-legend').addEventListener('click', () => {
 window.addEventListener('resize', () => requestAnimationFrame(drawRelations));
 document.getElementById('canvas-wrap').addEventListener('scroll', () => requestAnimationFrame(drawRelations));
 
+/* ===== 상단 국장단 배너 ===== */
+function renderLeadershipBanner() {
+  const banner = document.getElementById('ld-banner');
+  if (!banner) return;
+  const order = ['부장집사','총무','담당 목사','교육국장','예배국장','미디어국장','홍보국장'];
+  const leaders = teachers.filter(t => t.position).sort((a,b) => order.indexOf(a.position) - order.indexOf(b.position));
+  if (!leaders.length) { banner.style.display = 'none'; return; }
+  const items = leaders.map(t => `<span class="ld-item" data-id="${t.id}"><span class="ld-role">${t.position}</span>${t.id}</span>`).join('');
+  banner.innerHTML = `<span class="ld-icon">👑</span><span class="ld-title">국장단</span><div class="ld-list">${items}</div>`;
+  banner.querySelectorAll('.ld-item').forEach(el => {
+    el.addEventListener('click', () => activateCard(el.dataset.id, true));
+  });
+}
+
 /* ===== 상단 생일 알림 박스 (D-14 이내) ===== */
 function renderBirthdayBanner() {
   const banner = document.getElementById('bd-banner');
@@ -1179,6 +1218,7 @@ document.getElementById('visit-modal').addEventListener('click', e => {
 buildIndexInto('index-body', 'class');
 buildIndexInto('index-body-mobile', 'class');
 buildGroups();
+renderLeadershipBanner();
 renderBirthdayBanner();
 setTimeout(drawRelations, 150);
 window.activateCard = activateCard;
