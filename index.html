@@ -142,6 +142,29 @@
   .ann-howto strong { color: #e2e8f0; }
   .ann-howto code { background: #0f172a; padding: 1px 5px; border-radius: 3px; color: #fde047; font-family: 'SF Mono', Consolas, monospace; }
 
+  /* 긴급 기도제목 박스 */
+  .prayer-block { background: linear-gradient(135deg, rgba(127,29,29,.32) 0%, rgba(131,24,67,.32) 100%); border: 1px solid rgba(244,63,94,.4); }
+  .prayer-block .group-title { color: #fda4af; }
+  .prayer-block .group-title .count { background: #be123c; color: #fff; }
+  .prayer-card { background: linear-gradient(135deg, #7f1d1d 0%, #831843 100%); border: 1px solid rgba(244,63,94,.5); border-radius: 10px; padding: 10px 12px; min-width: 200px; cursor: pointer; transition: all .15s; flex: 1 1 calc(33.333% - 6px); position: relative; }
+  .prayer-card:hover, .prayer-card:active { transform: translateY(-2px); border-color: #f43f5e; box-shadow: 0 8px 20px rgba(244,63,94,.25); }
+  .prayer-card.urgent::before { content: ''; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #fff; border-radius: 50%; animation: bdPulse 1.6s ease-in-out infinite; box-shadow: 0 0 0 2px rgba(255,255,255,.4); }
+  .prayer-card .pr-student { font-size: 12px; font-weight: 700; color: #fecdd3; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+  .prayer-card .pr-student .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .prayer-card .pr-title { font-size: 13px; color: #fff; font-weight: 700; margin-bottom: 5px; line-height: 1.3; }
+  .prayer-card .pr-content { font-size: 11px; color: #fecdd3; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .prayer-card .pr-date { font-size: 10px; color: #fda4af; margin-top: 6px; opacity: 0.85; display: flex; gap: 6px; }
+
+  /* 학생 상세 패널 기도제목 섹션 */
+  .pr-mini { background: linear-gradient(135deg, rgba(127,29,29,.25), rgba(131,24,67,.25)); border-left: 3px solid #ef4444; padding: 8px 10px; margin-bottom: 6px; border-radius: 4px; font-size: 11px; }
+  .pr-mini .pr-mini-title { color: #fecdd3; font-weight: 700; margin-bottom: 3px; }
+  .pr-mini .pr-mini-content { color: #cbd5e1; line-height: 1.5; }
+  .pr-mini .pr-mini-meta { color: #fda4af; font-size: 10px; margin-top: 3px; }
+
+  @media (max-width: 900px) {
+    .prayer-card { flex: 1 1 100%; min-width: 0; }
+  }
+
   /* 심방 마크 */
   .badge-mini.visit { background: #0ea5e9; color: #fff; }
   .card.visited::before { content: '📋'; position: absolute; top: 4px; left: 4px; font-size: 12px; z-index: 3; }
@@ -379,6 +402,19 @@
       <button class="close" id="ann-modal-close">✕</button>
     </div>
     <div class="modal-body" id="ann-modal-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="prayer-modal">
+  <div class="modal">
+    <div class="ann-bureau-header" id="prayer-modal-header" style="background:linear-gradient(135deg,#be123c 0%,#831843 100%)">
+      <div>
+        <h2 id="prayer-modal-title">🙏 긴급 기도제목</h2>
+        <div class="sub" id="prayer-modal-sub"></div>
+      </div>
+      <button class="close" id="prayer-modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="prayer-modal-body"></div>
   </div>
 </div>
 
@@ -753,7 +789,7 @@ function buildIndexInto(containerId, view) {
   ];
   let groups = {}, order = [];
   if (view === 'class') {
-    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14','헬퍼'];
+    const co = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','헬퍼','국장단'];
     co.forEach(c => { groups[c]=[]; order.push(c); });
     all.forEach(p => { const c = p.cls; if (groups[c]) groups[c].push(p); });
     // 국장단 인덱스에도 직책자 모두 (담임반과 중복)
@@ -809,21 +845,18 @@ function buildIndexInto(containerId, view) {
 function buildGroups() {
   const wrap = document.getElementById('groups');
   wrap.innerHTML = '';
+  // 모든 모드에서 맨 위에 긴급 기도제목 박스
+  const prayerBlock = buildPrayerBlock();
+  if (prayerBlock) wrap.appendChild(prayerBlock);
   const all = [...students, ...teachers].filter(shouldShow);
   let blocks = [];
 
   if (state.mode === 'class') {
-    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14','헬퍼'];
+    const co = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','헬퍼','국장단'];
     co.forEach(c => {
-      let items;
-      if (c === '국장단') {
-        // 국장단 박스: position 있는 모든 사람 (반과 중복 가능)
-        items = all.filter(p => isTeacher(p.id) && p.position);
-        items.sort((a,b) => positionRank(a) - positionRank(b));
-      } else {
-        items = all.filter(p => p.cls === c);
-      }
-      if (items.length) blocks.push({ title: c==='국장단'?'👑 국장단':c==='헬퍼'?'🤝 헬퍼':c+'반', items, sub:'' });
+      let items = all.filter(p => p.cls === c);
+      if (c === '국장단') items.sort((a,b) => positionRank(a) - positionRank(b));
+      if (items.length) blocks.push({ title: c==='국장단'?'👑 국장단 (담임 외)':c==='헬퍼'?'🤝 헬퍼':c+'반', items, sub:'' });
     });
   } else if (state.mode === 'grade') {
     [['T','교사'],['1','1학년'],['2','2학년'],['3','3학년']].forEach(([k, label]) => {
@@ -899,6 +932,8 @@ function buildCard(p) {
   if (p.absent) badges.push('<span class="badge-mini absent">🚪</span>');
   const hasVisit = visitsByStudent[p.id] && visitsByStudent[p.id].length > 0;
   if (hasVisit) card.classList.add('visited');
+  const hasPrayer = !isT && getPrayersForStudent(p.id).length > 0;
+  if (hasPrayer) badges.push('<span class="badge-mini" style="background:#ef4444;color:#fff">🙏</span>');
   const relIcons = [];
   ['family','friend','conflict','care','school','ride'].forEach(r => {
     const has = edges.some(e => e.rel===r && (e.from===p.id || e.to===p.id));
@@ -1049,6 +1084,22 @@ function renderDetailHTML(id, p) {
         <strong>${r.other}</strong> <span style="color:#94a3b8">— ${r.label}</span>
       </li>`).join('') + '</ul>';
   }
+  // 긴급 기도제목
+  let prayerSection = '';
+  if (!isT) {
+    const prs = getPrayersForStudent(id);
+    if (prs.length) {
+      prayerSection = '<div class="detail-section"><h3>🙏 긴급 기도제목</h3>' +
+        prs.map(pr => `
+          <div class="pr-mini" onclick="openPrayerModal('${pr.id}')" style="cursor:pointer">
+            <div class="pr-mini-title">${pr.urgent?'🔥 ':''}${pr.title}</div>
+            <div class="pr-mini-content">${pr.content.split('\n')[0]}</div>
+            <div class="pr-mini-meta">📅 ${pr.date} · 클릭해서 전체 보기</div>
+          </div>
+        `).join('') + '</div>';
+    }
+  }
+
   // 심방 기록
   let visitSection = '';
   if (!isT && visitsByStudent[id]) {
@@ -1068,6 +1119,7 @@ function renderDetailHTML(id, p) {
        <div class="detail-meta">${p.cls}반 · ${p.grade}학년 · ${p.gender||''}${p.school?' · '+p.school:''}</div>
        <div>${badges.join('')}</div>
        <div class="detail-section"><h3>핵심 상황</h3><div class="content">${p.notes||'(정보 없음)'}</div></div>
+       ${prayerSection}
        ${visitSection}`;
   return `
     ${header}
@@ -1386,6 +1438,140 @@ function handleAnnouncementDeepLink() {
   }
 }
 
+/* ===== 긴급 기도제목 ===== */
+const PRAYER_REQUESTS = [
+  {
+    id: 'pr-001',
+    student: '조강인',
+    title: '농구 진로 결정',
+    date: '2026-05-20',
+    urgent: true,
+    content: '용산고 농구부에서 주전으로 못 뛰어 점수가 안 나오는 상황. 학교를 옮기거나 유급을 고민 중. 진로 결정 가운데 하나님의 인도하심을 위해.\n전성희 선생님이 별도로 만남 진행 중. 함께 기도해주세요.'
+  },
+  {
+    id: 'pr-002',
+    student: '권하율',
+    title: '학업 스트레스 극심',
+    date: '2026-05-20',
+    urgent: true,
+    content: '대치동 입시 압박으로 시험기간 정서적으로 어려움을 표현. 즉각적인 케어와 영적 보호가 필요한 단계.\n오덕현 선생님(13반 담임)·이승헌 헬퍼와 함께 케어 중. 마음의 평안과 학업의 균형을 위해.'
+  },
+  {
+    id: 'pr-003',
+    student: '강은교',
+    title: '정서적 회복과 또래 관계',
+    date: '2026-05-20',
+    urgent: true,
+    content: '우울증 약을 미성년자 최대치로 복용 중. 또래 트라우마로 동학년 친구들과의 관계 형성이 매우 어려움. 텀이 바뀌는 것 자체에도 불안감을 가짐.\n"성경통경" 책을 읽고 신앙에 대한 갈망이 있는 모습 — 정명경 선생님이 부담임으로 케어 중. 정서적 회복과 영적 성장, 그리고 또래와의 따뜻한 만남을 위해.'
+  }
+];
+
+function getPrayersForStudent(name) {
+  return PRAYER_REQUESTS.filter(p => p.student === name);
+}
+
+function buildPrayerBlock() {
+  if (!PRAYER_REQUESTS.length) return null;
+  const block = document.createElement('div');
+  block.className = 'group-block prayer-block';
+  block.innerHTML = `<div class="group-title">🙏 <span>긴급 기도제목</span><span class="count">${PRAYER_REQUESTS.length}</span><span class="sub">함께 기도해 주세요</span></div>`;
+  const grid = document.createElement('div');
+  grid.className = 'card-grid';
+  PRAYER_REQUESTS.forEach(pr => {
+    const p = personById[pr.student];
+    const card = document.createElement('div');
+    card.className = 'prayer-card' + (pr.urgent ? ' urgent' : '');
+    card.dataset.prId = pr.id;
+    const color = p ? personColor(p) : '#94a3b8';
+    const meta = p ? `${p.cls}반 · ${p.grade}학년` : '';
+    card.innerHTML = `
+      <div class="pr-student"><span class="dot" style="background:${color}"></span>${pr.student} <span style="color:#fda4af;font-weight:400;font-size:10px;margin-left:2px">${meta}</span></div>
+      <div class="pr-title">${pr.title}</div>
+      <div class="pr-content">${pr.content.split('\n')[0]}</div>
+      <div class="pr-date">📅 ${pr.date}${pr.urgent?' · 🔥 긴급':''}</div>
+    `;
+    card.addEventListener('click', () => openPrayerModal(pr.id));
+    grid.appendChild(card);
+  });
+  block.appendChild(grid);
+  return block;
+}
+
+function openPrayerModal(prId, focus = true) {
+  const list = PRAYER_REQUESTS.slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  const body = document.getElementById('prayer-modal-body');
+  document.getElementById('prayer-modal-sub').textContent = `함께 기도해 주세요 · ${list.length}건`;
+  body.innerHTML = list.map(pr => {
+    const p = personById[pr.student];
+    const cls = p ? `${p.cls}반 ${p.grade}학년 ${p.gender||''}` : '';
+    return `
+      <div class="ann-item" id="pr-${pr.id}" style="--bureau-color:#ef4444;border-color:rgba(244,63,94,.3)">
+        <div class="ann-item-header">
+          <span class="ann-item-title">🙏 ${pr.title}</span>
+          <span class="ann-item-date">📅 ${pr.date}</span>
+          ${pr.urgent ? `<span class="ann-item-deadline" style="background:#ef4444">🔥 긴급</span>` : ''}
+        </div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">
+          <strong style="color:#fecdd3">${pr.student}</strong> ${cls?'· '+cls:''}
+          <button class="ann-url-btn" data-go="${pr.student}" style="margin-left:8px;padding:2px 8px;font-size:10px">👤 카드 보기</button>
+        </div>
+        <div class="ann-item-content" style="border-left-color:#ef4444">${pr.content.replace(/\n/g,'<br>')}</div>
+        <div class="ann-item-actions">
+          <button class="ann-url-btn" data-pr="${pr.id}">🔗 URL 복사</button>
+          <span class="ann-url-text">?prayer=${pr.id}</span>
+        </div>
+      </div>
+    `;
+  }).join('') + `<div class="ann-howto">
+    <strong>🙏 기도제목 추가·수정하는 방법</strong><br>
+    1. 카톡으로 <strong>학생 / 제목 / 내용 / 긴급 여부</strong>를 보내주세요<br>
+    2. 또는 <code>관계도.html</code>의 <code>PRAYER_REQUESTS</code> 배열에 직접 추가 후 push<br>
+    <br>
+    <strong>🔗 기도제목 링크</strong> — 각 기도제목 <strong>URL 복사</strong>로 카톡 공유. 받는 사람이 누르면 그 기도제목이 펼쳐진 상태로 페이지가 열립니다.
+  </div>`;
+  body.querySelectorAll('.ann-url-btn[data-pr]').forEach(btn => {
+    btn.addEventListener('click', () => copyPrayerUrl(btn.dataset.pr));
+  });
+  body.querySelectorAll('.ann-url-btn[data-go]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closePrayerModal();
+      activateCard(btn.dataset.go, true);
+    });
+  });
+  document.getElementById('prayer-modal').classList.add('open');
+  if (focus && prId) {
+    setTimeout(() => {
+      const el = document.getElementById('pr-' + prId);
+      if (el) {
+        el.classList.add('focus');
+        el.scrollIntoView({ behavior:'smooth', block:'center' });
+      }
+    }, 200);
+  }
+}
+
+function closePrayerModal() { document.getElementById('prayer-modal').classList.remove('open'); }
+
+function copyPrayerUrl(prId) {
+  const base = window.location.origin + window.location.pathname;
+  const url = `${base}?prayer=${prId}`;
+  navigator.clipboard.writeText(url).then(() => toast('기도제목 URL 복사 완료')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('URL 복사 완료'); } catch(e) { toast('복사 실패'); }
+    document.body.removeChild(ta);
+  });
+}
+
+function handlePrayerDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const prId = params.get('prayer');
+  if (!prId) return;
+  if (PRAYER_REQUESTS.find(x => x.id === prId)) {
+    setTimeout(() => openPrayerModal(prId, true), 300);
+  }
+}
+
 /* ===== 상단 생일 알림 박스 (D-14 이내) ===== */
 function renderBirthdayBanner() {
   const banner = document.getElementById('bd-banner');
@@ -1458,6 +1644,11 @@ document.getElementById('ann-modal-close').addEventListener('click', closeAnnoun
 document.getElementById('ann-modal').addEventListener('click', e => {
   if (e.target.id === 'ann-modal') closeAnnouncementModal();
 });
+// 기도제목 모달 닫기 이벤트
+document.getElementById('prayer-modal-close').addEventListener('click', closePrayerModal);
+document.getElementById('prayer-modal').addEventListener('click', e => {
+  if (e.target.id === 'prayer-modal') closePrayerModal();
+});
 
 buildIndexInto('index-body', 'class');
 buildIndexInto('index-body-mobile', 'class');
@@ -1465,8 +1656,10 @@ buildGroups();
 renderAnnouncementBanner();
 renderBirthdayBanner();
 handleAnnouncementDeepLink();
+handlePrayerDeepLink();
 setTimeout(drawRelations, 150);
 window.activateCard = activateCard;
+window.openPrayerModal = openPrayerModal;
 </script>
 
 </body>
