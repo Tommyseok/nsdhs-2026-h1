@@ -682,6 +682,13 @@ const state = {
 };
 const isMobile = () => window.innerWidth <= 900;
 
+const POSITION_ORDER = ['담당 목사','부장집사','총무','교육국장','예배국장','미디어국장','홍보국장'];
+function positionRank(p) {
+  if (!p || !p.position) return 99;
+  const i = POSITION_ORDER.indexOf(p.position);
+  return i === -1 ? 99 : i;
+}
+
 function shouldShow(p) {
   if (!state.showGrades[gradeKey(p)]) return false;
   if (!isTeacher(p.id)) {
@@ -705,7 +712,11 @@ function buildIndexInto(containerId, view) {
     co.forEach(c => { groups[c]=[]; order.push(c); });
     all.forEach(p => { const c = p.cls; if (!groups[c]) return; groups[c].push(p); });
     order = order.filter(c => groups[c] && groups[c].length);
-    order.forEach(c => groups[c].sort((a,b) => (a._type !== b._type ? (a._type==='teacher'?-1:1) : (a.grade||9)-(b.grade||9))));
+    order.forEach(c => groups[c].sort((a,b) => {
+      if (a._type !== b._type) return a._type==='teacher' ? -1 : 1;
+      if (c === '국장단') return positionRank(a) - positionRank(b);
+      return (a.grade||9) - (b.grade||9);
+    }));
   } else if (view === 'grade') {
     order = ['T','1','2','3']; order.forEach(g => groups[g] = []);
     all.forEach(p => { const g = p._type==='teacher' ? 'T' : String(p.grade); if (!groups[g]) return; groups[g].push(p); });
@@ -755,6 +766,7 @@ function buildGroups() {
     const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14'];
     co.forEach(c => {
       const items = all.filter(p => p.cls === c);
+      if (c === '국장단') items.sort((a,b) => positionRank(a) - positionRank(b));
       if (items.length) blocks.push({ title: c==='국장단'?'👑 국장단':c+'반', items, sub:'' });
     });
   } else if (state.mode === 'grade') {
@@ -1138,7 +1150,7 @@ document.getElementById('canvas-wrap').addEventListener('scroll', () => requestA
 function renderLeadershipBanner() {
   const banner = document.getElementById('ld-banner');
   if (!banner) return;
-  const order = ['부장집사','총무','담당 목사','교육국장','예배국장','미디어국장','홍보국장'];
+  const order = ['담당 목사','부장집사','총무','교육국장','예배국장','미디어국장','홍보국장'];
   const leaders = teachers.filter(t => t.position).sort((a,b) => order.indexOf(a.position) - order.indexOf(b.position));
   if (!leaders.length) { banner.style.display = 'none'; return; }
   const items = leaders.map(t => `<span class="ld-item" data-id="${t.id}"><span class="ld-role">${t.position}</span>${t.id}</span>`).join('');
