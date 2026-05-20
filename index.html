@@ -101,6 +101,38 @@
   .bd-banner .bd-item .d-day { color: #fbcfe8; font-weight: 700; margin-left: 4px; }
   .bd-banner .bd-item.today { background: #ec4899; color: #fff; font-weight: 700; }
   .bd-banner .bd-empty { color: #fbcfe8; opacity: 0.7; font-size: 11px; }
+
+  /* 심방 마크 */
+  .badge-mini.visit { background: #0ea5e9; color: #fff; }
+  .card.visited::before { content: '📋'; position: absolute; top: 4px; left: 4px; font-size: 12px; z-index: 3; }
+
+  /* 심방 일지 모달 */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 150; opacity: 0; pointer-events: none; transition: opacity .25s; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .modal { background: #1e293b; border-radius: 14px; max-width: 760px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,.5); transform: translateY(20px); transition: transform .25s; }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header { position: sticky; top: 0; background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); padding: 16px 20px; border-radius: 14px 14px 0 0; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+  .modal-header h2 { margin: 0; font-size: 18px; color: #fff; font-weight: 700; }
+  .modal-header .close { background: rgba(255,255,255,.2); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+  .modal-body { padding: 18px 22px 24px; }
+  .visit-log { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .visit-log-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #334155; flex-wrap: wrap; }
+  .visit-pastor { font-weight: 700; color: #f1f5f9; font-size: 14px; }
+  .visit-date { color: #94a3b8; font-size: 12px; background: #334155; padding: 2px 8px; border-radius: 10px; }
+  .visit-students { color: #60a5fa; font-size: 11px; margin-left: auto; }
+  .visit-student-block { margin-bottom: 14px; }
+  .visit-student-block:last-child { margin-bottom: 0; }
+  .visit-student-name { font-size: 14px; font-weight: 700; color: #fde047; margin-bottom: 6px; cursor: pointer; display: inline-block; padding: 3px 10px; background: rgba(253,224,71,.1); border-radius: 12px; }
+  .visit-student-name:hover { background: rgba(253,224,71,.2); }
+  .visit-content { font-size: 12px; line-height: 1.7; color: #cbd5e1; margin-bottom: 8px; padding: 8px 10px; background: #1e293b; border-radius: 6px; border-left: 3px solid #64748b; }
+  .visit-prayer { font-size: 12px; line-height: 1.6; color: #fbcfe8; padding: 8px 10px; background: rgba(236,72,153,.07); border-radius: 6px; border-left: 3px solid #ec4899; }
+  .visit-prayer strong { color: #f9a8d4; }
+
+  /* 상세 패널 심방 섹션 */
+  .visit-mini { background: rgba(14,165,233,.08); border-left: 3px solid #0ea5e9; padding: 8px 10px; margin-bottom: 6px; border-radius: 4px; font-size: 11px; }
+  .visit-mini .visit-mini-meta { color: #7dd3fc; font-weight: 600; margin-bottom: 4px; }
+  .visit-mini .visit-mini-content { color: #cbd5e1; line-height: 1.5; }
+  .visit-mini .visit-mini-prayer { color: #fbcfe8; line-height: 1.5; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(236,72,153,.3); }
   .card.teacher { background: #334155; border: 2px dashed #64748b; }
   .card.teacher .card-att { display: none; }
   .card.teacher .att-strip { display: none; }
@@ -169,6 +201,7 @@
   }
   @media (max-width: 460px) {
     .card { flex: 1 1 100%; }
+    .visit-btn-label { display: none; }
   }
 </style>
 </head>
@@ -180,6 +213,7 @@
     <h1>내수동 고등부 관계도</h1>
     <span class="subtitle">2026 1학기</span>
   </div>
+  <button class="icon-btn" id="visit-btn" aria-label="심방 일지" title="목사 심방 일지" style="width:auto;padding:0 12px;font-size:13px;gap:4px;display:flex">📋 <span class="visit-btn-label">심방 일지</span></button>
 </header>
 
 <div class="bd-banner" id="bd-banner"></div>
@@ -200,6 +234,7 @@
   <button class="chip" data-mode="school">같은 학교</button>
   <button class="chip" data-mode="ride">동반 등교</button>
   <button class="chip" data-mode="star">⭐ 집중 케어</button>
+  <button class="chip" data-mode="visited">📋 심방 받은</button>
 </div>
 
 <div class="grade-row">
@@ -283,6 +318,16 @@
 <button class="fab toggle-line-fab" id="fab-line" aria-label="관계선 토글">⇶</button>
 <button class="fab" id="fab-legend" aria-label="범례">?</button>
 
+<div class="modal-overlay" id="visit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📋 목사 심방 일지</h2>
+      <button class="close" id="visit-modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="visit-modal-body"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -330,7 +375,7 @@ const students = [
   {id:'최승아', grade:3, gender:'여', cls:'01', school:'대원여고', birthday:'', attRate:'', attLevel:4, absent:true, notes:'장기결석. 조인상 친구. 부모님 반대'},
   {id:'나호윤', grade:1, gender:'남', cls:'02', school:'', birthday:'10-02', attRate:'A', notes:'누나 나정인(01반)'},
   {id:'안민혁', grade:1, gender:'남', cls:'02', school:'', birthday:'11-11', attRate:'B', notes:'부모님과 가끔 결석'},
-  {id:'이주형', grade:1, gender:'여', cls:'02', school:'', birthday:'07-01', attRate:'A', notes:''},
+  {id:'이주형', grade:1, gender:'여', cls:'02', school:'덕성여고', birthday:'07-01', attRate:'A', notes:'할아버지가 현대미술가 이건용 작가. 어렸을 때부터 자연스럽게 전시·예술 공부. 부모님은 예술 쪽 진로 권장하지만 본인은 하고 싶은 것이 너무 많음. 현재 전시관 큐레이터 목표지만 확정은 아님. 공부 목표가 뚜렷하지 않은 상태'},
   {id:'박진서', grade:3, gender:'여', cls:'02', school:'서울여자상업고', birthday:'03-29', attRate:'', attLevel:4, absent:true, notes:'금융권 취업 준비. 출석 거의 없음'},
   {id:'임소명', grade:3, gender:'여', cls:'02', school:'서울여자상업고', birthday:'01-18', attRate:'', attLevel:4, absent:true, notes:'금융권 취업 준비. 출석 거의 없음'},
   {id:'박민주', grade:1, gender:'여', cls:'03', school:'', birthday:'', attRate:'', attLevel:0, notes:'발언 없음. 추가 파악 필요'},
@@ -365,7 +410,7 @@ const students = [
   {id:'이가영', grade:2, gender:'여', cls:'07', school:'서울예고', birthday:'04-19', attRate:0.55, notes:'본인 얘기 매우 많이 함. 도연·도윤이가 싫어함. 장문 카톡으로 상처 잘 줌(뒤끝 김). 어린 남교사 좋아함'},
   {id:'박시우', grade:1, gender:'남', cls:'08', school:'', birthday:'11-02', attRate:'C', notes:''},
   {id:'조한나', grade:1, gender:'여', cls:'08', school:'기독교 대안학교', birthday:'05-24', attRate:'유학중', attLevel:1, faith:'안정', notes:'대안학교 신앙 배경. 출석 양호. 신앙 깊고 고민 깊음. 신규 교사 반 도우미 자원'},
-  {id:'최유현', grade:1, gender:'여', cls:'08', school:'', birthday:'05-08', attRate:'A', notes:'텐션 높은 막내. 스킨십·앵기. 조용한 반에서 잘 안 나옴'},
+  {id:'최유현', grade:1, gender:'여', cls:'08', school:'배화여고', birthday:'05-08', attRate:'A', notes:'텐션 높은 막내. 스킨십·앵기. 조용한 반에서 잘 안 나옴. 경찰대학 진학 목표이나 성적이 받쳐주지 못해 걱정. 동성애에 대한 신앙적 고민 중 — 죄임은 인정하나 품는 부분은 아직 마음이 안 열림'},
   {id:'김라일', grade:2, gender:'남', cls:'08', school:'지산고', birthday:'11-10', attRate:0.84, notes:'김윤일 동생. "하나님 계신 게 잘 안 믿겨진다" 솔직 표현(긍정 신호). 모태신앙'},
   {id:'김채은', grade:2, gender:'여', cls:'08', school:'이대부고', birthday:'03-10', attRate:0.36, notes:'공부 스트레스로 결석. 말 시키면 잘 함'},
   {id:'양소희', grade:2, gender:'여', cls:'08', school:'', birthday:'03-28', attRate:0.23, notes:'잠 많음. 모든 게 편하지 않음. 어머니 교회 일로 늦게 옴. 유아부 봉사 중'},
@@ -503,6 +548,39 @@ const edges = [
   // ride
   {from:'연해준', to:'전지훈', rel:'ride', label:'매일 아침 동반 등교 → 분리'},
 ];
+
+/* ===== 심방 일지 데이터 ===== */
+const visitLogs = [
+  {
+    id: 'visit-001',
+    pastor: '오신영',
+    date: '2026-05-20',
+    title: '오신영 목사 심방 일지',
+    students: [
+      {
+        name: '최유현',
+        content: '배화여고 재학, 경찰대학 진학이 목표이나 성적이 받쳐주지를 못해 걱정이 많음. 지난 주일에 동성애에 대한 설교를 들었는데, 주변에 동성애를 하고 있는 사람들이 많아 그게 얼마나 죄이고 심각한 것인지 알게 됨. 설교 중에는 그것이 죄인 것을 인정하되, 그들이 교회로 향할 때 품어줄 수 있어야 된다고 했지만, 아직은 그 부분에는 마음이 열리지 않음.',
+        prayer: '본인과 가족의 건강을 위해. 그리고 경찰대를 가고 싶지만 아직 성적이 많이 받쳐주지 못함. 이를 위해서.'
+      },
+      {
+        name: '이주형',
+        content: '덕성여고 재학. 할아버지가 유명한 현대미술가(이건용 작가)셔서 자연스럽게 어렸을 때부터 전시를 보거나 관련된 공부를 하게 됨. 그래서 부모님은 앞으로도 예술 쪽 일을 하라고 하시지만, 사실 하고 싶은 게 너무 많음. 지금 당장은 전시관 큐레이터가 되는 것을 목표로 삼긴 했어도, 명확한 꿈은 아님. 공부를 하기는 하는데 목표가 뚜렷하지 않은 느낌.',
+        prayer: '하고 싶은 게 너무 많아 미래에 대해 고민이 있음. 공부를 하고는 있지만 왜 하는지 모르겠음. 이 부분에 대한 답을 찾길.'
+      }
+    ]
+  }
+];
+
+// 학생 → 심방 기록 인덱스
+const visitsByStudent = {};
+visitLogs.forEach(log => {
+  log.students.forEach(s => {
+    (visitsByStudent[s.name] = visitsByStudent[s.name] || []).push({
+      logId: log.id, pastor: log.pastor, date: log.date,
+      content: s.content, prayer: s.prayer,
+    });
+  });
+});
 
 /* ===== 유틸 ===== */
 const personById = {};
@@ -679,6 +757,11 @@ function buildGroups() {
     blocks.push({ title:'⭐ 집중 케어', items, sub:`${items.length}명` });
     const others = all.filter(p => !p.star);
     if (others.length) blocks.push({ title:'그 외 전체', items:others, sub:'참고용' });
+  } else if (state.mode === 'visited') {
+    const items = all.filter(p => !isTeacher(p.id) && visitsByStudent[p.id]);
+    blocks.push({ title:'📋 심방 받은 학생', items, sub:`${items.length}명` });
+    const others = all.filter(p => !visitsByStudent[p.id]);
+    if (others.length) blocks.push({ title:'그 외 전체', items:others, sub:'참고용' });
   } else {
     const groups = unionGroups(state.mode);
     groups.sort((a,b) => b.length - a.length);
@@ -721,6 +804,8 @@ function buildCard(p) {
   else if (isBdMonth) badges.push('<span class="badge-mini birthday">🎂 이번달!</span>');
   if (p.star) badges.push('<span class="badge-mini star">⭐</span>');
   if (p.absent) badges.push('<span class="badge-mini absent">🚪</span>');
+  const hasVisit = visitsByStudent[p.id] && visitsByStudent[p.id].length > 0;
+  if (hasVisit) card.classList.add('visited');
   const relIcons = [];
   ['family','friend','conflict','care','school','ride'].forEach(r => {
     const has = edges.some(e => e.rel===r && (e.from===p.id || e.to===p.id));
@@ -871,12 +956,26 @@ function renderDetailHTML(id, p) {
         <strong>${r.other}</strong> <span style="color:#94a3b8">— ${r.label}</span>
       </li>`).join('') + '</ul>';
   }
+  // 심방 기록
+  let visitSection = '';
+  if (!isT && visitsByStudent[id]) {
+    const visits = visitsByStudent[id];
+    visitSection = '<div class="detail-section"><h3>💬 심방 기록</h3>' +
+      visits.map(v => `
+        <div class="visit-mini">
+          <div class="visit-mini-meta">📋 ${v.pastor} 목사 · ${v.date}</div>
+          <div class="visit-mini-content">${v.content}</div>
+          ${v.prayer ? `<div class="visit-mini-prayer"><strong>기도제목:</strong> ${v.prayer}</div>` : ''}
+        </div>
+      `).join('') + '</div>';
+  }
   const header = isT
     ? `<div class="detail-name">${p.id}</div><div class="detail-meta">${p.cls}반 · ${p.role}</div>`
     : `<div class="detail-name">${p.id}</div>
        <div class="detail-meta">${p.cls}반 · ${p.grade}학년 · ${p.gender||''}${p.school?' · '+p.school:''}</div>
        <div>${badges.join('')}</div>
-       <div class="detail-section"><h3>핵심 상황</h3><div class="content">${p.notes||'(정보 없음)'}</div></div>`;
+       <div class="detail-section"><h3>핵심 상황</h3><div class="content">${p.notes||'(정보 없음)'}</div></div>
+       ${visitSection}`;
   return `
     ${header}
     <div class="detail-section"><h3>가족</h3>${relList(byRel.family)}</div>
@@ -1034,6 +1133,48 @@ function renderBirthdayBanner() {
     el.addEventListener('click', () => activateCard(el.dataset.id, true));
   });
 }
+
+/* ===== 심방 일지 모달 ===== */
+function renderVisitModal() {
+  const body = document.getElementById('visit-modal-body');
+  if (!visitLogs.length) {
+    body.innerHTML = '<div style="text-align:center;color:#64748b;padding:40px 20px">아직 등록된 심방 기록이 없습니다.</div>';
+    return;
+  }
+  const sorted = visitLogs.slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  body.innerHTML = sorted.map(log => `
+    <div class="visit-log">
+      <div class="visit-log-header">
+        <span class="visit-pastor">${log.pastor} 목사</span>
+        <span class="visit-date">${log.date}</span>
+        <span class="visit-students">${log.students.map(s=>s.name).join(' · ')}</span>
+      </div>
+      ${log.students.map(s => {
+        const p = personById[s.name];
+        const cls = p ? p.cls+'반 ' + p.grade + '학년' : '';
+        return `
+        <div class="visit-student-block">
+          <div class="visit-student-name" data-name="${s.name}">👤 ${s.name} ${cls?'· '+cls:''}</div>
+          <div class="visit-content">${s.content}</div>
+          ${s.prayer ? `<div class="visit-prayer"><strong>🙏 기도제목:</strong> ${s.prayer}</div>` : ''}
+        </div>
+      `;}).join('')}
+    </div>
+  `).join('');
+  body.querySelectorAll('.visit-student-name').forEach(el => {
+    el.addEventListener('click', () => {
+      closeVisitModal();
+      activateCard(el.dataset.name, true);
+    });
+  });
+}
+function openVisitModal() { renderVisitModal(); document.getElementById('visit-modal').classList.add('open'); }
+function closeVisitModal() { document.getElementById('visit-modal').classList.remove('open'); }
+document.getElementById('visit-btn').addEventListener('click', openVisitModal);
+document.getElementById('visit-modal-close').addEventListener('click', closeVisitModal);
+document.getElementById('visit-modal').addEventListener('click', e => {
+  if (e.target.id === 'visit-modal') closeVisitModal();
+});
 
 buildIndexInto('index-body', 'class');
 buildIndexInto('index-body-mobile', 'class');
