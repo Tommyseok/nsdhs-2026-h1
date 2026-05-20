@@ -425,7 +425,7 @@ const students = [
   {id:'김채은', grade:2, gender:'여', cls:'08', school:'이대부고', birthday:'03-10', attRate:0.36, notes:'공부 스트레스로 결석. 말 시키면 잘 함'},
   {id:'양소희', grade:2, gender:'여', cls:'08', school:'', birthday:'03-28', attRate:0.23, notes:'잠 많음. 모든 게 편하지 않음. 어머니 교회 일로 늦게 옴. 유아부 봉사 중'},
   {id:'박동하', grade:1, gender:'남', cls:'09', school:'', birthday:'06-01', attRate:'A', absent:true, notes:'기숙사 거주. 거의 못 옴 (실 출석 불참, 교적부 등급 A)'},
-  {id:'오은수', grade:1, gender:'여', cls:'09', school:'', birthday:'03-10', attRate:'A', notes:'오은규(F쌤) 동생. 중등부 때 힘들었음. 동학년 여자애 불편. 09반 3학년 언니들이 적응 도움. 친언니와 같은 반 원치 않음. 김한결(04반)과 초등 시절 큰 갈등 — 분리 요청'},
+  {id:'오은수', grade:1, gender:'여', cls:'09', school:'', birthday:'03-10', attRate:'A', notes:'오은규 동생(자매). 중등부 때 힘들었음. 동학년 여자애 불편. 09반 3학년 언니들이 적응 도움. 친언니와 같은 반 원치 않음. 김한결(04반)과 초등 시절 큰 갈등 — 분리 요청'},
   {id:'곽지원', grade:3, gender:'남', cls:'09', school:'중앙고', birthday:'12-19', attRate:0.55, notes:'학기 초 걱정 → 요즘 회복세. 큐티 권유에 따라옴. 인상과 매번 같은 반 본인 투덜'},
   {id:'박지호', grade:3, gender:'여', cls:'09', school:'이화여고', birthday:'01-25', attRate:0.77, absent:true, notes:'출석 거의 없음'},
   {id:'정원영', grade:3, gender:'남', cls:'09', school:'중앙고', birthday:'', attRate:0.16, absent:true, notes:'장기결석. 곽지원 친한 그룹'},
@@ -491,6 +491,7 @@ const teachers = [
   {id:'안종범', cls:'국장단', role:'부장집사', position:'부장집사'},
   {id:'송진우', cls:'국장단', role:'예배국장', position:'예배국장'},
   {id:'오신영', cls:'국장단', role:'담당 목사', position:'담당 목사'},
+  {id:'박해니', cls:'헬퍼', role:'헬퍼'},
 ];
 
 const edges = [
@@ -499,7 +500,7 @@ const edges = [
   {from:'김다은', to:'양지현', rel:'family', label:'딸-어머니'},
   {from:'김준수', to:'김주영', rel:'family', label:'남매(쌤)'},
   {from:'정승빈', to:'정유빈', rel:'family', label:'자매(쌤)'},
-  {from:'오은수', to:'오은규', rel:'family', label:'남매(쌤·F쌤)'},
+  {from:'오은수', to:'오은규', rel:'family', label:'자매'},
   {from:'최가은', to:'최지은', rel:'family', label:'언니-동생'},
   {from:'최서윤', to:'최지윤', rel:'family', label:'쌍둥이'},
   // friend
@@ -708,9 +709,14 @@ function buildIndexInto(containerId, view) {
   ];
   let groups = {}, order = [];
   if (view === 'class') {
-    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14'];
+    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14','헬퍼'];
     co.forEach(c => { groups[c]=[]; order.push(c); });
-    all.forEach(p => { const c = p.cls; if (!groups[c]) return; groups[c].push(p); });
+    all.forEach(p => { const c = p.cls; if (groups[c]) groups[c].push(p); });
+    // 국장단 인덱스에도 직책자 모두 (담임반과 중복)
+    teachers.filter(t => t.position && t.cls !== '국장단').forEach(t => {
+      const dup = {...t, _type:'teacher', grade:'T'};
+      if (!groups['국장단'].find(x => x.id === t.id)) groups['국장단'].push(dup);
+    });
     order = order.filter(c => groups[c] && groups[c].length);
     order.forEach(c => groups[c].sort((a,b) => {
       if (a._type !== b._type) return a._type==='teacher' ? -1 : 1;
@@ -731,7 +737,7 @@ function buildIndexInto(containerId, view) {
     if (!items || !items.length) return;
     const wrap = document.createElement('div'); wrap.className='index-class';
     const head = document.createElement('div'); head.className='index-class-header';
-    const headLabel = view==='class' ? (g==='국장단'?'👑 국장단':g+'반') : view==='grade' ? (g==='T'?'교사':g+'학년') : '전체';
+    const headLabel = view==='class' ? (g==='국장단'?'👑 국장단':g==='헬퍼'?'🤝 헬퍼':g+'반') : view==='grade' ? (g==='T'?'교사':g+'학년') : '전체';
     head.innerHTML = `<span>${headLabel}</span><span class="count">${items.length}</span>`;
     wrap.appendChild(head);
     const list = document.createElement('div'); list.className='index-class-list';
@@ -763,11 +769,17 @@ function buildGroups() {
   let blocks = [];
 
   if (state.mode === 'class') {
-    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14'];
+    const co = ['국장단','01','02','03','04','05','06','07','08','09','10','11','12','13','14','헬퍼'];
     co.forEach(c => {
-      const items = all.filter(p => p.cls === c);
-      if (c === '국장단') items.sort((a,b) => positionRank(a) - positionRank(b));
-      if (items.length) blocks.push({ title: c==='국장단'?'👑 국장단':c+'반', items, sub:'' });
+      let items;
+      if (c === '국장단') {
+        // 국장단 박스: position 있는 모든 사람 (반과 중복 가능)
+        items = all.filter(p => isTeacher(p.id) && p.position);
+        items.sort((a,b) => positionRank(a) - positionRank(b));
+      } else {
+        items = all.filter(p => p.cls === c);
+      }
+      if (items.length) blocks.push({ title: c==='국장단'?'👑 국장단':c==='헬퍼'?'🤝 헬퍼':c+'반', items, sub:'' });
     });
   } else if (state.mode === 'grade') {
     [['T','교사'],['1','1학년'],['2','2학년'],['3','3학년']].forEach(([k, label]) => {
