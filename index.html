@@ -142,24 +142,24 @@
   .ann-howto strong { color: #e2e8f0; }
   .ann-howto code { background: #0f172a; padding: 1px 5px; border-radius: 3px; color: #fde047; font-family: 'SF Mono', Consolas, monospace; }
 
-  /* 긴급 기도제목 박스 */
-  .prayer-block { background: linear-gradient(135deg, rgba(127,29,29,.32) 0%, rgba(131,24,67,.32) 100%); border: 1px solid rgba(244,63,94,.4); }
-  .prayer-block .group-title { color: #fda4af; }
-  .prayer-block .group-title .count { background: #be123c; color: #fff; }
-  .prayer-card { background: linear-gradient(135deg, #7f1d1d 0%, #831843 100%); border: 1px solid rgba(244,63,94,.5); border-radius: 10px; padding: 10px 12px; min-width: 200px; cursor: pointer; transition: all .15s; flex: 1 1 calc(33.333% - 6px); position: relative; }
-  .prayer-card:hover, .prayer-card:active { transform: translateY(-2px); border-color: #f43f5e; box-shadow: 0 8px 20px rgba(244,63,94,.25); }
-  .prayer-card.urgent::before { content: ''; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #fff; border-radius: 50%; animation: bdPulse 1.6s ease-in-out infinite; box-shadow: 0 0 0 2px rgba(255,255,255,.4); }
-  .prayer-card .pr-student { font-size: 12px; font-weight: 700; color: #fecdd3; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+  /* 긴급 기도제목 박스 — emerald·teal 톤 */
+  .prayer-block { background: linear-gradient(135deg, rgba(6,78,59,.32) 0%, rgba(19,78,74,.32) 100%); border: 1px solid rgba(20,184,166,.4); }
+  .prayer-block .group-title { color: #6ee7b7; }
+  .prayer-block .group-title .count { background: #0d9488; color: #fff; }
+  .prayer-card { background: linear-gradient(135deg, #065f46 0%, #134e4a 100%); border: 1px solid rgba(20,184,166,.5); border-radius: 10px; padding: 10px 12px; min-width: 200px; cursor: pointer; transition: all .15s; flex: 1 1 calc(33.333% - 6px); position: relative; }
+  .prayer-card:hover, .prayer-card:active { transform: translateY(-2px); border-color: #14b8a6; box-shadow: 0 8px 20px rgba(20,184,166,.28); }
+  .prayer-card.urgent::before { content: ''; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #5eead4; border-radius: 50%; animation: bdPulse 1.6s ease-in-out infinite; box-shadow: 0 0 0 2px rgba(94,234,212,.35); }
+  .prayer-card .pr-student { font-size: 12px; font-weight: 700; color: #a7f3d0; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
   .prayer-card .pr-student .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .prayer-card .pr-title { font-size: 13px; color: #fff; font-weight: 700; margin-bottom: 5px; line-height: 1.3; }
-  .prayer-card .pr-content { font-size: 11px; color: #fecdd3; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .prayer-card .pr-date { font-size: 10px; color: #fda4af; margin-top: 6px; opacity: 0.85; display: flex; gap: 6px; }
+  .prayer-card .pr-title { font-size: 13px; color: #f0fdfa; font-weight: 700; margin-bottom: 5px; line-height: 1.3; }
+  .prayer-card .pr-content { font-size: 11px; color: #ccfbf1; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .prayer-card .pr-date { font-size: 10px; color: #6ee7b7; margin-top: 6px; opacity: 0.85; display: flex; gap: 6px; }
 
   /* 학생 상세 패널 기도제목 섹션 */
-  .pr-mini { background: linear-gradient(135deg, rgba(127,29,29,.25), rgba(131,24,67,.25)); border-left: 3px solid #ef4444; padding: 8px 10px; margin-bottom: 6px; border-radius: 4px; font-size: 11px; }
-  .pr-mini .pr-mini-title { color: #fecdd3; font-weight: 700; margin-bottom: 3px; }
+  .pr-mini { background: linear-gradient(135deg, rgba(6,78,59,.25), rgba(19,78,74,.25)); border-left: 3px solid #14b8a6; padding: 8px 10px; margin-bottom: 6px; border-radius: 4px; font-size: 11px; }
+  .pr-mini .pr-mini-title { color: #a7f3d0; font-weight: 700; margin-bottom: 3px; }
   .pr-mini .pr-mini-content { color: #cbd5e1; line-height: 1.5; }
-  .pr-mini .pr-mini-meta { color: #fda4af; font-size: 10px; margin-top: 3px; }
+  .pr-mini .pr-mini-meta { color: #6ee7b7; font-size: 10px; margin-top: 3px; }
 
   @media (max-width: 900px) {
     .prayer-card { flex: 1 1 100%; min-width: 0; }
@@ -407,7 +407,7 @@
 
 <div class="modal-overlay" id="prayer-modal">
   <div class="modal">
-    <div class="ann-bureau-header" id="prayer-modal-header" style="background:linear-gradient(135deg,#be123c 0%,#831843 100%)">
+    <div class="ann-bureau-header" id="prayer-modal-header" style="background:linear-gradient(135deg,#0d9488 0%,#134e4a 100%)">
       <div>
         <h2 id="prayer-modal-title">🙏 긴급 기도제목</h2>
         <div class="sub" id="prayer-modal-sub"></div>
@@ -933,7 +933,7 @@ function buildCard(p) {
   const hasVisit = visitsByStudent[p.id] && visitsByStudent[p.id].length > 0;
   if (hasVisit) card.classList.add('visited');
   const hasPrayer = !isT && getPrayersForStudent(p.id).length > 0;
-  if (hasPrayer) badges.push('<span class="badge-mini" style="background:#ef4444;color:#fff">🙏</span>');
+  if (hasPrayer) badges.push('<span class="badge-mini" style="background:#0d9488;color:#fff">🙏</span>');
   const relIcons = [];
   ['family','friend','conflict','care','school','ride'].forEach(r => {
     const has = edges.some(e => e.rel===r && (e.from===p.id || e.to===p.id));
@@ -1485,7 +1485,7 @@ function buildPrayerBlock() {
     const color = p ? personColor(p) : '#94a3b8';
     const meta = p ? `${p.cls}반 · ${p.grade}학년` : '';
     card.innerHTML = `
-      <div class="pr-student"><span class="dot" style="background:${color}"></span>${pr.student} <span style="color:#fda4af;font-weight:400;font-size:10px;margin-left:2px">${meta}</span></div>
+      <div class="pr-student"><span class="dot" style="background:${color}"></span>${pr.student} <span style="color:#6ee7b7;font-weight:400;font-size:10px;margin-left:2px">${meta}</span></div>
       <div class="pr-title">${pr.title}</div>
       <div class="pr-content">${pr.content.split('\n')[0]}</div>
       <div class="pr-date">📅 ${pr.date}${pr.urgent?' · 🔥 긴급':''}</div>
@@ -1505,17 +1505,17 @@ function openPrayerModal(prId, focus = true) {
     const p = personById[pr.student];
     const cls = p ? `${p.cls}반 ${p.grade}학년 ${p.gender||''}` : '';
     return `
-      <div class="ann-item" id="pr-${pr.id}" style="--bureau-color:#ef4444;border-color:rgba(244,63,94,.3)">
+      <div class="ann-item" id="pr-${pr.id}" style="--bureau-color:#14b8a6;border-color:rgba(20,184,166,.3)">
         <div class="ann-item-header">
           <span class="ann-item-title">🙏 ${pr.title}</span>
           <span class="ann-item-date">📅 ${pr.date}</span>
-          ${pr.urgent ? `<span class="ann-item-deadline" style="background:#ef4444">🔥 긴급</span>` : ''}
+          ${pr.urgent ? `<span class="ann-item-deadline" style="background:#0d9488">🔥 긴급</span>` : ''}
         </div>
         <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">
-          <strong style="color:#fecdd3">${pr.student}</strong> ${cls?'· '+cls:''}
+          <strong style="color:#a7f3d0">${pr.student}</strong> ${cls?'· '+cls:''}
           <button class="ann-url-btn" data-go="${pr.student}" style="margin-left:8px;padding:2px 8px;font-size:10px">👤 카드 보기</button>
         </div>
-        <div class="ann-item-content" style="border-left-color:#ef4444">${pr.content.replace(/\n/g,'<br>')}</div>
+        <div class="ann-item-content" style="border-left-color:#14b8a6">${pr.content.replace(/\n/g,'<br>')}</div>
         <div class="ann-item-actions">
           <button class="ann-url-btn" data-pr="${pr.id}">🔗 URL 복사</button>
           <span class="ann-url-text">?prayer=${pr.id}</span>
