@@ -102,14 +102,45 @@
   .bd-banner .bd-item.today { background: #ec4899; color: #fff; font-weight: 700; }
   .bd-banner .bd-empty { color: #fbcfe8; opacity: 0.7; font-size: 11px; }
 
-  /* 국장단 배너 */
-  .ld-banner { background: linear-gradient(90deg, #1e3a8a 0%, #312e81 100%); padding: 8px 16px; border-bottom: 1px solid #3730a3; color: #e0e7ff; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; }
-  .ld-banner .ld-icon { font-size: 16px; }
-  .ld-banner .ld-title { font-weight: 700; color: #fff; font-size: 12px; }
-  .ld-banner .ld-list { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
-  .ld-banner .ld-item { background: rgba(255,255,255,.13); padding: 3px 9px; border-radius: 11px; cursor: pointer; transition: all .15s; white-space: nowrap; font-size: 11px; }
-  .ld-banner .ld-item:hover, .ld-banner .ld-item:active { background: rgba(255,255,255,.25); transform: translateY(-1px); }
-  .ld-banner .ld-item .ld-role { color: #c7d2fe; margin-right: 4px; font-weight: 700; }
+  /* 공지 배너 */
+  .ann-banner { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #4c1d95 100%); padding: 10px 16px; border-bottom: 1px solid #3730a3; color: #e0e7ff; }
+  .ann-banner-title { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .ann-banner-title .ann-icon { font-size: 16px; }
+  .ann-banner-title .ann-help { margin-left: auto; background: rgba(255,255,255,.15); border: none; color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 10px; cursor: pointer; }
+  .ann-banner-title .ann-help:hover { background: rgba(255,255,255,.25); }
+  .ann-list { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: thin; scroll-snap-type: x mandatory; }
+  .ann-list::-webkit-scrollbar { height: 4px; }
+  .ann-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 2px; }
+  .ann-card { flex-shrink: 0; background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 8px 11px; min-width: 165px; max-width: 220px; cursor: pointer; transition: all .15s; scroll-snap-align: start; position: relative; }
+  .ann-card:hover, .ann-card:active { background: rgba(15,23,42,.85); border-color: rgba(255,255,255,.25); transform: translateY(-1px); }
+  .ann-card.has-new::before { content: ''; position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #f43f5e; border-radius: 50%; box-shadow: 0 0 0 2px rgba(244,63,94,.3); animation: bdPulse 1.8s ease-in-out infinite; }
+  .ann-card .ann-role { font-size: 10px; font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+  .ann-card .ann-role .ann-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .ann-card .ann-name { font-size: 12px; color: #f8fafc; font-weight: 600; margin-bottom: 4px; }
+  .ann-card .ann-latest { font-size: 11px; color: #cbd5e1; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .ann-card .ann-deadline { font-size: 10px; color: #fbbf24; margin-top: 4px; font-weight: 600; }
+  .ann-card .ann-empty { font-size: 11px; color: #64748b; font-style: italic; }
+
+  /* 공지 모달 */
+  .ann-modal-content { padding: 0; }
+  .ann-bureau-header { padding: 16px 20px; background: linear-gradient(135deg, var(--bureau-color, #6366f1) 0%, rgba(0,0,0,.5) 100%); border-radius: 14px 14px 0 0; display: flex; justify-content: space-between; align-items: center; }
+  .ann-bureau-header h2 { margin: 0; font-size: 17px; color: #fff; font-weight: 700; }
+  .ann-bureau-header .sub { font-size: 12px; color: rgba(255,255,255,.85); margin-top: 2px; }
+  .ann-item { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; transition: all .25s; position: relative; }
+  .ann-item.focus { border-color: #fde047; box-shadow: 0 0 0 2px rgba(253,224,71,.18); }
+  .ann-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .ann-item-title { font-size: 14px; font-weight: 700; color: #f1f5f9; flex: 1; min-width: 120px; }
+  .ann-item-date { font-size: 11px; color: #94a3b8; background: #334155; padding: 2px 8px; border-radius: 9px; }
+  .ann-item-deadline { font-size: 11px; color: #fff; background: #f59e0b; padding: 2px 8px; border-radius: 9px; font-weight: 600; }
+  .ann-item-content { font-size: 12px; line-height: 1.7; color: #cbd5e1; padding: 10px 12px; background: #1e293b; border-radius: 6px; border-left: 3px solid var(--bureau-color, #6366f1); }
+  .ann-item-actions { display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+  .ann-url-btn { background: #334155; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px; padding: 5px 10px; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .ann-url-btn:hover { background: #475569; }
+  .ann-url-text { font-family: 'SF Mono', Consolas, monospace; font-size: 10px; color: #64748b; word-break: break-all; flex: 1; }
+  .ann-empty-msg { text-align: center; color: #64748b; padding: 30px 20px; font-size: 12px; }
+  .ann-howto { background: #1e293b; border: 1px dashed #475569; border-radius: 8px; padding: 12px 14px; margin-top: 18px; font-size: 11px; color: #94a3b8; line-height: 1.6; }
+  .ann-howto strong { color: #e2e8f0; }
+  .ann-howto code { background: #0f172a; padding: 1px 5px; border-radius: 3px; color: #fde047; font-family: 'SF Mono', Consolas, monospace; }
 
   /* 심방 마크 */
   .badge-mini.visit { background: #0ea5e9; color: #fff; }
@@ -225,7 +256,7 @@
   <button class="icon-btn" id="visit-btn" aria-label="심방 일지" title="목사 심방 일지" style="width:auto;padding:0 12px;font-size:13px;gap:4px;display:flex">📋 <span class="visit-btn-label">심방 일지</span></button>
 </header>
 
-<div class="ld-banner" id="ld-banner"></div>
+<div class="ann-banner" id="ann-banner"></div>
 <div class="bd-banner" id="bd-banner"></div>
 
 <div class="search-row">
@@ -335,6 +366,19 @@
       <button class="close" id="visit-modal-close">✕</button>
     </div>
     <div class="modal-body" id="visit-modal-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ann-modal">
+  <div class="modal">
+    <div class="ann-bureau-header" id="ann-modal-header">
+      <div>
+        <h2 id="ann-modal-title">공지</h2>
+        <div class="sub" id="ann-modal-sub"></div>
+      </div>
+      <button class="close" id="ann-modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="ann-modal-body"></div>
   </div>
 </div>
 
@@ -1158,18 +1202,188 @@ document.getElementById('fab-legend').addEventListener('click', () => {
 window.addEventListener('resize', () => requestAnimationFrame(drawRelations));
 document.getElementById('canvas-wrap').addEventListener('scroll', () => requestAnimationFrame(drawRelations));
 
-/* ===== 상단 국장단 배너 ===== */
-function renderLeadershipBanner() {
-  const banner = document.getElementById('ld-banner');
+/* ===== 공지 시스템 ===== */
+// 각 국 정의 (포지션·색상)
+const BUREAUS = [
+  { key:'pastor',    pos:'담당 목사',   name:'오신영', color:'#a855f7' },
+  { key:'deacon',    pos:'부장집사',    name:'안종범', color:'#0ea5e9' },
+  { key:'treasurer', pos:'총무',       name:'석준원', color:'#10b981' },
+  { key:'edu',       pos:'교육국',     name:'김광현', color:'#f59e0b' },
+  { key:'worship',   pos:'예배국',     name:'송진우', color:'#ec4899' },
+  { key:'media',     pos:'미디어국',   name:'오덕현', color:'#8b5cf6' },
+  { key:'pr',        pos:'홍보국',     name:'이유성', color:'#06b6d4' },
+];
+
+// 공지 데이터 — 새 공지 추가는 이 배열 끝에 append
+const ANNOUNCEMENTS = [
+  {
+    id: 'ann-001',
+    bureau: 'pastor',
+    title: '다음텀 라인업 편성',
+    date: '2026-05-20',
+    deadline: '2026-05-29',
+    content: '다음 텀(2학기) 반 편성을 진행 중입니다. 5/29까지 완료 예정.'
+  },
+  {
+    id: 'ann-002',
+    bureau: 'edu',
+    title: '1차 라인업 배분',
+    date: '2026-05-20',
+    deadline: '2026-05-23',
+    content: '각 반 선생님들은 현재 라인업에 대한 피드백 부탁드립니다.'
+  }
+];
+
+function bureauByKey(key) { return BUREAUS.find(b => b.key === key); }
+function announcementsByBureau(key) {
+  return ANNOUNCEMENTS.filter(a => a.bureau === key).sort((a,b) => (b.date||'').localeCompare(a.date||''));
+}
+function isAnnouncementNew(a) {
+  if (!a || !a.deadline) return false;
+  const today = new Date();
+  const dl = new Date(a.deadline + 'T23:59:59');
+  return dl >= today;  // 마감 안 지났으면 "new"
+}
+
+function renderAnnouncementBanner() {
+  const banner = document.getElementById('ann-banner');
   if (!banner) return;
-  const order = ['담당 목사','부장집사','총무','교육국장','예배국장','미디어국장','홍보국장'];
-  const leaders = teachers.filter(t => t.position).sort((a,b) => order.indexOf(a.position) - order.indexOf(b.position));
-  if (!leaders.length) { banner.style.display = 'none'; return; }
-  const items = leaders.map(t => `<span class="ld-item" data-id="${t.id}"><span class="ld-role">${t.position}</span>${t.id}</span>`).join('');
-  banner.innerHTML = `<span class="ld-icon">👑</span><span class="ld-title">국장단</span><div class="ld-list">${items}</div>`;
-  banner.querySelectorAll('.ld-item').forEach(el => {
-    el.addEventListener('click', () => activateCard(el.dataset.id, true));
+  const cards = BUREAUS.map(b => {
+    const list = announcementsByBureau(b.key);
+    const latest = list[0];
+    const hasNew = latest && isAnnouncementNew(latest);
+    const latestHTML = latest
+      ? `<div class="ann-latest">${latest.title}</div>${latest.deadline?`<div class="ann-deadline">~ ${latest.deadline.slice(5)}</div>`:''}`
+      : `<div class="ann-empty">아직 공지 없음</div>`;
+    return `<div class="ann-card${hasNew?' has-new':''}" data-bureau="${b.key}">
+      <div class="ann-role"><span class="ann-dot" style="background:${b.color}"></span>${b.pos}</div>
+      <div class="ann-name">${b.name}</div>
+      ${latestHTML}
+    </div>`;
+  }).join('');
+  banner.innerHTML = `
+    <div class="ann-banner-title">
+      <span class="ann-icon">📢</span>
+      <span>목사님 / 각 국별 주요공지</span>
+      <button class="ann-help" id="ann-help-btn">업데이트 방법</button>
+    </div>
+    <div class="ann-list">${cards}</div>
+  `;
+  banner.querySelectorAll('.ann-card').forEach(el => {
+    el.addEventListener('click', () => openAnnouncementModal(el.dataset.bureau));
   });
+  document.getElementById('ann-help-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    openAnnouncementHelp();
+  });
+}
+
+function openAnnouncementModal(bureauKey, focusAnnId) {
+  const b = bureauByKey(bureauKey);
+  if (!b) return;
+  const list = announcementsByBureau(bureauKey);
+  const header = document.getElementById('ann-modal-header');
+  header.style.setProperty('--bureau-color', b.color);
+  header.style.background = `linear-gradient(135deg, ${b.color} 0%, rgba(0,0,0,.55) 100%)`;
+  document.getElementById('ann-modal-title').textContent = `📢 ${b.pos}`;
+  document.getElementById('ann-modal-sub').textContent = `${b.name} · 공지 ${list.length}건`;
+  const body = document.getElementById('ann-modal-body');
+  body.style.setProperty('--bureau-color', b.color);
+  if (!list.length) {
+    body.innerHTML = '<div class="ann-empty-msg">아직 등록된 공지가 없습니다.</div>' + howtoHTML();
+  } else {
+    body.innerHTML = list.map(a => `
+      <div class="ann-item" id="ann-${a.id}" style="--bureau-color:${b.color}">
+        <div class="ann-item-header">
+          <span class="ann-item-title">${a.title}</span>
+          <span class="ann-item-date">📅 ${a.date}</span>
+          ${a.deadline?`<span class="ann-item-deadline">~ ${a.deadline}</span>`:''}
+        </div>
+        <div class="ann-item-content">${a.content.replace(/\n/g,'<br>')}</div>
+        <div class="ann-item-actions">
+          <button class="ann-url-btn" data-ann="${a.id}">🔗 URL 복사</button>
+          <span class="ann-url-text">?ann=${a.id}</span>
+        </div>
+      </div>
+    `).join('') + howtoHTML();
+  }
+  body.querySelectorAll('.ann-url-btn').forEach(btn => {
+    btn.addEventListener('click', () => copyAnnouncementUrl(btn.dataset.ann));
+  });
+  document.getElementById('ann-modal').classList.add('open');
+  if (focusAnnId) {
+    setTimeout(() => {
+      const el = document.getElementById('ann-' + focusAnnId);
+      if (el) {
+        el.classList.add('focus');
+        el.scrollIntoView({ behavior:'smooth', block:'center' });
+      }
+    }, 200);
+  }
+}
+
+function howtoHTML() {
+  return `<div class="ann-howto">
+    <strong>📝 공지 추가·수정하는 방법</strong><br>
+    1. 카톡으로 <strong>국 / 제목 / 마감일 / 내용</strong>을 보내주세요<br>
+    2. 또는 GitHub repo의 <code>관계도.html</code>에서 <code>ANNOUNCEMENTS</code> 배열에 직접 추가 후 push (1~2분 후 자동 반영)<br>
+    <br>
+    <strong>🔗 공지 링크 공유</strong><br>
+    각 공지 옆 <strong>URL 복사</strong> 버튼을 누르면 카톡에 붙여넣기 가능. 받는 사람이 링크를 누르면 바로 그 공지가 열립니다.
+  </div>`;
+}
+
+function openAnnouncementHelp() {
+  const header = document.getElementById('ann-modal-header');
+  header.style.background = 'linear-gradient(135deg, #6366f1 0%, rgba(0,0,0,.5) 100%)';
+  document.getElementById('ann-modal-title').textContent = '📝 공지 시스템 도움말';
+  document.getElementById('ann-modal-sub').textContent = '공지 추가·수정·공유 방법';
+  document.getElementById('ann-modal-body').innerHTML = `
+    ${howtoHTML()}
+    <div class="ann-howto" style="margin-top:10px">
+      <strong>📌 공지 구성 요소</strong><br>
+      • <strong>국(bureau)</strong>: pastor (담당 목사) / deacon (부장집사) / treasurer (총무) / edu (교육국) / worship (예배국) / media (미디어국) / pr (홍보국)<br>
+      • <strong>제목(title)</strong>: 간결한 한 줄 요약<br>
+      • <strong>마감일(deadline)</strong>: YYYY-MM-DD 형식 (없어도 됨)<br>
+      • <strong>내용(content)</strong>: 상세 안내·당부 사항
+    </div>
+    <div class="ann-howto" style="margin-top:10px">
+      <strong>🔗 URL 형식</strong><br>
+      각 공지는 고유 ID를 가지며, <code>?ann=ann-001</code> 식의 deep link로 직접 접근할 수 있습니다.<br>
+      예: <code>https://tommyseok.github.io/nsdhs-2026-h1/?ann=ann-001</code><br>
+      해당 URL을 카톡에 공유하면 받는 사람은 페이지 진입 즉시 그 공지가 펼쳐진 상태로 보게 됩니다.
+    </div>
+  `;
+  document.getElementById('ann-modal').classList.add('open');
+}
+
+function copyAnnouncementUrl(annId) {
+  const base = window.location.origin + window.location.pathname;
+  const url = `${base}?ann=${annId}`;
+  navigator.clipboard.writeText(url).then(() => {
+    toast('URL이 복사되었어요. 카톡에 붙여넣기!');
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('URL 복사 완료'); } catch(e) { toast('복사 실패 - URL: ' + url); }
+    document.body.removeChild(ta);
+  });
+}
+
+function closeAnnouncementModal() {
+  document.getElementById('ann-modal').classList.remove('open');
+}
+
+// 페이지 로드 시 ?ann=XXX 파라미터 확인
+function handleAnnouncementDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const annId = params.get('ann');
+  if (!annId) return;
+  const a = ANNOUNCEMENTS.find(x => x.id === annId);
+  if (a) {
+    setTimeout(() => openAnnouncementModal(a.bureau, annId), 300);
+  }
 }
 
 /* ===== 상단 생일 알림 박스 (D-14 이내) ===== */
@@ -1239,11 +1453,18 @@ document.getElementById('visit-modal').addEventListener('click', e => {
   if (e.target.id === 'visit-modal') closeVisitModal();
 });
 
+// 공지 모달 닫기 이벤트
+document.getElementById('ann-modal-close').addEventListener('click', closeAnnouncementModal);
+document.getElementById('ann-modal').addEventListener('click', e => {
+  if (e.target.id === 'ann-modal') closeAnnouncementModal();
+});
+
 buildIndexInto('index-body', 'class');
 buildIndexInto('index-body-mobile', 'class');
 buildGroups();
-renderLeadershipBanner();
+renderAnnouncementBanner();
 renderBirthdayBanner();
+handleAnnouncementDeepLink();
 setTimeout(drawRelations, 150);
 window.activateCard = activateCard;
 </script>
