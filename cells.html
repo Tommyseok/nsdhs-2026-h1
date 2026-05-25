@@ -283,17 +283,18 @@
 <body>
 
 <div class="toolbar">
-  <button class="btn" onclick="showApplications()">📋 신청 내역 보기</button>
-  <button class="btn btn-secondary" onclick="copyApplications()">📋 카톡 공유 복사</button>
+  <button class="btn admin-only" onclick="showApplications()" style="display:none">📋 신청 내역 보기</button>
+  <button class="btn btn-secondary admin-only" onclick="copyApplications()" style="display:none">📋 카톡 공유 복사</button>
   <button class="btn btn-secondary" onclick="expandAll()">↕ 모두 펼치기</button>
   <button class="btn btn-secondary" onclick="collapseAll()">↥ 모두 접기</button>
   <a class="nav-link" href="./">관계도</a>
+  <span class="admin-badge admin-only" style="display:none;background:#7c2d12;color:#fed7aa;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">🔑 관리자 모드</span>
 </div>
 
 <header>
   <div class="container">
     <h1>📋 내수동 고등부 2학기 셀 편성 (2026)</h1>
-    <div class="subtitle">14셀 정규 + Special(장결) 부착 + 별도 풀 · 지원 선생님은 신청으로 결정</div>
+    <div class="subtitle">14셀 정규 + Special(장결) 부착 + 별도 풀 · 지원 신청은 관리자에게만 전송됩니다</div>
     <div class="notice">
       🔒 교사 내부 자료입니다. 외부 공유 금지. 학생 민감정보 포함—교사 단톡방 외 절대 공유 X.
     </div>
@@ -302,18 +303,35 @@
 
 <div class="container" id="root"></div>
 
-<div class="container" id="appOutputContainer">
+<div class="container admin-only" id="appOutputContainer" style="display:none">
   <textarea id="applyOutput" placeholder="신청 내역이 여기 표시됩니다..."></textarea>
 </div>
 
 <footer>
   <div>내수동교회 고등부 · 2026년 2학기 (6–8월) 셀 편성 · v1</div>
-  <div style="margin-top:8px;">셀 하단 입력란에 이름 → [지원] 버튼 클릭 → 리스트에 추가 (× 버튼으로 삭제). [지원] 누르지 않은 입력은 저장되지 않습니다.</div>
+  <div style="margin-top:8px;">셀 하단 입력란에 이름 → [지원] 버튼 클릭 → 카톡 메시지가 클립보드에 복사됩니다. 관리자에게 보내주세요. 다른 선생님의 신청 내역은 보이지 않습니다.</div>
 </footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
+/* ========== 관리자 모드 판별 ========== */
+// URL: cells.html?admin=nsdhs2026  로 접속 시 관리자 모드
+// 한 번 활성화되면 localStorage에 저장되어 같은 브라우저에서는 계속 관리자
+const ADMIN_KEY = 'nsdhs2026';
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('admin') === ADMIN_KEY) {
+    localStorage.setItem('isAdmin', '1');
+  } else if (params.get('admin') === 'off') {
+    localStorage.removeItem('isAdmin');
+  }
+})();
+const IS_ADMIN = localStorage.getItem('isAdmin') === '1';
+if (IS_ADMIN) {
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+}
+
 /* ========== 데이터 ========== */
 const data = {
   groups: [
@@ -579,8 +597,11 @@ function memberHtml(m, idPrefix) {
 function cellHtml(cell, groupId) {
   const cellId = cell.name.replace(/\s/g,'');
   const idPrefix = `g${groupId}-${cellId}`;
+  const guide = IS_ADMIN
+    ? '📝 지원 선생님 신청 (관리자 모드: 명단 표시)'
+    : '📝 지원 선생님 신청 (이름 입력 후 [지원] 클릭 → 카톡 메시지가 클립보드에 복사됩니다)';
   return `
-    <div class="cell-card ${cell.star ? 'star-cell' : ''}">
+    <div class="cell-card ${cell.star ? 'star-cell' : ''}" data-cell-name="${escapeHtml(cell.name)}" data-cell-intent="${escapeHtml(cell.intent)}">
       <div class="cell-header">
         <div class="cell-name">${cell.name} <span style="font-weight:400;color:#94a3b8;">(${cell.count}명)</span></div>
         <div class="cell-intent">${cell.intent}</div>
@@ -589,13 +610,13 @@ function cellHtml(cell, groupId) {
         ${cell.members.map(m => memberHtml(m, idPrefix)).join('')}
       </div>
       <div class="apply-form">
-        <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:600;">📝 지원 선생님 신청 (중복 가능)</div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:600;">${guide}</div>
         <div class="input-row">
           <input type="text" id="apply-input-${cellId}" placeholder="선생님 이름 입력 후 [지원] 클릭"
                  onkeydown="if(event.key==='Enter'){event.preventDefault();addApplicant('${cellId}');}">
           <button type="button" class="apply-btn" onclick="addApplicant('${cellId}')">지원</button>
         </div>
-        <div class="apply-list" id="apply-list-${cellId}"></div>
+        ${IS_ADMIN ? `<div class="apply-list" id="apply-list-${cellId}"></div>` : ''}
       </div>
     </div>
   `;
@@ -659,7 +680,7 @@ function principlesHtml() {
     <div class="principles-card">
       <h2>🌱 운영 원칙</h2>
       <ul>
-        <li><b>지원 선생님</b>: 셀 하단 입력란에 이름 입력 → [지원] 버튼 클릭 시 리스트 추가, × 버튼으로 삭제 (중복 가능)</li>
+        <li><b>지원 선생님 신청</b>: 셀 하단 입력란에 이름 입력 → [지원] 클릭 → 카톡 메시지가 클립보드에 복사 → 관리자에게 전송. <b>다른 선생님의 신청 내역은 보이지 않습니다</b> (관리자만 열람)</li>
         <li><b>장결자 관리 4단계 (무응답 시)</b>: Week 1 친구들(셀 코어) 카톡 → Week 2 담임 연락 → Week 3 교육국장 (성년부 학생은 부모에게) → Week 4 담당 목회자</li>
         <li><b>대학부 형제자매 연결</b>: 송준원↔송예원(누나) · 이서현↔이지환(오빠) · 이준호↔이준성(형) → 목회자 / 담당리더와 협조</li>
         <li><b>성년부 경우 (부모)</b>: 부모님이 성년부 출석하는 경우 (파악 필요) → 교육국장이 성년부 경유</li>
@@ -714,12 +735,44 @@ function addApplicant(cellId) {
     input.focus();
     return;
   }
-  const list = getApplicants(cellId);
-  list.push(name);
-  setApplicants(cellId, list);
-  input.value = '';
-  renderApplicants(cellId);
-  showToast(`✅ ${name} 지원 추가`);
+
+  if (IS_ADMIN) {
+    // 관리자 모드: 로컬 명단에 직접 추가
+    const list = getApplicants(cellId);
+    list.push(name);
+    setApplicants(cellId, list);
+    input.value = '';
+    renderApplicants(cellId);
+    showToast(`✅ ${name} 지원 추가 (관리자)`);
+  } else {
+    // 일반 모드: 카톡 메시지를 클립보드에 복사 → 관리자에게 전달
+    const card = input.closest('.cell-card');
+    const cellName = card ? card.getAttribute('data-cell-name') : cellId;
+    const cellIntent = card ? card.getAttribute('data-cell-intent') : '';
+    const msg = `[셀편성 지원] ${cellName}${cellIntent ? ' — ' + cellIntent : ''}\n지원: ${name}`;
+    copyText(msg).then(() => {
+      input.value = '';
+      showToast(`📋 ${name} → ${cellName} 지원 메시지 복사됨. 관리자에게 보내주세요.`);
+    }).catch(() => {
+      showToast('복사 실패. 직접 카톡으로 전달해 주세요.');
+    });
+  }
+}
+
+async function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  // fallback
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  return Promise.resolve();
 }
 
 function removeApplicant(cellId, index) {
@@ -752,6 +805,7 @@ function escapeHtml(s) {
 }
 
 function renderAllApplicants() {
+  if (!IS_ADMIN) return; // 일반 모드에서는 명단 비공개
   data.groups.forEach(group => {
     group.cells.forEach(c => {
       const cellId = c.name.replace(/\s/g,'');
