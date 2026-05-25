@@ -653,7 +653,7 @@ function principlesHtml() {
 // 렌더링 실행
 root.innerHTML =
   data.groups.map(groupHtml).join('') +
-  `<div class="group-title">🟧 별도 풀 (Track 1 — 목사·부장 직접 케어)</div>` +
+  `<div class="group-title">🟧 장결자 특별관리 <span style="font-size:13px;font-weight:400;color:#94a3b8">(추후 각 반에 분산배치 하되, 목회자 + 별도 교사가 특별관리)</span></div>` +
   data.pools.map(poolHtml).join('') +
   exitHtml(data.exits) +
   principlesHtml();
