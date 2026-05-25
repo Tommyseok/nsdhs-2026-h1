@@ -127,6 +127,22 @@
     padding-top: 12px;
     border-top: 1px solid #1f2937;
   }
+  .apply-form .form-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .apply-form .form-header .guide {
+    font-size: 12px; color: #94a3b8; font-weight: 600;
+  }
+  .apply-form .form-header .apply-count {
+    font-size: 12px; font-weight: 700;
+    background: #1e1b3a; border: 1px solid #4c3a8a;
+    color: #c4b5fd; border-radius: 999px;
+    padding: 2px 10px; white-space: nowrap;
+  }
+  .apply-form .form-header .apply-count.zero {
+    background: #1f2937; border-color: #374151; color: #6b7280;
+  }
   .apply-form .input-row {
     display: flex; gap: 6px; margin-bottom: 8px; align-items: center;
   }
@@ -598,8 +614,8 @@ function cellHtml(cell, groupId) {
   const cellId = cell.name.replace(/\s/g,'');
   const idPrefix = `g${groupId}-${cellId}`;
   const guide = IS_ADMIN
-    ? '📝 지원 선생님 신청 (관리자 모드: 명단 표시)'
-    : '📝 지원 선생님 신청 (이름 입력 후 [지원] 클릭 → 카톡 메시지가 클립보드에 복사됩니다)';
+    ? '📝 지원 선생님 신청 (관리자)'
+    : '📝 지원 선생님 신청';
   return `
     <div class="cell-card ${cell.star ? 'star-cell' : ''}" data-cell-name="${escapeHtml(cell.name)}" data-cell-intent="${escapeHtml(cell.intent)}">
       <div class="cell-header">
@@ -610,7 +626,10 @@ function cellHtml(cell, groupId) {
         ${cell.members.map(m => memberHtml(m, idPrefix)).join('')}
       </div>
       <div class="apply-form">
-        <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:600;">${guide}</div>
+        <div class="form-header">
+          <span class="guide">${guide}</span>
+          <span class="apply-count zero" id="apply-count-${cellId}">지원자 0명</span>
+        </div>
         <div class="input-row">
           <input type="text" id="apply-input-${cellId}" placeholder="선생님 이름 입력 후 [지원] 클릭"
                  onkeydown="if(event.key==='Enter'){event.preventDefault();addApplicant('${cellId}');}">
@@ -736,25 +755,25 @@ function addApplicant(cellId) {
     return;
   }
 
+  // 두 모드 모두 localStorage에 저장 (지원자 수 카운트용)
+  const list = getApplicants(cellId);
+  list.push(name);
+  setApplicants(cellId, list);
+  input.value = '';
+  renderApplicants(cellId);
+
   if (IS_ADMIN) {
-    // 관리자 모드: 로컬 명단에 직접 추가
-    const list = getApplicants(cellId);
-    list.push(name);
-    setApplicants(cellId, list);
-    input.value = '';
-    renderApplicants(cellId);
     showToast(`✅ ${name} 지원 추가 (관리자)`);
   } else {
     // 일반 모드: 카톡 메시지를 클립보드에 복사 → 관리자에게 전달
-    const card = input.closest('.cell-card');
+    const card = document.querySelector(`#apply-input-${cellId}`).closest('.cell-card');
     const cellName = card ? card.getAttribute('data-cell-name') : cellId;
     const cellIntent = card ? card.getAttribute('data-cell-intent') : '';
     const msg = `[셀편성 지원] ${cellName}${cellIntent ? ' — ' + cellIntent : ''}\n지원: ${name}`;
     copyText(msg).then(() => {
-      input.value = '';
       showToast(`📋 ${name} → ${cellName} 지원 메시지 복사됨. 관리자에게 보내주세요.`);
     }).catch(() => {
-      showToast('복사 실패. 직접 카톡으로 전달해 주세요.');
+      showToast(`✅ ${name} 지원 접수. 관리자에게 직접 전달해 주세요.`);
     });
   }
 }
@@ -785,9 +804,18 @@ function removeApplicant(cellId, index) {
 }
 
 function renderApplicants(cellId) {
+  const list = getApplicants(cellId);
+
+  // 카운트 뱃지는 모든 모드에서 표시
+  const countEl = document.getElementById(`apply-count-${cellId}`);
+  if (countEl) {
+    countEl.textContent = `지원자 ${list.length}명`;
+    countEl.classList.toggle('zero', list.length === 0);
+  }
+
+  // 이름 명단은 관리자 모드에서만
   const container = document.getElementById(`apply-list-${cellId}`);
   if (!container) return;
-  const list = getApplicants(cellId);
   if (list.length === 0) {
     container.innerHTML = '<div class="empty-list">아직 지원자 없음</div>';
     return;
@@ -805,7 +833,7 @@ function escapeHtml(s) {
 }
 
 function renderAllApplicants() {
-  if (!IS_ADMIN) return; // 일반 모드에서는 명단 비공개
+  // 모든 모드에서 카운트 갱신 (관리자 모드면 이름까지)
   data.groups.forEach(group => {
     group.cells.forEach(c => {
       const cellId = c.name.replace(/\s/g,'');
