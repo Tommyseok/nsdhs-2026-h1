@@ -131,8 +131,10 @@
     display: flex; gap: 8px; margin-bottom: 6px; align-items: center;
   }
   .apply-form label {
-    font-size: 12px; color: #c4b5fd;
-    min-width: 60px; font-weight: 600;
+    font-size: 13px; color: #c4b5fd;
+    min-width: 24px; text-align: center; font-weight: 700;
+    background: #1e1b3a; border: 1px solid #3b3470;
+    border-radius: 6px; padding: 4px 0;
   }
   .apply-form input {
     flex: 1;
@@ -267,7 +269,7 @@
 <header>
   <div class="container">
     <h1>📋 내수동 고등부 2학기 셀 편성 (2026)</h1>
-    <div class="subtitle">14셀 정규 + Special(장결) 부착 + 별도 풀 · 담임·부담임은 교사 신청으로 결정</div>
+    <div class="subtitle">14셀 정규 + Special(장결) 부착 + 별도 풀 · 지원 선생님은 신청으로 결정</div>
     <div class="notice">
       🔒 교사 내부 자료입니다. 외부 공유 금지. 학생 민감정보 포함—교사 단톡방 외 절대 공유 X.
     </div>
@@ -282,7 +284,7 @@
 
 <footer>
   <div>내수동교회 고등부 · 2026년 2학기 (6–8월) 셀 편성 · v1</div>
-  <div style="margin-top:8px;">담임·부담임 신청은 각 셀 아래 입력란에 이름을 적으면 자동 저장됩니다.</div>
+  <div style="margin-top:8px;">지원 선생님 신청은 각 셀 아래 입력란(1·2·3)에 이름을 적으면 자동 저장됩니다. 중복 이름도 입력 가능.</div>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -553,8 +555,9 @@ function memberHtml(m, idPrefix) {
 function cellHtml(cell, groupId) {
   const cellId = cell.name.replace(/\s/g,'');
   const idPrefix = `g${groupId}-${cellId}`;
-  const savedT = localStorage.getItem(`apply-${cellId}-담임`) || '';
-  const savedA = localStorage.getItem(`apply-${cellId}-부담임`) || '';
+  const saved1 = localStorage.getItem(`apply-${cellId}-1`) || '';
+  const saved2 = localStorage.getItem(`apply-${cellId}-2`) || '';
+  const saved3 = localStorage.getItem(`apply-${cellId}-3`) || '';
   return `
     <div class="cell-card ${cell.star ? 'star-cell' : ''}">
       <div class="cell-header">
@@ -565,16 +568,21 @@ function cellHtml(cell, groupId) {
         ${cell.members.map(m => memberHtml(m, idPrefix)).join('')}
       </div>
       <div class="apply-form">
-        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;font-weight:600;">📝 교사 신청 (이 셀의 담임/부담임이 되고 싶으신 분 이름)</div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;font-weight:600;">📝 지원 선생님 신청 (이 셀을 함께 섬기고 싶으신 분 — 중복 가능)</div>
         <div class="row">
-          <label>담임</label>
-          <input type="text" placeholder="담임 신청자 이름" value="${savedT}"
-                 onblur="saveApply('${cellId}', '담임', this.value)">
+          <label>1</label>
+          <input type="text" placeholder="지원 선생님 1" value="${saved1}"
+                 onblur="saveApply('${cellId}', '1', this.value)">
         </div>
         <div class="row">
-          <label>부담임</label>
-          <input type="text" placeholder="부담임 신청자 이름 (선택)" value="${savedA}"
-                 onblur="saveApply('${cellId}', '부담임', this.value)">
+          <label>2</label>
+          <input type="text" placeholder="지원 선생님 2" value="${saved2}"
+                 onblur="saveApply('${cellId}', '2', this.value)">
+        </div>
+        <div class="row">
+          <label>3</label>
+          <input type="text" placeholder="지원 선생님 3" value="${saved3}"
+                 onblur="saveApply('${cellId}', '3', this.value)">
         </div>
       </div>
     </div>
@@ -639,7 +647,7 @@ function principlesHtml() {
     <div class="principles-card">
       <h2>🌱 운영 원칙</h2>
       <ul>
-        <li><b>담임·부담임</b>: 위 각 셀 하단 입력란에 이름 적기 (자동 저장)</li>
+        <li><b>지원 선생님</b>: 위 각 셀 하단 입력란(1·2·3)에 이름 적기 (자동 저장, 중복 가능)</li>
         <li><b>장결자 관리 4단계 (무응답 시)</b>: Week 1 친구들(셀 코어) 카톡 → Week 2 담임 연락 → Week 3 교육국장 (성년부 학생은 부모에게) → Week 4 담당 목회자</li>
         <li><b>대학부 형제자매 연결</b>: 송준원↔송예원(누나) · 이서현↔이지환(오빠) · 이준호↔이준성(형) → 목회자 / 담당리더와 협조</li>
         <li><b>성년부 경우 (부모)</b>: 부모님이 성년부 출석하는 경우 (파악 필요) → 교육국장이 성년부 경유</li>
@@ -671,11 +679,11 @@ function collapseAll() {
   document.querySelectorAll('.member-detail').forEach(el => el.classList.remove('open'));
 }
 
-function saveApply(cellId, role, value) {
-  const key = `apply-${cellId}-${role}`;
+function saveApply(cellId, slot, value) {
+  const key = `apply-${cellId}-${slot}`;
   if (value && value.trim()) {
     localStorage.setItem(key, value.trim());
-    showToast(`${cellId} ${role} 저장: ${value.trim()}`);
+    showToast(`${cellId} 지원${slot} 저장: ${value.trim()}`);
   } else {
     localStorage.removeItem(key);
   }
@@ -683,14 +691,16 @@ function saveApply(cellId, role, value) {
 
 function showApplications() {
   const out = document.getElementById('applyOutput');
-  const lines = ['📋 셀편성 교사 신청 내역 (' + new Date().toLocaleDateString('ko-KR') + ')\n'];
+  const lines = ['📋 셀편성 지원 선생님 신청 내역 (' + new Date().toLocaleDateString('ko-KR') + ')\n'];
   data.groups.forEach(group => {
     lines.push(`\n[${group.title}]`);
     group.cells.forEach(c => {
       const cellId = c.name.replace(/\s/g,'');
-      const t = localStorage.getItem(`apply-${cellId}-담임`) || '(없음)';
-      const a = localStorage.getItem(`apply-${cellId}-부담임`) || '(없음)';
-      lines.push(`${c.name} [${c.intent}] — 담임: ${t} / 부담임: ${a}`);
+      const names = ['1','2','3']
+        .map(s => localStorage.getItem(`apply-${cellId}-${s}`))
+        .filter(v => v && v.trim());
+      const joined = names.length ? names.join(', ') : '(없음)';
+      lines.push(`${c.name} [${c.intent}] — ${joined}`);
     });
   });
   out.value = lines.join('\n');
