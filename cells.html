@@ -334,9 +334,8 @@
 
 <script>
 /* ========== 백엔드 설정 ========== */
-// Apps Script 배포 후 발급되는 웹앱 URL 붙여넣기 (~/exec)
-// 비어있으면 백엔드 미사용 → localStorage + 클립보드 폴백
-const APPS_SCRIPT_URL = '';
+// Apps Script 웹앱 URL (Deployment ID: AKfycbw0kiRAT9SKti4u1ASu1ZM5pdYGsX-LfuQusug931CwyGS07pSJtfDCqZvJ-rkyZg4M)
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0kiRAT9SKti4u1ASu1ZM5pdYGsX-LfuQusug931CwyGS07pSJtfDCqZvJ-rkyZg4M/exec';
 const BACKEND_ENABLED = !!APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf('http') === 0;
 
 /* ========== 관리자 모드 판별 ========== */
