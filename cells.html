@@ -127,26 +127,50 @@
     padding-top: 12px;
     border-top: 1px solid #1f2937;
   }
-  .apply-form .row {
-    display: flex; gap: 8px; margin-bottom: 6px; align-items: center;
-  }
-  .apply-form label {
-    font-size: 13px; color: #c4b5fd;
-    min-width: 24px; text-align: center; font-weight: 700;
-    background: #1e1b3a; border: 1px solid #3b3470;
-    border-radius: 6px; padding: 4px 0;
+  .apply-form .input-row {
+    display: flex; gap: 6px; margin-bottom: 8px; align-items: center;
   }
   .apply-form input {
     flex: 1;
     background: #0f172a;
     color: #f1f5f9;
     border: 1px solid #1e293b;
-    padding: 6px 8px;
+    padding: 7px 9px;
     border-radius: 6px;
     font-size: 13px;
     font-family: inherit;
   }
   .apply-form input:focus { outline: none; border-color: #a78bfa; }
+  .apply-form .apply-btn {
+    background: linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%);
+    color: #fff; border: none; border-radius: 6px;
+    padding: 7px 14px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    flex-shrink: 0;
+  }
+  .apply-form .apply-btn:active { transform: scale(0.96); }
+  .apply-list {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    min-height: 4px;
+  }
+  .apply-list .applicant-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #1e1b3a; border: 1px solid #4c3a8a;
+    color: #ddd6fe; border-radius: 999px;
+    padding: 4px 4px 4px 10px;
+    font-size: 12px; font-weight: 500;
+  }
+  .apply-list .applicant-chip button {
+    background: #4c1d95; color: #fff; border: none;
+    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 12px; line-height: 1;
+    cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .apply-list .applicant-chip button:active { background: #7c3aed; }
+  .apply-list .empty-list {
+    font-size: 12px; color: #4b5563; font-style: italic;
+  }
   .pool-card {
     background: #111827;
     border: 1px solid #1f2937;
@@ -284,7 +308,7 @@
 
 <footer>
   <div>내수동교회 고등부 · 2026년 2학기 (6–8월) 셀 편성 · v1</div>
-  <div style="margin-top:8px;">지원 선생님 신청은 각 셀 아래 입력란(1·2·3)에 이름을 적으면 자동 저장됩니다. 중복 이름도 입력 가능.</div>
+  <div style="margin-top:8px;">셀 하단 입력란에 이름 → [지원] 버튼 클릭 → 리스트에 추가 (× 버튼으로 삭제). [지원] 누르지 않은 입력은 저장되지 않습니다.</div>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -555,9 +579,6 @@ function memberHtml(m, idPrefix) {
 function cellHtml(cell, groupId) {
   const cellId = cell.name.replace(/\s/g,'');
   const idPrefix = `g${groupId}-${cellId}`;
-  const saved1 = localStorage.getItem(`apply-${cellId}-1`) || '';
-  const saved2 = localStorage.getItem(`apply-${cellId}-2`) || '';
-  const saved3 = localStorage.getItem(`apply-${cellId}-3`) || '';
   return `
     <div class="cell-card ${cell.star ? 'star-cell' : ''}">
       <div class="cell-header">
@@ -568,22 +589,13 @@ function cellHtml(cell, groupId) {
         ${cell.members.map(m => memberHtml(m, idPrefix)).join('')}
       </div>
       <div class="apply-form">
-        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;font-weight:600;">📝 지원 선생님 신청 (이 셀을 함께 섬기고 싶으신 분 — 중복 가능)</div>
-        <div class="row">
-          <label>1</label>
-          <input type="text" placeholder="지원 선생님 1" value="${saved1}"
-                 onblur="saveApply('${cellId}', '1', this.value)">
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:600;">📝 지원 선생님 신청 (중복 가능)</div>
+        <div class="input-row">
+          <input type="text" id="apply-input-${cellId}" placeholder="선생님 이름 입력 후 [지원] 클릭"
+                 onkeydown="if(event.key==='Enter'){event.preventDefault();addApplicant('${cellId}');}">
+          <button type="button" class="apply-btn" onclick="addApplicant('${cellId}')">지원</button>
         </div>
-        <div class="row">
-          <label>2</label>
-          <input type="text" placeholder="지원 선생님 2" value="${saved2}"
-                 onblur="saveApply('${cellId}', '2', this.value)">
-        </div>
-        <div class="row">
-          <label>3</label>
-          <input type="text" placeholder="지원 선생님 3" value="${saved3}"
-                 onblur="saveApply('${cellId}', '3', this.value)">
-        </div>
+        <div class="apply-list" id="apply-list-${cellId}"></div>
       </div>
     </div>
   `;
@@ -647,7 +659,7 @@ function principlesHtml() {
     <div class="principles-card">
       <h2>🌱 운영 원칙</h2>
       <ul>
-        <li><b>지원 선생님</b>: 위 각 셀 하단 입력란(1·2·3)에 이름 적기 (자동 저장, 중복 가능)</li>
+        <li><b>지원 선생님</b>: 셀 하단 입력란에 이름 입력 → [지원] 버튼 클릭 시 리스트 추가, × 버튼으로 삭제 (중복 가능)</li>
         <li><b>장결자 관리 4단계 (무응답 시)</b>: Week 1 친구들(셀 코어) 카톡 → Week 2 담임 연락 → Week 3 교육국장 (성년부 학생은 부모에게) → Week 4 담당 목회자</li>
         <li><b>대학부 형제자매 연결</b>: 송준원↔송예원(누나) · 이서현↔이지환(오빠) · 이준호↔이준성(형) → 목회자 / 담당리더와 협조</li>
         <li><b>성년부 경우 (부모)</b>: 부모님이 성년부 출석하는 경우 (파악 필요) → 교육국장이 성년부 경유</li>
@@ -665,6 +677,9 @@ root.innerHTML =
   exitHtml(data.exits) +
   principlesHtml();
 
+// 저장된 지원자 리스트를 각 셀에 그려넣기
+setTimeout(() => { try { renderAllApplicants(); } catch (e) { console.error(e); } }, 0);
+
 /* ========== 인터랙션 ========== */
 function toggleDetail(id) {
   const el = document.getElementById('detail-' + id);
@@ -679,14 +694,70 @@ function collapseAll() {
   document.querySelectorAll('.member-detail').forEach(el => el.classList.remove('open'));
 }
 
-function saveApply(cellId, slot, value) {
-  const key = `apply-${cellId}-${slot}`;
-  if (value && value.trim()) {
-    localStorage.setItem(key, value.trim());
-    showToast(`${cellId} 지원${slot} 저장: ${value.trim()}`);
-  } else {
-    localStorage.removeItem(key);
+function getApplicants(cellId) {
+  try {
+    const raw = localStorage.getItem(`apply-${cellId}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+
+function setApplicants(cellId, list) {
+  localStorage.setItem(`apply-${cellId}`, JSON.stringify(list));
+}
+
+function addApplicant(cellId) {
+  const input = document.getElementById(`apply-input-${cellId}`);
+  if (!input) return;
+  const name = (input.value || '').trim();
+  if (!name) {
+    showToast('이름을 입력해주세요');
+    input.focus();
+    return;
   }
+  const list = getApplicants(cellId);
+  list.push(name);
+  setApplicants(cellId, list);
+  input.value = '';
+  renderApplicants(cellId);
+  showToast(`✅ ${name} 지원 추가`);
+}
+
+function removeApplicant(cellId, index) {
+  const list = getApplicants(cellId);
+  if (index < 0 || index >= list.length) return;
+  const removed = list.splice(index, 1)[0];
+  setApplicants(cellId, list);
+  renderApplicants(cellId);
+  showToast(`🗑 ${removed} 지원 취소`);
+}
+
+function renderApplicants(cellId) {
+  const container = document.getElementById(`apply-list-${cellId}`);
+  if (!container) return;
+  const list = getApplicants(cellId);
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty-list">아직 지원자 없음</div>';
+    return;
+  }
+  container.innerHTML = list.map((name, i) => `
+    <div class="applicant-chip">
+      <span>${escapeHtml(name)}</span>
+      <button type="button" onclick="removeApplicant('${cellId}', ${i})" aria-label="삭제">×</button>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderAllApplicants() {
+  data.groups.forEach(group => {
+    group.cells.forEach(c => {
+      const cellId = c.name.replace(/\s/g,'');
+      renderApplicants(cellId);
+    });
+  });
 }
 
 function showApplications() {
@@ -696,10 +767,8 @@ function showApplications() {
     lines.push(`\n[${group.title}]`);
     group.cells.forEach(c => {
       const cellId = c.name.replace(/\s/g,'');
-      const names = ['1','2','3']
-        .map(s => localStorage.getItem(`apply-${cellId}-${s}`))
-        .filter(v => v && v.trim());
-      const joined = names.length ? names.join(', ') : '(없음)';
+      const list = getApplicants(cellId);
+      const joined = list.length ? list.join(', ') : '(없음)';
       lines.push(`${c.name} [${c.intent}] — ${joined}`);
     });
   });
