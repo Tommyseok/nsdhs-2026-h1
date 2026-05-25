@@ -301,10 +301,12 @@
 <div class="toolbar">
   <button class="btn admin-only" onclick="showApplications()" style="display:none">📋 신청 내역 보기</button>
   <button class="btn btn-secondary admin-only" onclick="copyApplications()" style="display:none">📋 카톡 공유 복사</button>
+  <button class="btn btn-secondary" onclick="loadRemoteData()" title="서버에서 최신 지원 현황 가져오기">🔄 새로고침</button>
   <button class="btn btn-secondary" onclick="expandAll()">↕ 모두 펼치기</button>
   <button class="btn btn-secondary" onclick="collapseAll()">↥ 모두 접기</button>
   <a class="nav-link" href="./">관계도</a>
   <span class="admin-badge admin-only" style="display:none;background:#7c2d12;color:#fed7aa;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">🔑 관리자 모드</span>
+  <span id="syncStatus" style="margin-left:auto;font-size:12px;font-weight:600;color:#94a3b8;align-self:center;">⏳ 로딩 중...</span>
 </div>
 
 <header>
@@ -325,12 +327,18 @@
 
 <footer>
   <div>내수동교회 고등부 · 2026년 2학기 (6–8월) 셀 편성 · v1</div>
-  <div style="margin-top:8px;">셀 하단 입력란에 이름 → [지원] 버튼 클릭 → 카톡 메시지가 클립보드에 복사됩니다. 관리자에게 보내주세요. 다른 선생님의 신청 내역은 보이지 않습니다.</div>
+  <div style="margin-top:8px;">셀 하단 입력란에 이름 → [지원] 클릭 → <b>구글 시트에 자동 저장</b>. 카운트는 모든 선생님이 실시간으로 볼 수 있고, 이름 명단은 관리자만 확인합니다.</div>
 </footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
+/* ========== 백엔드 설정 ========== */
+// Apps Script 배포 후 발급되는 웹앱 URL 붙여넣기 (~/exec)
+// 비어있으면 백엔드 미사용 → localStorage + 클립보드 폴백
+const APPS_SCRIPT_URL = '';
+const BACKEND_ENABLED = !!APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf('http') === 0;
+
 /* ========== 관리자 모드 판별 ========== */
 // URL: cells.html?admin=nsdhs2026  로 접속 시 관리자 모드
 // 한 번 활성화되면 localStorage에 저장되어 같은 브라우저에서는 계속 관리자
@@ -610,12 +618,12 @@ function memberHtml(m, idPrefix) {
   `;
 }
 
-function cellHtml(cell, groupId) {
+function cellHtml(cell, groupId, groupTitle) {
   const cellId = cell.name.replace(/\s/g,'');
   const idPrefix = `g${groupId}-${cellId}`;
   const guide = '📝 지원 선생님 신청 (이름 입력 후 [지원] 클릭)';
   return `
-    <div class="cell-card ${cell.star ? 'star-cell' : ''}" data-cell-name="${escapeHtml(cell.name)}" data-cell-intent="${escapeHtml(cell.intent)}">
+    <div class="cell-card ${cell.star ? 'star-cell' : ''}" data-cell-id="${escapeHtml(cellId)}" data-cell-name="${escapeHtml(cell.name)}" data-cell-intent="${escapeHtml(cell.intent)}" data-group-title="${escapeHtml(groupTitle || '')}">
       <div class="cell-header">
         <div class="cell-name">${cell.name} <span style="font-weight:400;color:#94a3b8;">(${cell.count}명)</span></div>
         <div class="cell-intent">${cell.intent}</div>
@@ -643,7 +651,7 @@ function groupHtml(group) {
   return `
     <div class="group-title">📁 ${group.title}</div>
     <div class="cell-grid">
-      ${group.cells.map(c => cellHtml(c, group.id)).join('')}
+      ${group.cells.map(c => cellHtml(c, group.id, group.title)).join('')}
     </div>
   `;
 }
@@ -697,7 +705,7 @@ function principlesHtml() {
     <div class="principles-card">
       <h2>🌱 운영 원칙</h2>
       <ul>
-        <li><b>지원 선생님 신청</b>: 셀 하단 입력란에 이름 입력 → [지원] 클릭 → 카톡 메시지가 클립보드에 복사 → 관리자에게 전송. <b>다른 선생님의 신청 내역은 보이지 않습니다</b> (관리자만 열람)</li>
+        <li><b>지원 선생님 신청</b>: 셀 하단 입력란에 이름 입력 → [지원] 클릭 → <b>구글 시트에 자동 저장</b>. 카운트는 모든 선생님이 볼 수 있고, <b>이름 명단은 관리자만 열람 가능</b></li>
         <li><b>장결자 관리 4단계 (무응답 시)</b>: Week 1 친구들(셀 코어) 카톡 → Week 2 담임 연락 → Week 3 교육국장 (성년부 학생은 부모에게) → Week 4 담당 목회자</li>
         <li><b>대학부 형제자매 연결</b>: 송준원↔송예원(누나) · 이서현↔이지환(오빠) · 이준호↔이준성(형) → 목회자 / 담당리더와 협조</li>
         <li><b>성년부 경우 (부모)</b>: 부모님이 성년부 출석하는 경우 (파악 필요) → 교육국장이 성년부 경유</li>
@@ -716,7 +724,17 @@ root.innerHTML =
   principlesHtml();
 
 // 저장된 지원자 리스트를 각 셀에 그려넣기
-setTimeout(() => { try { renderAllApplicants(); } catch (e) { console.error(e); } }, 0);
+setTimeout(() => {
+  try {
+    renderAllApplicants();
+    updateSyncStatus(false);
+    if (BACKEND_ENABLED) {
+      loadRemoteData();
+      // 30초마다 자동 동기화
+      setInterval(loadRemoteData, 30000);
+    }
+  } catch (e) { console.error(e); }
+}, 0);
 
 /* ========== 인터랙션 ========== */
 function toggleDetail(id) {
@@ -732,6 +750,67 @@ function collapseAll() {
   document.querySelectorAll('.member-detail').forEach(el => el.classList.remove('open'));
 }
 
+/* ========== 백엔드 (Apps Script) 통신 ========== */
+// remoteData: { [cellId]: { count, names:[{row,name,ts}] | [], cellName } }
+let remoteData = {};
+let lastSyncAt = null;
+
+async function loadRemoteData() {
+  if (!BACKEND_ENABLED) return;
+  try {
+    const url = IS_ADMIN ? `${APPS_SCRIPT_URL}?key=${encodeURIComponent(ADMIN_KEY)}` : APPS_SCRIPT_URL;
+    const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+    const j = await res.json();
+    if (!j.ok) throw new Error(j.error || 'GET 실패');
+    remoteData = j.cells || {};
+    lastSyncAt = new Date();
+    renderAllApplicants();
+    updateSyncStatus(true);
+  } catch (err) {
+    console.error('서버 동기화 실패', err);
+    updateSyncStatus(false, err.message);
+  }
+}
+
+async function addApplicantRemote(payload) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: 'add', ...payload })
+  });
+  return res.json();
+}
+
+async function deleteApplicantRemote(row) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: 'delete', row, key: ADMIN_KEY })
+  });
+  return res.json();
+}
+
+function updateSyncStatus(ok, err) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  if (!BACKEND_ENABLED) {
+    el.textContent = '⚠ 백엔드 미설정 (오프라인)';
+    el.style.color = '#f59e0b';
+    return;
+  }
+  if (ok && lastSyncAt) {
+    const hh = String(lastSyncAt.getHours()).padStart(2,'0');
+    const mm = String(lastSyncAt.getMinutes()).padStart(2,'0');
+    const ss = String(lastSyncAt.getSeconds()).padStart(2,'0');
+    el.textContent = `🟢 동기화 ${hh}:${mm}:${ss}`;
+    el.style.color = '#86efac';
+  } else {
+    el.textContent = `🔴 동기화 실패${err ? ': ' + err : ''}`;
+    el.style.color = '#fca5a5';
+  }
+}
+
+/* ========== 폴백용 localStorage (백엔드 미설정 시) ========== */
 function getApplicants(cellId) {
   try {
     const raw = localStorage.getItem(`apply-${cellId}`);
@@ -743,7 +822,8 @@ function setApplicants(cellId, list) {
   localStorage.setItem(`apply-${cellId}`, JSON.stringify(list));
 }
 
-function addApplicant(cellId) {
+/* ========== 지원 추가/삭제 ========== */
+async function addApplicant(cellId) {
   const input = document.getElementById(`apply-input-${cellId}`);
   if (!input) return;
   const name = (input.value || '').trim();
@@ -753,7 +833,29 @@ function addApplicant(cellId) {
     return;
   }
 
-  // 두 모드 모두 localStorage에 저장 (지원자 수 카운트용)
+  const card = input.closest('.cell-card');
+  const cellName = card ? card.getAttribute('data-cell-name') : cellId;
+  const cellIntent = card ? card.getAttribute('data-cell-intent') : '';
+  const groupTitle = card ? card.getAttribute('data-group-title') : '';
+  const btn = card ? card.querySelector('.apply-btn') : null;
+
+  if (BACKEND_ENABLED) {
+    if (btn) { btn.disabled = true; btn.textContent = '...'; }
+    try {
+      const r = await addApplicantRemote({ cellId, cellName, groupTitle, applicantName: name });
+      if (!r.ok) throw new Error(r.error || '저장 실패');
+      input.value = '';
+      showToast(`✅ ${name} → ${cellName} 신청 완료`);
+      await loadRemoteData();
+    } catch (err) {
+      showToast(`⚠ 저장 실패: ${err.message}`);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '지원'; }
+    }
+    return;
+  }
+
+  // ── 백엔드 미설정 시 localStorage + 클립보드 폴백 ──
   const list = getApplicants(cellId);
   list.push(name);
   setApplicants(cellId, list);
@@ -761,17 +863,13 @@ function addApplicant(cellId) {
   renderApplicants(cellId);
 
   if (IS_ADMIN) {
-    showToast(`✅ ${name} 지원 추가 (관리자)`);
+    showToast(`✅ ${name} 지원 추가 (관리자, 오프라인)`);
   } else {
-    // 일반 모드: 카톡 메시지를 클립보드에 복사 → 관리자에게 전달
-    const card = document.querySelector(`#apply-input-${cellId}`).closest('.cell-card');
-    const cellName = card ? card.getAttribute('data-cell-name') : cellId;
-    const cellIntent = card ? card.getAttribute('data-cell-intent') : '';
     const msg = `[셀편성 지원] ${cellName}${cellIntent ? ' — ' + cellIntent : ''}\n지원: ${name}`;
     copyText(msg).then(() => {
       showToast(`📋 ${name} → ${cellName} 지원 메시지 복사됨. 관리자에게 보내주세요.`);
     }).catch(() => {
-      showToast(`✅ ${name} 지원 접수. 관리자에게 직접 전달해 주세요.`);
+      showToast(`✅ ${name} 지원 접수.`);
     });
   }
 }
@@ -780,7 +878,6 @@ async function copyText(text) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     return navigator.clipboard.writeText(text);
   }
-  // fallback
   const ta = document.createElement('textarea');
   ta.value = text;
   ta.style.position = 'fixed';
@@ -792,36 +889,61 @@ async function copyText(text) {
   return Promise.resolve();
 }
 
-function removeApplicant(cellId, index) {
+async function removeApplicant(cellId, indexOrRow) {
+  if (BACKEND_ENABLED) {
+    if (!IS_ADMIN) { showToast('관리자만 삭제 가능'); return; }
+    if (!confirm('이 지원을 삭제하시겠습니까?')) return;
+    try {
+      const r = await deleteApplicantRemote(indexOrRow);
+      if (!r.ok) throw new Error(r.error || '삭제 실패');
+      showToast('🗑 삭제 완료');
+      await loadRemoteData();
+    } catch (err) {
+      showToast(`⚠ 삭제 실패: ${err.message}`);
+    }
+    return;
+  }
+  // localStorage 폴백
   const list = getApplicants(cellId);
-  if (index < 0 || index >= list.length) return;
-  const removed = list.splice(index, 1)[0];
+  if (indexOrRow < 0 || indexOrRow >= list.length) return;
+  const removed = list.splice(indexOrRow, 1)[0];
   setApplicants(cellId, list);
   renderApplicants(cellId);
   showToast(`🗑 ${removed} 지원 취소`);
 }
 
 function renderApplicants(cellId) {
-  const list = getApplicants(cellId);
+  let count = 0;
+  let names = []; // [{row, name}] (백엔드) 또는 [{row, name}] (변환된 로컬)
 
-  // 카운트 뱃지는 모든 모드에서 표시
-  const countEl = document.getElementById(`apply-count-${cellId}`);
-  if (countEl) {
-    countEl.textContent = `지원자 ${list.length}명`;
-    countEl.classList.toggle('zero', list.length === 0);
+  if (BACKEND_ENABLED) {
+    const entry = remoteData[cellId];
+    count = entry ? entry.count : 0;
+    names = entry && entry.names ? entry.names : [];
+  } else {
+    const list = getApplicants(cellId);
+    count = list.length;
+    names = list.map((n, i) => ({ row: i, name: n }));
   }
 
-  // 이름 명단은 관리자 모드에서만
+  // 카운트 뱃지 — 모든 모드에서 표시
+  const countEl = document.getElementById(`apply-count-${cellId}`);
+  if (countEl) {
+    countEl.textContent = `지원자 ${count}명`;
+    countEl.classList.toggle('zero', count === 0);
+  }
+
+  // 이름 명단 — 관리자 모드만
   const container = document.getElementById(`apply-list-${cellId}`);
   if (!container) return;
-  if (list.length === 0) {
+  if (names.length === 0) {
     container.innerHTML = '<div class="empty-list">아직 지원자 없음</div>';
     return;
   }
-  container.innerHTML = list.map((name, i) => `
+  container.innerHTML = names.map(item => `
     <div class="applicant-chip">
-      <span>${escapeHtml(name)}</span>
-      <button type="button" onclick="removeApplicant('${cellId}', ${i})" aria-label="삭제">×</button>
+      <span>${escapeHtml(item.name)}</span>
+      <button type="button" onclick="removeApplicant('${cellId}', ${item.row})" aria-label="삭제">×</button>
     </div>
   `).join('');
 }
@@ -847,8 +969,14 @@ function showApplications() {
     lines.push(`\n[${group.title}]`);
     group.cells.forEach(c => {
       const cellId = c.name.replace(/\s/g,'');
-      const list = getApplicants(cellId);
-      const joined = list.length ? list.join(', ') : '(없음)';
+      let nameList;
+      if (BACKEND_ENABLED) {
+        const entry = remoteData[cellId];
+        nameList = entry && entry.names ? entry.names.map(x => x.name) : [];
+      } else {
+        nameList = getApplicants(cellId);
+      }
+      const joined = nameList.length ? nameList.join(', ') : '(없음)';
       lines.push(`${c.name} [${c.intent}] — ${joined}`);
     });
   });
