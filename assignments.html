@@ -142,6 +142,48 @@
     grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
     gap: 16px;
   }
+  .special-card {
+    background: linear-gradient(180deg, rgba(249,115,22,.08) 0%, rgba(154,52,18,.05) 100%);
+    border: 1px dashed #fb923c;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+  .special-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed rgba(251,146,60,.4);
+  }
+  .special-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fdba74;
+    letter-spacing: 0.3px;
+  }
+  .special-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: #0b0f17;
+    background: #fb923c;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+  .special-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .special-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
   .cell-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -271,7 +313,7 @@
 <header>
   <div class="container">
     <h1>🌱 내수동 고등부 2학기 편성 <span class="badge-public">공개용</span></h1>
-    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 · 총 83명 · 학생·학부모 공유용</div>
+    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 6 Special · 총 83명 · 학생·학부모 공유용</div>
     <div class="notice">
       이 페이지는 학생들에게 셀 편성을 안내하기 위한 공개용 페이지입니다. 자유롭게 공유 가능합니다.
     </div>
@@ -338,8 +380,8 @@ const FAMILY_HELPERS = {
   '대가족반6': '',
 };
 
-/* ========== 편성 (대가족반 → 소그룹반 → 학생) ========== */
-// 정규 학생 + 장기결석자 통합 명단 (학생 시점에서는 구분 없음)
+/* ========== 편성 (대가족반 → 소그룹반/Special → 학생) ========== */
+// 정규 소그룹반 = 출석 학생, Special = 장기결석자 (목회자·별도 교사 특별관리)
 const FAMILY_GROUPS = [
   { name: "대가족반 1", cells: [
     { name: "소그룹반 1", students: [
@@ -355,28 +397,31 @@ const FAMILY_GROUPS = [
       {name:"조인상", grade:3, gender:"여"},
       {name:"연해준", grade:2, gender:"남"},
       {name:"유나린", grade:2, gender:"여"},
-      {name:"최승아", grade:3, gender:"여"}, // 조인상 매개 (01반 출신)
     ]},
-  ]},
+  ], special: { name: "Special 1", students: [
+    {name:"고예나", grade:1, gender:"여"}, // 11반·박해니T 라포
+    {name:"김민채", grade:3, gender:"여"}, // 11반
+    {name:"송성모", grade:3, gender:"남"}, // 11반
+    {name:"최승아", grade:3, gender:"여"}, // 01반·조인상 매개
+  ]}},
   { name: "대가족반 2", cells: [
     { name: "소그룹반 3", students: [
       {name:"박지호", grade:3, gender:"여"},
       {name:"한채은", grade:3, gender:"여"},
       {name:"김라일", grade:2, gender:"남"},
       {name:"안민혁", grade:1, gender:"남"},
-      {name:"이하준", grade:1, gender:"남"}, // 전성희T 01반 라포
-      {name:"김민채", grade:3, gender:"여"}, // 한채은 11반 동출신 매개
     ]},
     { name: "소그룹반 4", students: [
       {name:"원대연", grade:2, gender:"남"},
       {name:"이준호", grade:2, gender:"남"},
       {name:"오현우", grade:1, gender:"남"},
       {name:"이빛가온", grade:1, gender:"남"},
-      {name:"백결",   grade:3, gender:"남"}, // 3남 동학년·박대철T 라포
-      {name:"조혁준", grade:3, gender:"남"}, // 정보 파악 시급
-      {name:"송성모", grade:3, gender:"남"}, // 11반 출신
     ]},
-  ]},
+  ], special: { name: "Special 2", students: [
+    {name:"이하준", grade:1, gender:"남"}, // 01반·전성희T 라포
+    {name:"최지윤", grade:3, gender:"여"}, // 12반·최서윤 쌍둥이
+    {name:"최서윤", grade:3, gender:"여"}, // 13반·최지윤 쌍둥이
+  ]}},
   { name: "대가족반 3", cells: [
     { name: "소그룹반 5", students: [
       {name:"민예원", grade:2, gender:"여"},
@@ -384,19 +429,23 @@ const FAMILY_GROUPS = [
       {name:"전지훈", grade:2, gender:"남"},
       {name:"임태민", grade:2, gender:"남"},
       {name:"최지은", grade:1, gender:"여"},
-      {name:"김재원", grade:1, gender:"남"}, // ⭐⭐⭐ 이수지T 직접 케어 (05반)
-      {name:"김유진", grade:2, gender:"여"}, // 05반 출신
     ]},
     { name: "소그룹반 6", students: [
       {name:"조한나", grade:1, gender:"여"},
       {name:"김한결", grade:1, gender:"남"},
       {name:"김강은", grade:1, gender:"여"},
       {name:"이서후", grade:1, gender:"여"},
-      {name:"고예나", grade:1, gender:"여"}, // 1여 안정셀
-      {name:"김강희", grade:1, gender:"여"}, // 정유빈T 10반 라포·1여
-      {name:"박서연", grade:1, gender:"여"}, // 인도네시아 선교 (이름만)
     ]},
-  ]},
+  ], special: { name: "Special 3", students: [
+    {name:"김재원", grade:1, gender:"남"}, // 05반·이수지T 라포
+    {name:"김유진", grade:2, gender:"여"}, // 05반
+    {name:"박진서", grade:3, gender:"여"}, // 02반·서울여상
+    {name:"임소명", grade:3, gender:"여"}, // 02반·서울여상
+    {name:"백결",   grade:3, gender:"남"}, // 10반·정유빈T 라포
+    {name:"조혁준", grade:3, gender:"남"}, // 10반
+    {name:"김강희", grade:1, gender:"여"}, // 10반·춘천
+    {name:"박서연", grade:1, gender:"여"}, // 10반·인도네시아 선교
+  ]}},
   { name: "대가족반 4", cells: [
     { name: "소그룹반 7", students: [
       {name:"조강인", grade:3, gender:"남"},
@@ -404,20 +453,18 @@ const FAMILY_GROUPS = [
       {name:"최민호", grade:2, gender:"남"},
       {name:"박지웅", grade:1, gender:"남"},
       {name:"송준원", grade:1, gender:"남"},
-      {name:"박시우", grade:1, gender:"남"}, // ⭐⭐⭐ 양지현T 직접 케어 (08반)
-      {name:"하어림", grade:1, gender:"남"}, // 06반·김주영T 헬퍼 라포
     ]},
     { name: "소그룹반 8", students: [
       {name:"심희은", grade:3, gender:"여"},
       {name:"김은우", grade:3, gender:"여"},
       {name:"최가은", grade:3, gender:"여"},
       {name:"양소희", grade:2, gender:"여"},
-      {name:"박진서", grade:3, gender:"여"}, // 서울여상 동급생
-      {name:"임소명", grade:3, gender:"여"}, // 서울여상 동급생
-      {name:"김나현", grade:2, gender:"여"}, // ⭐⭐⭐ 이유성T 06반 라포
-      {name:"오희수", grade:3, gender:"여"}, // 3여 안정셀
     ]},
-  ]},
+  ], special: { name: "Special 4", students: [
+    {name:"박시우", grade:1, gender:"남"}, // 08반·양지현T 라포
+    {name:"김나현", grade:2, gender:"여"}, // 06반·이유성T 라포
+    {name:"하어림", grade:1, gender:"남"}, // 06반·해외 유학
+  ]}},
   { name: "대가족반 5", cells: [
     { name: "소그룹반 9", students: [
       {name:"나정인", grade:3, gender:"여"},
@@ -426,19 +473,21 @@ const FAMILY_GROUPS = [
       {name:"서이수", grade:3, gender:"여"},
       {name:"양인혁", grade:3, gender:"남"},
       {name:"김다은", grade:3, gender:"여"},
-      {name:"장세민", grade:3, gender:"남"}, // 곽지원·주성 4인 그룹
-      {name:"정원영", grade:3, gender:"남"}, // 곽지원·장세민 4인 그룹
     ]},
     { name: "소그룹반 10", students: [
       {name:"이주형", grade:1, gender:"여"},
       {name:"유재희", grade:2, gender:"여"},
       {name:"윤성하", grade:1, gender:"남"},
       {name:"나호윤", grade:1, gender:"남"},
-      {name:"박민주", grade:1, gender:"여"}, // 최희승T 03반 라포
-      {name:"이소민", grade:3, gender:"여"}, // 자매·14반·동대문
-      {name:"이소현", grade:1, gender:"여"}, // 이소민 동생·윤성하 라포
+      {name:"이소현", grade:1, gender:"여"}, // 신규·이소민 동생·윤성하 친밀
     ]},
-  ]},
+  ], special: { name: "Special 5", students: [
+    {name:"오희수", grade:3, gender:"여"}, // 13반·오덕현T 라포
+    {name:"박민주", grade:1, gender:"여"}, // 03반·최희승T 라포
+    {name:"배유나", grade:2, gender:"여"}, // 03반·부천
+    {name:"장세민", grade:3, gender:"남"}, // 14반·곽지원 친구 그룹
+    {name:"정원영", grade:3, gender:"남"}, // 09반·곽지원 친구 그룹
+  ]}},
   { name: "대가족반 6", cells: [
     { name: "소그룹반 11", students: [
       {name:"최유현", grade:1, gender:"여"},
@@ -446,8 +495,6 @@ const FAMILY_GROUPS = [
       {name:"김준수", grade:3, gender:"남"},
       {name:"최수지", grade:1, gender:"여"},
       {name:"박동하", grade:1, gender:"남"},
-      {name:"김도헌", grade:3, gender:"남"}, // 김준수 매개 (12반)
-      {name:"이서현", grade:1, gender:"여"}, // 석준원T 14반 라포
     ]},
     { name: "소그룹반 12", students: [
       {name:"정태율", grade:1, gender:"남"},
@@ -455,11 +502,12 @@ const FAMILY_GROUPS = [
       {name:"김주하", grade:2, gender:"여"},
       {name:"김정록", grade:1, gender:"남"},
       {name:"김채은", grade:2, gender:"여"},
-      {name:"배유나", grade:2, gender:"여"}, // 부천·김주하 매개
-      {name:"최지윤", grade:3, gender:"여"}, // 최서윤 쌍둥이
-      {name:"최서윤", grade:3, gender:"여"}, // 최지윤 쌍둥이
     ]},
-  ]},
+  ], special: { name: "Special 6", students: [
+    {name:"이서현", grade:1, gender:"여"}, // 14반·석준원T 라포
+    {name:"이소민", grade:3, gender:"여"}, // 14반·동대문·이소현 언니
+    {name:"김도헌", grade:3, gender:"남"}, // 12반·김준수 매개
+  ]}},
 ];
 
 /* ========== 렌더링 ========== */
@@ -513,18 +561,42 @@ function cellHtml(cell, familyId) {
   `;
 }
 
+function specialHtml(special) {
+  if (!special || !special.students || special.students.length === 0) return '';
+  const sorted = special.students.slice().sort((a, b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  return `
+    <div class="special-card">
+      <div class="special-head">
+        <span class="special-tag">SPECIAL</span>
+        <span class="special-name">${escapeHtml(special.name)}</span>
+        <span class="special-meta">${special.students.length}명</span>
+      </div>
+      <div class="special-note">목회자 · 별도 교사가 특별 케어 (장기결석자 회복 그룹)</div>
+      <div class="member-list">${sorted.map(memberHtml).join('')}</div>
+    </div>
+  `;
+}
+
 function familyHtml(family) {
   const familyId = family.name.replace(/\s/g,'');
-  const total = family.cells.reduce((sum, c) => sum + c.students.length, 0);
+  const regularCount = family.cells.reduce((sum, c) => sum + c.students.length, 0);
+  const specialCount = family.special ? family.special.students.length : 0;
+  const total = regularCount + specialCount;
   const leader = FAMILY_LEADERS[familyId];
   const helper = FAMILY_HELPERS[familyId];
+  const metaParts = [`${family.cells.length}개 소그룹반`];
+  if (family.special) metaParts.push(`Special 1개`);
+  metaParts.push(`총 ${total}명`);
   return `
     <section class="family-section">
       <div class="family-header">
         <div class="family-title">
           <span class="family-icon">👨‍👩‍👧‍👦</span>
           <span class="family-name">${escapeHtml(family.name)}</span>
-          <span class="family-meta">${family.cells.length}개 소그룹반 · 총 ${total}명</span>
+          <span class="family-meta">${metaParts.join(' · ')}</span>
         </div>
         ${leader ? `
           <div class="family-role-row">
@@ -542,6 +614,7 @@ function familyHtml(family) {
         ` : ''}
       </div>
       <div class="cell-grid">${family.cells.map(c => cellHtml(c, familyId)).join('')}</div>
+      ${specialHtml(family.special)}
     </section>
   `;
 }
