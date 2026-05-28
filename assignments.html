@@ -69,11 +69,38 @@
     border-left: 3px solid #34d399;
   }
 
+  .family-section {
+    margin-top: 28px;
+  }
+  .family-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(167,139,250,.15) 0%, rgba(124,58,237,.10) 100%);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .family-header .family-icon {
+    font-size: 20px;
+  }
+  .family-header .family-name {
+    font-size: 17px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: 0.3px;
+  }
+  .family-header .family-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
   .cell-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
     gap: 16px;
-    margin-top: 20px;
   }
   .cell-card {
     background: var(--card);
@@ -203,8 +230,8 @@
 
 <header>
   <div class="container">
-    <h1>🌱 내수동 고등부 2학기 셀편성 <span class="badge-public">공개용</span></h1>
-    <div class="subtitle">2026년 6–8월 · 12셀 · 학생·학부모 공유용</div>
+    <h1>🌱 내수동 고등부 2학기 편성 <span class="badge-public">공개용</span></h1>
+    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 · 학생·학부모 공유용</div>
     <div class="notice">
       이 페이지는 학생들에게 셀 편성을 안내하기 위한 공개용 페이지입니다. 자유롭게 공유 가능합니다.
     </div>
@@ -215,123 +242,135 @@
 
 <footer>
   <div class="church">내수동교회 고등부</div>
-  <div>2026년 2학기 (6–8월) 셀편성 · 공개 v1</div>
+  <div>2026년 2학기 (6–8월) 편성 · 공개 v2</div>
 </footer>
 
 <script>
-/* ========== 셀별 담임 (확정) ========== */
+/* ========== 소그룹반별 담임 (확정) ========== */
 const HOMEROOM_TEACHERS = {
-  '셀1': '이윤정',
-  '셀2': '정명경',
-  '셀3': '전성희',
-  '셀4': '박대철',
-  '셀5': '이수지',
-  '셀6': '정유빈',
-  '셀7': '양지현',
-  '셀8': '이유성',
-  '셀9': '오덕현',
-  '셀10': '최희승',
-  '셀11': '석준원',
-  '셀12': '고은솔',
+  '소그룹반1': '이윤정',
+  '소그룹반2': '정명경',
+  '소그룹반3': '전성희',
+  '소그룹반4': '박대철',
+  '소그룹반5': '이수지',
+  '소그룹반6': '정유빈',
+  '소그룹반7': '양지현',
+  '소그룹반8': '이유성',
+  '소그룹반9': '오덕현',
+  '소그룹반10': '최희승',
+  '소그룹반11': '석준원',
+  '소그룹반12': '고은솔',
 };
 
-/* ========== 셀별 부담임 (미정 — 추후 채워서 재배포) ========== */
+/* ========== 소그룹반별 부담임 (미정 — 추후 채워서 재배포) ========== */
 const SUB_TEACHERS = {
-  '셀1': '',
-  '셀2': '',
-  '셀3': '',
-  '셀4': '',
-  '셀5': '',
-  '셀6': '',
-  '셀7': '',
-  '셀8': '',
-  '셀9': '',
-  '셀10': '',
-  '셀11': '',
-  '셀12': '',
+  '소그룹반1': '',
+  '소그룹반2': '',
+  '소그룹반3': '',
+  '소그룹반4': '',
+  '소그룹반5': '',
+  '소그룹반6': '',
+  '소그룹반7': '',
+  '소그룹반8': '',
+  '소그룹반9': '',
+  '소그룹반10': '',
+  '소그룹반11': '',
+  '소그룹반12': '',
 };
 
-/* ========== 학생 명단 (이름·학년만, 민감 정보 제외) ========== */
-const CELLS = [
-  { name: "셀 1", students: [
-    {name:"권하율", grade:1, gender:"남"},
-    {name:"하은유", grade:1, gender:"여"},
-    {name:"홍기진", grade:2, gender:"남"},
-    {name:"오은수", grade:1, gender:"여"},
-    {name:"장지현", grade:2, gender:"여"},
+/* ========== 편성 (대가족반 → 소그룹반 → 학생) ========== */
+const FAMILY_GROUPS = [
+  { name: "대가족반 1", cells: [
+    { name: "소그룹반 1", students: [
+      {name:"권하율", grade:1, gender:"남"},
+      {name:"하은유", grade:1, gender:"여"},
+      {name:"홍기진", grade:2, gender:"남"},
+      {name:"오은수", grade:1, gender:"여"},
+      {name:"장지현", grade:2, gender:"여"},
+    ]},
+    { name: "소그룹반 2", students: [
+      {name:"강은교", grade:2, gender:"여"},
+      {name:"명주원", grade:3, gender:"남"},
+      {name:"조인상", grade:3, gender:"여"},
+      {name:"연해준", grade:2, gender:"남"},
+      {name:"유나린", grade:2, gender:"여"},
+    ]},
   ]},
-  { name: "셀 2", students: [
-    {name:"강은교", grade:2, gender:"여"},
-    {name:"명주원", grade:3, gender:"남"},
-    {name:"조인상", grade:3, gender:"여"},
-    {name:"연해준", grade:2, gender:"남"},
-    {name:"유나린", grade:2, gender:"여"},
+  { name: "대가족반 2", cells: [
+    { name: "소그룹반 3", students: [
+      {name:"박지호", grade:3, gender:"여"},
+      {name:"한채은", grade:3, gender:"여"},
+      {name:"김라일", grade:2, gender:"남"},
+      {name:"안민혁", grade:1, gender:"남"},
+    ]},
+    { name: "소그룹반 4", students: [
+      {name:"원대연", grade:2, gender:"남"},
+      {name:"이준호", grade:2, gender:"남"},
+      {name:"오현우", grade:1, gender:"남"},
+      {name:"이빛가온", grade:1, gender:"남"},
+    ]},
   ]},
-  { name: "셀 3", students: [
-    {name:"박지호", grade:3, gender:"여"},
-    {name:"한채은", grade:3, gender:"여"},
-    {name:"김라일", grade:2, gender:"남"},
-    {name:"안민혁", grade:1, gender:"남"},
+  { name: "대가족반 3", cells: [
+    { name: "소그룹반 5", students: [
+      {name:"민예원", grade:2, gender:"여"},
+      {name:"김도연", grade:2, gender:"여"},
+      {name:"전지훈", grade:2, gender:"남"},
+      {name:"임태민", grade:2, gender:"남"},
+      {name:"최지은", grade:1, gender:"여"},
+    ]},
+    { name: "소그룹반 6", students: [
+      {name:"조한나", grade:1, gender:"여"},
+      {name:"김한결", grade:1, gender:"남"},
+      {name:"김강은", grade:1, gender:"여"},
+      {name:"이서후", grade:1, gender:"여"},
+    ]},
   ]},
-  { name: "셀 4", students: [
-    {name:"원대연", grade:2, gender:"남"},
-    {name:"이준호", grade:2, gender:"남"},
-    {name:"오현우", grade:1, gender:"남"},
-    {name:"이빛가온", grade:1, gender:"남"},
+  { name: "대가족반 4", cells: [
+    { name: "소그룹반 7", students: [
+      {name:"조강인", grade:3, gender:"남"},
+      {name:"이에녹", grade:3, gender:"남"},
+      {name:"최민호", grade:2, gender:"남"},
+      {name:"박지웅", grade:1, gender:"남"},
+      {name:"송준원", grade:1, gender:"남"},
+    ]},
+    { name: "소그룹반 8", students: [
+      {name:"심희은", grade:3, gender:"여"},
+      {name:"김은우", grade:3, gender:"여"},
+      {name:"최가은", grade:3, gender:"여"},
+      {name:"양소희", grade:2, gender:"여"},
+    ]},
   ]},
-  { name: "셀 5", students: [
-    {name:"민예원", grade:2, gender:"여"},
-    {name:"김도연", grade:2, gender:"여"},
-    {name:"전지훈", grade:2, gender:"남"},
-    {name:"임태민", grade:2, gender:"남"},
-    {name:"최지은", grade:1, gender:"여"},
+  { name: "대가족반 5", cells: [
+    { name: "소그룹반 9", students: [
+      {name:"나정인", grade:3, gender:"여"},
+      {name:"주성",   grade:3, gender:"남"},
+      {name:"곽지원", grade:3, gender:"남"},
+      {name:"서이수", grade:3, gender:"여"},
+      {name:"양인혁", grade:3, gender:"남"},
+      {name:"김다은", grade:3, gender:"여"},
+    ]},
+    { name: "소그룹반 10", students: [
+      {name:"이주형", grade:1, gender:"여"},
+      {name:"유재희", grade:2, gender:"여"},
+      {name:"윤성하", grade:1, gender:"남"},
+      {name:"나호윤", grade:1, gender:"남"},
+    ]},
   ]},
-  { name: "셀 6", students: [
-    {name:"조한나", grade:1, gender:"여"},
-    {name:"김한결", grade:1, gender:"남"},
-    {name:"김강은", grade:1, gender:"여"},
-    {name:"이서후", grade:1, gender:"여"},
-  ]},
-  { name: "셀 7", students: [
-    {name:"조강인", grade:3, gender:"남"},
-    {name:"이에녹", grade:3, gender:"남"},
-    {name:"최민호", grade:2, gender:"남"},
-    {name:"박지웅", grade:1, gender:"남"},
-    {name:"송준원", grade:1, gender:"남"},
-  ]},
-  { name: "셀 8", students: [
-    {name:"심희은", grade:3, gender:"여"},
-    {name:"김은우", grade:3, gender:"여"},
-    {name:"최가은", grade:3, gender:"여"},
-    {name:"양소희", grade:2, gender:"여"},
-  ]},
-  { name: "셀 9", students: [
-    {name:"나정인", grade:3, gender:"여"},
-    {name:"주성",   grade:3, gender:"남"},
-    {name:"곽지원", grade:3, gender:"남"},
-    {name:"서이수", grade:3, gender:"여"},
-    {name:"양인혁", grade:3, gender:"남"},
-    {name:"김다은", grade:3, gender:"여"},
-  ]},
-  { name: "셀 10", students: [
-    {name:"이주형", grade:1, gender:"여"},
-    {name:"유재희", grade:2, gender:"여"},
-    {name:"윤성하", grade:1, gender:"남"},
-    {name:"나호윤", grade:1, gender:"남"},
-  ]},
-  { name: "셀 11", students: [
-    {name:"최유현", grade:1, gender:"여"},
-    {name:"이가영", grade:2, gender:"여"},
-    {name:"김준수", grade:3, gender:"남"},
-    {name:"최수지", grade:1, gender:"여"},
-    {name:"박동하", grade:1, gender:"남"},
-  ]},
-  { name: "셀 12", students: [
-    {name:"정태율", grade:1, gender:"남"},
-    {name:"정승빈", grade:3, gender:"여"},
-    {name:"김주하", grade:2, gender:"여"},
-    {name:"김정록", grade:1, gender:"남"},
-    {name:"김채은", grade:2, gender:"여"},
+  { name: "대가족반 6", cells: [
+    { name: "소그룹반 11", students: [
+      {name:"최유현", grade:1, gender:"여"},
+      {name:"이가영", grade:2, gender:"여"},
+      {name:"김준수", grade:3, gender:"남"},
+      {name:"최수지", grade:1, gender:"여"},
+      {name:"박동하", grade:1, gender:"남"},
+    ]},
+    { name: "소그룹반 12", students: [
+      {name:"정태율", grade:1, gender:"남"},
+      {name:"정승빈", grade:3, gender:"여"},
+      {name:"김주하", grade:2, gender:"여"},
+      {name:"김정록", grade:1, gender:"남"},
+      {name:"김채은", grade:2, gender:"여"},
+    ]},
   ]},
 ];
 
@@ -384,9 +423,22 @@ function cellHtml(cell) {
   `;
 }
 
-document.getElementById('root').innerHTML = `
-  <div class="cell-grid">${CELLS.map(cellHtml).join('')}</div>
-`;
+function familyHtml(family) {
+  const total = family.cells.reduce((sum, c) => sum + c.students.length, 0);
+  return `
+    <section class="family-section">
+      <div class="family-header">
+        <span class="family-icon">👨‍👩‍👧‍👦</span>
+        <span class="family-name">${escapeHtml(family.name)}</span>
+        <span class="family-meta">${family.cells.length}개 소그룹반 · 총 ${total}명</span>
+      </div>
+      <div class="cell-grid">${family.cells.map(cellHtml).join('')}</div>
+    </section>
+  `;
+}
+
+document.getElementById('root').innerHTML =
+  FAMILY_GROUPS.map(familyHtml).join('');
 </script>
 
 </body>
