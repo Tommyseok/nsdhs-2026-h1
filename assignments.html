@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>내수동 고등부 2학기 셀편성 (공개용) · 2026</title>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --card: #111827;
+    --border: #1f2937;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --accent: #a78bfa;
+    --homeroom: #fbbf24;
+    --sub: #38bdf8;
+    --grade1: #fbbf24; /* 1학년 노랑 */
+    --grade2: #60a5fa; /* 2학년 파랑 */
+    --grade3: #34d399; /* 3학년 초록 */
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.5;
+    font-size: 15px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+  header {
+    background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%);
+    padding: 24px 0;
+    border-bottom: 2px solid var(--accent);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  header .badge-public {
+    background: #059669;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+  }
+  header .subtitle {
+    color: #c4b5fd;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  header .notice {
+    color: #d1d5db;
+    font-size: 12px;
+    margin-top: 10px;
+    background: rgba(255,255,255,.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #34d399;
+  }
+
+  .cell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .cell-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .cell-card .cell-head {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cell-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: 0.3px;
+  }
+  .cell-name .count {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 14px;
+    margin-left: 6px;
+  }
+
+  .teacher-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .teacher-row.homeroom {
+    background: rgba(251,191,36,.10);
+    border-left: 3px solid var(--homeroom);
+  }
+  .teacher-row.sub {
+    background: rgba(56,189,248,.10);
+    border-left: 3px solid var(--sub);
+    margin-top: 6px;
+  }
+  .teacher-row .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #0b0f17;
+    flex-shrink: 0;
+  }
+  .teacher-row.homeroom .label { background: var(--homeroom); }
+  .teacher-row.sub .label { background: var(--sub); }
+  .teacher-row .name {
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .teacher-row .name.tba {
+    color: var(--muted);
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .members {
+    padding: 12px 16px 16px;
+  }
+  .members-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .member {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 7px;
+  }
+  .member .member-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+  .grade-pill {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    color: #0b0f17;
+  }
+  .g1 { background: var(--grade1); }
+  .g2 { background: var(--grade2); }
+  .g3 { background: var(--grade3); }
+  .gender {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  footer {
+    margin-top: 32px;
+    padding: 20px 0 28px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+  }
+  footer .church { color: #c4b5fd; font-weight: 600; margin-bottom: 4px; }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 18px; }
+    .cell-name { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>🌱 내수동 고등부 2학기 셀편성 <span class="badge-public">공개용</span></h1>
+    <div class="subtitle">2026년 6–8월 · 12셀 · 학생·학부모 공유용</div>
+    <div class="notice">
+      이 페이지는 학생들에게 셀 편성을 안내하기 위한 공개용 페이지입니다. 자유롭게 공유 가능합니다.
+    </div>
+  </div>
+</header>
+
+<div class="container" id="root"></div>
+
+<footer>
+  <div class="church">내수동교회 고등부</div>
+  <div>2026년 2학기 (6–8월) 셀편성 · 공개 v1</div>
+</footer>
+
+<script>
+/* ========== 셀별 담임 (확정) ========== */
+const HOMEROOM_TEACHERS = {
+  '셀1': '이윤정',
+  '셀2': '정명경',
+  '셀3': '전성희',
+  '셀4': '박대철',
+  '셀5': '이수지',
+  '셀6': '정유빈',
+  '셀7': '양지현',
+  '셀8': '이유성',
+  '셀9': '오덕현',
+  '셀10': '최희승',
+  '셀11': '석준원',
+  '셀12': '고은솔',
+};
+
+/* ========== 셀별 부담임 (미정 — 추후 채워서 재배포) ========== */
+const SUB_TEACHERS = {
+  '셀1': '',
+  '셀2': '',
+  '셀3': '',
+  '셀4': '',
+  '셀5': '',
+  '셀6': '',
+  '셀7': '',
+  '셀8': '',
+  '셀9': '',
+  '셀10': '',
+  '셀11': '',
+  '셀12': '',
+};
+
+/* ========== 학생 명단 (이름·학년만, 민감 정보 제외) ========== */
+const CELLS = [
+  { name: "셀 1", students: [
+    {name:"권하율", grade:1, gender:"남"},
+    {name:"하은유", grade:1, gender:"여"},
+    {name:"홍기진", grade:2, gender:"남"},
+    {name:"오은수", grade:1, gender:"여"},
+    {name:"장지현", grade:2, gender:"여"},
+  ]},
+  { name: "셀 2", students: [
+    {name:"강은교", grade:2, gender:"여"},
+    {name:"명주원", grade:3, gender:"남"},
+    {name:"조인상", grade:3, gender:"여"},
+    {name:"연해준", grade:2, gender:"남"},
+    {name:"유나린", grade:2, gender:"여"},
+  ]},
+  { name: "셀 3", students: [
+    {name:"박지호", grade:3, gender:"여"},
+    {name:"한채은", grade:3, gender:"여"},
+    {name:"김라일", grade:2, gender:"남"},
+    {name:"안민혁", grade:1, gender:"남"},
+  ]},
+  { name: "셀 4", students: [
+    {name:"원대연", grade:2, gender:"남"},
+    {name:"이준호", grade:2, gender:"남"},
+    {name:"오현우", grade:1, gender:"남"},
+    {name:"이빛가온", grade:1, gender:"남"},
+  ]},
+  { name: "셀 5", students: [
+    {name:"민예원", grade:2, gender:"여"},
+    {name:"김도연", grade:2, gender:"여"},
+    {name:"전지훈", grade:2, gender:"남"},
+    {name:"임태민", grade:2, gender:"남"},
+    {name:"최지은", grade:1, gender:"여"},
+  ]},
+  { name: "셀 6", students: [
+    {name:"조한나", grade:1, gender:"여"},
+    {name:"김한결", grade:1, gender:"남"},
+    {name:"김강은", grade:1, gender:"여"},
+    {name:"이서후", grade:1, gender:"여"},
+  ]},
+  { name: "셀 7", students: [
+    {name:"조강인", grade:3, gender:"남"},
+    {name:"이에녹", grade:3, gender:"남"},
+    {name:"최민호", grade:2, gender:"남"},
+    {name:"박지웅", grade:1, gender:"남"},
+    {name:"송준원", grade:1, gender:"남"},
+  ]},
+  { name: "셀 8", students: [
+    {name:"심희은", grade:3, gender:"여"},
+    {name:"김은우", grade:3, gender:"여"},
+    {name:"최가은", grade:3, gender:"여"},
+    {name:"양소희", grade:2, gender:"여"},
+  ]},
+  { name: "셀 9", students: [
+    {name:"나정인", grade:3, gender:"여"},
+    {name:"주성",   grade:3, gender:"남"},
+    {name:"곽지원", grade:3, gender:"남"},
+    {name:"서이수", grade:3, gender:"여"},
+    {name:"양인혁", grade:3, gender:"남"},
+    {name:"김다은", grade:3, gender:"여"},
+  ]},
+  { name: "셀 10", students: [
+    {name:"이주형", grade:1, gender:"여"},
+    {name:"유재희", grade:2, gender:"여"},
+    {name:"윤성하", grade:1, gender:"남"},
+    {name:"나호윤", grade:1, gender:"남"},
+  ]},
+  { name: "셀 11", students: [
+    {name:"최유현", grade:1, gender:"여"},
+    {name:"이가영", grade:2, gender:"여"},
+    {name:"김준수", grade:3, gender:"남"},
+    {name:"최수지", grade:1, gender:"여"},
+    {name:"박동하", grade:1, gender:"남"},
+  ]},
+  { name: "셀 12", students: [
+    {name:"정태율", grade:1, gender:"남"},
+    {name:"정승빈", grade:3, gender:"여"},
+    {name:"김주하", grade:2, gender:"여"},
+    {name:"김정록", grade:1, gender:"남"},
+    {name:"김채은", grade:2, gender:"여"},
+  ]},
+];
+
+/* ========== 렌더링 ========== */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function memberHtml(s) {
+  return `
+    <div class="member">
+      <span class="member-name">${escapeHtml(s.name)}</span>
+      <span class="gender">${escapeHtml(s.gender)}</span>
+      <span class="grade-pill g${s.grade}">${s.grade}학년</span>
+    </div>
+  `;
+}
+
+function cellHtml(cell) {
+  const cellId = cell.name.replace(/\s/g,'');
+  const homeroom = HOMEROOM_TEACHERS[cellId] || '';
+  const sub = SUB_TEACHERS[cellId] || '';
+  // 학년→이름 가나다 순으로 정렬: 3학년 → 2학년 → 1학년, 같은 학년이면 이름 가나다
+  const sorted = cell.students.slice().sort((a, b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade; // 3→2→1
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  return `
+    <div class="cell-card">
+      <div class="cell-head">
+        <div class="cell-name">${escapeHtml(cell.name)}<span class="count">${cell.students.length}명</span></div>
+        <div class="teacher-row homeroom">
+          <span class="label">담임</span>
+          ${homeroom
+            ? `<span class="name">${escapeHtml(homeroom)}</span>`
+            : `<span class="name tba">미정</span>`}
+        </div>
+        <div class="teacher-row sub">
+          <span class="label">부담임</span>
+          ${sub
+            ? `<span class="name">${escapeHtml(sub)}</span>`
+            : `<span class="name tba">미정</span>`}
+        </div>
+      </div>
+      <div class="members">
+        <div class="members-title">학생 명단</div>
+        <div class="member-list">${sorted.map(memberHtml).join('')}</div>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('root').innerHTML = `
+  <div class="cell-grid">${CELLS.map(cellHtml).join('')}</div>
+`;
+</script>
+
+</body>
+</html>
