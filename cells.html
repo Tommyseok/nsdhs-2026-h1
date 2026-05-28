@@ -70,6 +70,30 @@
     border-radius: 6px;
     border-left: 3px solid #a78bfa;
   }
+  .cell-homeroom {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fde68a;
+    background: rgba(251,191,36,.10);
+    padding: 6px 10px;
+    border-radius: 6px;
+    border-left: 3px solid #fbbf24;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cell-homeroom .label {
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+  }
+  .cell-homeroom .tba {
+    color: #6b7280;
+    font-weight: 400;
+    font-style: italic;
+  }
   .member {
     border: 1px solid #1f2937;
     border-radius: 8px;
@@ -312,7 +336,7 @@
 <header>
   <div class="container">
     <h1>📋 내수동 고등부 2학기 셀 편성 (2026)</h1>
-    <div class="subtitle">14셀 정규 + Special(장결) 부착 + 별도 풀 · 지원 신청은 관리자에게만 전송됩니다</div>
+    <div class="subtitle">담임 확정 · 부담임/지원 선생님 신청 받는 중 (관리자에게만 명단 공개)</div>
     <div class="notice">
       🔒 교사 내부 자료입니다. 외부 공유 금지. 학생 민감정보 포함—교사 단톡방 외 절대 공유 X.
     </div>
@@ -354,6 +378,22 @@ const IS_ADMIN = localStorage.getItem('isAdmin') === '1';
 if (IS_ADMIN) {
   document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
 }
+
+/* ========== 셀별 담임 (확정 명단) ========== */
+const HOMEROOM_TEACHERS = {
+  '셀1': '이윤정',
+  '셀2': '정명경',
+  '셀3': '전성희',
+  '셀4': '박대철',
+  '셀5': '이수지',
+  '셀6': '정유빈',
+  '셀7': '양지현',
+  '셀8': '이유성',
+  '셀9': '오덕현',
+  '셀10': '최희승',
+  '셀11': '석준원',
+  '셀12': '고은솔',
+};
 
 /* ========== 데이터 ========== */
 const data = {
@@ -626,6 +666,12 @@ function cellHtml(cell, groupId, groupTitle) {
       <div class="cell-header">
         <div class="cell-name">${cell.name} <span style="font-weight:400;color:#94a3b8;">(${cell.count}명)</span></div>
         <div class="cell-intent">${cell.intent}</div>
+        <div class="cell-homeroom">
+          <span class="label">담임</span>
+          ${HOMEROOM_TEACHERS[cellId]
+            ? `<span>${escapeHtml(HOMEROOM_TEACHERS[cellId])}</span>`
+            : `<span class="tba">미정</span>`}
+        </div>
       </div>
       <div>
         ${cell.members.map(m => memberHtml(m, idPrefix)).join('')}
