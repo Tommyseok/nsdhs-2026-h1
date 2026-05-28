@@ -73,14 +73,17 @@
     margin-top: 28px;
   }
   .family-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     padding: 12px 16px;
     background: linear-gradient(135deg, rgba(167,139,250,.15) 0%, rgba(124,58,237,.10) 100%);
     border-left: 4px solid var(--accent);
     border-radius: 8px;
     margin-bottom: 12px;
+  }
+  .family-header .family-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
   }
   .family-header .family-icon {
     font-size: 20px;
@@ -96,6 +99,43 @@
     font-size: 12px;
     color: var(--muted);
     font-weight: 500;
+  }
+  .family-role-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 13px;
+  }
+  .family-role-row .role-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: #0b0f17;
+    flex-shrink: 0;
+  }
+  .family-role-row .role-label.leader { background: #f97316; }
+  .family-role-row .role-label.helper { background: #14b8a6; }
+  .family-role-row .role-name {
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .family-role-row .role-note {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .leader-badge {
+    margin-left: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    background: #f97316;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
   }
   .cell-grid {
     display: grid;
@@ -262,20 +302,40 @@ const HOMEROOM_TEACHERS = {
   '소그룹반12': '고은솔',
 };
 
-/* ========== 소그룹반별 부담임 (미정 — 추후 채워서 재배포) ========== */
+/* ========== 소그룹반별 부담임 ========== */
 const SUB_TEACHERS = {
-  '소그룹반1': '',
-  '소그룹반2': '',
+  '소그룹반1': '이승헌',
+  '소그룹반2': '박해니',
   '소그룹반3': '',
-  '소그룹반4': '',
-  '소그룹반5': '',
+  '소그룹반4': '오은규',
+  '소그룹반5': '조세경',
   '소그룹반6': '',
-  '소그룹반7': '',
-  '소그룹반8': '',
+  '소그룹반7': '송진우',
+  '소그룹반8': '이규리',
   '소그룹반9': '',
   '소그룹반10': '',
   '소그룹반11': '',
   '소그룹반12': '',
+};
+
+/* ========== 대가족반별 가족장 (홀수 소그룹반 담임이 겸임) ========== */
+const FAMILY_LEADERS = {
+  '대가족반1': { name: '이윤정', from: '소그룹반 1' },
+  '대가족반2': { name: '전성희', from: '소그룹반 3' },
+  '대가족반3': { name: '이수지', from: '소그룹반 5' },
+  '대가족반4': { name: '양지현', from: '소그룹반 7' },
+  '대가족반5': { name: '오덕현', from: '소그룹반 9' },
+  '대가족반6': { name: '석준원', from: '소그룹반 11' },
+};
+
+/* ========== 대가족반별 공통 헬퍼 ========== */
+const FAMILY_HELPERS = {
+  '대가족반1': '',
+  '대가족반2': '',
+  '대가족반3': '',
+  '대가족반4': '김주영',
+  '대가족반5': '김희원',
+  '대가족반6': '',
 };
 
 /* ========== 편성 (대가족반 → 소그룹반 → 학생) ========== */
@@ -389,10 +449,12 @@ function memberHtml(s) {
   `;
 }
 
-function cellHtml(cell) {
+function cellHtml(cell, familyId) {
   const cellId = cell.name.replace(/\s/g,'');
   const homeroom = HOMEROOM_TEACHERS[cellId] || '';
   const sub = SUB_TEACHERS[cellId] || '';
+  const leader = FAMILY_LEADERS[familyId];
+  const isLeaderCell = leader && leader.name === homeroom; // 이 소그룹반 담임이 가족장 겸임
   // 학년→이름 가나다 순으로 정렬: 3학년 → 2학년 → 1학년, 같은 학년이면 이름 가나다
   const sorted = cell.students.slice().sort((a, b) => {
     if (a.grade !== b.grade) return b.grade - a.grade; // 3→2→1
@@ -405,7 +467,7 @@ function cellHtml(cell) {
         <div class="teacher-row homeroom">
           <span class="label">담임</span>
           ${homeroom
-            ? `<span class="name">${escapeHtml(homeroom)}</span>`
+            ? `<span class="name">${escapeHtml(homeroom)}</span>${isLeaderCell ? '<span class="leader-badge">🌟 대가족장</span>' : ''}`
             : `<span class="name tba">미정</span>`}
         </div>
         <div class="teacher-row sub">
@@ -424,15 +486,34 @@ function cellHtml(cell) {
 }
 
 function familyHtml(family) {
+  const familyId = family.name.replace(/\s/g,'');
   const total = family.cells.reduce((sum, c) => sum + c.students.length, 0);
+  const leader = FAMILY_LEADERS[familyId];
+  const helper = FAMILY_HELPERS[familyId];
   return `
     <section class="family-section">
       <div class="family-header">
-        <span class="family-icon">👨‍👩‍👧‍👦</span>
-        <span class="family-name">${escapeHtml(family.name)}</span>
-        <span class="family-meta">${family.cells.length}개 소그룹반 · 총 ${total}명</span>
+        <div class="family-title">
+          <span class="family-icon">👨‍👩‍👧‍👦</span>
+          <span class="family-name">${escapeHtml(family.name)}</span>
+          <span class="family-meta">${family.cells.length}개 소그룹반 · 총 ${total}명</span>
+        </div>
+        ${leader ? `
+          <div class="family-role-row">
+            <span class="role-label leader">🌟 대가족장</span>
+            <span class="role-name">${escapeHtml(leader.name)}</span>
+            <span class="role-note">(${escapeHtml(leader.from)} 담임 겸임)</span>
+          </div>
+        ` : ''}
+        ${helper ? `
+          <div class="family-role-row">
+            <span class="role-label helper">🤝 헬퍼</span>
+            <span class="role-name">${escapeHtml(helper)}</span>
+            <span class="role-note">(대가족반 공통)</span>
+          </div>
+        ` : ''}
       </div>
-      <div class="cell-grid">${family.cells.map(cellHtml).join('')}</div>
+      <div class="cell-grid">${family.cells.map(c => cellHtml(c, familyId)).join('')}</div>
     </section>
   `;
 }
