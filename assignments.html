@@ -271,7 +271,7 @@
 <header>
   <div class="container">
     <h1>🌱 내수동 고등부 2학기 편성 <span class="badge-public">공개용</span></h1>
-    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 · 학생·학부모 공유용</div>
+    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 · 총 83명 · 학생·학부모 공유용</div>
     <div class="notice">
       이 페이지는 학생들에게 셀 편성을 안내하기 위한 공개용 페이지입니다. 자유롭게 공유 가능합니다.
     </div>
@@ -339,6 +339,7 @@ const FAMILY_HELPERS = {
 };
 
 /* ========== 편성 (대가족반 → 소그룹반 → 학생) ========== */
+// 정규 학생 + 장기결석자 통합 명단 (학생 시점에서는 구분 없음)
 const FAMILY_GROUPS = [
   { name: "대가족반 1", cells: [
     { name: "소그룹반 1", students: [
@@ -354,6 +355,7 @@ const FAMILY_GROUPS = [
       {name:"조인상", grade:3, gender:"여"},
       {name:"연해준", grade:2, gender:"남"},
       {name:"유나린", grade:2, gender:"여"},
+      {name:"최승아", grade:3, gender:"여"}, // 조인상 매개 (01반 출신)
     ]},
   ]},
   { name: "대가족반 2", cells: [
@@ -362,12 +364,17 @@ const FAMILY_GROUPS = [
       {name:"한채은", grade:3, gender:"여"},
       {name:"김라일", grade:2, gender:"남"},
       {name:"안민혁", grade:1, gender:"남"},
+      {name:"이하준", grade:1, gender:"남"}, // 전성희T 01반 라포
+      {name:"김민채", grade:3, gender:"여"}, // 한채은 11반 동출신 매개
     ]},
     { name: "소그룹반 4", students: [
       {name:"원대연", grade:2, gender:"남"},
       {name:"이준호", grade:2, gender:"남"},
       {name:"오현우", grade:1, gender:"남"},
       {name:"이빛가온", grade:1, gender:"남"},
+      {name:"백결",   grade:3, gender:"남"}, // 3남 동학년·박대철T 라포
+      {name:"조혁준", grade:3, gender:"남"}, // 정보 파악 시급
+      {name:"송성모", grade:3, gender:"남"}, // 11반 출신
     ]},
   ]},
   { name: "대가족반 3", cells: [
@@ -377,12 +384,17 @@ const FAMILY_GROUPS = [
       {name:"전지훈", grade:2, gender:"남"},
       {name:"임태민", grade:2, gender:"남"},
       {name:"최지은", grade:1, gender:"여"},
+      {name:"김재원", grade:1, gender:"남"}, // ⭐⭐⭐ 이수지T 직접 케어 (05반)
+      {name:"김유진", grade:2, gender:"여"}, // 05반 출신
     ]},
     { name: "소그룹반 6", students: [
       {name:"조한나", grade:1, gender:"여"},
       {name:"김한결", grade:1, gender:"남"},
       {name:"김강은", grade:1, gender:"여"},
       {name:"이서후", grade:1, gender:"여"},
+      {name:"고예나", grade:1, gender:"여"}, // 1여 안정셀
+      {name:"김강희", grade:1, gender:"여"}, // 정유빈T 10반 라포·1여
+      {name:"박서연", grade:1, gender:"여"}, // 인도네시아 선교 (이름만)
     ]},
   ]},
   { name: "대가족반 4", cells: [
@@ -392,12 +404,18 @@ const FAMILY_GROUPS = [
       {name:"최민호", grade:2, gender:"남"},
       {name:"박지웅", grade:1, gender:"남"},
       {name:"송준원", grade:1, gender:"남"},
+      {name:"박시우", grade:1, gender:"남"}, // ⭐⭐⭐ 양지현T 직접 케어 (08반)
+      {name:"하어림", grade:1, gender:"남"}, // 06반·김주영T 헬퍼 라포
     ]},
     { name: "소그룹반 8", students: [
       {name:"심희은", grade:3, gender:"여"},
       {name:"김은우", grade:3, gender:"여"},
       {name:"최가은", grade:3, gender:"여"},
       {name:"양소희", grade:2, gender:"여"},
+      {name:"박진서", grade:3, gender:"여"}, // 서울여상 동급생
+      {name:"임소명", grade:3, gender:"여"}, // 서울여상 동급생
+      {name:"김나현", grade:2, gender:"여"}, // ⭐⭐⭐ 이유성T 06반 라포
+      {name:"오희수", grade:3, gender:"여"}, // 3여 안정셀
     ]},
   ]},
   { name: "대가족반 5", cells: [
@@ -408,12 +426,17 @@ const FAMILY_GROUPS = [
       {name:"서이수", grade:3, gender:"여"},
       {name:"양인혁", grade:3, gender:"남"},
       {name:"김다은", grade:3, gender:"여"},
+      {name:"장세민", grade:3, gender:"남"}, // 곽지원·주성 4인 그룹
+      {name:"정원영", grade:3, gender:"남"}, // 곽지원·장세민 4인 그룹
     ]},
     { name: "소그룹반 10", students: [
       {name:"이주형", grade:1, gender:"여"},
       {name:"유재희", grade:2, gender:"여"},
       {name:"윤성하", grade:1, gender:"남"},
       {name:"나호윤", grade:1, gender:"남"},
+      {name:"박민주", grade:1, gender:"여"}, // 최희승T 03반 라포
+      {name:"이소민", grade:3, gender:"여"}, // 자매·14반·동대문
+      {name:"이소현", grade:1, gender:"여"}, // 이소민 동생·윤성하 라포
     ]},
   ]},
   { name: "대가족반 6", cells: [
@@ -423,6 +446,8 @@ const FAMILY_GROUPS = [
       {name:"김준수", grade:3, gender:"남"},
       {name:"최수지", grade:1, gender:"여"},
       {name:"박동하", grade:1, gender:"남"},
+      {name:"김도헌", grade:3, gender:"남"}, // 김준수 매개 (12반)
+      {name:"이서현", grade:1, gender:"여"}, // 석준원T 14반 라포
     ]},
     { name: "소그룹반 12", students: [
       {name:"정태율", grade:1, gender:"남"},
@@ -430,6 +455,9 @@ const FAMILY_GROUPS = [
       {name:"김주하", grade:2, gender:"여"},
       {name:"김정록", grade:1, gender:"남"},
       {name:"김채은", grade:2, gender:"여"},
+      {name:"배유나", grade:2, gender:"여"}, // 부천·김주하 매개
+      {name:"최지윤", grade:3, gender:"여"}, // 최서윤 쌍둥이
+      {name:"최서윤", grade:3, gender:"여"}, // 최지윤 쌍둥이
     ]},
   ]},
 ];
