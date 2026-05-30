@@ -306,9 +306,259 @@
     header h1 { font-size: 18px; }
     .cell-name { font-size: 16px; }
   }
+
+  /* ============================================ */
+  /* 프린트 버튼 (화면 전용)                      */
+  /* ============================================ */
+  .print-btn {
+    position: fixed; top: 14px; right: 14px; z-index: 1000;
+    background: linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%);
+    color: #fff; border: none;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(124,58,237,.35);
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit;
+  }
+  .print-btn:active { transform: scale(0.97); }
+
+  /* ============================================ */
+  /* 프린트 레이아웃 (A4 portrait, 1장)            */
+  /* ============================================ */
+  @media print {
+    @page { size: A4 portrait; margin: 7mm; }
+
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    .print-btn { display: none !important; }
+
+    body {
+      background: #fff !important;
+      color: #111 !important;
+      font-size: 8pt;
+      line-height: 1.25;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* 화면용 헤더 → 프린트용 1줄 타이틀 */
+    header {
+      background: #fff !important;
+      border-bottom: 1.5pt solid #6b21a8 !important;
+      padding: 0 0 2mm 0 !important;
+      margin-bottom: 3mm !important;
+    }
+    header .container { padding: 0 !important; max-width: none !important; }
+    header h1 {
+      font-size: 13pt !important;
+      color: #111 !important;
+      margin: 0 !important;
+      gap: 6px !important;
+    }
+    header .badge-public {
+      font-size: 7pt !important;
+      background: #059669 !important;
+      padding: 1.5px 6px !important;
+    }
+    header .subtitle {
+      font-size: 8pt !important;
+      color: #444 !important;
+      margin-top: 1mm !important;
+    }
+    header .notice { display: none !important; }
+
+    .container {
+      max-width: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* 6개 대가족반 → 3 × 2 그리드 */
+    #root {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 2.5mm !important;
+    }
+
+    .family-section {
+      margin-top: 0 !important;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      border: 0.5pt solid #cbd5e1 !important;
+      border-radius: 1.5mm !important;
+      padding: 2mm !important;
+      background: #fff !important;
+    }
+
+    /* 대가족 헤더 */
+    .family-header {
+      background: #ede9fe !important;
+      border-left: 2pt solid #6b21a8 !important;
+      padding: 1.5mm 2mm !important;
+      margin-bottom: 1.5mm !important;
+      border-radius: 1mm !important;
+    }
+    .family-title { gap: 4px !important; flex-wrap: wrap !important; }
+    .family-icon { font-size: 8pt !important; }
+    .family-name {
+      font-size: 9pt !important;
+      color: #111 !important;
+      letter-spacing: 0 !important;
+    }
+    .family-meta {
+      font-size: 6.5pt !important;
+      color: #555 !important;
+      margin-left: auto !important;
+    }
+    .family-role-row {
+      margin-top: 1mm !important;
+      gap: 3px !important;
+      font-size: 7.5pt !important;
+    }
+    .role-label {
+      font-size: 6pt !important;
+      padding: 0.3mm 1mm !important;
+      color: #000 !important;
+    }
+    .role-label.leader { background: #fb923c !important; }
+    .role-label.helper { background: #14b8a6 !important; }
+    .role-name { font-size: 7.5pt !important; color: #111 !important; font-weight: 700 !important; }
+    .role-note { font-size: 6.5pt !important; color: #666 !important; }
+
+    /* 소그룹반 카드 — 한 컬럼 안에 세로 스택 */
+    .cell-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 1.5mm !important;
+    }
+    .cell-card {
+      background: #fff !important;
+      border: 0.5pt solid #d1d5db !important;
+      border-radius: 1mm !important;
+      padding: 1.5mm !important;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .cell-head {
+      padding: 0 !important;
+      border-bottom: 0.5pt dotted #e5e7eb !important;
+      padding-bottom: 1mm !important;
+      margin-bottom: 1mm !important;
+    }
+    .cell-name {
+      font-size: 8.5pt !important;
+      color: #111 !important;
+      font-weight: 800 !important;
+      letter-spacing: 0 !important;
+      margin-bottom: 1mm !important;
+    }
+    .cell-name .count { font-size: 6.5pt !important; margin-left: 3px !important; }
+
+    /* 담임/부담임 → 인라인 */
+    .teacher-row {
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0.3mm 0 !important;
+      gap: 3px !important;
+      font-size: 7.5pt !important;
+    }
+    .teacher-row.homeroom .label {
+      background: #fde68a !important;
+      color: #78350f !important;
+    }
+    .teacher-row.sub .label {
+      background: #bae6fd !important;
+      color: #0c4a6e !important;
+    }
+    .teacher-row .label {
+      font-size: 6pt !important;
+      padding: 0.2mm 1.2mm !important;
+      letter-spacing: 0 !important;
+    }
+    .teacher-row .name {
+      font-size: 7.5pt !important;
+      color: #111 !important;
+      font-weight: 700 !important;
+    }
+    .teacher-row .name.tba { color: #9ca3af !important; font-weight: 400 !important; }
+    .leader-badge {
+      font-size: 5.5pt !important;
+      padding: 0.2mm 1mm !important;
+      background: #fb923c !important;
+      color: #000 !important;
+      margin-left: 2px !important;
+    }
+
+    /* 학생 명단 — 작은 칩 형태로 줄바꿈 자유롭게 */
+    .members { padding: 0 !important; margin-top: 1mm !important; }
+    .members-title { display: none !important; }
+    .member-list {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      gap: 1mm !important;
+    }
+    .member {
+      background: #fff !important;
+      border: 0.4pt solid #e5e7eb !important;
+      border-radius: 0.8mm !important;
+      padding: 0.3mm 1.2mm !important;
+      gap: 1mm !important;
+      font-size: 7pt !important;
+    }
+    .member-name { font-size: 7pt !important; color: #111 !important; font-weight: 600 !important; }
+    .gender { font-size: 6pt !important; color: #6b7280 !important; }
+    .grade-pill {
+      font-size: 5.5pt !important;
+      padding: 0.2mm 1mm !important;
+      margin-left: 0 !important;
+      color: #000 !important;
+      font-weight: 700 !important;
+    }
+    /* 학년 색은 유지 (인쇄 시 시각적 구분) */
+
+    /* Special 카드 */
+    .special-card {
+      background: #fff7ed !important;
+      border: 0.5pt dashed #fb923c !important;
+      border-radius: 1mm !important;
+      padding: 1.5mm !important;
+      margin-top: 1.5mm !important;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .special-head {
+      padding: 0 !important;
+      padding-bottom: 0.5mm !important;
+      margin-bottom: 1mm !important;
+      border-bottom: 0.4pt dashed #fed7aa !important;
+      gap: 3px !important;
+    }
+    .special-tag {
+      font-size: 5.5pt !important;
+      background: #fb923c !important;
+      color: #fff !important;
+      padding: 0.2mm 1.2mm !important;
+    }
+    .special-name {
+      font-size: 8pt !important;
+      color: #9a3412 !important;
+      letter-spacing: 0 !important;
+    }
+    .special-meta { font-size: 6.5pt !important; color: #666 !important; }
+    .special-note { display: none !important; }
+
+    footer { display: none !important; }
+  }
 </style>
 </head>
 <body>
+
+<button class="print-btn" onclick="window.print()">🖨 프린트 / PDF 저장</button>
 
 <header>
   <div class="container">
