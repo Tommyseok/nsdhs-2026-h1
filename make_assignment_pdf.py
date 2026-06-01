@@ -199,10 +199,12 @@ def draw_wrapped_chips(c, students, x, y, max_w, font='Malgun', size=7.5, leadin
 
 def draw_cell_section(c, x, y, w, h, cell_id, fam):
     """소그룹반 박스 그리기."""
-    # 외곽선
-    c.setLineWidth(0.4)
+    # 외곽선 — 대가족 두꺼운 테두리와 대비하여 얇고 연하게
+    c.setLineWidth(0.3)
+    c.setStrokeColor(colors.HexColor('#c4b5fd'))
     c.setDash()
     c.rect(x, y, w, h, stroke=1, fill=0)
+    c.setStrokeColor(colors.black)
 
     pad = 1.5*mm
     top = y + h
@@ -252,11 +254,13 @@ def draw_cell_section(c, x, y, w, h, cell_id, fam):
 
 
 def draw_special_section(c, x, y, w, h, fam):
-    """Special 박스 (대시 보더)."""
-    c.setLineWidth(0.5)
+    """Special 박스 (대시 보더) — 연한 주황."""
+    c.setLineWidth(0.4)
+    c.setStrokeColor(colors.HexColor('#fdba74'))
     c.setDash(2.2, 1.4)
     c.rect(x, y, w, h, stroke=1, fill=0)
     c.setDash()
+    c.setStrokeColor(colors.black)
 
     pad = 1.5*mm
     top = y + h
@@ -280,18 +284,20 @@ def draw_special_section(c, x, y, w, h, fam):
 
 
 def draw_family_box(c, x, y, w, h, fam):
-    """대가족반 박스 — 두꺼운 이중 테두리."""
-    # 외곽 (두꺼운 메인 테두리)
-    c.setLineWidth(1.8)
+    """대가족반 박스 — 두꺼운 이중 테두리 + 연한 보라 배경."""
+    # 연한 보라 배경 fill
+    c.setFillColor(colors.HexColor('#f5f3ff'))
     c.setStrokeColor(colors.HexColor('#4c1d95'))
+    c.setLineWidth(1.8)
     c.setDash()
-    c.rect(x, y, w, h, stroke=1, fill=0)
+    c.rect(x, y, w, h, stroke=1, fill=1)
     # 내부 보조선 (얇은 가이드)
     c.setLineWidth(0.3)
     c.setStrokeColor(colors.HexColor('#c4b5fd'))
     c.rect(x + 1*mm, y + 1*mm, w - 2*mm, h - 2*mm, stroke=1, fill=0)
     # 색 복원
     c.setStrokeColor(colors.black)
+    c.setFillColor(colors.black)
 
     pad = 2*mm
     top = y + h
