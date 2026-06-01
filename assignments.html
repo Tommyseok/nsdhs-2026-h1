@@ -74,25 +74,27 @@
     border: 3px solid #6d28d9;
     border-radius: 14px;
     padding: 16px;
-    background: rgba(124, 58, 237, 0.06);
+    /* 가족 배경: 진한 보라 톤 — 내부 카드와 확실한 대비 */
+    background: linear-gradient(180deg, rgba(91, 33, 182, 0.22) 0%, rgba(76, 29, 149, 0.16) 100%);
     position: relative;
   }
   .family-section::before {
     content: '';
     position: absolute;
     inset: 5px;
-    border: 1px solid rgba(167, 139, 250, 0.22);
+    border: 1px solid rgba(167, 139, 250, 0.30);
     border-radius: 10px;
     pointer-events: none;
   }
   .family-header {
-    padding: 10px 14px;
-    background: rgba(167,139,250,.10);
+    padding: 12px 16px;
+    background: #2e1065;
     border-left: 4px solid var(--accent);
     border-radius: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     position: relative;
     z-index: 1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
   .family-header .family-title {
     display: flex;
@@ -160,13 +162,15 @@
     z-index: 1;
   }
   .special-card {
-    background: rgba(249,115,22,.05);
-    border: 1px dashed rgba(251,146,60,.45);
+    /* 솔리드 다크 + 주황 톤 — 가족 보라 배경 위에서 별도 카드로 부각 */
+    background: linear-gradient(180deg, #1c1410 0%, #1a0f08 100%);
+    border: 1px dashed rgba(251,146,60,.55);
     border-radius: 12px;
     padding: 14px 16px;
     margin-top: 12px;
     position: relative;
     z-index: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   }
   .special-head {
     display: flex;
@@ -204,10 +208,12 @@
     font-style: italic;
   }
   .cell-card {
-    background: rgba(17, 24, 39, 0.55);
-    border: 1px solid rgba(167, 139, 250, 0.18);
+    /* 솔리드 다크 — 가족 보라 배경 위에서 확실히 부각 */
+    background: #0f172a;
+    border: 1px solid rgba(167, 139, 250, 0.35);
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.2);
   }
   .cell-card .cell-head {
     padding: 14px 16px 10px;
