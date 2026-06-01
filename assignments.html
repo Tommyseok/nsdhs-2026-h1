@@ -291,6 +291,64 @@
     font-weight: 600;
     color: var(--muted);
   }
+  .member-label {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+  .member-label.new {
+    background: #065f46;
+    color: #d1fae5;
+    border: 1px solid #10b981;
+  }
+  .member-label.rejoin {
+    background: #78350f;
+    color: #fed7aa;
+    border: 1px solid #f59e0b;
+  }
+  .member-label.urgent {
+    background: #7f1d1d;
+    color: #fecaca;
+    border: 1px solid #ef4444;
+  }
+  .member.has-label-new { border-color: #10b981; }
+  .member.has-label-rejoin { border-color: #f59e0b; }
+  .member.has-label-urgent { border-color: #ef4444; }
+
+  /* 범례 박스 */
+  .legend-box {
+    margin: 14px 0 0;
+    padding: 10px 14px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12px;
+  }
+  .legend-box .legend-title {
+    font-weight: 700;
+    color: #cbd5e1;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    align-self: center;
+    margin-right: 4px;
+  }
+  .legend-box .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #cbd5e1;
+  }
+  .legend-box .legend-item .legend-desc {
+    font-size: 11px;
+    color: #94a3b8;
+  }
 
   footer {
     margin-top: 32px;
@@ -521,6 +579,28 @@
     }
     /* 학년 색은 유지 (인쇄 시 시각적 구분) */
 
+    .member-label {
+      font-size: 5.5pt !important;
+      padding: 0.2mm 1mm !important;
+      margin-left: 1mm !important;
+      border-width: 0.3pt !important;
+    }
+    .member-label.new { background: #d1fae5 !important; color: #064e3b !important; border-color: #10b981 !important; }
+    .member-label.rejoin { background: #fed7aa !important; color: #7c2d12 !important; border-color: #f59e0b !important; }
+    .member-label.urgent { background: #fecaca !important; color: #7f1d1d !important; border-color: #ef4444 !important; }
+    .legend-box {
+      background: #f9fafb !important;
+      border: 0.5pt solid #d1d5db !important;
+      padding: 1.5mm 2mm !important;
+      margin: 0 0 2mm 0 !important;
+      gap: 4mm !important;
+      font-size: 7pt !important;
+      border-radius: 1mm !important;
+    }
+    .legend-box .legend-title { font-size: 6.5pt !important; color: #111 !important; }
+    .legend-box .legend-item { gap: 3px !important; color: #333 !important; }
+    .legend-box .legend-desc { font-size: 6.5pt !important; color: #666 !important; }
+
     /* Special 카드 */
     .special-card {
       background: #fff7ed !important;
@@ -563,7 +643,13 @@
 <header>
   <div class="container">
     <h1>🌱 내수동 고등부 2학기 편성 <span class="badge-public">공개용</span></h1>
-    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 6 Special · 총 83명 · 학생·학부모 공유용</div>
+    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 6 Special · 총 85명 · 학생·학부모 공유용</div>
+    <div class="legend-box">
+      <span class="legend-title">📌 라벨 안내</span>
+      <span class="legend-item"><span class="member-label new">🆕 새신자</span><span class="legend-desc">첫 출석한 신규 학생</span></span>
+      <span class="legend-item"><span class="member-label rejoin">🔄 정규합류</span><span class="legend-desc">장결자에서 정규 셀로 전환</span></span>
+      <span class="legend-item"><span class="member-label urgent">🚨 즉시접촉</span><span class="legend-desc">담임·목사 직접 케어 필요</span></span>
+    </div>
     <div class="notice">
       이 페이지는 학생들에게 셀 편성을 안내하기 위한 공개용 페이지입니다. 자유롭게 공유 가능합니다.
     </div>
@@ -599,15 +685,22 @@ const SUB_TEACHERS = {
   '소그룹반1': '이승헌',
   '소그룹반2': '조세경',
   '소그룹반3': '',
-  '소그룹반4': '',
+  '소그룹반4': '김희원',
   '소그룹반5': '박해니',
   '소그룹반6': '',
   '소그룹반7': '송진우',
   '소그룹반8': '이규리',
   '소그룹반9': '김주영',
   '소그룹반10': '',
-  '소그룹반11': '김희원',
+  '소그룹반11': '',
   '소그룹반12': '오은규',
+};
+
+/* ========== 학생 라벨 정의 ========== */
+const LABELS = {
+  new:     { text: '🆕 새신자',    title: '첫 출석한 신규 학생' },
+  rejoin:  { text: '🔄 정규합류',  title: '장결자에서 정규 셀로 전환' },
+  urgent:  { text: '🚨 즉시접촉',  title: '담임·목사 직접 케어 필요' },
 };
 
 /* ========== 대가족반별 가족장 (홀수 소그룹반 담임이 겸임) ========== */
@@ -632,14 +725,16 @@ const FAMILY_HELPERS = {
 
 /* ========== 편성 (대가족반 → 소그룹반/Special → 학생) ========== */
 // 정규 소그룹반 = 출석 학생, Special = 장기결석자 (목회자·별도 교사 특별관리)
+// label: 'new' (새신자) | 'rejoin' (정규 합류) | 'urgent' (즉시 접촉)
 const FAMILY_GROUPS = [
   { name: "대가족반 1", cells: [
     { name: "소그룹반 1", students: [
       {name:"권하율", grade:1, gender:"남"},
       {name:"하은유", grade:1, gender:"여"},
       {name:"홍기진", grade:2, gender:"남"},
-      {name:"오은수", grade:1, gender:"여"},
+      {name:"서이수", grade:3, gender:"여"},
       {name:"장지현", grade:2, gender:"여"},
+      {name:"김은",   grade:1, gender:"여", label:'new'},
     ]},
     { name: "소그룹반 2", students: [
       {name:"강은교", grade:2, gender:"여"},
@@ -649,10 +744,10 @@ const FAMILY_GROUPS = [
       {name:"유나린", grade:2, gender:"여"},
     ]},
   ], special: { name: "Special 1", students: [
-    {name:"고예나", grade:1, gender:"여"}, // 11반·박해니T 라포
-    {name:"김민채", grade:3, gender:"여"}, // 11반
-    {name:"송성모", grade:3, gender:"남"}, // 11반
-    {name:"최승아", grade:3, gender:"여"}, // 01반·조인상 매개
+    {name:"고예나", grade:1, gender:"여"},
+    {name:"김민채", grade:3, gender:"여"},
+    {name:"송성모", grade:3, gender:"남"},
+    {name:"최승아", grade:3, gender:"여"},
   ]}},
   { name: "대가족반 2", cells: [
     { name: "소그룹반 3", students: [
@@ -662,16 +757,17 @@ const FAMILY_GROUPS = [
       {name:"안민혁", grade:1, gender:"남"},
     ]},
     { name: "소그룹반 4", students: [
+      {name:"김준수", grade:3, gender:"남"},
       {name:"원대연", grade:2, gender:"남"},
       {name:"이준호", grade:2, gender:"남"},
       {name:"오현우", grade:1, gender:"남"},
       {name:"이빛가온", grade:1, gender:"남"},
     ]},
   ], special: { name: "Special 2", students: [
-    {name:"최지윤", grade:3, gender:"여"}, // 12반·최서윤 쌍둥이
-    {name:"최서윤", grade:3, gender:"여"}, // 13반·최지윤 쌍둥이
-    {name:"백결",   grade:3, gender:"남"}, // 10반·박대철T 셀 4 1지망 라포
-    {name:"조혁준", grade:3, gender:"남"}, // 10반·백결과 동학년
+    {name:"최지윤", grade:3, gender:"여"},
+    {name:"최서윤", grade:3, gender:"여"},
+    {name:"백결",   grade:3, gender:"남"},
+    {name:"조혁준", grade:3, gender:"남"},
   ]}},
   { name: "대가족반 3", cells: [
     { name: "소그룹반 5", students: [
@@ -680,26 +776,27 @@ const FAMILY_GROUPS = [
       {name:"전지훈", grade:2, gender:"남"},
       {name:"임태민", grade:2, gender:"남"},
       {name:"최지은", grade:1, gender:"여"},
+      {name:"김나현", grade:2, gender:"여", label:'rejoin'},
+      {name:"윤서희", grade:2, gender:"여", label:'new'},
     ]},
     { name: "소그룹반 6", students: [
       {name:"조한나", grade:1, gender:"여"},
       {name:"김한결", grade:1, gender:"남"},
-      {name:"김강은", grade:1, gender:"여"},
       {name:"이서후", grade:1, gender:"여"},
     ]},
   ], special: { name: "Special 3", students: [
-    {name:"김재원", grade:1, gender:"남"}, // 05반·이수지T 라포·⭐⭐⭐
-    {name:"김유진", grade:2, gender:"여"}, // 05반·이수지T 라포
-    {name:"김강희", grade:1, gender:"여"}, // 10반·정유빈T 라포·춘천(최지은 매개)
-    {name:"박서연", grade:1, gender:"여"}, // 10반·정유빈T 라포·인도네시아 선교
+    {name:"김재원", grade:1, gender:"남", label:'urgent'},
+    {name:"김유진", grade:2, gender:"여"},
+    {name:"김강희", grade:1, gender:"여"},
+    {name:"박서연", grade:1, gender:"여"},
   ]}},
   { name: "대가족반 4", cells: [
     { name: "소그룹반 7", students: [
       {name:"조강인", grade:3, gender:"남"},
       {name:"이에녹", grade:3, gender:"남"},
-      {name:"최민호", grade:2, gender:"남"},
-      {name:"박지웅", grade:1, gender:"남"},
-      {name:"송준원", grade:1, gender:"남"},
+      {name:"최민호", grade:2, gender:"남", label:'new'},
+      {name:"김정록", grade:1, gender:"남"},
+      {name:"정태율", grade:1, gender:"남"},
     ]},
     { name: "소그룹반 8", students: [
       {name:"심희은", grade:3, gender:"여"},
@@ -708,55 +805,54 @@ const FAMILY_GROUPS = [
       {name:"양소희", grade:2, gender:"여"},
     ]},
   ], special: { name: "Special 4", students: [
-    {name:"박시우", grade:1, gender:"남"}, // 08반·양지현T 라포·⭐⭐⭐
-    {name:"김나현", grade:2, gender:"여"}, // 06반·이유성T 라포
-    {name:"하어림", grade:1, gender:"남"}, // 06반·이유성T 라포·해외 유학
-    {name:"박진서", grade:3, gender:"여"}, // 02반·서울여상·셀 8 3여 동질성
-    {name:"임소명", grade:3, gender:"여"}, // 02반·서울여상·셀 8 3여 동질성
+    {name:"박시우", grade:1, gender:"남", label:'urgent'},
+    {name:"하어림", grade:1, gender:"남"},
+    {name:"박진서", grade:3, gender:"여"},
+    {name:"임소명", grade:3, gender:"여"},
   ]}},
   { name: "대가족반 5", cells: [
     { name: "소그룹반 9", students: [
       {name:"나정인", grade:3, gender:"여"},
-      {name:"주성",   grade:3, gender:"남"},
+      {name:"주성",   grade:3, gender:"남", label:'new'},
       {name:"곽지원", grade:3, gender:"남"},
-      {name:"서이수", grade:3, gender:"여"},
       {name:"양인혁", grade:3, gender:"남"},
       {name:"김다은", grade:3, gender:"여"},
+      {name:"오은수", grade:1, gender:"여"},
     ]},
     { name: "소그룹반 10", students: [
       {name:"이주형", grade:1, gender:"여"},
       {name:"유재희", grade:2, gender:"여"},
       {name:"윤성하", grade:1, gender:"남"},
       {name:"나호윤", grade:1, gender:"남"},
-      {name:"이소현", grade:1, gender:"여"}, // 신규·이소민 동생·윤성하 친밀
+      {name:"이소현", grade:1, gender:"여", label:'new'},
+      {name:"배유나", grade:2, gender:"여", label:'rejoin'},
     ]},
   ], special: { name: "Special 5", students: [
-    {name:"오희수", grade:3, gender:"여"}, // 13반·오덕현T 라포
-    {name:"박민주", grade:1, gender:"여"}, // 03반·최희승T 라포
-    {name:"배유나", grade:2, gender:"여"}, // 03반·부천
-    {name:"장세민", grade:3, gender:"남"}, // 14반·곽지원 친구 그룹
-    {name:"정원영", grade:3, gender:"남"}, // 09반·곽지원 친구 그룹
+    {name:"오희수", grade:3, gender:"여"},
+    {name:"박민주", grade:1, gender:"여"},
+    {name:"장세민", grade:3, gender:"남"},
+    {name:"정원영", grade:3, gender:"남"},
   ]}},
   { name: "대가족반 6", cells: [
     { name: "소그룹반 11", students: [
       {name:"최유현", grade:1, gender:"여"},
       {name:"이가영", grade:2, gender:"여"},
-      {name:"김준수", grade:3, gender:"남"},
       {name:"최수지", grade:1, gender:"여"},
       {name:"박동하", grade:1, gender:"남"},
+      {name:"송준원", grade:1, gender:"남"},
     ]},
     { name: "소그룹반 12", students: [
-      {name:"정태율", grade:1, gender:"남"},
       {name:"정승빈", grade:3, gender:"여"},
       {name:"김주하", grade:2, gender:"여"},
-      {name:"김정록", grade:1, gender:"남"},
       {name:"김채은", grade:2, gender:"여"},
+      {name:"박지웅", grade:1, gender:"남"},
+      {name:"김강은", grade:1, gender:"여"},
     ]},
   ], special: { name: "Special 6", students: [
-    {name:"이서현", grade:1, gender:"여"}, // 14반·석준원T 라포
-    {name:"이소민", grade:3, gender:"여"}, // 14반·동대문·이소현 언니
-    {name:"김도헌", grade:3, gender:"남"}, // 12반·김준수 매개
-    {name:"이하준", grade:1, gender:"남"}, // 01반·분당 거주·1남 다양성
+    {name:"이서현", grade:1, gender:"여"},
+    {name:"이소민", grade:3, gender:"여"},
+    {name:"김도헌", grade:3, gender:"남"},
+    {name:"이하준", grade:1, gender:"남"},
   ]}},
 ];
 
@@ -766,11 +862,14 @@ function escapeHtml(s) {
 }
 
 function memberHtml(s) {
+  const labelInfo = s.label ? LABELS[s.label] : null;
+  const cardCls = labelInfo ? `member has-label-${s.label}` : 'member';
   return `
-    <div class="member">
+    <div class="${cardCls}">
       <span class="member-name">${escapeHtml(s.name)}</span>
       <span class="gender">${escapeHtml(s.gender)}</span>
       <span class="grade-pill g${s.grade}">${s.grade}학년</span>
+      ${labelInfo ? `<span class="member-label ${s.label}" title="${escapeHtml(labelInfo.title)}">${labelInfo.text}</span>` : ''}
     </div>
   `;
 }
