@@ -288,8 +288,19 @@
   .g3 { background: var(--grade3); }
   .gender {
     font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .gender.male {
+    color: #93c5fd;
+    background: rgba(96,165,250,.12);
+    border: 1px solid rgba(96,165,250,.35);
+  }
+  .gender.female {
+    color: #fbcfe8;
+    background: rgba(244,114,182,.12);
+    border: 1px solid rgba(244,114,182,.35);
   }
   .member-label {
     font-size: 10px;
@@ -569,7 +580,14 @@
       font-size: 7pt !important;
     }
     .member-name { font-size: 7pt !important; color: #111 !important; font-weight: 600 !important; }
-    .gender { font-size: 6pt !important; color: #6b7280 !important; }
+    .gender {
+      font-size: 6pt !important;
+      padding: 0.2mm 1mm !important;
+      border-radius: 1mm !important;
+      font-weight: 700 !important;
+    }
+    .gender.male { background: #dbeafe !important; color: #1e3a8a !important; border: 0.3pt solid #3b82f6 !important; }
+    .gender.female { background: #fce7f3 !important; color: #831843 !important; border: 0.3pt solid #ec4899 !important; }
     .grade-pill {
       font-size: 5.5pt !important;
       padding: 0.2mm 1mm !important;
@@ -648,7 +666,7 @@
       <span class="legend-title">📌 라벨 안내</span>
       <span class="legend-item"><span class="member-label new">🆕 새신자</span><span class="legend-desc">첫 출석한 신규 학생</span></span>
       <span class="legend-item"><span class="member-label rejoin">🔄 정규합류</span><span class="legend-desc">장결자에서 정규 셀로 전환</span></span>
-      <span class="legend-item"><span class="member-label urgent">🚨 즉시접촉</span><span class="legend-desc">담임·목사 직접 케어 필요</span></span>
+      <span class="legend-item"><span class="member-label urgent">🚨 선생님이 즉각 접촉하는 것 필요</span><span class="legend-desc">담임·목사 직접 케어</span></span>
     </div>
     <div class="notice">
       이 페이지는 학생들에게 셀 편성을 안내하기 위한 공개용 페이지입니다. 자유롭게 공유 가능합니다.
@@ -700,7 +718,7 @@ const SUB_TEACHERS = {
 const LABELS = {
   new:     { text: '🆕 새신자',    title: '첫 출석한 신규 학생' },
   rejoin:  { text: '🔄 정규합류',  title: '장결자에서 정규 셀로 전환' },
-  urgent:  { text: '🚨 즉시접촉',  title: '담임·목사 직접 케어 필요' },
+  urgent:  { text: '🚨 선생님이 즉각 접촉하는 것 필요',  title: '담임·목사 직접 케어 필요' },
 };
 
 /* ========== 대가족반별 가족장 (홀수 소그룹반 담임이 겸임) ========== */
@@ -864,10 +882,11 @@ function escapeHtml(s) {
 function memberHtml(s) {
   const labelInfo = s.label ? LABELS[s.label] : null;
   const cardCls = labelInfo ? `member has-label-${s.label}` : 'member';
+  const genderCls = s.gender === '남' ? 'male' : 'female';
   return `
     <div class="${cardCls}">
       <span class="member-name">${escapeHtml(s.name)}</span>
-      <span class="gender">${escapeHtml(s.gender)}</span>
+      <span class="gender ${genderCls}">${escapeHtml(s.gender)}</span>
       <span class="grade-pill g${s.grade}">${s.grade}학년</span>
       ${labelInfo ? `<span class="member-label ${s.label}" title="${escapeHtml(labelInfo.title)}">${labelInfo.text}</span>` : ''}
     </div>

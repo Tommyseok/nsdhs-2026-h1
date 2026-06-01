@@ -75,8 +75,12 @@ SPECIAL = {
 LABEL_TEXT = {
     'new':    '[새]',
     'rejoin': '[합류]',
-    'urgent': '[즉시]',
+    'urgent': '[즉시접촉]',
 }
+
+# 성별 색상
+MALE_COLOR = colors.Color(0.118, 0.227, 0.541)   # 진한 파랑
+FEMALE_COLOR = colors.Color(0.514, 0.094, 0.262) # 진한 핑크
 
 FAMILY_TO_CELLS = {1:(1,2), 2:(3,4), 3:(5,6), 4:(7,8), 5:(9,10), 6:(11,12)}
 
@@ -86,43 +90,79 @@ def sort_students(students):
     return sorted(students, key=lambda s: (-s[1], s[0]))
 
 
-def fmt_students(students):
-    """학생 리스트 → '권하율(1남), 김은(1여)[새]'"""
-    result = []
-    for s in students:
-        # s는 (이름, 학년, 성별, 라벨) 또는 (이름, 학년, 성별)
-        n, g, x = s[0], s[1], s[2]
-        label = s[3] if len(s) > 3 else None
-        chip = f'{n}({g}{x})'
-        if label and label in LABEL_TEXT:
-            chip += LABEL_TEXT[label]
-        result.append(chip)
-    return result
+def chip_parts(s):
+    """학생 → (prefix, gender, suffix) 3 부분 분리
+    예: ('권하율(1', '남', ')') 또는 ('김재원(1', '남', ')[즉시접촉]')
+    """
+    n, g, x = s[0], s[1], s[2]
+    label = s[3] if len(s) > 3 else None
+    prefix = f'{n}({g}'
+    gender = x
+    suffix = ')'
+    if label and label in LABEL_TEXT:
+        suffix += LABEL_TEXT[label]
+    return prefix, gender, suffix
 
 
-def draw_wrapped_chips(c, items, x, y, max_w, font='Malgun', size=7.5, leading=9.5):
-    """학생 칩을 가로로 펼쳐 그리고, 폭 초과 시 줄바꿈."""
-    if not items:
+def chip_width(c, s, font, size):
+    prefix, gender, suffix = chip_parts(s)
+    return (c.stringWidth(prefix, font, size) +
+            c.stringWidth(gender, font, size) +
+            c.stringWidth(suffix, font, size))
+
+
+def draw_chip(c, s, x, y, font, size):
+    """학생 칩 하나 그리기. 성별만 색상 적용."""
+    prefix, gender, suffix = chip_parts(s)
+    c.setFillColor(colors.black)
+    c.drawString(x, y, prefix)
+    x += c.stringWidth(prefix, font, size)
+    if gender == '남':
+        c.setFillColor(MALE_COLOR)
+    else:
+        c.setFillColor(FEMALE_COLOR)
+    c.drawString(x, y, gender)
+    x += c.stringWidth(gender, font, size)
+    c.setFillColor(colors.black)
+    c.drawString(x, y, suffix)
+    return x + c.stringWidth(suffix, font, size)
+
+
+def draw_wrapped_chips(c, students, x, y, max_w, font='Malgun', size=7.5, leading=9.5):
+    """학생 리스트를 wrap하며 그림 (성별 색상 적용)."""
+    if not students:
         return y
     c.setFont(font, size)
     sep = ', '
     sep_w = c.stringWidth(sep, font, size)
-    line_items = []
+
+    line_students = []
     line_w = 0
     current_y = y
-    for item in items:
-        item_w = c.stringWidth(item, font, size)
-        add_w = item_w if not line_items else (sep_w + item_w)
-        if line_w + add_w > max_w and line_items:
-            c.drawString(x, current_y, sep.join(line_items))
+
+    def render_line(line, draw_y):
+        cx = x
+        for i, s in enumerate(line):
+            if i > 0:
+                c.setFillColor(colors.black)
+                c.drawString(cx, draw_y, sep)
+                cx += sep_w
+            cx = draw_chip(c, s, cx, draw_y, font, size)
+        c.setFillColor(colors.black)
+
+    for s in students:
+        w = chip_width(c, s, font, size)
+        add_w = w if not line_students else (sep_w + w)
+        if line_w + add_w > max_w and line_students:
+            render_line(line_students, current_y)
             current_y -= leading
-            line_items = [item]
-            line_w = item_w
+            line_students = [s]
+            line_w = w
         else:
-            line_items.append(item)
+            line_students.append(s)
             line_w += add_w
-    if line_items:
-        c.drawString(x, current_y, sep.join(line_items))
+    if line_students:
+        render_line(line_students, current_y)
         current_y -= leading
     return current_y
 
@@ -177,9 +217,8 @@ def draw_cell_section(c, x, y, w, h, cell_id, fam):
     c.setDash()
 
     # 학생 명단
-    items = fmt_students(students)
     student_y = sep_y - 3.2*mm
-    draw_wrapped_chips(c, items, x + pad, student_y, w - 2*pad, font='Malgun', size=7.5, leading=9.2)
+    draw_wrapped_chips(c, students, x + pad, student_y, w - 2*pad, font='Malgun', size=7.5, leading=9.2)
 
 
 def draw_special_section(c, x, y, w, h, fam):
@@ -201,9 +240,8 @@ def draw_special_section(c, x, y, w, h, fam):
     c.setFont('Malgun', 6.5)
     c.drawString(x + pad, top - 7*mm, '장기결석자 · 별도 교사 케어')
 
-    items = fmt_students(students)
     student_y = top - 10*mm
-    draw_wrapped_chips(c, items, x + pad, student_y, w - 2*pad, font='Malgun', size=7.5, leading=9.2)
+    draw_wrapped_chips(c, students, x + pad, student_y, w - 2*pad, font='Malgun', size=7.5, leading=9.2)
 
 
 def draw_family_box(c, x, y, w, h, fam):
@@ -327,7 +365,7 @@ def main():
     c.setFont('Malgun', 7)
     c.setFillColor(colors.grey)
     line1 = '* 학생 표기: 이름(학년+성별)  *Special: 장기결석자 회복 그룹 (목회자·별도 교사 케어)  *★ 가족장: 대가족반 리더'
-    line2 = '* 라벨:  [새] 새신자(첫 출석)   [합류] 정규합류(장결→정규)   [즉시] 즉시접촉(담임·목사 직접 케어 필요)'
+    line2 = '* 라벨:  [새] 새신자(첫 출석)   [합류] 정규합류(장결→정규)   [즉시접촉] 선생님이 즉각 접촉하는 것 필요'
     c.drawString(M, M + 4*mm, line1)
     c.drawString(M, M, line2)
     c.setFillColor(colors.black)
