@@ -238,9 +238,14 @@ def draw_special_section(c, x, y, w, h, fam):
     c.drawRightString(x + w - pad, top - 4*mm, f'{len(students)}명')
 
     c.setFont('Malgun', 6.5)
-    c.drawString(x + pad, top - 7*mm, '장기결석자 · 별도 교사 케어')
+    c.setFont('Malgun', 6)
+    note_line1 = '목회자/대가족 소속 교사가 특별케어'
+    note_line2 = '(처음 반 맡았을 때 반드시 연락)'
+    c.drawString(x + pad, top - 6.5*mm, note_line1)
+    c.drawString(x + pad, top - 9*mm, note_line2)
+    c.setFont('Malgun', 7.5)
 
-    student_y = top - 10*mm
+    student_y = top - 11.5*mm
     draw_wrapped_chips(c, students, x + pad, student_y, w - 2*pad, font='Malgun', size=7.5, leading=9.2)
 
 
