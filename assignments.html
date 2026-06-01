@@ -302,6 +302,20 @@
     background: rgba(244,114,182,.12);
     border: 1px solid rgba(244,114,182,.35);
   }
+  .att-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  .att-excellent { background: rgba(34,197,94,.15);  color: #86efac; border: 1px solid rgba(34,197,94,.45); }
+  .att-good      { background: rgba(132,204,22,.15); color: #bef264; border: 1px solid rgba(132,204,22,.45); }
+  .att-warn      { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.45); }
+  .att-poor      { background: rgba(249,115,22,.18); color: #fdba74; border: 1px solid rgba(249,115,22,.50); }
+  .att-absent    { background: rgba(239,68,68,.18);  color: #fca5a5; border: 1px solid rgba(239,68,68,.55); }
+  .att-new       { background: rgba(148,163,184,.18); color: #cbd5e1; border: 1px solid rgba(148,163,184,.40); }
   .member-label {
     font-size: 10px;
     font-weight: 700;
@@ -588,6 +602,20 @@
     }
     .gender.male { background: #dbeafe !important; color: #1e3a8a !important; border: 0.3pt solid #3b82f6 !important; }
     .gender.female { background: #fce7f3 !important; color: #831843 !important; border: 0.3pt solid #ec4899 !important; }
+
+    .att-pill {
+      font-size: 5.5pt !important;
+      padding: 0.2mm 1mm !important;
+      margin-left: 1mm !important;
+      border-width: 0.3pt !important;
+      font-weight: 700 !important;
+    }
+    .att-excellent { background: #d1fae5 !important; color: #064e3b !important; border-color: #10b981 !important; }
+    .att-good      { background: #ecfccb !important; color: #3f6212 !important; border-color: #84cc16 !important; }
+    .att-warn      { background: #fef3c7 !important; color: #78350f !important; border-color: #f59e0b !important; }
+    .att-poor      { background: #fed7aa !important; color: #7c2d12 !important; border-color: #f97316 !important; }
+    .att-absent    { background: #fecaca !important; color: #7f1d1d !important; border-color: #ef4444 !important; }
+    .att-new       { background: #e5e7eb !important; color: #374151 !important; border-color: #9ca3af !important; }
     .grade-pill {
       font-size: 5.5pt !important;
       padding: 0.2mm 1mm !important;
@@ -663,10 +691,19 @@
     <h1>🌱 내수동 고등부 2학기 편성 <span class="badge-public">공개용</span></h1>
     <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 6 Special · 총 85명 · 학생·학부모 공유용</div>
     <div class="legend-box">
-      <span class="legend-title">📌 라벨 안내</span>
-      <span class="legend-item"><span class="member-label new">🆕 새신자</span><span class="legend-desc">첫 출석한 신규 학생</span></span>
-      <span class="legend-item"><span class="member-label rejoin">🔄 정규합류</span><span class="legend-desc">장결자에서 정규 셀로 전환</span></span>
+      <span class="legend-title">📌 라벨</span>
+      <span class="legend-item"><span class="member-label new">🆕 새신자</span><span class="legend-desc">첫 출석</span></span>
+      <span class="legend-item"><span class="member-label rejoin">🔄 정규합류</span><span class="legend-desc">장결→정규</span></span>
       <span class="legend-item"><span class="member-label urgent">🚨 선생님이 즉각 접촉하는 것 필요</span><span class="legend-desc">담당 사역자 직접 케어</span></span>
+    </div>
+    <div class="legend-box">
+      <span class="legend-title">📊 1학기 출석률</span>
+      <span class="legend-item"><span class="att-pill att-excellent">90~100%</span><span class="legend-desc">매우 우수</span></span>
+      <span class="legend-item"><span class="att-pill att-good">70~89%</span><span class="legend-desc">양호</span></span>
+      <span class="legend-item"><span class="att-pill att-warn">40~69%</span><span class="legend-desc">저조</span></span>
+      <span class="legend-item"><span class="att-pill att-poor">20~39%</span><span class="legend-desc">위험</span></span>
+      <span class="legend-item"><span class="att-pill att-absent">0~19%</span><span class="legend-desc">장결</span></span>
+      <span class="legend-item"><span class="att-pill att-new">신규</span><span class="legend-desc">새 학생</span></span>
     </div>
     <div class="notice">
       이 페이지는 학생들에게 셀 편성을 안내하기 위한 공개용 페이지입니다. 자유롭게 공유 가능합니다.
@@ -720,6 +757,44 @@ const LABELS = {
   rejoin:  { text: '🔄 정규합류',  title: '장결자에서 정규 셀로 전환' },
   urgent:  { text: '🚨 선생님이 즉각 접촉하는 것 필요',  title: '담당 사역자 직접 케어 필요' },
 };
+
+/* ========== 학생 출석률 (1학기 6/21 기준, %) — null은 신규 ========== */
+const ATT = {
+  // 정규 셀
+  '권하율':89,'하은유':95,'홍기진':95,'서이수':100,'장지현':95,'김은':null,
+  '강은교':95,'명주원':95,'조인상':100,'연해준':100,'유나린':100,
+  '박지호':79,'한채은':100,'김라일':100,'안민혁':86,
+  '김준수':74,'원대연':95,'이준호':26,'오현우':100,'이빛가온':89,
+  '민예원':89,'김도연':89,'전지훈':26,'최지은':95,'김나현':0,'윤서희':null,
+  '조한나':95,'김한결':89,'이서후':84,'임태민':32,
+  '조강인':47,'이에녹':100,'최민호':null,'김정록':100,'정태율':95,
+  '심희은':100,'김은우':78,'최가은':74,'양소희':42,
+  '나정인':95,'주성':null,'곽지원':42,'양인혁':100,'김다은':84,'오은수':79,
+  '이주형':100,'유재희':89,'윤성하':78,'나호윤':100,'이소현':null,'배유나':5,
+  '최유현':84,'이가영':53,'최수지':100,'박동하':32,'송준원':17,
+  '정승빈':100,'김주하':47,'김채은':21,'박지웅':95,'김강은':100,
+  // Special
+  '고예나':11,'김민채':0,'송성모':0,'최승아':0,
+  '최지윤':0,'최서윤':0,'백결':5,'조혁준':0,
+  '김재원':0,'김유진':0,'김강희':0,'박서연':74,
+  '박시우':0,'하어림':0,'박진서':24,'임소명':24,
+  '오희수':16,'박민주':0,'장세민':22,'정원영':16,
+  '이서현':0,'이소민':11,'김도헌':5,'이하준':0,
+};
+
+/* 출석률 → 등급 */
+function attClass(att) {
+  if (att === null || att === undefined) return 'att-new';
+  if (att >= 90) return 'att-excellent';
+  if (att >= 70) return 'att-good';
+  if (att >= 40) return 'att-warn';
+  if (att >= 20) return 'att-poor';
+  return 'att-absent';
+}
+function attText(att) {
+  if (att === null || att === undefined) return '신규';
+  return `${att}%`;
+}
 
 /* ========== 대가족반별 가족장 (홀수 소그룹반 담임이 겸임) ========== */
 const FAMILY_LEADERS = {
@@ -883,11 +958,13 @@ function memberHtml(s) {
   const labelInfo = s.label ? LABELS[s.label] : null;
   const cardCls = labelInfo ? `member has-label-${s.label}` : 'member';
   const genderCls = s.gender === '남' ? 'male' : 'female';
+  const att = ATT[s.name];
   return `
     <div class="${cardCls}">
       <span class="member-name">${escapeHtml(s.name)}</span>
       <span class="gender ${genderCls}">${escapeHtml(s.gender)}</span>
       <span class="grade-pill g${s.grade}">${s.grade}학년</span>
+      <span class="att-pill ${attClass(att)}" title="1학기 출석률">${attText(att)}</span>
       ${labelInfo ? `<span class="member-label ${s.label}" title="${escapeHtml(labelInfo.title)}">${labelInfo.text}</span>` : ''}
     </div>
   `;
