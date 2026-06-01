@@ -280,11 +280,18 @@ def draw_special_section(c, x, y, w, h, fam):
 
 
 def draw_family_box(c, x, y, w, h, fam):
-    """대가족반 박스."""
-    # 외곽
-    c.setLineWidth(0.8)
+    """대가족반 박스 — 두꺼운 이중 테두리."""
+    # 외곽 (두꺼운 메인 테두리)
+    c.setLineWidth(1.8)
+    c.setStrokeColor(colors.HexColor('#4c1d95'))
     c.setDash()
     c.rect(x, y, w, h, stroke=1, fill=0)
+    # 내부 보조선 (얇은 가이드)
+    c.setLineWidth(0.3)
+    c.setStrokeColor(colors.HexColor('#c4b5fd'))
+    c.rect(x + 1*mm, y + 1*mm, w - 2*mm, h - 2*mm, stroke=1, fill=0)
+    # 색 복원
+    c.setStrokeColor(colors.black)
 
     pad = 2*mm
     top = y + h

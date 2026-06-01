@@ -71,13 +71,28 @@
 
   .family-section {
     margin-top: 28px;
+    border: 3px solid #6d28d9;
+    border-radius: 14px;
+    padding: 14px;
+    background: rgba(124, 58, 237, 0.04);
+    position: relative;
+  }
+  .family-section::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+    border-radius: 10px;
+    pointer-events: none;
   }
   .family-header {
     padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(167,139,250,.15) 0%, rgba(124,58,237,.10) 100%);
+    background: linear-gradient(135deg, rgba(167,139,250,.18) 0%, rgba(124,58,237,.12) 100%);
     border-left: 4px solid var(--accent);
     border-radius: 8px;
     margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
   }
   .family-header .family-title {
     display: flex;
@@ -141,6 +156,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
     gap: 16px;
+    position: relative;
+    z-index: 1;
   }
   .special-card {
     background: linear-gradient(180deg, rgba(249,115,22,.08) 0%, rgba(154,52,18,.05) 100%);
@@ -148,6 +165,8 @@
     border-radius: 12px;
     padding: 14px 16px;
     margin-top: 12px;
+    position: relative;
+    z-index: 1;
   }
   .special-head {
     display: flex;
@@ -470,10 +489,15 @@
       margin-top: 0 !important;
       page-break-inside: avoid;
       break-inside: avoid;
-      border: 0.5pt solid #cbd5e1 !important;
+      border: 1.2pt solid #4c1d95 !important;
       border-radius: 1.5mm !important;
       padding: 2mm !important;
-      background: #fff !important;
+      background: #faf5ff !important;
+    }
+    .family-section::before {
+      inset: 0.8mm !important;
+      border: 0.3pt solid #c4b5fd !important;
+      border-radius: 1mm !important;
     }
 
     /* 대가족 헤더 */
