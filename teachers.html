@@ -659,7 +659,7 @@ function logout() {
   location.href = location.pathname;
 }
 
-(function authorize() {
+function authorize() {
   const params = new URLSearchParams(location.search);
   const urlKey = params.get('key');
   const saved = localStorage.getItem('teacher_key');
@@ -672,7 +672,7 @@ function logout() {
   } else {
     showGate();
   }
-})();
+}
 
 /* ====================================================================
  * 1. 데이터 — 교사·셀편성
@@ -1573,6 +1573,11 @@ function render() {
     });
   });
 }
+
+/* ====================================================================
+ * 8. 부팅 — 데이터·렌더 함수가 모두 정의된 이후 인증 실행
+ * ==================================================================== */
+authorize();
 </script>
 
 </body>
