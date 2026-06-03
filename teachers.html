@@ -1,0 +1,1579 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>내수동 고등부 2학기 셀편성 (교사용 비공개) · 2026</title>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --card: #111827;
+    --border: #1f2937;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --accent: #a78bfa;
+    --homeroom: #fbbf24;
+    --sub: #38bdf8;
+    --grade1: #fbbf24;
+    --grade2: #60a5fa;
+    --grade3: #34d399;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --ok: #10b981;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+
+  /* ============== Gate (비밀번호 입력) ============== */
+  .gate {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+    background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%);
+  }
+  .gate-card {
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 14px;
+    padding: 30px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .gate-card h1 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #f1f5f9;
+  }
+  .gate-card .lock { font-size: 40px; margin-bottom: 12px; }
+  .gate-card p {
+    margin: 0 0 20px;
+    font-size: 13px;
+    color: #94a3b8;
+  }
+  .gate-card input {
+    width: 100%;
+    background: #0f172a;
+    color: #e5e7eb;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .gate-card input:focus {
+    outline: none;
+    border-color: #a78bfa;
+  }
+  .gate-card button {
+    width: 100%;
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .gate-card .gate-err {
+    color: #fca5a5;
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 16px;
+  }
+
+  /* ============== Header / Nav ============== */
+  header {
+    background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%);
+    padding: 20px 0 16px;
+    border-bottom: 2px solid var(--accent);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 20px;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  header .badge-private {
+    background: #dc2626;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  header .subtitle {
+    color: #c4b5fd;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .nav-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .nav-link {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #e2e8f0;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s;
+  }
+  .nav-link:hover { background: rgba(255,255,255,.15); }
+  .nav-link.relations { background: rgba(59,130,246,.18); border-color: rgba(59,130,246,.4); }
+  .nav-link.public { background: rgba(16,185,129,.18); border-color: rgba(16,185,129,.4); }
+  .nav-link.apply { background: rgba(245,158,11,.18); border-color: rgba(245,158,11,.4); }
+  .nav-link.logout { background: rgba(239,68,68,.18); border-color: rgba(239,68,68,.4); margin-left: auto; }
+
+  .notice-bar {
+    background: rgba(220,38,38,.10);
+    border-left: 3px solid #dc2626;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #fecaca;
+  }
+
+  /* ============== 대가족 / 셀 ============== */
+  .family-section {
+    margin-top: 24px;
+    border: 3px solid #6d28d9;
+    border-radius: 14px;
+    padding: 14px;
+    background: linear-gradient(180deg, rgba(91,33,182,0.18) 0%, rgba(76,29,149,0.12) 100%);
+    position: relative;
+  }
+  .family-header {
+    padding: 12px 16px;
+    background: #2e1065;
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .family-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .family-icon { font-size: 20px; }
+  .family-name {
+    font-size: 17px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: 0.3px;
+  }
+  .family-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .family-role-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 13px;
+  }
+  .role-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: #0b0f17;
+    flex-shrink: 0;
+  }
+  .role-label.leader { background: #f97316; }
+  .role-name {
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .role-note {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .cell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 14px;
+  }
+  .cell-card {
+    background: #0f172a;
+    border: 1px solid rgba(167,139,250,0.35);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  }
+  .cell-head {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(167,139,250,.06) 0%, transparent 100%);
+  }
+  .cell-name {
+    font-size: 17px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: 0.3px;
+  }
+  .cell-name .count {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 13px;
+    margin-left: 6px;
+  }
+  .teacher-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .teacher-row.homeroom {
+    background: rgba(251,191,36,.10);
+    border-left: 3px solid var(--homeroom);
+  }
+  .teacher-row.sub {
+    background: rgba(56,189,248,.10);
+    border-left: 3px solid var(--sub);
+    margin-top: 4px;
+  }
+  .teacher-row .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #0b0f17;
+    flex-shrink: 0;
+  }
+  .teacher-row.homeroom .label { background: var(--homeroom); }
+  .teacher-row.sub .label { background: var(--sub); }
+  .teacher-row .name {
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .teacher-row .name.tba {
+    color: var(--muted);
+    font-weight: 500;
+    font-style: italic;
+  }
+  .leader-badge {
+    margin-left: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    background: #f97316;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* ============== 학생 상세 카드 ============== */
+  .student-list {
+    padding: 10px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .student {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+  }
+  .student.has-urgent {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 1px rgba(239,68,68,.25);
+  }
+  .student.has-new {
+    border-color: #10b981;
+  }
+  .student.has-rejoin {
+    border-color: #f59e0b;
+  }
+  .student.split-violation {
+    border-color: #dc2626;
+    background: rgba(220,38,38,.06);
+  }
+  .student-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .student-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+  .pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .pill.gender-m {
+    color: #93c5fd;
+    background: rgba(96,165,250,.12);
+    border: 1px solid rgba(96,165,250,.35);
+  }
+  .pill.gender-f {
+    color: #fbcfe8;
+    background: rgba(244,114,182,.12);
+    border: 1px solid rgba(244,114,182,.35);
+  }
+  .pill.grade1 { background: var(--grade1); color: #0b0f17; }
+  .pill.grade2 { background: var(--grade2); color: #0b0f17; }
+  .pill.grade3 { background: var(--grade3); color: #0b0f17; }
+  .pill.att-excellent { background: rgba(34,197,94,.15);  color: #86efac; border: 1px solid rgba(34,197,94,.45); }
+  .pill.att-good      { background: rgba(132,204,22,.15); color: #bef264; border: 1px solid rgba(132,204,22,.45); }
+  .pill.att-warn      { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.45); }
+  .pill.att-poor      { background: rgba(249,115,22,.18); color: #fdba74; border: 1px solid rgba(249,115,22,.50); }
+  .pill.att-absent    { background: rgba(239,68,68,.18);  color: #fca5a5; border: 1px solid rgba(239,68,68,.55); }
+  .pill.att-new       { background: rgba(148,163,184,.18); color: #cbd5e1; border: 1px solid rgba(148,163,184,.40); }
+  .pill.label-new    { background: #065f46; color: #d1fae5; border: 1px solid #10b981; }
+  .pill.label-rejoin { background: #78350f; color: #fed7aa; border: 1px solid #f59e0b; }
+  .pill.label-urgent { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
+
+  .prev-row {
+    font-size: 12px;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+    padding: 4px 8px;
+    background: rgba(255,255,255,.03);
+    border-radius: 5px;
+    border-left: 2px solid #64748b;
+  }
+  .prev-row .prev-label {
+    color: #94a3b8;
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  .prev-row .prev-cell {
+    color: #fcd34d;
+    font-weight: 700;
+  }
+  .prev-row .prev-teacher {
+    color: #e5e7eb;
+  }
+
+  .notes {
+    margin-top: 6px;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .notes li {
+    font-size: 12.5px;
+    color: #e2e8f0;
+    line-height: 1.5;
+    padding-left: 14px;
+    position: relative;
+  }
+  .notes li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+  .notes li.alert {
+    color: #fecaca;
+  }
+  .notes li.alert::before {
+    color: #ef4444;
+  }
+  .notes li.school { color: #cbd5e1; }
+  .notes li.school::before { content: '🏫'; left: 0; }
+  .notes li.family { color: #cbd5e1; }
+  .notes li.family::before { content: '👨‍👩'; left: 0; }
+  .notes li.health { color: #fed7aa; }
+  .notes li.health::before { content: '⚠️'; left: 0; }
+  .notes li.spirit { color: #c4b5fd; }
+  .notes li.spirit::before { content: '✝️'; left: 0; }
+  .notes li.relation { color: #bae6fd; }
+  .notes li.relation::before { content: '🤝'; left: 0; }
+  .notes li.career { color: #d1fae5; }
+  .notes li.career::before { content: '🎯'; left: 0; }
+  .notes li.attend { color: #fde68a; }
+  .notes li.attend::before { content: '📅'; left: 0; }
+
+  .pair-warn {
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: rgba(220,38,38,.15);
+    border: 1px solid rgba(220,38,38,.4);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: #fca5a5;
+    font-weight: 600;
+  }
+  .pair-warn::before { content: '🚨 분리 페어 위반: '; }
+  .pair-keep {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: rgba(16,185,129,.10);
+    border: 1px solid rgba(16,185,129,.3);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: #6ee7b7;
+  }
+  .pair-keep::before { content: '✓ 유지 페어 매칭: '; }
+
+  /* Special card */
+  .special-card {
+    background: linear-gradient(180deg, #1c1410 0%, #1a0f08 100%);
+    border: 1px dashed rgba(251,146,60,.55);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 12px;
+    grid-column: 1 / -1;
+  }
+  .special-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed rgba(251,146,60,.4);
+  }
+  .special-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fdba74;
+  }
+  .special-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: #0b0f17;
+    background: #fb923c;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .special-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .special-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  /* TOC / 검색 */
+  .toc {
+    background: rgba(0,0,0,.3);
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .toc-label {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 700;
+  }
+  .toc-link {
+    background: #1e293b;
+    border: 1px solid #475569;
+    color: #cbd5e1;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .toc-link:hover {
+    background: #334155;
+    color: #f1f5f9;
+  }
+  .search-row {
+    margin: 14px 0 0;
+    display: flex;
+    gap: 8px;
+  }
+  .search-row input {
+    flex: 1;
+    background: #0f172a;
+    color: #e5e7eb;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .search-row input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .student.dim {
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .student.match {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  footer {
+    margin-top: 32px;
+    padding: 20px 0 28px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+  }
+  footer .church { color: #c4b5fd; font-weight: 600; margin-bottom: 4px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 17px; }
+    .cell-grid { grid-template-columns: 1fr; }
+    .nav-link { padding: 6px 10px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate-root"></div>
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <h1>🔒 내수동 고등부 2학기 셀편성
+        <span class="badge-private">🔐 교사용 비공개</span>
+      </h1>
+      <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 6 Special · 총 86명 · 학생별 케어 정보 포함</div>
+      <div class="nav-row">
+        <a class="nav-link relations" href="index.html" target="_blank">🕸 관계도</a>
+        <a class="nav-link public" href="assignments.html" target="_blank">🌱 공개용 편성표</a>
+        <a class="nav-link apply" href="cells.html" target="_blank">📝 부담임 지원</a>
+        <a class="nav-link logout" href="javascript:void(0)" onclick="logout()">🚪 로그아웃</a>
+      </div>
+      <div class="notice-bar">
+        ⚠️ <strong>이 페이지는 교사·사역자 전용 비공개입니다.</strong> 학생 가정·건강·심리 정보가 포함되어 있으니 외부 공유·캡처·재전송 금지. 학생·학부모에게는 공개용 편성표(상단 링크)만 안내해 주세요.
+      </div>
+      <div class="search-row">
+        <input id="search" type="search" placeholder="🔍 학생 이름 검색..." autocomplete="off">
+      </div>
+    </div>
+  </header>
+
+  <div class="container" id="root"></div>
+
+  <footer>
+    <div class="church">내수동교회 고등부 · 교사용</div>
+    <div>2026년 2학기 (6–8월) 편성 · 교사 비공개 v1</div>
+  </footer>
+</div>
+
+<script>
+/* ====================================================================
+ * 0. 비밀번호 게이트
+ * ==================================================================== */
+const PRIVATE_KEY = 'nsdhs2026t';
+
+function showGate(err) {
+  document.getElementById('app-root').style.display = 'none';
+  document.getElementById('gate-root').innerHTML = `
+    <div class="gate">
+      <div class="gate-card">
+        <div class="lock">🔐</div>
+        <h1>교사용 비공개 페이지</h1>
+        <p>이 페이지는 내수동 고등부 교사·사역자 전용입니다.<br>접근 키를 입력해 주세요.</p>
+        <input id="gate-input" type="password" placeholder="접근 키" autofocus>
+        <button onclick="checkGate()">접속</button>
+        <div class="gate-err">${err || ''}</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('gate-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkGate();
+  });
+}
+
+function checkGate() {
+  const v = document.getElementById('gate-input').value.trim();
+  if (v === PRIVATE_KEY) {
+    localStorage.setItem('teacher_key', v);
+    location.search = '?key=' + encodeURIComponent(v);
+  } else {
+    showGate('❌ 키가 일치하지 않습니다');
+  }
+}
+
+function logout() {
+  localStorage.removeItem('teacher_key');
+  location.href = location.pathname;
+}
+
+(function authorize() {
+  const params = new URLSearchParams(location.search);
+  const urlKey = params.get('key');
+  const saved = localStorage.getItem('teacher_key');
+  if (urlKey === PRIVATE_KEY) {
+    localStorage.setItem('teacher_key', urlKey);
+    document.getElementById('app-root').style.display = 'block';
+    render();
+  } else if (saved === PRIVATE_KEY) {
+    location.search = '?key=' + encodeURIComponent(saved);
+  } else {
+    showGate();
+  }
+})();
+
+/* ====================================================================
+ * 1. 데이터 — 교사·셀편성
+ * ==================================================================== */
+const HOMEROOM_TEACHERS = {
+  '소그룹반1': '이윤정', '소그룹반2': '정명경', '소그룹반3': '전성희',
+  '소그룹반4': '박대철', '소그룹반5': '이수지', '소그룹반6': '정유빈',
+  '소그룹반7': '양지현', '소그룹반8': '이유성', '소그룹반9': '오덕현',
+  '소그룹반10': '최희승', '소그룹반11': '석준원', '소그룹반12': '고은솔',
+};
+const SUB_TEACHERS = {
+  '소그룹반1': '이승헌', '소그룹반2': '조세경', '소그룹반3': '',
+  '소그룹반4': '김희원', '소그룹반5': '박해니', '소그룹반6': '',
+  '소그룹반7': '송진우', '소그룹반8': '이규리', '소그룹반9': '김주영',
+  '소그룹반10': '', '소그룹반11': '', '소그룹반12': '오은규',
+};
+const FAMILY_LEADERS = {
+  '대가족반1': { name: '이윤정', from: '소그룹반 1' },
+  '대가족반2': { name: '전성희', from: '소그룹반 3' },
+  '대가족반3': { name: '이수지', from: '소그룹반 5' },
+  '대가족반4': { name: '양지현', from: '소그룹반 7' },
+  '대가족반5': { name: '오덕현', from: '소그룹반 9' },
+  '대가족반6': { name: '석준원', from: '소그룹반 11' },
+};
+
+const LABELS = {
+  new:    { text: '🆕 새신자',    title: '첫 출석한 신규 학생' },
+  rejoin: { text: '🔄 정규합류',  title: '장결자에서 정규 셀로 전환' },
+  urgent: { text: '🚨 즉시접촉',  title: '담당 사역자 직접 케어 필요' },
+};
+
+/* ====================================================================
+ * 2. 출석률 (1학기 6/21 기준, %)
+ * ==================================================================== */
+const ATT = {
+  '권하율':89,'하은유':95,'홍기진':95,'서이수':100,'장지현':95,'김은':null,
+  '강은교':95,'명주원':95,'조인상':100,'연해준':100,'유나린':100,
+  '박지호':79,'한채은':100,'김라일':100,'안민혁':86,
+  '김준수':74,'원대연':95,'이준호':26,'오현우':100,'이빛가온':89,
+  '민예원':89,'김도연':89,'전지훈':26,'최지은':95,'김나현':0,'윤서희':null,
+  '조한나':95,'김한결':89,'이서후':84,'임태민':32,
+  '조강인':47,'이에녹':100,'최민호':null,'김정록':100,'정태율':95,
+  '심희은':100,'김은우':78,'최가은':74,'양소희':42,
+  '나정인':95,'주성':null,'곽지원':42,'양인혁':100,'김다은':84,'오은수':79,'박재영':null,
+  '이주형':100,'유재희':89,'윤성하':78,'나호윤':100,'이소현':null,'배유나':5,
+  '최유현':84,'이가영':53,'최수지':100,'박동하':32,'송준원':17,
+  '정승빈':100,'김주하':47,'김채은':21,'박지웅':95,'김강은':100,
+  '고예나':11,'김민채':0,'송성모':0,'최승아':0,
+  '최지윤':0,'최서윤':0,'백결':5,'조혁준':0,
+  '김재원':0,'김유진':0,'김강희':0,'박서연':74,
+  '박시우':0,'하어림':0,'박진서':24,'임소명':24,
+  '오희수':16,'박민주':0,'장세민':22,'정원영':16,
+  '이서현':0,'이소민':11,'김도헌':5,'이하준':0,
+};
+
+/* ====================================================================
+ * 3. 1학기 담임 정보 (학생 → 1학기 반·담임·부담임)
+ *    출처: 반편성_교사나눔_정리.md
+ * ==================================================================== */
+const PREV_INFO = {
+  // 01반 (전성희)
+  '이하준':{cell:'01반',h:'전성희',s:''},'이윤서':{cell:'01반',h:'전성희',s:''},
+  '김다은':{cell:'01반',h:'전성희',s:''},'나정인':{cell:'01반',h:'전성희',s:''},
+  '서이수':{cell:'01반',h:'전성희',s:''},'최승아':{cell:'01반',h:'전성희',s:''},
+  // 02반 (안강훈/조세경)
+  '나호윤':{cell:'02반',h:'안강훈',s:'조세경'},'안민혁':{cell:'02반',h:'안강훈',s:'조세경'},
+  '이주형':{cell:'02반',h:'안강훈',s:'조세경'},'박진서':{cell:'02반',h:'안강훈',s:'조세경'},
+  '임소명':{cell:'02반',h:'안강훈',s:'조세경'},
+  // 03반 (최희승/곽현)
+  '박민주':{cell:'03반',h:'최희승',s:'곽현'},'이빛가온':{cell:'03반',h:'최희승',s:'곽현'},
+  '이서후':{cell:'03반',h:'최희승',s:'곽현'},'김주하':{cell:'03반',h:'최희승',s:'곽현'},
+  '배유나':{cell:'03반',h:'최희승',s:'곽현'},'임태민':{cell:'03반',h:'최희승',s:'곽현'},
+  // 04반 (이윤정/정명경)
+  '김한결':{cell:'04반',h:'이윤정',s:'정명경'},'최수지':{cell:'04반',h:'이윤정',s:'정명경'},
+  '강은교':{cell:'04반',h:'이윤정',s:'정명경'},'연해준':{cell:'04반',h:'이윤정',s:'정명경'},
+  '원대연':{cell:'04반',h:'이윤정',s:'정명경'},
+  // 05반 (이수지)
+  '김재원':{cell:'05반',h:'이수지',s:''},'하은유':{cell:'05반',h:'이수지',s:''},
+  '김유진':{cell:'05반',h:'이수지',s:''},'민예원':{cell:'05반',h:'이수지',s:''},
+  '김도연':{cell:'05반',h:'이수지',s:''},'전지훈':{cell:'05반',h:'이수지',s:''},
+  // 06반 (이유성/김주영)
+  '오현우':{cell:'06반',h:'이유성',s:'김주영'},'하어림':{cell:'06반',h:'이유성',s:'김주영'},
+  '김나현':{cell:'06반',h:'이유성',s:'김주영'},'유재희':{cell:'06반',h:'이유성',s:'김주영'},
+  '이준호':{cell:'06반',h:'이유성',s:'김주영'},'홍기진':{cell:'06반',h:'이유성',s:'김주영'},
+  // 07반 (박진호/이승헌)
+  '송준원':{cell:'07반',h:'박진호',s:'이승헌'},'장지현':{cell:'07반',h:'박진호',s:'이승헌'},
+  '유나린':{cell:'07반',h:'박진호',s:'이승헌'},'이가영':{cell:'07반',h:'박진호',s:'이승헌'},
+  // 08반 (양지현/김광현)
+  '박시우':{cell:'08반',h:'양지현',s:'김광현'},'조한나':{cell:'08반',h:'양지현',s:'김광현'},
+  '최유현':{cell:'08반',h:'양지현',s:'김광현'},'김라일':{cell:'08반',h:'양지현',s:'김광현'},
+  '김채은':{cell:'08반',h:'양지현',s:'김광현'},'양소희':{cell:'08반',h:'양지현',s:'김광현'},
+  '최민호':{cell:'08반',h:'양지현',s:'김광현',note:'1학기 새신자로 합류 (태준이 친구)'},
+  // 09반 (이규리/오은규)
+  '박동하':{cell:'09반',h:'이규리',s:'오은규'},'오은수':{cell:'09반',h:'이규리',s:'오은규'},
+  '곽지원':{cell:'09반',h:'이규리',s:'오은규'},'박지호':{cell:'09반',h:'이규리',s:'오은규'},
+  '정원영':{cell:'09반',h:'이규리',s:'오은규'},'조인상':{cell:'09반',h:'이규리',s:'오은규'},
+  '주성':{cell:'09반',h:'이규리',s:'오은규',note:'1학기 새신자로 합류'},
+  // 10반 (박정향/정유빈)
+  '김강희':{cell:'10반',h:'박정향',s:'정유빈'},'박서연':{cell:'10반',h:'박정향',s:'정유빈'},
+  '박지웅':{cell:'10반',h:'박정향',s:'정유빈'},'백결':{cell:'10반',h:'박정향',s:'정유빈'},
+  '조강인':{cell:'10반',h:'박정향',s:'정유빈'},'조혁준':{cell:'10반',h:'박정향',s:'정유빈'},
+  // 11반 (우서현)
+  '고예나':{cell:'11반',h:'우서현',s:''},'김정록':{cell:'11반',h:'우서현',s:''},
+  '김민채':{cell:'11반',h:'우서현',s:''},'송성모':{cell:'11반',h:'우서현',s:''},
+  '양인혁':{cell:'11반',h:'우서현',s:''},'한채은':{cell:'11반',h:'우서현',s:''},
+  // 12반 (박대철/김희원)
+  '정태율':{cell:'12반',h:'박대철',s:'김희원'},'최지은':{cell:'12반',h:'박대철',s:'김희원'},
+  '김도헌':{cell:'12반',h:'박대철',s:'김희원'},'김준수':{cell:'12반',h:'박대철',s:'김희원'},
+  '정승빈':{cell:'12반',h:'박대철',s:'김희원'},'최지윤':{cell:'12반',h:'박대철',s:'김희원'},
+  // 13반 (오덕현)
+  '권하율':{cell:'13반',h:'오덕현',s:''},'김강은':{cell:'13반',h:'오덕현',s:''},
+  '명주원':{cell:'13반',h:'오덕현',s:''},'오희수':{cell:'13반',h:'오덕현',s:''},
+  '최가은':{cell:'13반',h:'오덕현',s:''},'최서윤':{cell:'13반',h:'오덕현',s:''},
+  // 14반 (석준원/고은솔)
+  '윤성하':{cell:'14반',h:'석준원',s:'고은솔'},'이서현':{cell:'14반',h:'석준원',s:'고은솔'},
+  '김은우':{cell:'14반',h:'석준원',s:'고은솔'},'심희은':{cell:'14반',h:'석준원',s:'고은솔'},
+  '이소민':{cell:'14반',h:'석준원',s:'고은솔'},'이에녹':{cell:'14반',h:'석준원',s:'고은솔'},
+  '장세민':{cell:'14반',h:'석준원',s:'고은솔'},
+  '이소현':{cell:'14반',h:'석준원',s:'고은솔',note:'1학기 새신자로 합류 (이소민 동생)'},
+  // 2학기 신규
+  '김은':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
+  '윤서희':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
+  '박재영':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
+};
+
+/* ====================================================================
+ * 4. 학생 상세 메모 (1학기 교사나눔 + 추가 업데이트)
+ *    type: alert(긴급), health(건강), school(학교), family(가족),
+ *          spirit(신앙), relation(관계), career(진로), attend(출석)
+ * ==================================================================== */
+const STUDENT_NOTES = {
+  /* ===== 대가족 1 ===== */
+  // 셀 1
+  '권하율':[
+    {t:'alert',  m:'🚨 시험기간 김밥천국 모임에서 손목 그을 정도의 위험 표현 → 자해 신호 지속 모니터링 필요'},
+    {t:'school', m:'대치동 거주 · 학업 스트레스 매우 심함'},
+    {t:'spirit', m:'공부 욕심·주관 뚜렷. 오덕현T 격려도 잘 안 먹혔음'},
+    {t:'relation', m:'대학부 헬퍼(이지향, 목동·대일고 출신·자퇴 경험) 본인이 같은 반 의향 → 1학기에 페어링 요청됨'},
+  ],
+  '하은유':[
+    {t:'spirit', m:'찬양팀·제자반. 다 잘하는 친구'},
+    {t:'attend', m:'출석 매우 우수 (95%)'},
+  ],
+  '홍기진':[
+    {t:'spirit', m:'하나님 존재는 느끼지만 확신은 모르겠다고 표현'},
+    {t:'relation', m:'⚠️ 김주영T와 친한 사이 — 진지한 얘기 끊는 역할. **김주영T 같은 반 지양**'},
+  ],
+  '서이수':[
+    {t:'health', m:'🚨 알레르기: 오징어'},
+    {t:'school', m:'홈스쿨링 출신 — 고등학교 자퇴한 아이들과는 다름 (초등부터 홈스쿨링)'},
+    {t:'family', m:'언니 이안이도 홈스쿨링으로 같이 생활. 언니는 현재 서울 대학교 근처 자취 중'},
+    {t:'spirit', m:'혼자서도 큐티 잘하고 신앙생활 잘 하려 함'},
+    {t:'family', m:'부모님도 신앙생활 우선 가치관 — 고등부 주일학교 관한 건 우선순위로 말씀하심'},
+    {t:'career', m:'논술 입시 스트레스 큼. 작년 학원 적응 X → 입시 과외로 시간관리 중'},
+  ],
+  '장지현':[
+    {t:'family', m:'장성현 동생'},
+    {t:'spirit', m:'내성적, 듣는 편. 출석 양호'},
+  ],
+  '김은':[
+    {t:'spirit', m:'🆕 2학기 신규 등록 — 첫 출석 신생'},
+    {t:'attend', m:'관찰 기간 — 라포 형성 우선'},
+  ],
+  // 셀 2
+  '강은교':[
+    {t:'alert',  m:'🚨 우울증 약 미성년자 최대치 복용 중. 텀 바뀌는 것 자체에 불안 큼'},
+    {t:'relation', m:'또래 트라우마(특히 동학년) 강함. 1·3학년에는 거부감 없음'},
+    {t:'spirit', m:'굉장히 똑똑·지적 욕구 강함. 책 좋아하고 말씀이 들어가면 열심히'},
+    {t:'relation', m:'✓ 연해준과 같은 반 본인 요청 (셀 2 매칭 ✓). 유나린(또래 여학생 1명) 매칭도 ✓'},
+    {t:'relation', m:'⚠️ 한미소와는 완전 절교 (미소가 차단) — 별도 셀 분리'},
+  ],
+  '명주원':[
+    {t:'school', m:'서울예고 바이올린 전공'},
+    {t:'spirit', m:'조용한 줄 알았는데 반 모임에서 말 많고 자기 얘기 잘 함'},
+    {t:'career', m:'특이 취미 — 히브리어 배우기, 이집트 상형문자'},
+  ],
+  '조인상':[
+    {t:'school', m:'대원여고. 출석 100%'},
+    {t:'spirit', m:'잘 견디는 성격 → 어디든 배치 가능'},
+    {t:'relation', m:'최승아(Sp1)와 친구 — 접촉점 유지'},
+    {t:'relation', m:'⚠️ 1학기에 곽지원과 매번 같은 반 → 본인 투덜 (2학기엔 다른 셀 ✓)'},
+    {t:'relation', m:'✓ 김준수 잘 다루는 편 — 인접 셀 배치 가능'},
+  ],
+  '연해준':[
+    {t:'alert',  m:'본인이 많이 지친 상태 (학년장·반장 등 책임 과중)'},
+    {t:'spirit', m:'찬양팀 싱어'},
+    {t:'family', m:'작년 누나(아영) 재수로 가족 분위기 어려웠음'},
+    {t:'relation', m:'⚠️ 전지훈과 5/17 싸움 — **차편·셀 분리 필수** (2학기에 셀 4 분리 ✓)'},
+    {t:'relation', m:'친구들 플러팅 자제 요청했다가 "왜 갑자기"라는 반응'},
+  ],
+  '유나린':[
+    {t:'spirit', m:'출석 100%. 내성적이지만 유연하게 품을 수 있는 성격'},
+    {t:'relation', m:'✓ 강은교가 수련회 때 인사해줘서 좋아함 — 셀 2에서 또래 여학생 역할 ✓'},
+  ],
+
+  /* ===== 대가족 2 ===== */
+  // 셀 3
+  '박지호':[
+    {t:'school', m:'이화여고. 출석 거의 없음'},
+  ],
+  '한채은':[
+    {t:'school', m:'김포고. 출석 100%'},
+    {t:'career', m:'스포츠/사관학교 진로 고민'},
+  ],
+  '김준수':[
+    {t:'family', m:'김주영(이전 06반 부담임) 동생'},
+    {t:'spirit', m:'1학기 소그룹에서 마음을 좀 엶 (장난 → 삶 나눔으로). 태율이에게 형으로서 조언하는 모습'},
+    {t:'relation', m:'⚠️ **김희원T와 안 맞음** — 잡으려는 타입. **분리 필수** (2학기 셀 3 분리 ✓)'},
+    {t:'relation', m:'⚠️ 양인혁과 동반 지각 페어 (빈도 줄어드는 중)'},
+    {t:'relation', m:'⚠️ 정승빈과 매번 같은 반 → 시끄러움. 분리 권장'},
+    {t:'relation', m:'✓ 조인상이 준수를 잘 다룸'},
+  ],
+  '김라일':[
+    {t:'family', m:'김윤일 동생'},
+    {t:'spirit', m:'⚠️ 모태신앙·오래 다녔지만 "나의 하나님 모르겠다" 솔직히 표현 — 솔직함은 긍정 신호'},
+    {t:'spirit', m:'GBS에서 적극적 모습. 밑바닥 알고 케어해줄 교사 필요'},
+  ],
+  '안민혁':[
+    {t:'family', m:'부모님과 가끔 결석'},
+  ],
+  // 셀 4
+  '원대연':[
+    {t:'alert',  m:'⚠️ 부모 이혼 과정에서 가정 폭력 경험 (아버지 → 어머니·본인)'},
+    {t:'family', m:'재정/돈에 대한 의식 강함. 가족에게 해주고 싶은 마음으로 공부 열심'},
+    {t:'spirit', m:'중등부 때 선생님·목사님 기도 안에서 자란 학생'},
+    {t:'relation', m:'카톡 답 2주 뒤 확인 등 산만함. 본인은 "기도제목 없다·좋아요"만 표현'},
+  ],
+  '이준호':[
+    {t:'school', m:'대원외고. 학원으로 결석 잦음 (일요일 학원)'},
+    {t:'attend', m:'카톡방·연락엔 잘 응답. 학기 초·방학엔 출석 양호 예상'},
+  ],
+  '전지훈':[
+    {t:'alert',  m:'⚠️ 5/17 "교회 안 가겠다" 통보 — 연해준과 싸움이 원인'},
+    {t:'school', m:'충암고'},
+    {t:'relation', m:'⚠️ **연해준과 차편·셀 분리 필수** (2학기 셀 4 분리 ✓)'},
+    {t:'relation', m:'✓ 이수지T와 카톡 라포 형성 — 1학기 담임. 일어나면 무조건 오려고 함'},
+  ],
+  '오현우':[
+    {t:'spirit', m:'⭐ 1학기 6반에서 유일하게 구원의 확신 표현'},
+    {t:'career', m:'학업 스트레스 있으나 건강하게 풀어내는 편'},
+  ],
+  '이빛가온':[
+    {t:'spirit', m:'⚠️ 너무 열심히 대답·반응함 → 한 텀 거의 "대답 담당"'},
+    {t:'relation', m:'또래끼리 어울리는 욕구 있음 → 본인이 대답을 덜해도 되는 반 권장'},
+  ],
+
+  /* ===== 대가족 3 ===== */
+  // 셀 5
+  '민예원':[
+    {t:'spirit', m:'신앙 고민 있음. 친해지는 데 시간 필요'},
+    {t:'family', m:'부모님과 이수지T 매주 소통'},
+    {t:'relation', m:'✓ 이수지T 반 유지 권장 (2학기 셀 5 유지 ✓)'},
+  ],
+  '김도연':[
+    {t:'school', m:'학교 반장. 반 모임에서 활달'},
+    {t:'relation', m:'예원과 친함 (어머니 부탁으로 같은 반 유지 요청)'},
+    {t:'relation', m:'⚠️ 이가영(셀 11)에게 상처 받은 경험 — 분리 ✓'},
+  ],
+  '최지은':[
+    {t:'family', m:'최가은(셀 8) 동생. 춘천 거주'},
+    {t:'attend', m:'예배·소그룹은 잘 옴. 시험기간 2주 결석'},
+    {t:'relation', m:'1학년 또래와 거리감 (찬양팀·전도부 등 출신 친구에 비해). 마음 여는 데 시간 필요, 약간 내성적'},
+    {t:'spirit', m:'2학기엔 1학년 여학생과 묶을 기회 권장됨'},
+  ],
+  '김나현':[
+    {t:'alert',  m:'🔄 1학기 거의 안 옴 → 장결. 2학기 정규 합류'},
+    {t:'school', m:'김도헌과 같은 학교'},
+    {t:'spirit', m:'"교회 안 나갈 것" 본인 표명 (1학기). 단톡방은 안 나감, 회피성 답변'},
+    {t:'relation', m:'김도헌(Sp6)을 통한 접촉 검토'},
+  ],
+  '윤서희':[
+    {t:'spirit', m:'🆕 2학기 신규 등록 — 첫 출석 신생'},
+    {t:'attend', m:'관찰 기간 — 라포 형성 우선'},
+  ],
+  // 셀 6
+  '조한나':[
+    {t:'school', m:'기독교 대안학교 다님 — 신앙 배경 있음'},
+    {t:'spirit', m:'⭐ 신앙 깊고 고민 깊음 → 어디 가도 잘 적응. 새 교사 반 도우미로 적합'},
+  ],
+  '김한결':[
+    {t:'alert',  m:'학업 스트레스 매우 심함'},
+    {t:'family', m:'형은 하나고 출신·재수 중. 어머니 교수님'},
+    {t:'spirit', m:'큐티/기도는 꾸준히 함'},
+    {t:'relation', m:'⚠️ F쌤(특정 교사) 동생과 초등 시절 갈등 — 같은 반 분리 요청'},
+  ],
+  '이서후':[
+    {t:'school', m:'세화여고. 공부/내신 스트레스 큼, 학교 옮기고 싶어함'},
+    {t:'attend', m:'예배 끝나고 카페로 공부하러 빠짐. 여름 수련회 안 간다는 얘기'},
+    {t:'relation', m:'또래와 어울리는 욕구 있음 → 1학년 또래 섞이는 반 권장'},
+  ],
+  '임태민':[
+    {t:'attend', m:'⚠️ 출석 저조 (1학기 32%) — 학원으로 결석 잦음, 공부 욕심 큼'},
+    {t:'spirit', m:'체육대회 때 가장 밝은 모습'},
+    {t:'relation', m:'간식 까다로움 (소시지·핫바 호불호). 무던하게 받아줄 교사 적합'},
+  ],
+  '박지웅':[
+    {t:'career', m:'보컬 전공'},
+    {t:'relation', m:'1남 페어 부족했던 셀 6으로 이동 — 김한결과 1남 페어 ✓'},
+  ],
+
+  /* ===== 대가족 4 ===== */
+  // 셀 7
+  '조강인':[
+    {t:'alert',  m:'⚠️ 농구 진로 위기 (점수제 평가 못 받음, 학교 옮기거나 유급 고려 중)'},
+    {t:'school', m:'용산고. 아버지가 유명 농구인 → 압박'},
+    {t:'health', m:'예배 때 무릎 아파함'},
+    {t:'spirit', m:'학교명은 본인이 아직 말 안 함 → 기도 요청'},
+  ],
+  '이에녹':[
+    {t:'school', m:'INFJ. 중앙고'},
+    {t:'relation', m:'⚠️ 결이 안 맞는 친구들과 함께면 정색 (동성애 얘기·장난에 민감)'},
+    {t:'spirit', m:'진중하게 조언·마음 읽어줄 교사 필요. 형들을 워낙 좋아함'},
+    {t:'relation', m:'✓ 석준원T와 케미 좋음 (학생들도 인정)'},
+    {t:'relation', m:'⚠️ **김희원T와는 서로 힘들어함** — 같은 반 X (2학기 셀 7로 분리 ✓)'},
+  ],
+  '최민호':[
+    {t:'spirit', m:'🆕 1학기 새신자 — 초신자, 복음을 알고 싶어하지만 못 알아듣는 부분 있음'},
+    {t:'relation', m:'어른들에게 잘함, 자기 얘기 잘 함, 감성적 (설교 듣고 울었다고 함)'},
+    {t:'attend', m:'수련회 카톡도 먼저 보냄. 태준이 친구'},
+    {t:'spirit', m:'⚠️ 다른 분으로 옮기지 말고 기존 담임이 이어서 인도 권장 (탐색 과정 반복 비효율)'},
+  ],
+  '김정록':[
+    {t:'attend', m:'출석 100%'},
+  ],
+  '정태율':[
+    {t:'career', m:'드럼. 체대 입시 시작·학원 다님'},
+    {t:'spirit', m:'말 걸면 잘 함, 장난 좋아함, 형들과 친함. 1학년 친구들과도 잘 어울림'},
+  ],
+  // 셀 8
+  '심희은':[
+    {t:'school', m:'덕성여고. 마이웨이·페이스 분명'},
+    {t:'spirit', m:'강남 집회 등 자주 참여, 부모님 지원. 본인을 몰아세우는 성향 있음 → 위로·격려 필요'},
+    {t:'health', m:'초콜릿 좋아하고 밥 잘 안 먹음'},
+  ],
+  '김은우':[
+    {t:'school', m:'덕성여고. 심희은 친구'},
+    {t:'spirit', m:'⚠️ 반응이 극과 극 ("열심히 해라" or "너무 예쁘다") — 그냥 사람 대 사람으로 대해줄 교사 필요. 격려가 절실'},
+  ],
+  '최가은':[
+    {t:'school', m:'춘천여고. 최지은(셀 5) 언니'},
+    {t:'attend', m:'출석 양호 (시험기간 결석)'},
+  ],
+  '양소희':[
+    {t:'family', m:'유아부 봉사 중이라 고등부에 잘 못 옴. 어머니가 교회 일로 늦게 옴'},
+    {t:'spirit', m:'⚠️ 모든 것이 불편. 친구 별로 없음, K 선생님을 피해다님'},
+    {t:'relation', m:'친구 1명이 옆에 붙어줄 수 있는 반 권장. (어린이날 선물 못 받음 → 다음 주 전달)'},
+  ],
+  '오은수':[
+    {t:'family', m:'오은규T 친동생'},
+    {t:'spirit', m:'⚠️ 중등부 때 힘들었음 → 중등부 또래·중등부 목사님 불편. 또래 여자애에게 말 거는 것도 싫어함'},
+    {t:'relation', m:'⚠️ **친언니 오은규T와 같은 반 원하지 않음** (이규리T 직접 확인) → 셀 12 부담임 오은규T와 분리됨 ✓'},
+    {t:'relation', m:'1학년 또래 여학생 1명 + 언니 1명 필요'},
+  ],
+
+  /* ===== 대가족 5 ===== */
+  // 셀 9
+  '나정인':[
+    {t:'family', m:'어머니 수술 마치고 외할머니가 집에 와 계심. 잘 지내는 중'},
+    {t:'family', m:'나호윤(셀 10) 누나'},
+    {t:'spirit', m:'⭐ 영적으로 안정 → 어디 가도 잘 적응'},
+  ],
+  '주성':[
+    {t:'spirit', m:'🆕 1학기 새신자로 합류 (최근 처음 옴)'},
+    {t:'relation', m:'✓ 곽지원·정원영·장세민과 친한 그룹 — 셀 9에 곽지원과 함께 배치 ✓'},
+  ],
+  '곽지원':[
+    {t:'spirit', m:'학기 초 걱정 → 1학기 회복세. 기도/큐티 강하게 권유했더니 따라옴'},
+    {t:'attend', m:'매주 출석. 카톡 댓글도 다는 중'},
+    {t:'relation', m:'⚠️ 1학기에 조인상과 매번 같은 반 → 본인 투덜. 2학기 분리 ✓'},
+    {t:'relation', m:'✓ 장세민·정원영·주성과 친한 그룹 — 둘둘 배치 (셀 9에 주성과 ✓, 정원영 Sp5)'},
+  ],
+  '양인혁':[
+    {t:'school', m:'영락고 위탁학교 (실용음악·재즈피아노)'},
+    {t:'relation', m:'⚠️ **김준수와 항상 동반 지각** 페어 — 빈도 줄어드는 중. **분리** (2학기 분리 ✓)'},
+  ],
+  '김다은':[
+    {t:'spirit', m:'신앙적 고민 지속 → "당연한 성화 과정"으로 받아들임. 출석 양호'},
+    {t:'career', m:'역사에 관심 많고 역사 쪽으로 진학 예정. 안산동산고등학교(모교)로 돌아가서 교사를 하는 것이 꿈'},
+    {t:'spirit', m:'⭐ 영적으로 안정 → 어디 가도 잘 적응'},
+  ],
+  '박재영':[
+    {t:'spirit', m:'🆕 2학기 신규 등록 — 1학년 남학생'},
+    {t:'attend', m:'관찰 기간 — 라포 형성 우선'},
+  ],
+  // 셀 10
+  '이주형':[
+    {t:'spirit', m:'큰 이슈 언급 없음 (1학기)'},
+  ],
+  '윤성하':[
+    {t:'spirit', m:'ENTP → INTP. 취향 맞는 대화에선 말 많아짐 (밴드·록·J-pop)'},
+    {t:'relation', m:'이소민 동생(이소현)과 밴드 얘기로 친해짐 — 셀 10에 함께 ✓. 분위기 맞춰줄 친구·교사 필요'},
+  ],
+  '나호윤':[
+    {t:'family', m:'나정인(셀 9) 동생. 큰 이슈 언급 없음 (1학기)'},
+  ],
+  '이소현':[
+    {t:'spirit', m:'🆕 1학기 새신자로 합류 — 이소민(Sp6) 동생'},
+    {t:'spirit', m:'"소그룹 재밌었다·다음에도 이 반?" 본인 요청'},
+    {t:'relation', m:'✓ 즐길 수 있는 반 권장. 윤성하와 밴드 얘기로 친해짐'},
+  ],
+  '배유나':[
+    {t:'attend', m:'🔄 1학기 거의 출석 못 함 (1~2번). 2학기 정규 합류'},
+    {t:'family', m:'입시 스트레스. 집에 다른 가족 출석자 없어서 혼자 옴 (학원·차편 등 장벽 多)'},
+  ],
+
+  /* ===== 대가족 6 ===== */
+  // 셀 11
+  '최유현':[
+    {t:'spirit', m:'텐션 높고 막내'},
+    {t:'relation', m:'스킨십 좋아함, 누군가 옆에 없으면 불안. 조용한 반에서는 잘 안 나옴 → 활발한 반 권장'},
+  ],
+  '이가영':[
+    {t:'school', m:'서울예고'},
+    {t:'relation', m:'⚠️ 본인 얘기 매우 많이 함 → 주변 또래(특히 김도연·이도윤) 싫어함'},
+    {t:'relation', m:'⚠️ 장문 카톡 보내서 상처 잘 줌 (뒤끝 김). 김도연과 분리 ✓'},
+    {t:'relation', m:'어린 남자 선생님 좋아함. 잘 들어주는 교사 필요 — 일대일 또는 일대이 적합'},
+  ],
+  '최수지':[
+    {t:'attend', m:'공부 스트레스 있으나 양호'},
+    {t:'spirit', m:'⚠️ "기도의 필요성을 잘 모르겠다"는 신앙 상태 — 신앙적 양육 필요'},
+  ],
+  '박동하':[
+    {t:'school', m:'⚠️ 기숙사 살아서 거의 못 옴 (출석 32%)'},
+  ],
+  '송준원':[
+    {t:'family', m:'송예원 동생'},
+    {t:'attend', m:'1학기엔 출석 양호, 말 걸면 잘 대답 (축구 등으로 가끔 결석)'},
+    {t:'relation', m:'1학기 7반에서 유일한 남학생 (누나들 사이) → 2학기엔 박동하와 같은 셀로 1남 페어 ✓'},
+  ],
+  // 셀 12
+  '정승빈':[
+    {t:'family', m:'정유빈T(현 셀 6 담임)·정효빈 동생. 효빈이 재수 → 본인도 부담'},
+    {t:'career', m:'⚠️ 고3 학업 스트레스'},
+    {t:'relation', m:'⚠️ 김준수와 같은 반 너무 자주 → 분리 ✓ (셀 12). 평온한 반이 더 적합'},
+  ],
+  '김주하':[
+    {t:'family', m:'⚠️ 부모님 다른 교회 출석. 집이 멀어서 매주 출석 어려움 (작은 교회 갔다가 돌아옴)'},
+    {t:'spirit', m:'얌전·소극적'},
+    {t:'attend', m:'차량 또는 동행 친구 확인 필요 (액션 아이템)'},
+  ],
+  '김채은':[
+    {t:'school', m:'이대부고. 공부 스트레스로 결석'},
+    {t:'spirit', m:'말 시키면 잘 함'},
+  ],
+  '유재희':[
+    {t:'school', m:'서울예고 미술전공'},
+    {t:'relation', m:'⚠️ 말 매우 많음 (한 번 마음 열면 본인 얘기 많이 함). 가영(셀 11)과 비슷한 유형이지만 상처는 덜 받는 편'},
+    {t:'family', m:'부모님 끌고 오지 않으면 안 올 것 같다고 본인이 표현'},
+  ],
+  '김강은':[
+    {t:'spirit', m:'찬양팀. 밝음, 출석 100% (1학기 13반)'},
+    {t:'relation', m:'한결과 분리 (사용자 요청). 2학기 셀 12 전원 여학생 환경'},
+  ],
+
+  /* ===== Special 1 ===== */
+  '고예나':[
+    {t:'school', m:'드와이트 외국인 학교. 이사로 출석 어려움'},
+  ],
+  '김민채':[
+    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
+  ],
+  '송성모':[
+    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
+  ],
+  '최승아':[
+    {t:'attend', m:'⚠️ 장기결석. 부모님 반대로 출석 못 함'},
+    {t:'relation', m:'조인상(셀 2) 친구 — 접촉점 유지'},
+  ],
+  /* ===== Special 2 ===== */
+  '최지윤':[
+    {t:'school', m:'상명고. 최서윤(Sp2) 쌍둥이'},
+    {t:'attend', m:'⚠️ 한 번도 출석 안 함 → 장결'},
+  ],
+  '최서윤':[
+    {t:'family', m:'최지윤(Sp2) 쌍둥이'},
+    {t:'attend', m:'출석 거의 없음'},
+  ],
+  '백결':[
+    {t:'attend', m:'⚠️ 일요일 학원으로 거의 못 옴'},
+  ],
+  '조혁준':[
+    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
+  ],
+  /* ===== Special 3 ===== */
+  '김재원':[
+    {t:'alert',  m:'🚨 즉시 접촉 필요 — 특별한 관심·사랑 필요'},
+    {t:'family', m:'어머니도 요즘 교회에 안 나오심'},
+  ],
+  '김유진':[
+    {t:'attend', m:'⚠️ 한 번도 출석 안 함. 연락도 안 받음 → 장기결석'},
+  ],
+  '김강희':[
+    {t:'family', m:'춘천 거주. 수련회 외 출석 어려움'},
+  ],
+  '박서연':[
+    {t:'family', m:'부모님과 인도네시아 선교'},
+  ],
+  /* ===== Special 4 ===== */
+  '박시우':[
+    {t:'alert',  m:'🚨 즉시 접촉 필요 — 발언 없음, 라포 형성부터'},
+  ],
+  '하어림':[
+    {t:'family', m:'현재 유학 중. 여름방학에 한국 들어옴 → 다음 텀 선생님이 만날 수 있음'},
+  ],
+  '박진서':[
+    {t:'career', m:'⚠️ 금융권 취업 준비. 출석 거의 안 함'},
+    {t:'relation', m:'3학년 학습/진로 케어가 가능한 교사 적합'},
+  ],
+  '임소명':[
+    {t:'career', m:'⚠️ 금융권 취업 준비. 출석 거의 안 함'},
+    {t:'relation', m:'3학년 학습/진로 케어가 가능한 교사 적합'},
+  ],
+  /* ===== Special 5 ===== */
+  '오희수':[
+    {t:'school', m:'정의여고. 출석 없음'},
+  ],
+  '박민주':[
+    {t:'attend', m:'발언 없음 (1학기)'},
+  ],
+  '장세민':[
+    {t:'school', m:'성동공고'},
+    {t:'relation', m:'⚠️ 반에서 가장 안 섞임. 카톡 보내면 가장 먼저 대답 (관심받으면 그 주에 나옴)'},
+    {t:'spirit', m:'은은한 관심을 가져주는 교사 필요'},
+    {t:'relation', m:'✓ 친한 친구 그룹: 곽지원·정원영·주성 (같은 대가족 5에 곽지원·주성·정원영 배치 ✓)'},
+  ],
+  '정원영':[
+    {t:'attend', m:'장기결석 (1학기)'},
+    {t:'relation', m:'✓ 곽지원·장세민·주성과 친한 그룹 — 대가족 5 내 배치 ✓'},
+  ],
+  /* ===== Special 6 ===== */
+  '이서현':[
+    {t:'family', m:'오빠 이지환. 늦잠 자는 경우 많음'},
+  ],
+  '이소민':[
+    {t:'school', m:'동화고. 집이 멀어서 아쉽지만 어디든 잘 적응'},
+    {t:'career', m:'밴드·J-pop 좋아함'},
+    {t:'family', m:'동생 이소현(셀 10)이 1학기 말 처음 옴'},
+  ],
+  '김도헌':[
+    {t:'spirit', m:'카톡 응답은 잘 함'},
+    {t:'attend', m:'⚠️ 학원 시간과 겹쳐 2번 정도만 출석 후 결석. 안 겹치면 나오려 함'},
+  ],
+  '이하준':[
+    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
+  ],
+};
+
+/* ====================================================================
+ * 5. 분리/유지 페어
+ * ==================================================================== */
+const SPLIT_PAIRS = [
+  ['전지훈','연해준','5/17 싸움, 차편도 분리'],
+  ['강은교','한미소','미소가 차단, 완전 절교'],
+  ['양인혁','김준수','동반 지각 페어'],
+  ['김준수','정승빈','시끄러움'],
+  ['이가영','김도연','가영의 장문 카톡으로 상처'],
+  ['오은수','오은규','본인 요청'],
+  ['곽지원','조인상','매번 같은 반 → 본인 투덜'],
+];
+const KEEP_PAIRS = [
+  ['민예원','이수지','신앙·관계 적응 시간 필요'],
+  ['전지훈','이수지','카톡 라포 형성됨'],
+  ['강은교','연해준','은교 본인 요청'],
+  ['강은교','유나린','수용해줄 또래'],
+  ['이에녹','석준원','케미 좋음'],
+  ['장세민','곽지원','친한 그룹'],
+  ['장세민','정원영','친한 그룹'],
+  ['장세민','주성','친한 그룹'],
+];
+
+/* ====================================================================
+ * 6. 편성 (assignments.html과 동일 데이터)
+ * ==================================================================== */
+const FAMILY_GROUPS = [
+  { name: "대가족반 1", cells: [
+    { name: "소그룹반 1", students: [
+      {name:"권하율", grade:1, gender:"남"},{name:"하은유", grade:1, gender:"여"},
+      {name:"홍기진", grade:2, gender:"남"},{name:"서이수", grade:3, gender:"여"},
+      {name:"장지현", grade:2, gender:"여"},{name:"김은", grade:1, gender:"여", label:'new'},
+    ]},
+    { name: "소그룹반 2", students: [
+      {name:"강은교", grade:2, gender:"여"},{name:"명주원", grade:3, gender:"남"},
+      {name:"조인상", grade:3, gender:"여"},{name:"연해준", grade:2, gender:"남"},
+      {name:"유나린", grade:2, gender:"여"},
+    ]},
+  ], special: { name: "Special 1", students: [
+    {name:"고예나", grade:1, gender:"여"},{name:"김민채", grade:3, gender:"여"},
+    {name:"송성모", grade:3, gender:"남"},{name:"최승아", grade:3, gender:"여"},
+  ]}},
+  { name: "대가족반 2", cells: [
+    { name: "소그룹반 3", students: [
+      {name:"박지호", grade:3, gender:"여"},{name:"한채은", grade:3, gender:"여"},
+      {name:"김준수", grade:3, gender:"남"},{name:"김라일", grade:2, gender:"남"},
+      {name:"안민혁", grade:1, gender:"남"},
+    ]},
+    { name: "소그룹반 4", students: [
+      {name:"원대연", grade:2, gender:"남"},{name:"이준호", grade:2, gender:"남"},
+      {name:"전지훈", grade:2, gender:"남"},{name:"오현우", grade:1, gender:"남"},
+      {name:"이빛가온", grade:1, gender:"남"},
+    ]},
+  ], special: { name: "Special 2", students: [
+    {name:"최지윤", grade:3, gender:"여"},{name:"최서윤", grade:3, gender:"여"},
+    {name:"백결",   grade:3, gender:"남"},{name:"조혁준", grade:3, gender:"남"},
+  ]}},
+  { name: "대가족반 3", cells: [
+    { name: "소그룹반 5", students: [
+      {name:"민예원", grade:2, gender:"여"},{name:"김도연", grade:2, gender:"여"},
+      {name:"최지은", grade:1, gender:"여"},
+      {name:"김나현", grade:2, gender:"여", label:'rejoin'},
+      {name:"윤서희", grade:2, gender:"여", label:'new'},
+    ]},
+    { name: "소그룹반 6", students: [
+      {name:"조한나", grade:1, gender:"여"},{name:"김한결", grade:1, gender:"남"},
+      {name:"이서후", grade:1, gender:"여"},{name:"임태민", grade:2, gender:"남"},
+      {name:"박지웅", grade:1, gender:"남"},
+    ]},
+  ], special: { name: "Special 3", students: [
+    {name:"김재원", grade:1, gender:"남", label:'urgent'},
+    {name:"김유진", grade:2, gender:"여"},{name:"김강희", grade:1, gender:"여"},
+    {name:"박서연", grade:1, gender:"여"},
+  ]}},
+  { name: "대가족반 4", cells: [
+    { name: "소그룹반 7", students: [
+      {name:"조강인", grade:3, gender:"남"},{name:"이에녹", grade:3, gender:"남"},
+      {name:"최민호", grade:2, gender:"남", label:'new'},
+      {name:"김정록", grade:1, gender:"남"},{name:"정태율", grade:1, gender:"남"},
+    ]},
+    { name: "소그룹반 8", students: [
+      {name:"심희은", grade:3, gender:"여"},{name:"김은우", grade:3, gender:"여"},
+      {name:"최가은", grade:3, gender:"여"},{name:"양소희", grade:2, gender:"여"},
+      {name:"오은수", grade:1, gender:"여"},
+    ]},
+  ], special: { name: "Special 4", students: [
+    {name:"박시우", grade:1, gender:"남", label:'urgent'},
+    {name:"하어림", grade:1, gender:"남"},{name:"박진서", grade:3, gender:"여"},
+    {name:"임소명", grade:3, gender:"여"},
+  ]}},
+  { name: "대가족반 5", cells: [
+    { name: "소그룹반 9", students: [
+      {name:"나정인", grade:3, gender:"여"},
+      {name:"주성",   grade:3, gender:"남", label:'new'},
+      {name:"곽지원", grade:3, gender:"남"},{name:"양인혁", grade:3, gender:"남"},
+      {name:"김다은", grade:3, gender:"여"},
+      {name:"박재영", grade:1, gender:"남", label:'new'},
+    ]},
+    { name: "소그룹반 10", students: [
+      {name:"이주형", grade:1, gender:"여"},{name:"윤성하", grade:1, gender:"남"},
+      {name:"나호윤", grade:1, gender:"남"},
+      {name:"이소현", grade:1, gender:"여", label:'new'},
+      {name:"배유나", grade:2, gender:"여", label:'rejoin'},
+    ]},
+  ], special: { name: "Special 5", students: [
+    {name:"오희수", grade:3, gender:"여"},{name:"박민주", grade:1, gender:"여"},
+    {name:"장세민", grade:3, gender:"남"},{name:"정원영", grade:3, gender:"남"},
+  ]}},
+  { name: "대가족반 6", cells: [
+    { name: "소그룹반 11", students: [
+      {name:"최유현", grade:1, gender:"여"},{name:"이가영", grade:2, gender:"여"},
+      {name:"최수지", grade:1, gender:"여"},{name:"박동하", grade:1, gender:"남"},
+      {name:"송준원", grade:1, gender:"남"},
+    ]},
+    { name: "소그룹반 12", students: [
+      {name:"정승빈", grade:3, gender:"여"},{name:"김주하", grade:2, gender:"여"},
+      {name:"김채은", grade:2, gender:"여"},{name:"유재희", grade:2, gender:"여"},
+      {name:"김강은", grade:1, gender:"여"},
+    ]},
+  ], special: { name: "Special 6", students: [
+    {name:"이서현", grade:1, gender:"여"},{name:"이소민", grade:3, gender:"여"},
+    {name:"김도헌", grade:3, gender:"남"},{name:"이하준", grade:1, gender:"남"},
+  ]}},
+];
+
+/* ====================================================================
+ * 7. 렌더링
+ * ==================================================================== */
+function attClass(att) {
+  if (att === null || att === undefined) return 'att-new';
+  if (att >= 90) return 'att-excellent';
+  if (att >= 70) return 'att-good';
+  if (att >= 40) return 'att-warn';
+  if (att >= 20) return 'att-poor';
+  return 'att-absent';
+}
+function attText(att) {
+  if (att === null || att === undefined) return '신규';
+  return `${att}%`;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/** 같은 그룹(셀+Special) 안에 있는 학생 이름 set 만들기 */
+function namesInGroup(family) {
+  const set = new Set();
+  family.cells.forEach(c => c.students.forEach(s => set.add(s.name)));
+  if (family.special) family.special.students.forEach(s => set.add(s.name));
+  return set;
+}
+
+function studentHtml(s, sameCellNames, splitWithinCell, keepWithinCell) {
+  const att = ATT[s.name];
+  const prev = PREV_INFO[s.name];
+  const notes = STUDENT_NOTES[s.name] || [];
+  const genderCls = s.gender === '남' ? 'gender-m' : 'gender-f';
+  const labelInfo = s.label ? LABELS[s.label] : null;
+  let cls = 'student';
+  if (s.label === 'urgent') cls += ' has-urgent';
+  else if (s.label === 'new') cls += ' has-new';
+  else if (s.label === 'rejoin') cls += ' has-rejoin';
+  if (splitWithinCell.length > 0) cls += ' split-violation';
+
+  let prevHtml = '';
+  if (prev) {
+    if (prev.cell) {
+      prevHtml = `
+        <div class="prev-row">
+          <span class="prev-label">1학기:</span>
+          <span class="prev-cell">${escapeHtml(prev.cell)}</span>
+          <span class="prev-teacher">담임 ${escapeHtml(prev.h)}${prev.s ? ` · 부담임 ${escapeHtml(prev.s)}` : ''}</span>
+          ${prev.note ? `<span style="color:#94a3b8"> · ${escapeHtml(prev.note)}</span>` : ''}
+        </div>
+      `;
+    } else {
+      prevHtml = `<div class="prev-row"><span class="prev-label">1학기:</span> <span style="color:#94a3b8">${escapeHtml(prev.note || '정보 없음')}</span></div>`;
+    }
+  }
+
+  const notesHtml = notes.map(n => `<li class="${escapeHtml(n.t)}">${escapeHtml(n.m)}</li>`).join('');
+
+  let warnHtml = '';
+  if (splitWithinCell.length > 0) {
+    warnHtml = `<div class="pair-warn">${splitWithinCell.map(p => `<strong>${escapeHtml(p.with)}</strong> (${escapeHtml(p.reason)})`).join(', ')}</div>`;
+  }
+  let keepHtml = '';
+  if (keepWithinCell.length > 0) {
+    keepHtml = `<div class="pair-keep">${keepWithinCell.map(p => `<strong>${escapeHtml(p.with)}</strong> (${escapeHtml(p.reason)})`).join(', ')}</div>`;
+  }
+
+  return `
+    <div class="${cls}" data-name="${escapeHtml(s.name)}">
+      <div class="student-head">
+        <span class="student-name">${escapeHtml(s.name)}</span>
+        <span class="pill ${genderCls}">${escapeHtml(s.gender)}</span>
+        <span class="pill grade${s.grade}">${s.grade}학년</span>
+        <span class="pill ${attClass(att)}">${attText(att)}</span>
+        ${labelInfo ? `<span class="pill label-${s.label}" title="${escapeHtml(labelInfo.title)}">${labelInfo.text}</span>` : ''}
+      </div>
+      ${prevHtml}
+      ${notes.length > 0 ? `<ul class="notes">${notesHtml}</ul>` : ''}
+      ${warnHtml}
+      ${keepHtml}
+    </div>
+  `;
+}
+
+/** 셀/Special 내부에서 분리·유지 페어 검사 (학생 기준) */
+function pairsForStudent(name, sameCellNames) {
+  const splits = SPLIT_PAIRS
+    .filter(p => (p[0]===name && sameCellNames.has(p[1])) || (p[1]===name && sameCellNames.has(p[0])))
+    .map(p => ({with: p[0]===name ? p[1] : p[0], reason: p[2]}));
+  const keeps = KEEP_PAIRS
+    .filter(p => (p[0]===name && sameCellNames.has(p[1])) || (p[1]===name && sameCellNames.has(p[0])))
+    .map(p => ({with: p[0]===name ? p[1] : p[0], reason: p[2]}));
+  return {splits, keeps};
+}
+
+function cellHtml(cell, familyId, sameCellNames) {
+  const cellId = cell.name.replace(/\s/g,'');
+  const homeroom = HOMEROOM_TEACHERS[cellId] || '';
+  const sub = SUB_TEACHERS[cellId] || '';
+  const leader = FAMILY_LEADERS[familyId];
+  const isLeaderCell = leader && leader.name === homeroom;
+  const sorted = cell.students.slice().sort((a,b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  // 셀 내부 학생 이름 set
+  const cellNames = new Set(cell.students.map(s => s.name));
+
+  return `
+    <div class="cell-card">
+      <div class="cell-head">
+        <div class="cell-name">${escapeHtml(cell.name)}<span class="count">${cell.students.length}명</span></div>
+        <div class="teacher-row homeroom">
+          <span class="label">담임</span>
+          ${homeroom
+            ? `<span class="name">${escapeHtml(homeroom)}</span>${isLeaderCell ? '<span class="leader-badge">🌟 대가족장</span>' : ''}`
+            : `<span class="name tba">미정</span>`}
+        </div>
+        <div class="teacher-row sub">
+          <span class="label">부담임</span>
+          ${sub ? `<span class="name">${escapeHtml(sub)}</span>` : `<span class="name tba">미정</span>`}
+        </div>
+      </div>
+      <div class="student-list">
+        ${sorted.map(s => {
+          const {splits, keeps} = pairsForStudent(s.name, cellNames);
+          return studentHtml(s, cellNames, splits, keeps);
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function specialHtml(special, familyId) {
+  if (!special || !special.students || special.students.length === 0) return '';
+  const sorted = special.students.slice().sort((a,b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  const cellNames = new Set(special.students.map(s => s.name));
+  return `
+    <div class="special-card">
+      <div class="special-head">
+        <span class="special-tag">SPECIAL</span>
+        <span class="special-name">${escapeHtml(special.name)}</span>
+        <span class="special-meta">${special.students.length}명</span>
+      </div>
+      <div class="special-note">목회자/대가족 소속 교사가 특별케어 (처음 반 맡았을 때 반드시 연락)</div>
+      <div class="student-list">
+        ${sorted.map(s => {
+          const {splits, keeps} = pairsForStudent(s.name, cellNames);
+          return studentHtml(s, cellNames, splits, keeps);
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function familyHtml(family) {
+  const familyId = family.name.replace(/\s/g,'');
+  const regularCount = family.cells.reduce((sum, c) => sum + c.students.length, 0);
+  const specialCount = family.special ? family.special.students.length : 0;
+  const total = regularCount + specialCount;
+  const leader = FAMILY_LEADERS[familyId];
+  const sameCellNames = namesInGroup(family);
+  const metaParts = [`${family.cells.length}개 소그룹반`];
+  if (family.special) metaParts.push('Special 1개');
+  metaParts.push(`총 ${total}명`);
+  return `
+    <section class="family-section" id="${familyId}">
+      <div class="family-header">
+        <div class="family-title">
+          <span class="family-icon">👨‍👩‍👧‍👦</span>
+          <span class="family-name">${escapeHtml(family.name)}</span>
+          <span class="family-meta">${metaParts.join(' · ')}</span>
+        </div>
+        ${leader ? `
+          <div class="family-role-row">
+            <span class="role-label leader">🌟 대가족장</span>
+            <span class="role-name">${escapeHtml(leader.name)}</span>
+            <span class="role-note">(${escapeHtml(leader.from)} 담임 겸임)</span>
+          </div>
+        ` : ''}
+      </div>
+      <div class="cell-grid">
+        ${family.cells.map(c => cellHtml(c, familyId, sameCellNames)).join('')}
+        ${specialHtml(family.special, familyId)}
+      </div>
+    </section>
+  `;
+}
+
+function tocHtml() {
+  return `
+    <div class="toc">
+      <span class="toc-label">📍 빠른 이동</span>
+      ${FAMILY_GROUPS.map(f => {
+        const id = f.name.replace(/\s/g,'');
+        return `<a class="toc-link" href="#${id}">${escapeHtml(f.name)}</a>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function render() {
+  const root = document.getElementById('root');
+  root.innerHTML = tocHtml() + FAMILY_GROUPS.map(familyHtml).join('');
+
+  // 검색
+  const search = document.getElementById('search');
+  search.addEventListener('input', () => {
+    const q = search.value.trim();
+    const all = root.querySelectorAll('.student');
+    if (!q) {
+      all.forEach(el => { el.classList.remove('dim'); el.classList.remove('match'); });
+      return;
+    }
+    all.forEach(el => {
+      const name = el.getAttribute('data-name') || '';
+      if (name.includes(q)) {
+        el.classList.add('match');
+        el.classList.remove('dim');
+      } else {
+        el.classList.remove('match');
+        el.classList.add('dim');
+      }
+    });
+  });
+}
+</script>
+
+</body>
+</html>
