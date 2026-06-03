@@ -67,7 +67,7 @@
   .group-block { background: rgba(30,41,59,.55); border: 1px solid #334155; border-radius: 10px; padding: 12px; margin-bottom: 12px; position: relative; z-index: 2; }
   .group-title { font-size: 13px; font-weight: 700; color: #fbbf24; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .group-title .count { background: #334155; color: #cbd5e1; font-size: 10px; padding: 2px 7px; border-radius: 9px; font-weight: 400; }
-  .group-title .sub { color: #64748b; font-size: 11px; font-weight: 400; }
+  .group-title .sub { color: #cbd5e1; font-size: 11px; font-weight: 500; background: rgba(124,58,237,.15); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(167,139,250,.25); }
   .card-grid { display: flex; flex-wrap: wrap; gap: 8px; }
   .card { background: #1e293b; border: 2px solid transparent; border-radius: 10px; padding: 9px 11px; min-width: 140px; cursor: pointer; transition: all .15s; position: relative; touch-action: manipulation; overflow: hidden; }
   .card:active { transform: scale(0.97); }
@@ -811,6 +811,50 @@ function termField() { return TERM_CONFIG[CURRENT_TERM].field; }
 function termFieldOf(p) { const f = termField(); return p[f] || p.cls; }
 function termOrder() { return TERM_CONFIG[CURRENT_TERM].order; }
 function termLabel(c) { return TERM_CONFIG[CURRENT_TERM].label(c); }
+
+/* ===== 반/셀 → 담임/부담임 매핑 ===== */
+const TEACHERS_H1 = {
+  '01': {h:'전성희', s:''},
+  '02': {h:'안강훈', s:'조세경'},
+  '03': {h:'최희승', s:'곽현'},
+  '04': {h:'이윤정', s:'정명경'},
+  '05': {h:'이수지', s:''},
+  '06': {h:'이유성', s:'김주영'},
+  '07': {h:'박진호', s:'이승헌'},
+  '08': {h:'양지현', s:'김광현'},
+  '09': {h:'이규리', s:'오은규'},
+  '10': {h:'박정향', s:'정유빈'},
+  '11': {h:'우서현', s:''},
+  '12': {h:'박대철', s:'김희원'},
+  '13': {h:'오덕현', s:''},
+  '14': {h:'석준원', s:'고은솔'},
+};
+const TEACHERS_H2 = {
+  '셀01': {h:'이윤정', s:'이승헌'},
+  '셀02': {h:'정명경', s:'조세경'},
+  '셀03': {h:'전성희', s:''},
+  '셀04': {h:'박대철', s:'김희원'},
+  '셀05': {h:'이수지', s:'박해니'},
+  '셀06': {h:'정유빈', s:''},
+  '셀07': {h:'양지현', s:'송진우'},
+  '셀08': {h:'이유성', s:'이규리'},
+  '셀09': {h:'오덕현', s:'김주영'},
+  '셀10': {h:'최희승', s:''},
+  '셀11': {h:'석준원', s:''},
+  '셀12': {h:'고은솔', s:'오은규'},
+};
+function termTeachers(c) {
+  const map = CURRENT_TERM === 'h1' ? TEACHERS_H1 : TEACHERS_H2;
+  return map[c] || null;
+}
+function termSub(c) {
+  const t = termTeachers(c);
+  if (!t) return '';
+  const parts = [];
+  if (t.h) parts.push(`담임 ${t.h}`);
+  if (t.s) parts.push(`부담임 ${t.s}`);
+  return parts.join(' · ');
+}
 function setTerm(t) {
   if (CURRENT_TERM === t) return;
   CURRENT_TERM = t;
@@ -952,7 +996,8 @@ function buildIndexInto(containerId, view) {
     const wrap = document.createElement('div'); wrap.className='index-class';
     const head = document.createElement('div'); head.className='index-class-header';
     const headLabel = view==='class' ? termLabel(g) : view==='grade' ? (g==='T'?'교사':g+'학년') : '전체';
-    head.innerHTML = `<span>${headLabel}</span><span class="count">${items.length}</span>`;
+    const headSub = view==='class' ? termSub(g) : '';
+    head.innerHTML = `<span>${headLabel}${headSub?` <span style="color:#94a3b8;font-weight:400;font-size:9.5px;">${headSub}</span>`:''}</span><span class="count">${items.length}</span>`;
     wrap.appendChild(head);
     const list = document.createElement('div'); list.className='index-class-list';
     items.forEach(it => {
@@ -990,7 +1035,7 @@ function buildGroups() {
     co.forEach(c => {
       let items = all.filter(p => termFieldOf(p) === c);
       if (c === '국장단') items.sort((a,b) => positionRank(a) - positionRank(b));
-      if (items.length) blocks.push({ title: termLabel(c), items, sub:'' });
+      if (items.length) blocks.push({ title: termLabel(c), items, sub: termSub(c) });
     });
   } else if (state.mode === 'grade') {
     [['T','교사'],['1','1학년'],['2','2학년'],['3','3학년']].forEach(([k, label]) => {
