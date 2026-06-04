@@ -302,6 +302,159 @@
     color: #c4b5fd;
   }
 
+  /* ============== Share Tab (학생 공유용 — 간략) ============== */
+  .share-banner {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(16,185,129,.12) 0%, rgba(5,150,105,.08) 100%);
+    border: 1px solid rgba(16,185,129,.3);
+    border-radius: 10px;
+    font-size: 13px;
+    color: #d1fae5;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .share-banner strong { color: #6ee7b7; }
+  .share-banner .copy-all {
+    margin-left: auto;
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .share-banner .copy-all:hover { background: #059669; }
+  .share-card {
+    background: #0f172a;
+    border: 1px solid rgba(167,139,250,0.25);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 0;
+  }
+  .share-card .share-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .share-card .share-cell-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+  .share-card .share-cell-count {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+  .share-card .share-teachers {
+    font-size: 12px;
+    color: #c4b5fd;
+    font-weight: 600;
+    margin-left: auto;
+    background: rgba(124,58,237,.15);
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(167,139,250,.3);
+  }
+  .share-students {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .share-student {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    background: rgba(255,255,255,.02);
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  .share-student .sname {
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .share-student .sgrade {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #0b0f17;
+  }
+  .share-student .sgrade.g1 { background: #fbbf24; }
+  .share-student .sgrade.g2 { background: #60a5fa; }
+  .share-student .sgrade.g3 { background: #34d399; }
+  .share-student .sgender {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .share-student .sgender.male {
+    color: #93c5fd;
+    background: rgba(96,165,250,.12);
+    border: 1px solid rgba(96,165,250,.35);
+  }
+  .share-student .sgender.female {
+    color: #fbcfe8;
+    background: rgba(244,114,182,.12);
+    border: 1px solid rgba(244,114,182,.35);
+  }
+  .share-family-section {
+    margin-top: 20px;
+    padding: 14px;
+    border: 2px solid rgba(124,58,237,.4);
+    border-radius: 12px;
+    background: rgba(76,29,149,.08);
+  }
+  .share-family-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #c4b5fd;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    background: rgba(124,58,237,.18);
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .share-cell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+  }
+  .copy-cell-btn {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    color: #94a3b8;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-left: 6px;
+  }
+  .copy-cell-btn:hover {
+    background: rgba(255,255,255,.10);
+    color: #e2e8f0;
+  }
+  .copy-cell-btn.copied {
+    background: #10b981;
+    color: #fff;
+    border-color: #10b981;
+  }
+
   /* ============== 대가족 / 셀 ============== */
   .family-section {
     margin-top: 24px;
@@ -740,12 +893,14 @@
       <div class="tab-bar">
         <button class="tab-btn active" data-tab="care" onclick="switchTab('care')">📋 셀편성 · 케어 메모</button>
         <button class="tab-btn" data-tab="contact" onclick="switchTab('contact')">📞 연락처 · 가족 정보</button>
+        <button class="tab-btn" data-tab="share" onclick="switchTab('share')">🌱 학생 공유용 (간략)</button>
       </div>
     </div>
   </header>
 
   <div class="container" id="root"></div>
   <div class="container" id="root-contact" style="display:none"></div>
+  <div class="container" id="root-share" style="display:none"></div>
 
   <footer>
     <div class="church">내수동교회 고등부 · 교사용</div>
@@ -1942,16 +2097,159 @@ function renderContact() {
 }
 
 /* ====================================================================
+ * 7-D. Share 탭 렌더링 (학생 공유용 — 이름·학년·성별·담임·부담임)
+ * ==================================================================== */
+function shareStudentHtml(s) {
+  const genderCls = s.gender === '남' ? 'male' : 'female';
+  return `
+    <div class="share-student">
+      <span class="sname">${escapeHtml(s.name)}</span>
+      <span class="sgrade g${s.grade}">${s.grade}학년</span>
+      <span class="sgender ${genderCls}">${escapeHtml(s.gender)}</span>
+    </div>
+  `;
+}
+
+function shareCellHtml(cell, familyId) {
+  const cellId = cell.name.replace(/\s/g,'');
+  const homeroom = HOMEROOM_TEACHERS[cellId] || '';
+  const sub = SUB_TEACHERS[cellId] || '';
+  const leader = FAMILY_LEADERS[familyId];
+  const isLeaderCell = leader && leader.name === homeroom;
+  const sorted = cell.students.slice().sort((a,b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  const teacherText = homeroom + (isLeaderCell ? '🌟' : '') + (sub ? ` · ${sub}` : '');
+  const copyId = 'copy-' + cellId;
+  return `
+    <div class="share-card" data-copy-target="${copyId}">
+      <div class="share-head">
+        <span class="share-cell-name">${escapeHtml(cell.name)}</span>
+        <span class="share-cell-count">${cell.students.length}명</span>
+        <span class="share-teachers" title="담임 · 부담임">${escapeHtml(teacherText)}</span>
+        <button class="copy-cell-btn" onclick="copyCellText(this, ${JSON.stringify(cell.name).replace(/"/g,'&quot;')}, ${JSON.stringify(homeroom).replace(/"/g,'&quot;')}, ${JSON.stringify(sub).replace(/"/g,'&quot;')}, ${JSON.stringify(sorted).replace(/"/g,'&quot;')})">📋 복사</button>
+      </div>
+      <div class="share-students" id="${copyId}">
+        ${sorted.map(shareStudentHtml).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function shareSpecialHtml(special, familyId) {
+  if (!special || !special.students || special.students.length === 0) return '';
+  const sorted = special.students.slice().sort((a,b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  const copyId = 'copy-' + special.name.replace(/\s/g,'');
+  return `
+    <div class="share-card" style="border-color: rgba(251,146,60,.4)">
+      <div class="share-head">
+        <span class="share-cell-name" style="color:#fdba74">${escapeHtml(special.name)}</span>
+        <span class="share-cell-count">${special.students.length}명</span>
+        <button class="copy-cell-btn" onclick="copyCellText(this, ${JSON.stringify(special.name).replace(/"/g,'&quot;')}, '', '', ${JSON.stringify(sorted).replace(/"/g,'&quot;')})">📋 복사</button>
+      </div>
+      <div class="share-students" id="${copyId}">
+        ${sorted.map(shareStudentHtml).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function shareFamilyHtml(family) {
+  const familyId = family.name.replace(/\s/g,'');
+  const regularCount = family.cells.reduce((sum, c) => sum + c.students.length, 0);
+  const specialCount = family.special ? family.special.students.length : 0;
+  const total = regularCount + specialCount;
+  return `
+    <section class="share-family-section">
+      <div class="share-family-title">👨‍👩‍👧‍👦 ${escapeHtml(family.name)} · 총 ${total}명</div>
+      <div class="share-cell-grid">
+        ${family.cells.map(c => shareCellHtml(c, familyId)).join('')}
+        ${shareSpecialHtml(family.special, familyId)}
+      </div>
+    </section>
+  `;
+}
+
+function shareBannerHtml() {
+  return `
+    <div class="share-banner">
+      <strong>🌱 학생 공유용</strong> 이름 · 학년 · 성별 · 담임 · 부담임만 표시합니다. (출석률·메모·연락처 비공개)
+      <button class="copy-all" onclick="copyAllShare()">📋 전체 복사 (텍스트)</button>
+    </div>
+  `;
+}
+
+function plainTextForCell(cellName, homeroom, sub, students) {
+  const teacherLine = homeroom ? `담임 ${homeroom}${sub ? ` · 부담임 ${sub}` : ''}` : '';
+  const lines = [`[${cellName}]`];
+  if (teacherLine) lines.push(teacherLine);
+  students.forEach(s => lines.push(`• ${s.name} (${s.grade}학년 ${s.gender})`));
+  return lines.join('\n');
+}
+
+function copyCellText(btn, cellName, homeroom, sub, students) {
+  const text = plainTextForCell(cellName, homeroom, sub, students);
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+  }).catch(() => alert('복사 실패 — 브라우저 권한을 확인하세요'));
+}
+
+function copyAllShare() {
+  const lines = [];
+  FAMILY_GROUPS.forEach(family => {
+    const total = family.cells.reduce((sum, c) => sum + c.students.length, 0)
+                + (family.special ? family.special.students.length : 0);
+    lines.push('');
+    lines.push(`===== ${family.name} (총 ${total}명) =====`);
+    family.cells.forEach(cell => {
+      const cellId = cell.name.replace(/\s/g,'');
+      const homeroom = HOMEROOM_TEACHERS[cellId] || '';
+      const sub = SUB_TEACHERS[cellId] || '';
+      const sorted = cell.students.slice().sort((a,b) => a.grade !== b.grade ? b.grade - a.grade : a.name.localeCompare(b.name, 'ko'));
+      lines.push('');
+      lines.push(plainTextForCell(cell.name, homeroom, sub, sorted));
+    });
+    if (family.special) {
+      const sorted = family.special.students.slice().sort((a,b) => a.grade !== b.grade ? b.grade - a.grade : a.name.localeCompare(b.name, 'ko'));
+      lines.push('');
+      lines.push(plainTextForCell(family.special.name, '', '', sorted));
+    }
+  });
+  const text = '내수동 고등부 2026 2학기 셀편성\n' + lines.join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-all');
+    if (btn) {
+      btn.textContent = '✓ 전체 복사됨 (카톡 붙여넣기 가능)';
+      setTimeout(() => { btn.textContent = '📋 전체 복사 (텍스트)'; }, 2000);
+    }
+  }).catch(() => alert('복사 실패 — 브라우저 권한을 확인하세요'));
+}
+
+function renderShare() {
+  const root = document.getElementById('root-share');
+  root.innerHTML = shareBannerHtml() + FAMILY_GROUPS.map(shareFamilyHtml).join('');
+}
+
+/* ====================================================================
  * 7-C. 탭 전환
  * ==================================================================== */
 let CURRENT_TAB = 'care';
 let CONTACT_RENDERED = false;
+let SHARE_RENDERED = false;
 
 function switchTab(tab) {
   if (CURRENT_TAB === tab) return;
   CURRENT_TAB = tab;
   document.getElementById('root').style.display = tab === 'care' ? '' : 'none';
   document.getElementById('root-contact').style.display = tab === 'contact' ? '' : 'none';
+  document.getElementById('root-share').style.display = tab === 'share' ? '' : 'none';
   document.querySelectorAll('.tab-btn').forEach(b => {
     b.classList.toggle('active', b.getAttribute('data-tab') === tab);
   });
@@ -1959,10 +2257,14 @@ function switchTab(tab) {
     renderContact();
     CONTACT_RENDERED = true;
   }
+  if (tab === 'share' && !SHARE_RENDERED) {
+    renderShare();
+    SHARE_RENDERED = true;
+  }
   // 검색 결과 초기화
   const search = document.getElementById('search');
   if (search) search.value = '';
-  document.querySelectorAll('.student').forEach(el => {
+  document.querySelectorAll('.student, .share-student').forEach(el => {
     el.classList.remove('dim'); el.classList.remove('match');
   });
   // 상단으로 스크롤
@@ -1973,18 +2275,21 @@ function render() {
   const root = document.getElementById('root');
   root.innerHTML = tocHtml() + FAMILY_GROUPS.map(familyHtml).join('');
 
-  // 검색 — 양쪽 탭 모두 동작
+  // 검색 — 3개 탭 모두 동작
   const search = document.getElementById('search');
   search.addEventListener('input', () => {
     const q = search.value.trim();
-    const visibleRoot = CURRENT_TAB === 'care' ? root : document.getElementById('root-contact');
-    const all = visibleRoot ? visibleRoot.querySelectorAll('.student') : [];
+    let visibleRoot;
+    if (CURRENT_TAB === 'care') visibleRoot = root;
+    else if (CURRENT_TAB === 'contact') visibleRoot = document.getElementById('root-contact');
+    else visibleRoot = document.getElementById('root-share');
+    const all = visibleRoot ? visibleRoot.querySelectorAll('.student, .share-student') : [];
     if (!q) {
       all.forEach(el => { el.classList.remove('dim'); el.classList.remove('match'); });
       return;
     }
     all.forEach(el => {
-      const name = el.getAttribute('data-name') || '';
+      const name = el.getAttribute('data-name') || (el.querySelector('.sname')?.textContent || '');
       if (name.includes(q)) {
         el.classList.add('match');
         el.classList.remove('dim');
