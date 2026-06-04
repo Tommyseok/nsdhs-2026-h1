@@ -174,6 +174,119 @@
     color: #fecaca;
   }
 
+  /* ============== Tab Bar ============== */
+  .tab-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+    background: rgba(0,0,0,.25);
+    border: 1px solid rgba(255,255,255,.08);
+    padding: 4px;
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 160px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: #e2e8f0; }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(124,58,237,.4);
+  }
+
+  /* ============== Contact Tab ============== */
+  .contact-card .student {
+    padding: 14px;
+  }
+  .contact-row {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 6px;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px dotted rgba(255,255,255,.06);
+    align-items: center;
+  }
+  .contact-row:last-child { border-bottom: none; }
+  .contact-row .crow-label {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .contact-row .crow-value {
+    color: #e2e8f0;
+    word-break: break-all;
+  }
+  .contact-row .crow-value.empty {
+    color: #64748b;
+    font-style: italic;
+    font-size: 12px;
+  }
+  .contact-row a.tel-link {
+    color: #93c5fd;
+    text-decoration: none;
+    font-weight: 600;
+    background: rgba(96,165,250,.10);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(96,165,250,.25);
+  }
+  .contact-row a.tel-link:hover {
+    background: rgba(96,165,250,.20);
+  }
+  .contact-parent {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,.03);
+    border-radius: 6px;
+    border-left: 2px solid rgba(167,139,250,.4);
+  }
+  .contact-parent .parent-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c4b5fd;
+    margin-bottom: 4px;
+  }
+  .contact-note {
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: rgba(245,158,11,.08);
+    border: 1px dashed rgba(245,158,11,.3);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: #fcd34d;
+    line-height: 1.5;
+  }
+  .data-entry-banner {
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(124,58,237,.15) 0%, rgba(168,85,247,.10) 100%);
+    border: 1px dashed rgba(167,139,250,.5);
+    border-radius: 10px;
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+  .data-entry-banner strong {
+    color: #c4b5fd;
+  }
+
   /* ============== 대가족 / 셀 ============== */
   .family-section {
     margin-top: 24px;
@@ -609,10 +722,15 @@
       <div class="search-row">
         <input id="search" type="search" placeholder="🔍 학생 이름 검색..." autocomplete="off">
       </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="care" onclick="switchTab('care')">📋 셀편성 · 케어 메모</button>
+        <button class="tab-btn" data-tab="contact" onclick="switchTab('contact')">📞 연락처 · 가족 정보</button>
+      </div>
     </div>
   </header>
 
   <div class="container" id="root"></div>
+  <div class="container" id="root-contact" style="display:none"></div>
 
   <footer>
     <div class="church">내수동교회 고등부 · 교사용</div>
@@ -1246,6 +1364,101 @@ const KEEP_PAIRS = [
 ];
 
 /* ====================================================================
+ * 5-B. 학교 · 연락처 · 가족 정보 (CONTACT)
+ *      학교는 1학기 관계도 데이터에서 추출(기본값), 나머지 필드는 추후 입력
+ *      필드: school, phone(학생), address, father{name,phone}, mother{name,phone}, emergency, note
+ * ==================================================================== */
+const CONTACT = {
+  '권하율':   {school:'자퇴 상태 (前 대치동 학원가)'},
+  '하은유':   {school:''},
+  '홍기진':   {school:'행신고'},
+  '서이수':   {school:'홈스쿨링', note:'알레르기: 오징어. 언니 이안(서울 대학가 자취)'},
+  '장지현':   {school:'진관고'},
+  '김은':     {school:'', note:'2학기 신규 등록'},
+  '강은교':   {school:'자퇴(검정고시)'},
+  '명주원':   {school:'서울예고 (바이올린)'},
+  '조인상':   {school:'대원여고'},
+  '연해준':   {school:'충암고'},
+  '유나린':   {school:'수주고'},
+  '박지호':   {school:'이화여고'},
+  '한채은':   {school:'김포고'},
+  '김준수':   {school:'서인고'},
+  '김라일':   {school:'지산고'},
+  '안민혁':   {school:''},
+  '원대연':   {school:'대성고'},
+  '이준호':   {school:'대원외고'},
+  '전지훈':   {school:'충암고'},
+  '오현우':   {school:'광신고'},
+  '이빛가온': {school:''},
+  '민예원':   {school:'배화여고'},
+  '김도연':   {school:'배화여고'},
+  '최지은':   {school:'춘천여고 (춘천 거주)'},
+  '김나현':   {school:'배화여고'},
+  '윤서희':   {school:'', note:'2학기 신규 등록'},
+  '조한나':   {school:'기독교 대안학교'},
+  '김한결':   {school:'중앙고'},
+  '이서후':   {school:'세화여고'},
+  '임태민':   {school:'선정고'},
+  '박지웅':   {school:'(보컬 전공)'},
+  '조강인':   {school:'용산고 (농구부)'},
+  '이에녹':   {school:'중앙고'},
+  '최민호':   {school:'', note:'1학기 새신자 합류 (태준이 친구)'},
+  '김정록':   {school:''},
+  '정태율':   {school:'(체대 입시·드럼)'},
+  '심희은':   {school:'덕성여고'},
+  '김은우':   {school:'덕성여고'},
+  '최가은':   {school:'춘천여고 (춘천 거주)'},
+  '양소희':   {school:''},
+  '오은수':   {school:''},
+  '나정인':   {school:'동화고'},
+  '주성':     {school:'', note:'1학기 새신자 합류'},
+  '곽지원':   {school:'중앙고'},
+  '양인혁':   {school:'영락고 위탁 (실용음악·재즈피아노)'},
+  '김다은':   {school:'안산 동산고', note:'역사 전공 희망 — 안산동산고(모교) 교사 꿈'},
+  '박재영':   {school:'', note:'2학기 신규 등록'},
+  '이주형':   {school:'덕성여고'},
+  '윤성하':   {school:'(은평 거주)'},
+  '나호윤':   {school:''},
+  '이소현':   {school:'', note:'1학기 새신자 합류 (이소민 동생)'},
+  '배유나':   {school:''},
+  '최유현':   {school:'배화여고'},
+  '이가영':   {school:'서울예고'},
+  '최수지':   {school:'(수원 거주)'},
+  '박동하':   {school:'(기숙사 거주)'},
+  '송준원':   {school:''},
+  '정승빈':   {school:'세종고'},
+  '김주하':   {school:'수주고 (부천 거주)'},
+  '김채은':   {school:'이대부고'},
+  '유재희':   {school:'서울공연예술고 (미술)'},
+  '김강은':   {school:'(종로 거주)'},
+  // Special
+  '고예나':   {school:'드와이트 외국인학교'},
+  '김민채':   {school:''},
+  '송성모':   {school:''},
+  '최승아':   {school:'대원여고'},
+  '최지윤':   {school:'상명고 (노원)'},
+  '최서윤':   {school:'상명고'},
+  '백결':     {school:'정발고'},
+  '조혁준':   {school:''},
+  '김재원':   {school:''},
+  '김유진':   {school:'명지고'},
+  '김강희':   {school:'(춘천 거주)'},
+  '박서연':   {school:'(부모님 인도네시아 선교)'},
+  '박시우':   {school:''},
+  '하어림':   {school:'(해외 유학 중)'},
+  '박진서':   {school:'서울여자상업고'},
+  '임소명':   {school:'서울여자상업고'},
+  '오희수':   {school:'정의여고'},
+  '박민주':   {school:''},
+  '장세민':   {school:'성동공고'},
+  '정원영':   {school:'중앙고'},
+  '이서현':   {school:'(강서 거주)'},
+  '이소민':   {school:'동화고 (동대문 거주)'},
+  '김도헌':   {school:''},
+  '이하준':   {school:''},
+};
+
+/* ====================================================================
  * 6. 편성 (assignments.html과 동일 데이터)
  * ==================================================================== */
 const FAMILY_GROUPS = [
@@ -1550,15 +1763,196 @@ function tocHtml() {
   `;
 }
 
+/* ====================================================================
+ * 7-B. Contact 탭 렌더링 (학교 · 연락처 · 가족 정보)
+ * ==================================================================== */
+function contactRow(label, icon, value, isEmpty) {
+  const tel = !isEmpty && /^[0-9\-+\s()]+$/.test(value || '');
+  const valHtml = isEmpty
+    ? `<span class="crow-value empty">정보 미입력</span>`
+    : (tel
+        ? `<span class="crow-value"><a class="tel-link" href="tel:${escapeHtml(value.replace(/[^0-9+]/g,''))}">${escapeHtml(value)}</a></span>`
+        : `<span class="crow-value">${escapeHtml(value)}</span>`);
+  return `
+    <div class="contact-row">
+      <span class="crow-label">${icon} ${escapeHtml(label)}</span>
+      ${valHtml}
+    </div>
+  `;
+}
+
+function contactStudentHtml(s) {
+  const att = ATT[s.name];
+  const c = CONTACT[s.name] || {};
+  const labelInfo = s.label ? LABELS[s.label] : null;
+  const genderCls = s.gender === '남' ? 'gender-m' : 'gender-f';
+  let cls = 'student';
+  if (s.label === 'urgent') cls += ' has-urgent';
+  else if (s.label === 'new') cls += ' has-new';
+  else if (s.label === 'rejoin') cls += ' has-rejoin';
+
+  const father = c.father || {};
+  const mother = c.mother || {};
+
+  return `
+    <div class="${cls}" data-name="${escapeHtml(s.name)}">
+      <div class="student-head">
+        <span class="student-name">${escapeHtml(s.name)}</span>
+        <span class="pill ${genderCls}">${escapeHtml(s.gender)}</span>
+        <span class="pill grade${s.grade}">${s.grade}학년</span>
+        <span class="pill ${attClass(att)}">${attText(att)}</span>
+        ${labelInfo ? `<span class="pill label-${s.label}" title="${escapeHtml(labelInfo.title)}">${labelInfo.text}</span>` : ''}
+      </div>
+      ${contactRow('학교',   '🏫', c.school,  !c.school)}
+      ${contactRow('주소',   '🏠', c.address, !c.address)}
+      ${contactRow('학생',   '📱', c.phone,   !c.phone)}
+      <div class="contact-parent">
+        <div class="parent-title">👨 아버지</div>
+        ${contactRow('이름',  '👤', father.name,  !father.name)}
+        ${contactRow('연락처','📞', father.phone, !father.phone)}
+      </div>
+      <div class="contact-parent">
+        <div class="parent-title">👩 어머니</div>
+        ${contactRow('이름',  '👤', mother.name,  !mother.name)}
+        ${contactRow('연락처','📞', mother.phone, !mother.phone)}
+      </div>
+      ${contactRow('비상연락','🚨', c.emergency, !c.emergency)}
+      ${c.note ? `<div class="contact-note">📌 ${escapeHtml(c.note)}</div>` : ''}
+    </div>
+  `;
+}
+
+function contactCellHtml(cell, familyId) {
+  const cellId = cell.name.replace(/\s/g,'');
+  const homeroom = HOMEROOM_TEACHERS[cellId] || '';
+  const sub = SUB_TEACHERS[cellId] || '';
+  const leader = FAMILY_LEADERS[familyId];
+  const isLeaderCell = leader && leader.name === homeroom;
+  const sorted = cell.students.slice().sort((a,b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  return `
+    <div class="cell-card contact-card">
+      <div class="cell-head">
+        <div class="cell-name">${escapeHtml(cell.name)}<span class="count">${cell.students.length}명</span></div>
+        <div class="teacher-row homeroom">
+          <span class="label">담임</span>
+          ${homeroom
+            ? `<span class="name">${escapeHtml(homeroom)}</span>${isLeaderCell ? '<span class="leader-badge">🌟 대가족장</span>' : ''}`
+            : `<span class="name tba">미정</span>`}
+        </div>
+        <div class="teacher-row sub">
+          <span class="label">부담임</span>
+          ${sub ? `<span class="name">${escapeHtml(sub)}</span>` : `<span class="name tba">미정</span>`}
+        </div>
+      </div>
+      <div class="student-list">
+        ${sorted.map(contactStudentHtml).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function contactSpecialHtml(special, familyId) {
+  if (!special || !special.students || special.students.length === 0) return '';
+  const sorted = special.students.slice().sort((a,b) => {
+    if (a.grade !== b.grade) return b.grade - a.grade;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  return `
+    <div class="special-card contact-card">
+      <div class="special-head">
+        <span class="special-tag">SPECIAL</span>
+        <span class="special-name">${escapeHtml(special.name)}</span>
+        <span class="special-meta">${special.students.length}명</span>
+      </div>
+      <div class="student-list">
+        ${sorted.map(contactStudentHtml).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function contactFamilyHtml(family) {
+  const familyId = family.name.replace(/\s/g,'');
+  const regularCount = family.cells.reduce((sum, c) => sum + c.students.length, 0);
+  const specialCount = family.special ? family.special.students.length : 0;
+  const total = regularCount + specialCount;
+  const metaParts = [`${family.cells.length}개 소그룹반`];
+  if (family.special) metaParts.push('Special 1개');
+  metaParts.push(`총 ${total}명`);
+  return `
+    <section class="family-section" id="${familyId}-contact">
+      <div class="family-header">
+        <div class="family-title">
+          <span class="family-icon">👨‍👩‍👧‍👦</span>
+          <span class="family-name">${escapeHtml(family.name)}</span>
+          <span class="family-meta">${metaParts.join(' · ')}</span>
+        </div>
+      </div>
+      <div class="cell-grid">
+        ${family.cells.map(c => contactCellHtml(c, familyId)).join('')}
+        ${contactSpecialHtml(family.special, familyId)}
+      </div>
+    </section>
+  `;
+}
+
+function entryBannerHtml() {
+  return `
+    <div class="data-entry-banner">
+      <strong>📋 데이터 입력 안내</strong><br>
+      현재는 <strong>학교</strong> 정보만 자동 입력되어 있습니다. 학생 연락처·주소·부모님 정보는
+      관리자가 일괄 입력하면 모든 교사가 동일 페이지에서 확인할 수 있도록 반영됩니다.<br>
+      <span style="color:#94a3b8;font-size:11.5px">담당자: 박재영(편집권한) — 입력 완료 후 페이지 재배포</span>
+    </div>
+  `;
+}
+
+function renderContact() {
+  const root = document.getElementById('root-contact');
+  root.innerHTML = entryBannerHtml() + tocHtml() + FAMILY_GROUPS.map(contactFamilyHtml).join('');
+}
+
+/* ====================================================================
+ * 7-C. 탭 전환
+ * ==================================================================== */
+let CURRENT_TAB = 'care';
+let CONTACT_RENDERED = false;
+
+function switchTab(tab) {
+  if (CURRENT_TAB === tab) return;
+  CURRENT_TAB = tab;
+  document.getElementById('root').style.display = tab === 'care' ? '' : 'none';
+  document.getElementById('root-contact').style.display = tab === 'contact' ? '' : 'none';
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+  });
+  if (tab === 'contact' && !CONTACT_RENDERED) {
+    renderContact();
+    CONTACT_RENDERED = true;
+  }
+  // 검색 결과 초기화
+  const search = document.getElementById('search');
+  if (search) search.value = '';
+  document.querySelectorAll('.student').forEach(el => {
+    el.classList.remove('dim'); el.classList.remove('match');
+  });
+  // 상단으로 스크롤
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function render() {
   const root = document.getElementById('root');
   root.innerHTML = tocHtml() + FAMILY_GROUPS.map(familyHtml).join('');
 
-  // 검색
+  // 검색 — 양쪽 탭 모두 동작
   const search = document.getElementById('search');
   search.addEventListener('input', () => {
     const q = search.value.trim();
-    const all = root.querySelectorAll('.student');
+    const visibleRoot = CURRENT_TAB === 'care' ? root : document.getElementById('root-contact');
+    const all = visibleRoot ? visibleRoot.querySelectorAll('.student') : [];
     if (!q) {
       all.forEach(el => { el.classList.remove('dim'); el.classList.remove('match'); });
       return;
