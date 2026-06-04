@@ -273,6 +273,21 @@
     color: #fcd34d;
     line-height: 1.5;
   }
+  .contact-family {
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: rgba(236,72,153,.08);
+    border: 1px solid rgba(236,72,153,.25);
+    border-radius: 6px;
+    font-size: 12px;
+    color: #fbcfe8;
+    line-height: 1.5;
+  }
+  .contact-family::before {
+    content: '👨‍👧 가족관계: ';
+    color: #f9a8d4;
+    font-weight: 700;
+  }
   .data-entry-banner {
     margin-top: 16px;
     padding: 14px 18px;
@@ -853,11 +868,11 @@ const ATT = {
  * ==================================================================== */
 const PREV_INFO = {
   // 01반 (전성희)
-  '이하준':{cell:'01반',h:'전성희',s:''},'이윤서':{cell:'01반',h:'전성희',s:''},
+  '이하준':{cell:'01반',h:'전성희',s:''},'이윤서':   {cell:'01반',h:'전성희',s:''},
   '김다은':   {cell:'01반',h:'전성희',s:'', size:'M'},'나정인':   {cell:'01반',h:'전성희',s:'', size:'L'},
   '서이수':   {cell:'01반',h:'전성희',s:'', size:'M'},'최승아':{cell:'01반',h:'전성희',s:''},
   // 02반 (안강훈/조세경)
-  '나호윤':{cell:'02반',h:'안강훈',s:'조세경'},'안민혁':   {cell:'02반',h:'안강훈',s:'조세경', size:'M'},
+  '나호윤':   {cell:'02반',h:'안강훈',s:'조세경'},'안민혁':   {cell:'02반',h:'안강훈',s:'조세경', size:'M'},
   '이주형':   {cell:'02반',h:'안강훈',s:'조세경', size:'L'},'박진서':{cell:'02반',h:'안강훈',s:'조세경'},
   '임소명':{cell:'02반',h:'안강훈',s:'조세경'},
   // 03반 (최희승/곽현)
@@ -875,9 +890,9 @@ const PREV_INFO = {
   // 06반 (이유성/김주영)
   '오현우':   {cell:'06반',h:'이유성',s:'김주영', size:'XXL'},'하어림':{cell:'06반',h:'이유성',s:'김주영'},
   '김나현':{cell:'06반',h:'이유성',s:'김주영'},'유재희':   {cell:'06반',h:'이유성',s:'김주영', size:'L'},
-  '이준호':{cell:'06반',h:'이유성',s:'김주영'},'홍기진':   {cell:'06반',h:'이유성',s:'김주영', size:'XL'},
+  '이준호':   {cell:'06반',h:'이유성',s:'김주영'},'홍기진':   {cell:'06반',h:'이유성',s:'김주영', size:'XL'},
   // 07반 (박진호/이승헌)
-  '송준원':{cell:'07반',h:'박진호',s:'이승헌'},'장지현':   {cell:'07반',h:'박진호',s:'이승헌', size:'M'},
+  '송준원':   {cell:'07반',h:'박진호',s:'이승헌'},'장지현':   {cell:'07반',h:'박진호',s:'이승헌', size:'M'},
   '유나린':   {cell:'07반',h:'박진호',s:'이승헌', size:'M'},'이가영':{cell:'07반',h:'박진호',s:'이승헌'},
   // 08반 (양지현/김광현)
   '박시우':{cell:'08반',h:'양지현',s:'김광현'},'조한나':   {cell:'08반',h:'양지현',s:'김광현', size:'L'},
@@ -885,7 +900,7 @@ const PREV_INFO = {
   '김채은':{cell:'08반',h:'양지현',s:'김광현'},'양소희':{cell:'08반',h:'양지현',s:'김광현'},
   '최민호':{cell:'08반',h:'양지현',s:'김광현',note:'1학기 새신자로 합류 (태준이 친구)'},
   // 09반 (이규리/오은규)
-  '박동하':{cell:'09반',h:'이규리',s:'오은규'},'오은수':{cell:'09반',h:'이규리',s:'오은규'},
+  '박동하':{cell:'09반',h:'이규리',s:'오은규'},'오은수':   {cell:'09반',h:'이규리',s:'오은규'},
   '곽지원':   {cell:'09반',h:'이규리',s:'오은규', size:'L'},'박지호':{cell:'09반',h:'이규리',s:'오은규'},
   '정원영':{cell:'09반',h:'이규리',s:'오은규'},'조인상':   {cell:'09반',h:'이규리',s:'오은규', size:'L'},
   '주성':{cell:'09반',h:'이규리',s:'오은규',note:'1학기 새신자로 합류'},
@@ -900,17 +915,17 @@ const PREV_INFO = {
   // 12반 (박대철/김희원)
   '정태율':   {cell:'12반',h:'박대철',s:'김희원', size:'M'},'최지은':   {cell:'12반',h:'박대철',s:'김희원', size:'M'},
   '김도헌':{cell:'12반',h:'박대철',s:'김희원'},'김준수':   {cell:'12반',h:'박대철',s:'김희원', size:'S'},
-  '정승빈':   {cell:'12반',h:'박대철',s:'김희원', size:'L'},'최지윤':{cell:'12반',h:'박대철',s:'김희원'},
+  '정승빈':   {cell:'12반',h:'박대철',s:'김희원', size:'L'},'최지윤':   {cell:'12반',h:'박대철',s:'김희원'},
   // 13반 (오덕현)
   '권하율':   {cell:'13반',h:'오덕현',s:'', size:'4XL'},'김강은':   {cell:'13반',h:'오덕현',s:'', size:'M'},
   '명주원':{cell:'13반',h:'오덕현',s:''},'오희수':{cell:'13반',h:'오덕현',s:''},
-  '최가은':   {cell:'13반',h:'오덕현',s:'', size:'S'},'최서윤':{cell:'13반',h:'오덕현',s:''},
+  '최가은':   {cell:'13반',h:'오덕현',s:'', size:'S'},'최서윤':   {cell:'13반',h:'오덕현',s:''},
   // 14반 (석준원/고은솔)
-  '윤성하':   {cell:'14반',h:'석준원',s:'고은솔', size:'L'},'이서현':{cell:'14반',h:'석준원',s:'고은솔'},
+  '윤성하':   {cell:'14반',h:'석준원',s:'고은솔', size:'L'},'이서현':   {cell:'14반',h:'석준원',s:'고은솔'},
   '김은우':   {cell:'14반',h:'석준원',s:'고은솔', size:'M'},'심희은':   {cell:'14반',h:'석준원',s:'고은솔', size:'M'},
-  '이소민':{cell:'14반',h:'석준원',s:'고은솔'},'이에녹':   {cell:'14반',h:'석준원',s:'고은솔', size:'L'},
+  '이소민':   {cell:'14반',h:'석준원',s:'고은솔'},'이에녹':   {cell:'14반',h:'석준원',s:'고은솔', size:'L'},
   '장세민':{cell:'14반',h:'석준원',s:'고은솔'},
-  '이소현':{cell:'14반',h:'석준원',s:'고은솔',note:'1학기 새신자로 합류 (이소민 동생)'},
+  '이소현':   {cell:'14반',h:'석준원',s:'고은솔',note:'1학기 새신자로 합류 (이소민 동생)'},
   // 2학기 신규
   '김은':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
   '윤서희':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
@@ -1373,8 +1388,8 @@ const CONTACT = {
   '권하율':   {school:'자퇴 (前 대치동 학원가)', phone:'010-9986-4787', birthday:'2010-02-11', address:'서울시 강남구 선릉로 221 403동 1403호', parent:'나정은', parentPhone:'010-9986-2301', note:'🚨 현재 자퇴 상태 · 부모 기대 매우 큼'},
   '하은유':   {school:'', phone:'010-8406-2642', birthday:'2010-02-13', address:'경기 고양시 일산로488 후곡마을13단지 2동 203호', parent:'나주영', parentPhone:'010-8252-1819'},
   '홍기진':   {school:'행신고등학교', phone:'010-5640-2936', birthday:'2009-11-13', address:'경기도 고양시 토당동 대곡역 롯데캐슬 엘크라데씨', parent:'김혜진 · 홍정기', parentPhone:'010-6250-5933 · 010-5778-2936'},
-  '서이수':   {school:'홈스쿨링', phone:'010-4196-3863', birthday:'2008-08-07', address:'경기도 용인시 수지구 동천로 178번길 4, 더샵동천포레스트 104동 103호', parent:'임미리', parentPhone:'010-4911-7986', note:'🦑 알레르기: 오징어. 언니 이안(서울 대학가 자취)'},
-  '장지현':   {school:'진관고등학교', phone:'010-2132-1938', birthday:'2009-11-03', address:'서울 은평구 진관1로 21-10 박석고개 힐스테이트 117동 602호', parent:'윤현실', parentPhone:'010-4488-1938'},
+  '서이수':   {school:'홈스쿨링', phone:'010-4196-3863', birthday:'2008-08-07', address:'경기도 용인시 수지구 동천로 178번길 4, 더샵동천포레스트 104동 103호', parent:'임미리', parentPhone:'010-4911-7986', note:'🦑 알레르기: 오징어. 언니 이안(서울 대학가 자취)', family:'언니 이안 (서울 대학가 자취)'},
+  '장지현':   {school:'진관고등학교', phone:'010-2132-1938', birthday:'2009-11-03', address:'서울 은평구 진관1로 21-10 박석고개 힐스테이트 117동 602호', parent:'윤현실', parentPhone:'010-4488-1938', family:'오빠 장성현'},
   '김은':     {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'2학기 신규 등록 — 교적부 정보 미입력'},
   // ===== 셀 2 =====
   '강은교':   {school:'자퇴 (前 성심여고, 검정고시)', phone:'010-5309-6276', birthday:'2009-04-04', address:'서울시 성북구 길음로 118 길음뉴타운 412-1703', parent:'이영은', parentPhone:'010-4573-2082'},
@@ -1385,24 +1400,24 @@ const CONTACT = {
   // ===== 셀 3 =====
   '박지호':   {school:'이화여고', phone:'010-7689-4080', birthday:'2008-01-25', address:'서울시 서대문구 독립문로 8길 54 천연뜨란채 101동 803호', parent:'박승아', parentPhone:'010-7702-4080'},
   '한채은':   {school:'김포고등학교', phone:'010-4203-6250', birthday:'2008-05-01', address:'경기도 김포시 김포한강 11로 276 반도유보라 2차 710동 1301호', parent:'문세현', parentPhone:'010-9476-6250'},
-  '김준수':   {school:'서인고등학교', phone:'010-5586-3977', birthday:'', address:'서울시 송파구 잠실동 341-20 302호', parent:'이윤희', parentPhone:'010-2474-0527'},
-  '김라일':   {school:'지산고등학교', phone:'010-3137-4620', birthday:'2009-11-10', address:'파주시 범벅들길 100 603동 801호', parent:'김성년', parentPhone:'010-8584-8291'},
+  '김준수':   {school:'서인고등학교', phone:'010-5586-3977', birthday:'', address:'서울시 송파구 잠실동 341-20 302호', parent:'이윤희', parentPhone:'010-2474-0527', family:'누나 김주영T (셀 9 부담임 / 前 06반 부담임)'},
+  '김라일':   {school:'지산고등학교', phone:'010-3137-4620', birthday:'2009-11-10', address:'파주시 범벅들길 100 603동 801호', parent:'김성년', parentPhone:'010-8584-8291', family:'형 김윤일'},
   '안민혁':   {school:'', phone:'010-8531-2573', birthday:'2010-11-11', address:'서울 강서구 양천로27길 95 (삼도아파트) 501호', parent:'이근정', parentPhone:'010-3375-9927'},
   // ===== 셀 4 =====
   '원대연':   {school:'대성고등학교', phone:'010-5476-7145', birthday:'2009-01-21', address:'서울특별시 은평구 진관1로55 은평뉴타운 마고정 307동', parent:'김미현', parentPhone:'010-8924-2145'},
-  '이준호':   {school:'대원외고', phone:'010-9755-6485', birthday:'2009-06-13', address:'서울 강남구 삼성동 풍림 아파트 2차 403호(봉은사로 105길 12-7)', parent:'김진경', parentPhone:'010-2755-6485'},
+  '이준호':   {school:'대원외고', phone:'010-9755-6485', birthday:'2009-06-13', address:'서울 강남구 삼성동 풍림 아파트 2차 403호(봉은사로 105길 12-7)', parent:'김진경', parentPhone:'010-2755-6485', family:'형 이준성'},
   '전지훈':   {school:'충암고등학교', phone:'010-4229-9658', birthday:'2009-09-12', address:'', parent:'', parentPhone:''},
   '오현우':   {school:'광신고등학교', phone:'010-4220-9363', birthday:'2010-06-08', address:'서울 관악구 참숯1길 19, e편한세상서울대입구2차 503동 1302호', parent:'강유미', parentPhone:'010-4415-0145'},
   '이빛가온': {school:'', phone:'010-3542-1732', birthday:'2010-01-10', address:'서울 은평구 진흥로 267 북한산래미안아파트 102-102', parent:'문희주', parentPhone:'010-7254-4190'},
   // ===== 셀 5 =====
   '민예원':   {school:'배화여고', phone:'010-3192-1831', birthday:'2009-12-07', address:'서울 종로구 통일로 230, 경희궁 롯데캐슬 아파트 103동 504호', parent:'박보연', parentPhone:'010-3505-6693'},
   '김도연':   {school:'배화여고', phone:'010-5932-4084', birthday:'2009-03-07', address:'서울 종로구 통일로 14길 24, 401호', parent:'장은희', parentPhone:'010-9273-4084'},
-  '최지은':   {school:'춘천여고', phone:'010-9263-2891', birthday:'2010-12-19', address:'강원도 춘천시 동면 만천로 107 한일유앤아이 105-402', parent:'조남희', parentPhone:'010-2040-6483', note:'최가은(셀 8) 동생'},
+  '최지은':   {school:'춘천여고', phone:'010-9263-2891', birthday:'2010-12-19', address:'강원도 춘천시 동면 만천로 107 한일유앤아이 105-402', parent:'조남희', parentPhone:'010-2040-6483', note:'최가은(셀 8) 동생', family:'언니 최가은 (셀 8)'},
   '김나현':   {school:'배화여고', phone:'010-8268-7473', birthday:'2009-02-14', address:'서울 종로구 신교동 1-27 3층', parent:'양승은', parentPhone:'010-3233-7473'},
   '윤서희':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'2학기 신규 등록 — 교적부 정보 미입력'},
   // ===== 셀 6 =====
   '조한나':   {school:'기독교 대안학교', phone:'010-8880-5210', birthday:'2010-05-24', address:'경기 남양주시 다산중앙로82번길 15 자연앤이편한세상 5112동 1505호', parent:'김지연', parentPhone:'010-6500-0675'},
-  '김한결':   {school:'중앙고', phone:'010-4310-4522', birthday:'2010-01-15', address:'서울시 종로구 통일로 18길 34 인왕산 2차 아이파크 203동 102호', parent:'정덕유', parentPhone:'010-4310-4522'},
+  '김한결':   {school:'중앙고', phone:'010-4310-4522', birthday:'2010-01-15', address:'서울시 종로구 통일로 18길 34 인왕산 2차 아이파크 203동 102호', parent:'정덕유', parentPhone:'010-4310-4522', family:'동생 김한성·김한나'},
   '이서후':   {school:'세화여고', phone:'010-7423-4295', birthday:'2010-08-18', address:'서울 송파구 오금로 32길 14 삼성래미안 110동 902호', parent:'김어진', parentPhone:'010-7433-4295'},
   '임태민':   {school:'선정고등학교', phone:'010-6357-5217', birthday:'2009-03-23', address:'서울 은평구 갈현로 11길29 2층', parent:'임병준', parentPhone:'010-6357-5250'},
   '박지웅':   {school:'(보컬 전공)', phone:'010-4997-8192', birthday:'2010-06-23', address:'인천광역시 미추홀구 독배로251번길 24 101-3203 (힐스테이트 학익)', parent:'조은선', parentPhone:'010-4996-8192'},
@@ -1415,30 +1430,30 @@ const CONTACT = {
   // ===== 셀 8 =====
   '심희은':   {school:'덕성여고', phone:'010-4868-7755', birthday:'2008-12-04', address:'서울시 종로구 통일로 246-20 무악현대아파트 103동 1302호', parent:'조민경', parentPhone:'010-5190-7755'},
   '김은우':   {school:'덕성여고', phone:'010-4361-3688', birthday:'2008-02-15', address:'서울 종로구 창신동', parent:'김정희', parentPhone:'010-7324-3688'},
-  '최가은':   {school:'춘천여고', phone:'010-9262-2891', birthday:'2008-08-28', address:'강원도 춘천시 동면 만천로 107 한일유앤아이 105-402', parent:'조남희', parentPhone:'010-2040-6483', note:'최지은(셀 5) 언니'},
+  '최가은':   {school:'춘천여고', phone:'010-9262-2891', birthday:'2008-08-28', address:'강원도 춘천시 동면 만천로 107 한일유앤아이 105-402', parent:'조남희', parentPhone:'010-2040-6483', note:'최지은(셀 5) 언니', family:'동생 최지은 (셀 5)'},
   '양소희':   {school:'', phone:'010-8203-0348', birthday:'2009-03-28', address:'서울시 종로구 통일로 12길 40-11 201호', parent:'이진우', parentPhone:'010-7183-7169'},
-  '오은수':   {school:'', phone:'010-3041-7454', birthday:'2010-03-10', address:'서울 종로구 무악동 무악현대아파트 104-1604', parent:'김연정', parentPhone:'010-2657-7454', note:'오은규T(셀 12 부담임) 친동생'},
+  '오은수':   {school:'', phone:'010-3041-7454', birthday:'2010-03-10', address:'서울 종로구 무악동 무악현대아파트 104-1604', parent:'김연정', parentPhone:'010-2657-7454', note:'오은규T(셀 12 부담임) 친동생', family:'친언니 오은규T (셀 12 부담임) · 언니 오은율'},
   // ===== 셀 9 =====
-  '나정인':   {school:'동화고등학교', phone:'010-3024-0430', birthday:'2008-04-30', address:'경기도 남양주시 다산지금로 16번길 88 7105동 803호', parent:'우인숙', parentPhone:'010-8464-5025', note:'나호윤(셀 10) 누나'},
+  '나정인':   {school:'동화고등학교', phone:'010-3024-0430', birthday:'2008-04-30', address:'경기도 남양주시 다산지금로 16번길 88 7105동 803호', parent:'우인숙', parentPhone:'010-8464-5025', note:'나호윤(셀 10) 누나', family:'동생 나호윤 (셀 10)'},
   '주성':     {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'1학기 새신자 합류 — 교적부 정보 미입력'},
   '곽지원':   {school:'중앙고', phone:'010-2715-0882', birthday:'2008-12-19', address:'서울시 종로구 사직로 8길 24 경희궁의 아침2단지 아파트 1101호', parent:'김은주', parentPhone:'010-2508-2074'},
   '양인혁':   {school:'영락고등학교 (실용음악·재즈피아노)', phone:'010-2515-7018', birthday:'2008-01-19', address:'서울시 관악구 관악로 40길 60(봉천동) 관악 현대아파트 118동 403호', parent:'이정희', parentPhone:'010-2561-7399'},
-  '김다은':   {school:'안산 동산고등학교', phone:'010-4197-2380', birthday:'2008-10-06', address:'경기도 남양주시 다산중앙로 146번길7 다산롯데캐슬 2209-102', parent:'양지현', parentPhone:'010-7274-2380', note:'🎯 역사 전공 희망 — 안산동산고(모교) 교사 꿈'},
+  '김다은':   {school:'안산 동산고등학교', phone:'010-4197-2380', birthday:'2008-10-06', address:'경기도 남양주시 다산중앙로 146번길7 다산롯데캐슬 2209-102', parent:'양지현', parentPhone:'010-7274-2380', note:'🎯 역사 전공 희망 — 안산동산고(모교) 교사 꿈', family:'어머니 양지현T (셀 7 담임 / 1학기 08반 담임)'},
   '박재영':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'2학기 신규 등록 — 교적부 정보 미입력'},
   // ===== 셀 10 =====
   '이주형':   {school:'덕성여고', phone:'010-9565-2135', birthday:'2010-07-01', address:'서울시 종로구 삼청로 9길31 삼청빌라 201호', parent:'이호준', parentPhone:'010-9790-6052'},
   '윤성하':   {school:'(은평 거주)', phone:'010-3733-4649', birthday:'2010-11-13', address:'서울시 은평구 진관2로 57-7 249동 1002호(진관동 은평뉴타운 우물골 6단지)', parent:'이혜정', parentPhone:'010-8426-4649'},
-  '나호윤':   {school:'', phone:'010-5791-5025', birthday:'2010-10-02', address:'경기도 남양주시 다산지금로 16번길 88 7105동 803호', parent:'우인숙', parentPhone:'010-8464-5025', note:'나정인(셀 9) 동생'},
-  '이소현':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'1학기 새신자 합류 (이소민 Sp6 동생) — 교적부 정보 미입력'},
+  '나호윤':   {school:'', phone:'010-5791-5025', birthday:'2010-10-02', address:'경기도 남양주시 다산지금로 16번길 88 7105동 803호', parent:'우인숙', parentPhone:'010-8464-5025', note:'나정인(셀 9) 동생', family:'누나 나정인 (셀 9)'},
+  '이소현':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'1학기 새신자 합류 (이소민 Sp6 동생) — 교적부 정보 미입력', family:'언니 이소민 (Sp6)'},
   '배유나':   {school:'', phone:'', birthday:'2009-07-09', address:'', parent:'', parentPhone:''},
   // ===== 셀 11 =====
   '최유현':   {school:'배화여고', phone:'010-9296-6484', birthday:'2010-05-08', address:'서울 종로구 자하문로 115-14', parent:'이영숙', parentPhone:'010-8235-6484'},
   '이가영':   {school:'서울예고', phone:'010-9100-8049', birthday:'2009-04-19', address:'서울시 종로구 사직로8길 4 스페이스본 101동 1106호', parent:'안효정 · 이광선', parentPhone:'010-4384-9971 · 010-6703-9999'},
   '최수지':   {school:'(수원 거주)', phone:'010-5498-1046', birthday:'2010-04-06', address:'수원시 팔달구 고등로15, 107동 1404호(고등동, 수원역푸르지오자이)', parent:'이승연', parentPhone:'010-2396-7755'},
   '박동하':   {school:'(기숙사 거주)', phone:'010-9795-7182', birthday:'2010-06-01', address:'서울 도봉구 마들로 551 (쌍용아파트) 104동 1802호', parent:'강상이', parentPhone:'010-4134-2968'},
-  '송준원':   {school:'', phone:'010-7111-9895', birthday:'2010-04-25', address:'경기도 성남시 분당구 판교로 20 302동 2803호', parent:'황인애', parentPhone:'010-3052-9895', note:'송예원 동생'},
+  '송준원':   {school:'', phone:'010-7111-9895', birthday:'2010-04-25', address:'경기도 성남시 분당구 판교로 20 302동 2803호', parent:'황인애', parentPhone:'010-3052-9895', note:'송예원 동생', family:'누나 송예원'},
   // ===== 셀 12 =====
-  '정승빈':   {school:'서울 세종고등학교', phone:'010-5969-2538', birthday:'2008-06-03', address:'서울시 강남구 자곡로 175, 710동 705호(자곡동, 강남아이파크아파트)', parent:'정수현', parentPhone:'010-4207-2538', note:'정유빈T(셀 6 담임)·정효빈 동생'},
+  '정승빈':   {school:'서울 세종고등학교', phone:'010-5969-2538', birthday:'2008-06-03', address:'서울시 강남구 자곡로 175, 710동 705호(자곡동, 강남아이파크아파트)', parent:'정수현', parentPhone:'010-4207-2538', note:'정유빈T(셀 6 담임)·정효빈 동생', family:'언니 정유빈T (셀 6 담임) · 언니 정효빈 (재수)'},
   '김주하':   {school:'수주고등학교 (부천 거주)', phone:'010-2497-2658', birthday:'2009-05-28', address:'경기도 부천시', parent:'', parentPhone:''},
   '김채은':   {school:'이대부고', phone:'010-8250-1778', birthday:'2009-03-10', address:'서울시 서대문구 통일로 332 홍제청구3차 301동302호', parent:'박시원', parentPhone:'010-4438-1777'},
   '유재희':   {school:'서울공연예술고 (미술)', phone:'010-2916-4379', birthday:'2009-08-13', address:'서울시 송파구 올림픽로 135 리센츠 214동 2001호', parent:'박진영', parentPhone:'010-3481-4456'},
@@ -1449,8 +1464,8 @@ const CONTACT = {
   '송성모':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'교적부 정보 미입력'},
   '최승아':   {school:'대원여고', phone:'010-5539-0616', birthday:'', address:'', parent:'', parentPhone:'', note:'조인상(셀 2) 친구. 부모님 반대로 출석 안 함'},
   // ===== Special 2 =====
-  '최지윤':   {school:'상명고등학교 (노원)', phone:'010-5936-0646', birthday:'2008-11-06', address:'서울 노원구 덕릉로 517 중계2차 아파트 105동 301호', parent:'지은혜', parentPhone:'010-7399-6461', note:'최서윤(Sp2) 쌍둥이'},
-  '최서윤':   {school:'상명고등학교 (노원)', phone:'010-5909-0646', birthday:'2008-11-06', address:'서울 노원구 덕릉로 517 중계2차 아파트 105동 301호', parent:'지은혜', parentPhone:'010-7399-6461', note:'최지윤(Sp2) 쌍둥이'},
+  '최지윤':   {school:'상명고등학교 (노원)', phone:'010-5936-0646', birthday:'2008-11-06', address:'서울 노원구 덕릉로 517 중계2차 아파트 105동 301호', parent:'지은혜', parentPhone:'010-7399-6461', note:'최서윤(Sp2) 쌍둥이', family:'쌍둥이 최서윤 (Sp2)'},
+  '최서윤':   {school:'상명고등학교 (노원)', phone:'010-5909-0646', birthday:'2008-11-06', address:'서울 노원구 덕릉로 517 중계2차 아파트 105동 301호', parent:'지은혜', parentPhone:'010-7399-6461', note:'최지윤(Sp2) 쌍둥이', family:'쌍둥이 최지윤 (Sp2)'},
   '백결':     {school:'정발고', phone:'010-7310-2406', birthday:'2008-01-28', address:'경기도 고양시 일산서구 경의로 605, 1206동 301호', parent:'문선희', parentPhone:'010-3049-1004'},
   '조혁준':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'교적부 정보 미입력'},
   // ===== Special 3 =====
@@ -1469,8 +1484,8 @@ const CONTACT = {
   '장세민':   {school:'성동공고', phone:'010-3499-4965', birthday:'', address:'', parent:'', parentPhone:'', note:'카톡 답 가장 빠른 학생'},
   '정원영':   {school:'중앙고', phone:'010-2609-8057', birthday:'', address:'', parent:'', parentPhone:'', note:'장기결석'},
   // ===== Special 6 =====
-  '이서현':   {school:'(강서 거주)', phone:'010-3083-7006', birthday:'2010-10-26', address:'서울 강서구 공항대로 63길14, 302-303', parent:'김해란', parentPhone:'010-9789-7006', note:'오빠 이지환'},
-  '이소민':   {school:'동화고등학교 (동대문 거주)', phone:'010-2528-1035', birthday:'2008-09-28', address:'', parent:'김지은', parentPhone:'010-2843-1035', note:'동생 이소현(셀 10)'},
+  '이서현':   {school:'(강서 거주)', phone:'010-3083-7006', birthday:'2010-10-26', address:'서울 강서구 공항대로 63길14, 302-303', parent:'김해란', parentPhone:'010-9789-7006', note:'오빠 이지환', family:'오빠 이지환'},
+  '이소민':   {school:'동화고등학교 (동대문 거주)', phone:'010-2528-1035', birthday:'2008-09-28', address:'', parent:'김지은', parentPhone:'010-2843-1035', note:'동생 이소현(셀 10)', family:'동생 이소현 (셀 10)'},
   '김도헌':   {school:'', phone:'010-9055-6327', birthday:'', address:'', parent:'', parentPhone:'', note:'학원 시간과 겹쳐 결석'},
   '이하준':   {school:'', phone:'010-7130-3705', birthday:'2010-01-12', address:'경기도 성남시 분당구 서현동 87번지 삼성한신아파트 133동 1106호', parent:'남궁진', parentPhone:'010-6400-3705'},
 };
@@ -1827,6 +1842,7 @@ function contactStudentHtml(s) {
         ${contactRow('이름',   '👤', c.parent,      !c.parent)}
         ${contactRow('연락처', '📞', c.parentPhone, !c.parentPhone)}
       </div>
+      ${c.family ? `<div class="contact-family">${escapeHtml(c.family)}</div>` : ''}
       ${c.note ? `<div class="contact-note">📌 ${escapeHtml(c.note)}</div>` : ''}
     </div>
   `;
