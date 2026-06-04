@@ -177,28 +177,33 @@
   /* ============== Tab Bar ============== */
   .tab-bar {
     display: flex;
-    gap: 6px;
+    gap: 0;
     margin-top: 14px;
     background: rgba(0,0,0,.25);
     border: 1px solid rgba(255,255,255,.08);
-    padding: 4px;
+    padding: 3px;
     border-radius: 12px;
-    overflow-x: auto;
+    overflow: hidden;
+    flex-wrap: wrap;
   }
   .tab-btn {
-    flex: 1;
-    min-width: 160px;
+    flex: 0 0 calc(33.333% - 2px);
+    width: calc(33.333% - 2px);
+    min-width: auto;
     background: transparent;
     border: none;
     color: #94a3b8;
-    padding: 10px 14px;
+    padding: 12px 4px;
+    margin: 1px;
     border-radius: 9px;
-    font-size: 13px;
+    font-size: 9px;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     transition: all 0.15s;
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.3;
+    text-align: center;
   }
   .tab-btn:hover { color: #e2e8f0; }
   .tab-btn.active {
@@ -865,6 +870,8 @@
     header h1 { font-size: 17px; }
     .cell-grid { grid-template-columns: 1fr; }
     .nav-link { padding: 6px 10px; font-size: 11px; }
+    .tab-bar { flex-wrap: wrap; padding: 6px; }
+    .tab-btn { flex: 1 1 calc(50% - 3px); min-width: 0; padding: 8px 10px; font-size: 12px; white-space: normal; }
   }
 </style>
 </head>
@@ -1185,7 +1192,6 @@ const STUDENT_NOTES = {
   ],
   // 셀 4
   '원대연':[
-    {t:'alert',  m:'⚠️ 부모 이혼 과정에서 가정 폭력 경험 (아버지 → 어머니·본인)'},
     {t:'family', m:'재정/돈에 대한 의식 강함. 가족에게 해주고 싶은 마음으로 공부 열심'},
     {t:'spirit', m:'중등부 때 선생님·목사님 기도 안에서 자란 학생'},
     {t:'relation', m:'카톡 답 2주 뒤 확인 등 산만함. 본인은 "기도제목 없다·좋아요"만 표현'},
