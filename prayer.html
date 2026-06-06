@@ -252,40 +252,6 @@
     border-color: rgba(167,139,250,.4);
   }
 
-  /* Share JSON modal */
-  .share-banner {
-    margin-top: 14px;
-    background: rgba(245,158,11,.08);
-    border: 1px dashed rgba(245,158,11,.35);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 12.5px;
-    color: #fcd34d;
-    line-height: 1.6;
-  }
-  .share-banner strong { color: #fde68a; }
-  .share-banner code {
-    background: rgba(0,0,0,.3); padding: 1px 5px; border-radius: 3px;
-    font-size: 11.5px; color: #e2e8f0;
-  }
-  .share-banner a {
-    color: var(--accent); text-decoration: underline; font-weight: 700;
-  }
-  .share-output {
-    margin-top: 8px;
-    background: #0f172a;
-    border: 1px solid var(--border);
-    padding: 10px;
-    border-radius: 6px;
-    font-family: monospace;
-    font-size: 11px;
-    color: #e2e8f0;
-    max-height: 200px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-
   .empty {
     text-align: center; padding: 30px 20px;
     color: var(--muted); font-size: 13.5px; font-style: italic;
@@ -544,17 +510,6 @@
     <div class="picked-student" id="picked-student" style="display:none"></div>
 
     <div class="prayer-list" id="prayer-list"></div>
-
-    <!-- 공유 JSON 출력 (관리자용) -->
-    <div class="share-banner" id="share-banner" style="display:none">
-      <strong>📤 GitHub 공유</strong> — 본인 등록 기도제목을 모든 선생님과 공유하려면<br>
-      아래 JSON 객체들을 복사해서 <a href="https://github.com/Tommyseok/nsdhs-2026-h1/edit/main/publish/data/prayers.json" target="_blank"><code>data/prayers.json</code></a> 의 <code>items</code> 배열 맨 위에 추가 + commit
-      <div class="share-output" id="share-output"></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button onclick="copyShareJson()" style="background:#f59e0b;color:#1c1410;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">📋 JSON 복사</button>
-        <button onclick="hideShareBanner()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#cbd5e1;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">닫기</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -759,14 +714,33 @@ function savePrayers(arr) {
   localStorage.setItem('prayer_data', JSON.stringify(arr));
 }
 
-/* ===== GitHub 공유 데이터 fetch ===== */
+/* ===== 공유 기도 (Supabase prayers 자동 공유 + data/prayers.json 관리자 채널) ===== */
+const PrayerDB = (function () {
+  const REST = 'https://hycwzggbgnimuuhporwf.supabase.co/rest/v1';
+  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const H = { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json' };
+  function toRow(p, active) {
+    return { id: p.id, date: p.date, type: p.type || 'student', student: p.student, cell: p.cell || null, family: p.family || null, teacher: p.author || p.teacher || '', text: p.content || p.text || '', share: !!p.share, urgent: !!p.urgent, active: active !== false };
+  }
+  async function loadShared() {
+    try { const r = await fetch(REST + '/prayers?select=*&share=eq.true&active=eq.true', { headers: H }); return r.ok ? await r.json() : []; } catch (e) { return []; }
+  }
+  function upsert(p, active) {
+    return fetch(REST + '/prayers', { method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H), body: JSON.stringify(toRow(p, active)) }).catch(function () {});
+  }
+  return { loadShared, upsert };
+})();
+
+// 공유 기도: Supabase(선생님 자동 공유) + data/prayers.json(관리자 채널) 병합
 async function fetchSharedPrayers() {
-  try {
-    const r = await fetch('data/prayers.json?cb=' + Date.now(), {cache: 'no-store'});
-    if (!r.ok) return [];
-    const json = await r.json();
-    return (json.items || []).filter(p => p.active !== false);
-  } catch { return []; }
+  const [gh, sb] = await Promise.all([
+    fetch('data/prayers.json?cb=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+    PrayerDB.loadShared(),
+  ]);
+  const ghItems = (gh && gh.items || []).filter(p => p.active !== false);
+  const map = new Map();
+  [...sb, ...ghItems].forEach(p => { if (!map.has(p.id)) map.set(p.id, p); });
+  return [...map.values()];
 }
 
 /* ===== 폼 ===== */
@@ -795,7 +769,7 @@ function addPrayer() {
   }
   if (!content) { showToast('❌ 내용을 입력해 주세요', 'pink'); return; }
   const prayers = loadPrayers();
-  prayers.unshift({
+  const newP = {
     id: 'P' + Date.now(),
     date: new Date().toISOString().substring(0, 10),
     type: CURRENT_TYPE,
@@ -806,8 +780,10 @@ function addPrayer() {
     content,
     share,
     urgent,
-  });
+  };
+  prayers.unshift(newP);
   savePrayers(prayers);
+  if (share) PrayerDB.upsert(newP, true);  // 전체 공유 → Supabase 자동 공유
   clearForm();
   renderPrayers();
   showToast(share ? '✓ 추가됨 (전체 공유)' : '✓ 추가됨 (대가족 공유)');
@@ -830,7 +806,9 @@ function toggleUrgentUi() {
 
 function deletePrayer(id) {
   if (!confirm('이 기도제목을 삭제하시겠습니까?')) return;
-  savePrayers(loadPrayers().filter(p => p.id !== id));
+  const p = loadPrayers().find(x => x.id === id);
+  if (p && p.share) PrayerDB.upsert(p, false);  // 공유됐던 것이면 전체 공유에서도 제거
+  savePrayers(loadPrayers().filter(x => x.id !== id));
   renderPrayers();
   showToast('🗑 삭제됨');
 }
@@ -841,46 +819,12 @@ function toggleShare(id) {
   if (!p) return;
   p.share = !p.share;
   savePrayers(prayers);
+  PrayerDB.upsert(p, true);  // share 값 반영 — OFF면 공유 목록에서 자동 제외
   renderPrayers();
-  showToast(p.share ? '🌸 전체 공유 ON' : '전체 공유 OFF', p.share ? 'pink' : '');
+  showToast(p.share ? '🌸 전체 공유 ON (모든 선생님에게 보임)' : '전체 공유 OFF', p.share ? 'pink' : '');
 }
 
-/* ===== 공유 JSON 출력 ===== */
-function buildShareJson() {
-  const mine = loadPrayers().filter(p => p.author === MY.name);
-  if (mine.length === 0) return null;
-  return mine.map(p => ({
-    id: p.id,
-    date: p.date,
-    type: p.type || 'student',
-    student: p.student,
-    cell: p.cell,
-    family: p.family,
-    teacher: p.author,
-    text: p.content,
-    share: p.share,
-    urgent: p.urgent,
-    active: true,
-  }));
-}
-
-function showShareBanner() {
-  const arr = buildShareJson();
-  if (!arr || arr.length === 0) { showToast('공유할 본인 기도제목 없음', 'orange'); return; }
-  const output = arr.map(o => JSON.stringify(o, null, 2)).join(',\n');
-  document.getElementById('share-output').textContent = output;
-  document.getElementById('share-banner').style.display = '';
-  document.getElementById('share-banner').scrollIntoView({behavior: 'smooth'});
-}
-function hideShareBanner() {
-  document.getElementById('share-banner').style.display = 'none';
-}
-function copyShareJson() {
-  const text = document.getElementById('share-output').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('📋 복사됨 — GitHub 에 붙여넣으세요', 'orange');
-  });
-}
+/* (전체 공유는 '공유 ON' 토글 시 Supabase 로 자동 처리 — 별도 GitHub 복사 단계 없음) */
 
 /* ===== 학생별 모아보기 ===== */
 function canViewStudent(name) {
@@ -1006,8 +950,7 @@ function prayerCardHtml(p, opts={}) {
       </div>
       ${isMine ? `
         <div class="prayer-actions">
-          <button class="toggle-share ${p.share ? 'on' : ''}" onclick="toggleShare('${p.id}')">${p.share ? '🌸 공유 ON' : '공유 OFF'}</button>
-          <button class="copy" onclick="showShareBanner()">📤 GitHub 공유</button>
+          <button class="toggle-share ${p.share ? 'on' : ''}" onclick="toggleShare('${p.id}')">${p.share ? '🌸 전체 공유 ON' : '🌸 전체 공유'}</button>
           <button class="delete" onclick="deletePrayer('${p.id}')">🗑 삭제</button>
         </div>
       ` : ''}
@@ -1126,7 +1069,6 @@ function switchTab(tab) {
     b.classList.toggle('active', b.getAttribute('data-tab') === tab);
   });
   document.getElementById('new-prayer').style.display = tab === 'mine' ? '' : 'none';
-  document.getElementById('share-banner').style.display = 'none';
   if (tab !== 'byStudent') PICKED_STUDENT = null;
   renderPrayers();
 }

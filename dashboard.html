@@ -1245,11 +1245,14 @@ function showApp() {
 }
 
 async function refreshFromSheet() {
-  const [schedule, prayers, notices] = await Promise.all([
+  const [schedule, prayers, notices, supaPrayers] = await Promise.all([
     fetchJson('schedule'),
     fetchJson('prayers'),
     fetchJson('notices'),
+    Hub.select('prayers?select=id,student,cell,teacher,text,date,urgent&share=eq.true&active=eq.true'),
   ]);
+  SUPA_PRAYERS = (supaPrayers || []).map(r => ({ id: r.id, student: r.student, cell: r.cell, teacher: r.teacher, text: r.text, date: r.date, urgent: !!r.urgent }));
+  renderPrayers();
   if (schedule) {
     SCHEDULE.length = 0;
     schedule.filter(r => r.active !== false).forEach(r => {
@@ -1284,6 +1287,7 @@ async function refreshFromSheet() {
 }
 
 let SHEET_PRAYERS = null;
+let SUPA_PRAYERS = null;
 let SHEET_NOTICES = null;
 
 function renderNotices() {
@@ -1428,6 +1432,7 @@ function renderPrayers() {
     stored = JSON.parse(localStorage.getItem('prayer_data') || '[]')
       .filter(p => p.share)
       .map(p => ({
+        id: p.id,
         student: p.student,
         cell: p.cell,
         teacher: p.author,
@@ -1436,10 +1441,15 @@ function renderPrayers() {
         urgent: p.urgent,
       }));
   } catch {}
-  let items;
-  if (SHEET_PRAYERS && SHEET_PRAYERS.length > 0) items = SHEET_PRAYERS;
-  else if (stored.length > 0) items = stored;
-  else items = PRAYERS;
+  // Supabase 공유 + 시트(관리자) + 본인 localStorage 병합 (id 기준 중복 제거)
+  const seen = new Set(); let items = [];
+  [...(SUPA_PRAYERS || []), ...(SHEET_PRAYERS || []), ...stored].forEach(p => {
+    const key = p.id || (p.student + '|' + p.text + '|' + (p.date || ''));
+    if (seen.has(key)) return; seen.add(key); items.push(p);
+  });
+  if (items.length === 0) items = PRAYERS;
+  // 최신 날짜 우선
+  items.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   document.getElementById('prayer-count').textContent = `${items.length}건`;
   if (items.length === 0) {
     list.innerHTML = '<div class="prayer-empty">전체 공유된 학생상황·기도제목이 없습니다. <a href="prayer.html" style="color:#a78bfa;text-decoration:underline">+ 추가하기</a></div>';
