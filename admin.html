@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>관리자 페이지 · 내수동 고등부 2026</title>
+<style>
+  :root {
+    --bg:#0b0f17; --bg2:#111827; --card:#1e293b; --border:#334155;
+    --text:#e5e7eb; --muted:#94a3b8; --accent:#a78bfa; --accent2:#7c3aed;
+    --ok:#10b981; --warn:#f59e0b; --danger:#ef4444; --info:#38bdf8;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background:linear-gradient(180deg,#0b0f17,#0a0d14); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","맑은 고딕","Malgun Gothic",sans-serif; line-height:1.55; font-size:15px; min-height:100vh; }
+  .container { max-width:1100px; margin:0 auto; padding:16px; }
+
+  /* Gate */
+  .gate { min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px; background:linear-gradient(135deg,#0b0f17,#1e1b3a); }
+  .gate-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px 28px; max-width:460px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.5); }
+  .gate-card .lock { font-size:48px; text-align:center; margin-bottom:16px; }
+  .gate-card h1 { margin:0 0 6px; font-size:20px; color:#f1f5f9; text-align:center; }
+  .gate-card .gate-sub { margin:0 0 24px; font-size:13px; color:var(--muted); text-align:center; }
+  .gate-card input, .gate-card select { width:100%; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:12px; font-size:15px; font-family:inherit; margin-bottom:12px; }
+  .gate-card input { text-align:center; letter-spacing:2px; }
+  .gate-card button { width:100%; background:linear-gradient(135deg,var(--accent2),var(--accent)); color:#fff; border:none; border-radius:8px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; }
+  #gate-err { color:#fca5a5; font-size:12px; margin-top:10px; min-height:16px; text-align:center; }
+
+  /* Header */
+  header { background:linear-gradient(135deg,#3a1d1d,#7c2d12); padding:18px 0; border-bottom:2px solid var(--warn); position:sticky; top:0; z-index:100; }
+  header .container { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  header h1 { margin:0; font-size:18px; color:#fff; display:flex; align-items:center; gap:8px; flex:1; }
+  header .pill { background:rgba(245,158,11,.25); color:#fcd34d; font-size:11px; padding:3px 10px; border-radius:999px; border:1px solid rgba(245,158,11,.5); font-weight:700; }
+  header button, header a.btn { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#fff; padding:8px 12px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; text-decoration:none; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-top:18px; }
+  .card h2 { margin:0 0 4px; font-size:16px; color:#f1f5f9; display:flex; align-items:center; gap:8px; }
+  .card .sub { font-size:12px; color:var(--muted); margin-bottom:14px; }
+  .kpis { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .kpi { flex:1; min-width:120px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; padding:12px 14px; text-align:center; }
+  .kpi .n { font-size:26px; font-weight:800; }
+  .kpi .l { font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .kpi.ok .n { color:var(--ok); } .kpi.warn .n { color:var(--warn); } .kpi.danger .n { color:var(--danger); } .kpi.info .n { color:var(--info); }
+
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid rgba(255,255,255,.06); }
+  th { color:var(--muted); font-size:11.5px; font-weight:700; }
+  td.r, th.r { text-align:right; } td.c, th.c { text-align:center; }
+  .tag { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:999px; }
+  .tag.ok { background:rgba(16,185,129,.15); color:#6ee7b7; border:1px solid rgba(16,185,129,.35); }
+  .tag.warn { background:rgba(245,158,11,.15); color:#fcd34d; border:1px solid rgba(245,158,11,.35); }
+  .tag.danger { background:rgba(239,68,68,.15); color:#fca5a5; border:1px solid rgba(239,68,68,.4); }
+  .tag.muted { background:rgba(148,163,184,.12); color:#cbd5e1; border:1px solid rgba(148,163,184,.3); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:12px; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,.05); border:1px solid var(--border); }
+  .chip.danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.4); color:#fca5a5; }
+  .stu-photo-sm { width:24px; height:24px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:5px; background:#0f172a; }
+  .gh-links a { display:inline-block; margin:4px 8px 4px 0; font-size:12.5px; font-weight:700; color:#c4b5fd; background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.3); border-radius:8px; padding:7px 12px; text-decoration:none; }
+  .gh-links a:hover { background:rgba(167,139,250,.2); }
+  .muted-note { font-size:11.5px; color:var(--muted); margin-top:10px; }
+  .week-pick { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+  .week-pick select { background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-family:inherit; font-size:13px; }
+  .loading { color:var(--muted); font-size:13px; }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(196,181,253,.3); border-top-color:#c4b5fd; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock">👑</div>
+      <h1>관리자 페이지</h1>
+      <p class="gate-sub">국장단·목사·총무 전용 · 접속/출석/사진/기도 현황</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off">
+      <select id="teacher-select"></select>
+      <button onclick="adminLogin()">접속</button>
+      <div id="gate-err"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <h1>👑 관리자 페이지 <span class="pill" id="admin-name"></span></h1>
+      <button onclick="renderAll()">🔄 새로고침</button>
+      <a class="btn" href="dashboard.html">🏠 Home</a>
+      <button onclick="logout()">🚪 로그아웃</button>
+    </div>
+  </header>
+  <div class="container" id="admin-body"></div>
+</div>
+
+<script>
+/* ============ Supabase Hub (접속 로그 + 출석 + 일반 조회) ============ */
+const Hub = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const REST = URL_BASE + '/rest/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+  function logAccess(teacher, page) {
+    if (!teacher) return;
+    try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+    fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page }) }).catch(function () {});
+  }
+  async function loadAttendance() {
+    const map = {};
+    try {
+      const res = await fetch(REST + '/attendance?select=cell,week,student,status,note,teacher', { headers: H });
+      if (res.ok) (await res.json()).forEach(function (r) { if (!map[r.week]) map[r.week] = {}; map[r.week][r.student] = { status: r.status || '', note: r.note || '', cell: r.cell, teacher: r.teacher }; });
+    } catch (e) { console.warn(e); }
+    return map;
+  }
+  async function select(path) { try { const r = await fetch(REST + '/' + path, { headers: H }); return r.ok ? await r.json() : []; } catch (e) { return []; } }
+  return { logAccess, loadAttendance, select };
+})();
+
+/* ============ 사진 (등록 현황용) ============ */
+const Photos = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const BUCKET = 'student-photos';
+  const REST = URL_BASE + '/storage/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
+  function slug(name) { const b = new TextEncoder().encode(name); let h = ''; for (let i = 0; i < b.length; i++) h += b[i].toString(16).padStart(2, '0'); return h; }
+  function publicUrl(name, ver) { let u = REST + '/object/public/' + BUCKET + '/' + slug(name) + '.jpg'; if (ver) u += '?v=' + encodeURIComponent(ver); return u; }
+  function defaultAvatar(g) { const f = g === '여'; const bg = f ? '#3a2435' : '#1e2a44', fg = f ? '#ec8fc0' : '#6ba6e8'; const s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="' + bg + '"/><circle cx="32" cy="25" r="11" fill="' + fg + '"/><path d="M13 58c0-11 8.5-18 19-18s19 7 19 18z" fill="' + fg + '"/></svg>'; return 'data:image/svg+xml;utf8,' + encodeURIComponent(s); }
+  async function load() {
+    const set = new Set();
+    try {
+      const res = await fetch(REST + '/object/list/' + BUCKET, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ prefix: '', limit: 1000 }) });
+      if (res.ok) (await res.json()).forEach(function (o) { if (o && o.name && /\.jpg$/i.test(o.name)) set.add(o.name.replace(/\.jpg$/i, '')); });
+    } catch (e) { console.warn(e); }
+    return set; // slug 집합
+  }
+  return { slug, publicUrl, defaultAvatar, load };
+})();
+
+const PRIVATE_KEY = 'nsdhs2026h2';
+const GH = 'https://github.com/Tommyseok/nsdhs-2026-h1/edit/main/publish/data';
+
+/* ============ 데이터 (dashboard.html 과 동일) ============ */
+const TEACHERS = [
+  {name:'오신영', cell:null, role:'담당 목사', admin:true},
+  {name:'안종범', cell:null, role:'부장집사', admin:true},
+  {name:'석준원', cell:'셀11', role:'담임·총무', admin:true},
+  {name:'김광현', cell:null, role:'교육국장', admin:true},
+  {name:'송진우', cell:'셀7', role:'부담임·예배국장', admin:true},
+  {name:'오덕현', cell:'셀9', role:'담임·미디어국장', admin:true},
+  {name:'이유성', cell:'셀8', role:'담임·홍보국장', admin:true},
+  {name:'이윤정', cell:'셀1', role:'담임 (대가족장)'},
+  {name:'정명경', cell:'셀2', role:'담임'},
+  {name:'전성희', cell:'셀3', role:'담임 (대가족장)'},
+  {name:'박대철', cell:'셀4', role:'담임'},
+  {name:'이수지', cell:'셀5', role:'담임 (대가족장)'},
+  {name:'정유빈', cell:'셀6', role:'담임'},
+  {name:'양지현', cell:'셀7', role:'담임 (대가족장)'},
+  {name:'최희승', cell:'셀10', role:'담임'},
+  {name:'고은솔', cell:'셀12', role:'담임'},
+  {name:'이승헌', cell:'셀1', role:'부담임'},
+  {name:'조세경', cell:'셀2', role:'부담임'},
+  {name:'김희원', cell:'셀4', role:'부담임'},
+  {name:'박해니', cell:'셀5', role:'부담임'},
+  {name:'이규리', cell:'셀8', role:'부담임'},
+  {name:'김주영', cell:'셀9', role:'부담임'},
+  {name:'오은규', cell:'셀12', role:'부담임'},
+];
+const CELL_TEACHERS = {
+  '셀1':{homeroom:'이윤정',sub:'이승헌'}, '셀2':{homeroom:'정명경',sub:'조세경'},
+  '셀3':{homeroom:'전성희',sub:''}, '셀4':{homeroom:'박대철',sub:'김희원'},
+  '셀5':{homeroom:'이수지',sub:'박해니'}, '셀6':{homeroom:'정유빈',sub:''},
+  '셀7':{homeroom:'양지현',sub:'송진우'}, '셀8':{homeroom:'이유성',sub:'이규리'},
+  '셀9':{homeroom:'오덕현',sub:'김주영'}, '셀10':{homeroom:'최희승',sub:''},
+  '셀11':{homeroom:'석준원',sub:''}, '셀12':{homeroom:'고은솔',sub:'오은규'},
+};
+const CELL_STUDENTS = {
+  '셀1':[{name:'권하율',grade:1,gender:'남'},{name:'하은유',grade:1,gender:'여'},{name:'홍기진',grade:2,gender:'남'},{name:'서이수',grade:3,gender:'여'},{name:'장지현',grade:2,gender:'여'},{name:'김은',grade:1,gender:'여'}],
+  '셀2':[{name:'강은교',grade:2,gender:'여'},{name:'명주원',grade:3,gender:'남'},{name:'조인상',grade:3,gender:'여'},{name:'연해준',grade:2,gender:'남'},{name:'유나린',grade:2,gender:'여'}],
+  '셀3':[{name:'박지호',grade:3,gender:'여'},{name:'한채은',grade:3,gender:'여'},{name:'김준수',grade:3,gender:'남'},{name:'김라일',grade:2,gender:'남'},{name:'안민혁',grade:1,gender:'남'}],
+  '셀4':[{name:'원대연',grade:2,gender:'남'},{name:'이준호',grade:2,gender:'남'},{name:'전지훈',grade:2,gender:'남'},{name:'오현우',grade:1,gender:'남'},{name:'이빛가온',grade:1,gender:'남'}],
+  '셀5':[{name:'민예원',grade:2,gender:'여'},{name:'김도연',grade:2,gender:'여'},{name:'최지은',grade:1,gender:'여'},{name:'김나현',grade:2,gender:'여'},{name:'윤서희',grade:2,gender:'여'}],
+  '셀6':[{name:'조한나',grade:1,gender:'여'},{name:'김한결',grade:1,gender:'남'},{name:'이서후',grade:1,gender:'여'},{name:'임태민',grade:2,gender:'남'},{name:'박지웅',grade:1,gender:'남'}],
+  '셀7':[{name:'조강인',grade:3,gender:'남'},{name:'이에녹',grade:3,gender:'남'},{name:'최민호',grade:2,gender:'남'},{name:'김정록',grade:1,gender:'남'},{name:'정태율',grade:1,gender:'남'}],
+  '셀8':[{name:'심희은',grade:3,gender:'여'},{name:'김은우',grade:3,gender:'여'},{name:'최가은',grade:3,gender:'여'},{name:'양소희',grade:2,gender:'여'},{name:'오은수',grade:1,gender:'여'}],
+  '셀9':[{name:'나정인',grade:3,gender:'여'},{name:'주성',grade:3,gender:'남'},{name:'곽지원',grade:3,gender:'남'},{name:'양인혁',grade:3,gender:'남'},{name:'김다은',grade:3,gender:'여'},{name:'박재영',grade:1,gender:'남'}],
+  '셀10':[{name:'이주형',grade:1,gender:'여'},{name:'윤성하',grade:1,gender:'남'},{name:'나호윤',grade:1,gender:'남'},{name:'이소현',grade:1,gender:'여'},{name:'배유나',grade:2,gender:'여'}],
+  '셀11':[{name:'최유현',grade:1,gender:'여'},{name:'이가영',grade:2,gender:'여'},{name:'최수지',grade:1,gender:'여'},{name:'박동하',grade:1,gender:'남'},{name:'송준원',grade:1,gender:'남'}],
+  '셀12':[{name:'정승빈',grade:3,gender:'여'},{name:'김주하',grade:2,gender:'여'},{name:'김채은',grade:2,gender:'여'},{name:'유재희',grade:2,gender:'여'},{name:'김강은',grade:1,gender:'여'}],
+  'Sp1':[{name:'고예나',grade:1,gender:'여'},{name:'김민채',grade:3,gender:'여'},{name:'송성모',grade:3,gender:'남'},{name:'최승아',grade:3,gender:'여'}],
+  'Sp2':[{name:'최지윤',grade:3,gender:'여'},{name:'최서윤',grade:3,gender:'여'},{name:'백결',grade:3,gender:'남'},{name:'조혁준',grade:3,gender:'남'}],
+  'Sp3':[{name:'김재원',grade:1,gender:'남'},{name:'김유진',grade:2,gender:'여'},{name:'김강희',grade:1,gender:'여'},{name:'박서연',grade:1,gender:'여'}],
+  'Sp4':[{name:'박시우',grade:1,gender:'남'},{name:'하어림',grade:1,gender:'남'},{name:'박진서',grade:3,gender:'여'},{name:'임소명',grade:3,gender:'여'}],
+  'Sp5':[{name:'오희수',grade:3,gender:'여'},{name:'박민주',grade:1,gender:'여'},{name:'장세민',grade:3,gender:'남'},{name:'정원영',grade:3,gender:'남'}],
+  'Sp6':[{name:'이서현',grade:1,gender:'여'},{name:'이소민',grade:3,gender:'여'},{name:'김도헌',grade:3,gender:'남'},{name:'이하준',grade:1,gender:'남'}],
+};
+const CELL_ORDER = ['셀1','셀2','셀3','셀4','셀5','셀6','셀7','셀8','셀9','셀10','셀11','셀12'];
+const ALL_CELLS = CELL_ORDER.concat(['Sp1','Sp2','Sp3','Sp4','Sp5','Sp6']);
+
+/* ============ 유틸 ============ */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function sundayOf(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate()-x.getDay()); return x; }
+function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fmtWk(w){ const d=new Date(w+'T00:00:00'); return (d.getMonth()+1)+'/'+d.getDate(); }
+function recentSundays(n){ const out=[]; let s=sundayOf(new Date()); for(let i=0;i<n;i++){ out.push(ymd(s)); s=new Date(s); s.setDate(s.getDate()-7);} return out; }
+function relTime(iso){ if(!iso) return '—'; const t=new Date(iso).getTime(); const m=Math.floor((Date.now()-t)/60000);
+  if(m<1)return '방금'; if(m<60)return m+'분 전'; const h=Math.floor(m/60); if(h<24)return h+'시간 전'; const dd=Math.floor(h/24); if(dd<7)return dd+'일 전'; return new Date(iso).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'}); }
+
+/* ============ 인증 (관리자 전용) ============ */
+let MY = null;
+function fillSelect(){
+  const sel=document.getElementById('teacher-select');
+  sel.innerHTML='<option value="">— 본인 선택 —</option>';
+  const og=document.createElement('optgroup'); og.label='👑 관리자';
+  TEACHERS.filter(t=>t.admin).forEach(t=>{ const o=document.createElement('option'); o.value=t.name; o.textContent=t.name+' · '+t.role; og.appendChild(o); });
+  sel.appendChild(og);
+  const other=document.createElement('optgroup'); other.label='그 외 (관리자 아님)';
+  TEACHERS.filter(t=>!t.admin).forEach(t=>{ const o=document.createElement('option'); o.value=t.name; o.textContent=t.name; other.appendChild(o); });
+  sel.appendChild(other);
+  const saved=localStorage.getItem('mock_teacher'); if(saved) sel.value=saved;
+}
+function adminLogin(){
+  const pin=(document.getElementById('pin-input').value||'').trim();
+  const name=document.getElementById('teacher-select').value;
+  const err=document.getElementById('gate-err');
+  if(pin!==PRIVATE_KEY){ err.textContent='❌ 접근 코드가 일치하지 않습니다'; return; }
+  const me=TEACHERS.find(t=>t.name===name);
+  if(!me){ err.textContent='❌ 본인 이름을 선택해 주세요'; return; }
+  if(!me.admin){ err.textContent='⛔ 관리자 전용 페이지입니다. (국장단·목사·총무만 접근)'; return; }
+  err.textContent='';
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  MY=me; enterApp();
+}
+function logout(){ localStorage.removeItem('mock_teacher'); document.getElementById('app-root').style.display='none'; document.getElementById('gate-root').style.display=''; }
+function enterApp(){
+  document.getElementById('gate-root').style.display='none';
+  document.getElementById('app-root').style.display='';
+  document.getElementById('admin-name').textContent=MY.name;
+  Hub.logAccess(MY.name, 'admin');
+  renderAll();
+}
+
+/* ============ 렌더 ============ */
+let SEL_WEEK = ymd(sundayOf(new Date()));
+async function renderAll(){
+  const body=document.getElementById('admin-body');
+  body.innerHTML='<div class="card"><span class="spin"></span><span class="loading">현황을 불러오는 중…</span></div>';
+  const [logs, att, photoSet, prayers, notices] = await Promise.all([
+    Hub.select('access_log?select=teacher,page,at&order=at.desc&limit=3000'),
+    Hub.loadAttendance(),
+    Photos.load(),
+    fetch('data/prayers.json?cb='+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
+    fetch('data/notices.json?cb='+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
+  ]);
+  body.innerHTML =
+    sectionAccess(logs) +
+    sectionAttendance(att) +
+    sectionPhotos(photoSet) +
+    sectionPrayerNotice(prayers, notices);
+  // 출석 주차 선택 이벤트
+  const wk=document.getElementById('wk-sel');
+  if(wk) wk.addEventListener('change', e=>{ SEL_WEEK=e.target.value; document.getElementById('att-body').innerHTML=attTable(window.__ATT||{}); });
+}
+
+/* 1) 접속 현황 */
+function sectionAccess(logs){
+  const by={};
+  logs.forEach(l=>{ if(!by[l.teacher]) by[l.teacher]={last:l.at,count:0}; by[l.teacher].count++; if(l.at>by[l.teacher].last) by[l.teacher].last=l.at; });
+  const accessed=TEACHERS.filter(t=>by[t.name]).sort((a,b)=> (by[b.name].last||'').localeCompare(by[a.name].last||''));
+  const never=TEACHERS.filter(t=>!by[t.name]);
+  let rows=accessed.map(t=>`<tr><td>${esc(t.name)} ${t.admin?'<span class="tag warn">관리자</span>':''}</td><td>${esc(t.cell||t.role)}</td><td>${relTime(by[t.name].last)}</td><td class="r">${by[t.name].count}회</td></tr>`).join('');
+  return `
+  <div class="card">
+    <h2>📊 접속 현황</h2>
+    <div class="sub">선생님별 마지막 접속·접속 횟수 (30분 단위 기록)</div>
+    <div class="kpis">
+      <div class="kpi ok"><div class="n">${accessed.length}</div><div class="l">접속한 선생님</div></div>
+      <div class="kpi ${never.length?'danger':'ok'}"><div class="n">${never.length}</div><div class="l">아직 미접속</div></div>
+      <div class="kpi info"><div class="n">${TEACHERS.length}</div><div class="l">전체 선생님</div></div>
+    </div>
+    ${never.length?`<div style="margin-bottom:12px"><b style="color:#fca5a5">아직 한 번도 접속 안 함:</b><div class="chips" style="margin-top:6px">${never.map(t=>`<span class="chip danger">${esc(t.name)}${t.cell?' ('+esc(t.cell)+')':''}</span>`).join('')}</div></div>`:''}
+    <table><thead><tr><th>선생님</th><th>소속</th><th>마지막 접속</th><th class="r">횟수</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="loading">접속 기록이 아직 없습니다.</td></tr>'}</tbody></table>
+  </div>`;
+}
+
+/* 2) 출석 입력/누락 */
+function sectionAttendance(att){
+  window.__ATT=att;
+  const weeks=recentSundays(8).filter(w=> new Date(w)<=new Date());
+  if(!weeks.includes(SEL_WEEK)) SEL_WEEK=weeks[0];
+  const opts=weeks.map(w=>`<option value="${w}" ${w===SEL_WEEK?'selected':''}>${w} (${fmtWk(w)})${w===weeks[0]?' · 이번 주':''}</option>`).join('');
+  return `
+  <div class="card">
+    <h2>✅ 출석 입력 / 누락</h2>
+    <div class="sub">셀별 출석 입력 현황 (Supabase 공유 데이터 기준)</div>
+    <div class="week-pick">📅 주차: <select id="wk-sel">${opts}</select></div>
+    <div id="att-body">${attTable(att)}</div>
+  </div>`;
+}
+function attTable(att){
+  const wkData=att[SEL_WEEK]||{};
+  let done=0, partial=0, missing=0;
+  const rows=CELL_ORDER.map(cell=>{
+    const studs=CELL_STUDENTS[cell]||[];
+    const entered=studs.filter(s=>wkData[s.name]&&wkData[s.name].status).length;
+    const ct=CELL_TEACHERS[cell]||{};
+    let tag;
+    if(entered===0){ tag='<span class="tag danger">미입력</span>'; missing++; }
+    else if(entered<studs.length){ tag='<span class="tag warn">일부 ('+entered+'/'+studs.length+')</span>'; partial++; }
+    else { tag='<span class="tag ok">완료</span>'; done++; }
+    return `<tr><td><b>${cell}</b></td><td>${esc(ct.homeroom||'')}${ct.sub?' · '+esc(ct.sub):''}</td><td class="c">${entered}/${studs.length}</td><td class="c">${tag}</td></tr>`;
+  }).join('');
+  return `
+    <div class="kpis">
+      <div class="kpi ok"><div class="n">${done}</div><div class="l">입력 완료 셀</div></div>
+      <div class="kpi warn"><div class="n">${partial}</div><div class="l">일부 입력</div></div>
+      <div class="kpi danger"><div class="n">${missing}</div><div class="l">미입력 셀</div></div>
+    </div>
+    <table><thead><tr><th>셀</th><th>담임·부담임</th><th class="c">입력</th><th class="c">상태</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="muted-note">※ Special 셀은 출석 입력 대상이 아니라 제외했습니다. 미입력 셀 담임 선생님께 안내해 주세요.</div>`;
+}
+
+/* 3) 사진 등록 현황 */
+function sectionPhotos(photoSet){
+  let have=0; const missingByCell=[];
+  ALL_CELLS.forEach(cell=>{
+    const studs=CELL_STUDENTS[cell]||[];
+    const miss=[];
+    studs.forEach(s=>{ if(photoSet.has(Photos.slug(s.name))) have++; else miss.push(s); });
+    if(miss.length) missingByCell.push({cell, miss});
+  });
+  const total=ALL_CELLS.reduce((a,c)=>a+(CELL_STUDENTS[c]||[]).length,0);
+  const missTotal=total-have;
+  const missHtml=missingByCell.map(g=>`<div style="margin-top:8px"><b>${g.cell}</b> <span class="tag muted">${g.miss.length}명</span><div class="chips" style="margin-top:5px">${g.miss.map(s=>`<span class="chip"><img class="stu-photo-sm" src="${Photos.defaultAvatar(s.gender)}" alt="">${esc(s.name)}</span>`).join('')}</div></div>`).join('');
+  return `
+  <div class="card">
+    <h2>📸 사진 등록 현황</h2>
+    <div class="sub">전체 ${total}명 중 사진 등록 상태</div>
+    <div class="kpis">
+      <div class="kpi ok"><div class="n">${have}</div><div class="l">등록 완료</div></div>
+      <div class="kpi ${missTotal?'danger':'ok'}"><div class="n">${missTotal}</div><div class="l">미등록</div></div>
+      <div class="kpi info"><div class="n">${Math.round(have/total*100)}%</div><div class="l">등록률</div></div>
+    </div>
+    ${missTotal?`<div><b style="color:#fca5a5">미등록 학생 (셀별):</b>${missHtml}</div>`:'<div class="tag ok">🎉 전원 사진 등록 완료!</div>'}
+  </div>`;
+}
+
+/* 4) 기도·공지 현황/관리 */
+function sectionPrayerNotice(prayers, notices){
+  const pItems=(prayers&&(prayers.items||prayers))||[];
+  const nItems=(notices&&(notices.items||notices))||[];
+  const pActive=pItems.filter(x=>x.active!==false).length;
+  const nActive=nItems.filter(x=>x.active!==false).length;
+  return `
+  <div class="card">
+    <h2>🙏 기도제목 · 📢 공지 현황 / 관리</h2>
+    <div class="sub">전체 공유(GitHub) 데이터 기준</div>
+    <div class="kpis">
+      <div class="kpi info"><div class="n">${pActive}</div><div class="l">공유 기도제목</div></div>
+      <div class="kpi info"><div class="n">${nActive}</div><div class="l">활성 공지</div></div>
+    </div>
+    <div class="gh-links">
+      <a href="${GH}/notices.json" target="_blank">📢 공지 편집</a>
+      <a href="${GH}/schedule.json" target="_blank">📅 일정 편집</a>
+      <a href="${GH}/prayers.json" target="_blank">🙏 전체 기도제목 편집</a>
+      <a href="ADMIN_GUIDE.md" target="_blank">📖 관리 가이드</a>
+    </div>
+    <div class="muted-note">GitHub에서 편집 → "Commit changes" → 1~2분 후 모든 화면 반영. (학생 개인 기도제목은 각 선생님이 prayer.html에서 관리)</div>
+  </div>`;
+}
+
+/* ============ 초기화 ============ */
+fillSelect();
+(function(){
+  const pin=localStorage.getItem('access_pin'), name=localStorage.getItem('mock_teacher');
+  if(pin===PRIVATE_KEY && name){ const me=TEACHERS.find(t=>t.name===name); if(me && me.admin){ MY=me; enterApp(); return; } }
+  document.getElementById('pin-input').addEventListener('keydown', e=>{ if(e.key==='Enter') adminLogin(); });
+})();
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 */
+(function () {
+  const KEY = 'nsdhs2026h2';
+  const ITEMS = [
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['__sep__'],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['relations.html', '🕸 관계도', '?key=' + KEY],
+    ['attendance-overview.html', '📊 전체 출석현황', ''],
+    ['photos.html', '📸 사진 등록', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    it[0] === '__sep__'
+      ? '<span class="site-nav-sep" aria-hidden="true"></span>'
+      : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
+</body>
+</html>

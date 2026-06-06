@@ -303,6 +303,45 @@ const Photos = (function () {
 Photos.load();
 Photos.enableLightbox();
 
+/* ============================================================
+ * Hub — Supabase 공유 데이터 (접속 로그 + 출석 중앙 저장, REST)
+ * ============================================================ */
+const Hub = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const REST = URL_BASE + '/rest/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+  function logAccess(teacher, page) {
+    if (!teacher) return;
+    try {
+      const k = 'lastlog_' + page, now = Date.now();
+      if (now - (+(localStorage.getItem(k) || 0)) < 30 * 60 * 1000) return;
+      localStorage.setItem(k, String(now));
+    } catch (e) {}
+    fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page || '' }) }).catch(function () {});
+  }
+  async function loadAttendance() {
+    const map = {};
+    try {
+      const res = await fetch(REST + '/attendance?select=cell,week,student,status,note,teacher', { headers: H });
+      if (res.ok) (await res.json()).forEach(function (r) {
+        if (!map[r.week]) map[r.week] = {};
+        map[r.week][r.student] = { status: r.status || '', note: r.note || '', cell: r.cell, teacher: r.teacher };
+      });
+    } catch (e) { console.warn('attendance load failed', e); }
+    return map;
+  }
+  async function saveAttendance(records) {
+    if (!records || !records.length) return true;
+    const res = await fetch(REST + '/attendance', { method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H), body: JSON.stringify(records) });
+    if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error('출석 저장 실패 (' + res.status + ') ' + t); }
+    return true;
+  }
+  async function select(path) { try { const r = await fetch(REST + '/' + path, { headers: H }); return r.ok ? await r.json() : []; } catch (e) { return []; } }
+  return { logAccess, loadAttendance, saveAttendance, select, REST, H };
+})();
+let REMOTE_ATT = {};
+
 const PRIVATE_KEY = 'nsdhs2026h2';
 
 /* ===== 데이터 ===== */
@@ -412,10 +451,15 @@ function login() {
   showApp();
 }
 
-/* ===== 출석 데이터 헬퍼 ===== */
+/* ===== 출석 데이터 헬퍼 (localStorage + Supabase 공유 병합) ===== */
 function userAtt() {
-  try { return JSON.parse(localStorage.getItem('attendance_data') || '{}'); }
-  catch { return {}; }
+  let local = {};
+  try { local = JSON.parse(localStorage.getItem('attendance_data') || '{}'); } catch (e) {}
+  const merged = {};
+  [local, REMOTE_ATT].forEach(src => {
+    Object.keys(src || {}).forEach(w => { merged[w] = Object.assign(merged[w] || {}, src[w]); });
+  });
+  return merged;
 }
 
 function recentWeeks(n) {
@@ -636,11 +680,14 @@ function renderAll() {
   }
 }
 
-function showApp() {
+async function showApp() {
   document.getElementById('gate-root').style.display = 'none';
   document.getElementById('app-root').style.display = '';
   document.getElementById('search').addEventListener('input', renderAll);
+  Hub.logAccess(localStorage.getItem('mock_teacher'), 'overview');
   renderAll();
+  // Supabase 공유 출석 로드 후 재렌더 (전 선생님 입력 반영)
+  try { REMOTE_ATT = await Hub.loadAttendance(); renderAll(); } catch (e) { console.warn(e); }
 }
 
 function checkAutoLogin() {

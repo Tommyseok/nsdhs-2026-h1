@@ -505,6 +505,50 @@ const Photos = (function () {
 Photos.load();
 Photos.enableLightbox();
 
+/* ============================================================
+ * Hub — Supabase 공유 데이터 (접속 로그 + 출석 중앙 저장, REST)
+ * ============================================================ */
+const Hub = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const REST = URL_BASE + '/rest/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+  // 접속 기록 (브라우저별 30분 쓰로틀)
+  function logAccess(teacher, page) {
+    if (!teacher) return;
+    try {
+      const k = 'lastlog_' + page, now = Date.now();
+      if (now - (+(localStorage.getItem(k) || 0)) < 30 * 60 * 1000) return;
+      localStorage.setItem(k, String(now));
+    } catch (e) {}
+    fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page || '' }) }).catch(function () {});
+  }
+  // 출석 전체 로드 → {week: {student: {status, note, cell, teacher}}}
+  async function loadAttendance() {
+    const map = {};
+    try {
+      const res = await fetch(REST + '/attendance?select=cell,week,student,status,note,teacher', { headers: H });
+      if (res.ok) (await res.json()).forEach(function (r) {
+        if (!map[r.week]) map[r.week] = {};
+        map[r.week][r.student] = { status: r.status || '', note: r.note || '', cell: r.cell, teacher: r.teacher };
+      });
+    } catch (e) { console.warn('attendance load failed', e); }
+    return map;
+  }
+  // 출석 bulk upsert (records: [{cell, week, student, status, note, teacher}])
+  async function saveAttendance(records) {
+    if (!records || !records.length) return true;
+    const res = await fetch(REST + '/attendance', {
+      method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H),
+      body: JSON.stringify(records)
+    });
+    if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error('출석 저장 실패 (' + res.status + ') ' + t); }
+    return true;
+  }
+  async function select(path) { try { const r = await fetch(REST + '/' + path, { headers: H }); return r.ok ? await r.json() : []; } catch (e) { return []; } }
+  return { logAccess, loadAttendance, saveAttendance, select, REST, H };
+})();
+
 const PRIVATE_KEY = 'nsdhs2026h2';
 
 /* =========================================================
@@ -547,6 +591,12 @@ const CELL_STUDENTS = {
   '셀11': ['최유현','이가영','최수지','박동하','송준원'],
   '셀12': ['정승빈','김주하','김채은','유재희','김강은'],
 };
+
+// 학생 → 셀 매핑 (출석 Supabase 저장용)
+const STUDENT_TO_CELL = {};
+Object.entries(CELL_STUDENTS).forEach(([c, arr]) => arr.forEach(n => { STUDENT_TO_CELL[n] = c; }));
+// 이번 세션에서 내가 수정한 (주차|학생) — 저장 시 이것만 Supabase upsert (남의 입력 보호)
+const DIRTY = new Set();
 
 const STUDENT_INFO = {
   '권하율':{g:1,s:'남'},'하은유':{g:1,s:'여'},'홍기진':{g:2,s:'남'},'서이수':{g:3,s:'여'},'장지현':{g:2,s:'여'},'김은':{g:1,s:'여'},
@@ -722,12 +772,14 @@ function setStatus(name, status) {
   if (!ATTENDANCE[CURRENT_WEEK]) ATTENDANCE[CURRENT_WEEK] = {};
   if (!ATTENDANCE[CURRENT_WEEK][name]) ATTENDANCE[CURRENT_WEEK][name] = {status:'', note:''};
   ATTENDANCE[CURRENT_WEEK][name].status = status;
+  DIRTY.add(CURRENT_WEEK + '|' + name);
   renderStudents();
 }
 function setNote(name, note) {
   if (!ATTENDANCE[CURRENT_WEEK]) ATTENDANCE[CURRENT_WEEK] = {};
   if (!ATTENDANCE[CURRENT_WEEK][name]) ATTENDANCE[CURRENT_WEEK][name] = {status:'', note:''};
   ATTENDANCE[CURRENT_WEEK][name].note = note;
+  DIRTY.add(CURRENT_WEEK + '|' + name);
   renderSummary();
 }
 
@@ -882,9 +934,25 @@ function renderSummary() {
   `;
 }
 
-function saveAttendance() {
+async function saveAttendance() {
   persistAttendance();
-  showToast('💾 저장됨 — 브라우저에 임시 보관 중');
+  // 내가 이번 세션에서 수정한 기록만 Supabase 중앙 저장 (전 선생님 공유)
+  const records = [];
+  DIRTY.forEach(key => {
+    const i = key.indexOf('|'); const week = key.slice(0, i); const student = key.slice(i + 1);
+    const rec = (ATTENDANCE[week] || {})[student]; if (!rec) return;
+    records.push({ cell: STUDENT_TO_CELL[student] || (MY && MY.cell) || '', week: week, student: student, status: rec.status || '', note: rec.note || '', teacher: MY ? MY.name : '' });
+  });
+  if (!records.length) { showToast('💾 저장됨'); return; }
+  showToast('💾 저장 중…');
+  try {
+    await Hub.saveAttendance(records);
+    DIRTY.clear();
+    showToast('✅ 저장 완료 — 전체 공유됨');
+  } catch (e) {
+    console.error(e);
+    showToast('⚠️ 브라우저에는 저장됨 / 공유 실패 — 인터넷 확인 후 다시 저장');
+  }
 }
 
 function resetAll() {
@@ -909,10 +977,11 @@ function escapeHtml(s) {
 /* =========================================================
  * 진입
  * ========================================================= */
-function showApp() {
+async function showApp() {
   document.getElementById('gate-root').style.display = 'none';
   document.getElementById('app-root').style.display = '';
   document.getElementById('my-name').textContent = MY.name + ' 선생님';
+  Hub.logAccess(MY.name, 'attendance');
   if (MY.cell) {
     document.getElementById('my-cell-badge').textContent = MY.cell + ' · ' + MY.role;
   }
@@ -934,6 +1003,12 @@ function showApp() {
   CURRENT_WEEK = thisSunday();
   renderCellTabs();
   renderWeek();
+  // Supabase 공유 출석 병합 (다른 선생님이 입력한 것도 반영) 후 재렌더
+  try {
+    const remote = await Hub.loadAttendance();
+    Object.keys(remote).forEach(w => { ATTENDANCE[w] = Object.assign(ATTENDANCE[w] || {}, remote[w]); });
+    renderWeek();
+  } catch (e) { console.warn(e); }
 }
 
 function checkAutoLogin() {

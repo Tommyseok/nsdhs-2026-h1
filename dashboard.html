@@ -862,6 +862,45 @@ Photos.load();
 Photos.enableLightbox();
 
 /* ============================================================
+ * Hub — Supabase 공유 데이터 (접속 로그 + 출석 중앙 저장, REST)
+ * ============================================================ */
+const Hub = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const REST = URL_BASE + '/rest/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+  function logAccess(teacher, page) {
+    if (!teacher) return;
+    try {
+      const k = 'lastlog_' + page, now = Date.now();
+      if (now - (+(localStorage.getItem(k) || 0)) < 30 * 60 * 1000) return;
+      localStorage.setItem(k, String(now));
+    } catch (e) {}
+    fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page || '' }) }).catch(function () {});
+  }
+  async function loadAttendance() {
+    const map = {};
+    try {
+      const res = await fetch(REST + '/attendance?select=cell,week,student,status,note,teacher', { headers: H });
+      if (res.ok) (await res.json()).forEach(function (r) {
+        if (!map[r.week]) map[r.week] = {};
+        map[r.week][r.student] = { status: r.status || '', note: r.note || '', cell: r.cell, teacher: r.teacher };
+      });
+    } catch (e) { console.warn('attendance load failed', e); }
+    return map;
+  }
+  async function saveAttendance(records) {
+    if (!records || !records.length) return true;
+    const res = await fetch(REST + '/attendance', { method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H), body: JSON.stringify(records) });
+    if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error('출석 저장 실패 (' + res.status + ') ' + t); }
+    return true;
+  }
+  async function select(path) { try { const r = await fetch(REST + '/' + path, { headers: H }); return r.ok ? await r.json() : []; } catch (e) { return []; } }
+  return { logAccess, loadAttendance, saveAttendance, select, REST, H };
+})();
+let REMOTE_ATT = {};
+
+/* ============================================================
  * 1. 선생님 데이터 (실제로는 시트에서 가져옴)
  * ============================================================ */
 const TEACHERS = [
@@ -1196,6 +1235,10 @@ function showApp() {
   renderPrayers();
   renderMyClass(me);
   renderQuickMenu(me);
+
+  // 접속 기록 + Supabase 공유 출석 병합 후 내 반 재렌더
+  Hub.logAccess(me.name, 'dashboard');
+  (async () => { try { REMOTE_ATT = await Hub.loadAttendance(); renderMyClass(me); } catch (e) { console.warn(e); } })();
 
   // 시트에서 최신 데이터 가져와 다시 렌더 (성공 시)
   refreshFromSheet();
@@ -1582,7 +1625,7 @@ function renderQuickMenu(me) {
     {label:'🌱 공개용 편성표', href:'assignments.html'},
   ];
   if (me.admin) {
-    links.push({label:'👑 관리자 페이지', href:'#', admin:true, click:"alert('관리자 페이지 — 다음 단계에서 구현')"});
+    links.push({label:'👑 관리자 페이지', href:'admin.html', admin:true});
   }
   const root = document.getElementById('quick-menu');
   root.innerHTML = links.map(l => {
@@ -1598,9 +1641,13 @@ function escapeHtml(s) {
 }
 
 function loadAttendanceFromStorage() {
-  try {
-    return JSON.parse(localStorage.getItem('attendance_data') || '{}');
-  } catch { return {}; }
+  let local = {};
+  try { local = JSON.parse(localStorage.getItem('attendance_data') || '{}'); } catch (e) {}
+  const merged = {};
+  [local, REMOTE_ATT].forEach(src => {
+    Object.keys(src || {}).forEach(w => { merged[w] = Object.assign(merged[w] || {}, src[w]); });
+  });
+  return merged;
 }
 
 function getRecentWeeks(n) {

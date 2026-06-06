@@ -56,6 +56,7 @@
 | `relations.html` | URL `?key=` | 🕸 관계도 (1·2학기 토글) ※ 이전 파일명 index.html |
 | `attendance-overview.html` | PIN | 📊 전체 출석현황 (모든 선생님 접근) |
 | `photos.html` | PIN + 본인 선택 | 📸 학생 사진 업로드 전용 (선생님=본인 셀, 관리자=전체) |
+| `admin.html` | PIN + 관리자 본인 선택 | 👑 **관리자 페이지** (접속·출석누락·사진·기도 현황) — admin 7명만 접근 |
 | `assignments.html` | 공개 | 🌱 공개용 편성표 (학생·학부모) |
 | `assignments.pdf` | 공개 | 공개용 PDF (인쇄용) |
 
@@ -82,11 +83,12 @@
 ### 2. localStorage (브라우저별, 본인만 보임)
 - `mock_teacher` — 본인 선생님 이름
 - `access_pin` — 통과한 PIN
-- `attendance_data` — 출석 입력 데이터
+- `attendance_data` — 출석 입력 (로컬 캐시 / 오프라인 fallback. **공유 원본은 Supabase attendance 테이블** — 아래 #3.5)
 - `prayer_data` — 본인이 등록한 학생상황+기도제목
+- `lastlog_*` — 접속 로그 쓰로틀 타임스탬프(페이지별)
 
 → 같은 사람이 같은 브라우저에서만 보임
-→ 다른 선생님과 공유는 prayer.html 의 "📤 GitHub 공유" 버튼 → JSON 출력 → 관리자 commit
+→ prayer는 "📤 GitHub 공유" 버튼으로 공유. 출석은 자동으로 Supabase 공유됨(#3.5)
 
 ### 3. Supabase Storage (학생 사진, 전체 공유)
 - 버킷 `student-photos`, 파일 키 = **`{학생이름 UTF-8 hex}.jpg`** (Storage 키가 한글 불가 → hex 인코딩)
@@ -97,6 +99,13 @@
 - 로드 시 Storage `list` 1회 → `_vers` 맵 → 아바타 src 세팅(캐시버스팅 `?v=updated_at`)
 - Storage 정책: anon SELECT/INSERT/UPDATE 허용, **DELETE 미허용**
 - 사진 교체: 같은 학생에 다시 업로드(upsert). 삭제: 임시 delete 정책 추가 → REST DELETE → 정책 제거 (또는 Supabase 대시보드)
+
+### 3.5 Supabase Postgres (접속·출석, 전체 공유) — PostgREST `fetch`
+각 페이지의 `Hub` 헬퍼(또는 prayer/photos의 `logAccess`)가 `{URL}/rest/v1/...` 호출. RLS: anon SELECT/INSERT/UPDATE 허용(신뢰 기반), DELETE 미허용.
+- **`access_log`** (id, teacher, page, at) — 로그인/입장 시 1줄 기록(브라우저별 30분 쓰로틀, localStorage `lastlog_*`). admin.html 접속 현황·미접속 명단에 사용
+- **`attendance`** (cell, week, student, status, note, teacher, updated_at · PK=week+student) — **출석 공유 원본**. attendance.html 저장 시 내가 수정한 것만 upsert(`merge-duplicates`, DIRTY 추적으로 남의 입력 보호). dashboard/attendance-overview/attendance/admin 가 로드 시 병합(`Hub.loadAttendance`) → 전 선생님 공유
+- 삭제·초기화는 Supabase `execute_sql`(truncate)로. 학기 말 출석 데이터 정리 시 사용
+- 관리자가 직접 보려면: admin.html (접속·출석누락·사진·기도 현황 한 화면)
 
 ### 4. 코드에 하드코딩 (정적 데이터)
 - `TEACHERS` — 선생님 정보 (이름·셀·역할·admin)
@@ -188,7 +197,7 @@ cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
 ```
 파일 목록:
 - `dashboard.html`, `attendance.html`, `attendance-overview.html`
-- `prayer.html`, `teachers.html`, `relations.html`, `photos.html`
+- `prayer.html`, `teachers.html`, `relations.html`, `photos.html`, `admin.html`
 - `dashboard_backend.gs`, `DASHBOARD_DEPLOY.md`
 - ⚠️ 각 페이지 하단 **공통 네비 주입 스크립트의 `const KEY = 'nsdhs2026h2'`** 도 함께 치환 (teachers/관계도 링크에 사용)
 
@@ -217,6 +226,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **관리자 페이지(admin.html) + 출석 중앙화** — Supabase 테이블 `access_log`·`attendance` 신규. 모든 로그인에 접속 기록, 출석 저장 시 Supabase upsert(전 선생님 공유, dashboard/overview/attendance 병합). admin.html(관리자 7명): 접속 현황·미접속 / 셀별 출석 입력·누락(주차 선택) / 사진 등록 현황·미등록 / 기도·공지 현황+GitHub 편집 링크
 0. **메인 화면 = Home(대시보드)** — 루트 `index.html` 을 dashboard.html 리다이렉트로 변경, 기존 관계도 → `relations.html` 로 분리. 공통 네비 라벨 "대시보드"→"Home", 순서 재정렬: `Home·출석입력·학생상황기도` │ `셀편성·관계도·전체출석현황·사진등록` (구분선 2그룹)
 0. **학생 사진 + 페이지 네비 통합** — ① 업로드 전용 `photos.html` (선생님=본인 셀, 관리자=전체). ② dashboard/attendance/attendance-overview/prayer/teachers 이름 옆 아바타 + **클릭 시 라이트박스 확대**. ③ 모든 교사 페이지 상단 공통 네비 바(셀편성·출석현황 등 상호 연결, teachers의 "출석현황 준비중" → 실제 연결). 공개 assignments·관계도 노드엔 사진 미표시. 키=이름 UTF-8 hex
   - (이력: 전용 페이지 → 대시보드 인라인 → 다시 전용 photos.html + 네비/라이트박스 로 정착)
@@ -239,7 +249,7 @@ python make_assignment_pdf.py
 
 ## 🚧 알려진 제약사항·이슈
 
-1. **localStorage 격리** — 데이터 본인 브라우저만, 공유는 GitHub commit 통해서
+1. **localStorage 격리(부분 해결)** — prayer_data 등은 여전히 본인 브라우저만. 단 **출석·접속·사진은 Supabase로 공유**됨(attendance/access_log 테이블 + Storage). 출석은 저장 시 자동 동기화
 2. **백엔드 없음** — 실시간 동기화·이메일 발송 X (사용자 결정)
 3. **OAuth 자동화 어려움** — Apps Script 권한 부여 시 Chrome popup이 별도 window로 떠서 browser-harness 잡기 어려움
 4. **시트 fetch 사용 안 함** — 한때 시도했으나 사용자가 GitHub JSON 방식 선호
@@ -250,7 +260,7 @@ python make_assignment_pdf.py
 ## 🛠 기술 스택
 
 - **Frontend**: HTML + 바닐라 CSS + 바닐라 JS (프레임워크 없음)
-- **저장소**: localStorage + GitHub JSON 파일 + **Supabase Storage (학생 사진)**
+- **저장소**: localStorage + GitHub JSON 파일 + **Supabase Storage (사진) + Supabase Postgres (접속 access_log·출석 attendance)**
 - **호스팅**: GitHub Pages (정적)
 - **PDF 생성**: Python reportlab (`make_assignment_pdf.py`)
 - **데이터 변환**: Python (`_make_historical.py` 등 임시 스크립트)
@@ -278,6 +288,7 @@ publish/
 ├── attendance-overview.html
 ├── prayer.html
 ├── photos.html (학생 사진 업로드 전용 — Supabase Storage)
+├── admin.html (관리자 페이지 — 접속·출석·사진·기도 현황)
 ├── teachers.html
 ├── index.html (루트 → dashboard.html 리다이렉트)
 ├── relations.html (관계도 · 이전 index.html)

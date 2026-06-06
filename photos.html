@@ -381,11 +381,20 @@ function setStatus(msg, cls) {
   el.innerHTML = msg || '';
 }
 
+// 접속 기록 (Supabase access_log, 30분 쓰로틀)
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/access_log', { method: 'POST', headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify({ teacher: teacher, page: page }) }).catch(function () {});
+}
+
 async function showApp() {
   const name = localStorage.getItem('mock_teacher');
   const me = TEACHERS.find(t => t.name === name);
   if (!me) { logout(); return; }
   window.CURRENT_ME = me;
+  logAccess(me.name, 'photos');
 
   document.getElementById('gate-root').style.display = 'none';
   document.getElementById('app-root').style.display = '';
