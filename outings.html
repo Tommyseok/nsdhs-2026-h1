@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="내수동 경주자 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Runners 2026 · 아웃팅 기록</title>
+<style>
+  :root {
+    --bg: #0b0f17; --bg2: #111827; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
+    --grade1: #fbbf24; --grade2: #60a5fa; --grade3: #34d399;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+  /* ============== Gate ============== */
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .gate-card .lock { font-size: 48px; text-align: center; margin-bottom: 16px; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: var(--muted); text-align: center; }
+  .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 4px; }
+  .gate-card .gate-note { font-size: 11.5px; color: var(--muted); margin-top: 16px; padding: 10px 12px; background: rgba(255,255,255,.03); border-radius: 6px; border-left: 2px solid var(--accent); line-height: 1.6; }
+  .gate-card .gate-note strong { color: #c4b5fd; }
+
+  /* ============== Header ============== */
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header .greeting { flex: 1; min-width: 0; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  header h1 .my-cell { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
+  header h1 .my-admin { background: rgba(245,158,11,.2); color: #fcd34d; font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(245,158,11,.4); font-weight: 700; }
+  header .header-actions { display: flex; gap: 6px; }
+  header button, header a.btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; }
+  header button:hover, header a.btn:hover { background: rgba(255,255,255,.15); }
+  header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
+
+  /* ============== Intro ============== */
+  .intro { margin-top: 18px; padding: 14px 16px; background: linear-gradient(135deg, rgba(167,139,250,.12) 0%, rgba(124,58,237,.08) 100%); border: 1px solid rgba(167,139,250,.35); border-radius: 12px; font-size: 13px; color: #ddd6fe; line-height: 1.6; }
+  .intro strong { color: #c4b5fd; }
+
+  /* ============== Upload form ============== */
+  .post-card { margin-top: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 16px; }
+  .post-card h2 { margin: 0 0 14px; font-size: 16px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; }
+  .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+  .field { flex: 1; min-width: 150px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 5px; }
+  .field input, .field select, .field textarea { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; }
+  .field textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+  .field .cell-fixed { display: inline-block; background: rgba(167,139,250,.18); color: #c4b5fd; border: 1px solid rgba(167,139,250,.4); border-radius: 8px; padding: 10px 14px; font-size: 14px; font-weight: 700; }
+
+  .photo-pick { margin: 6px 0 12px; }
+  .photo-pick .pick-btn { display: inline-flex; align-items: center; gap: 8px; background: rgba(124,58,237,.15); border: 1px dashed var(--accent); color: #c4b5fd; padding: 11px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .photo-pick .pick-btn:hover { background: rgba(124,58,237,.25); }
+  .photo-pick input[type=file] { display: none; }
+  .photo-pick .pick-hint { font-size: 11.5px; color: var(--muted); margin-left: 10px; }
+
+  .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 9px; margin-top: 12px; }
+  .preview-cell { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #0f172a; border: 1px solid var(--border); }
+  .preview-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .preview-cell .rm { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%; background: rgba(15,23,42,.85); border: 1px solid rgba(255,255,255,.25); color: #fff; font-size: 13px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .preview-cell .rm:hover { background: var(--danger); }
+
+  .save-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .save-btn { background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .save-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .save-state { font-size: 12.5px; color: var(--muted); }
+  .save-state.ok { color: var(--ok); } .save-state.err { color: #fca5a5; }
+
+  /* ============== Gallery ============== */
+  .gallery-head { margin-top: 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .gallery-head h2 { margin: 0; font-size: 16px; color: #f1f5f9; }
+  .cell-filter { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-top: 12px; scrollbar-width: thin; }
+  .cell-filter button { flex: 0 0 auto; white-space: nowrap; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); color: #cbd5e1; border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .cell-filter button.active { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; border-color: #a78bfa; }
+
+  #gallery { margin-top: 16px; display: flex; flex-direction: column; gap: 16px; }
+  .outing-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .oc-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 4px; }
+  .oc-cell { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12.5px; font-weight: 800; padding: 3px 11px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); }
+  .oc-date { font-size: 14px; font-weight: 800; color: #f1f5f9; }
+  .oc-author { font-size: 12px; color: var(--muted); }
+  .oc-del { margin-left: auto; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .oc-del:hover { background: rgba(239,68,68,.25); }
+  .oc-text { font-size: 13.5px; color: #d8dee9; line-height: 1.6; margin: 8px 0 12px; white-space: pre-wrap; word-break: break-word; }
+  .oc-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .oc-photos .thumb { aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #0f172a; border: 1px solid var(--border); cursor: pointer; }
+  .oc-photos .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .15s; }
+  .oc-photos .thumb:hover img { transform: scale(1.05); }
+
+  .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 14px; }
+  .footnote { margin-top: 28px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: rgba(255,255,255,.02); border-radius: 8px; border-left: 2px solid var(--border); }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(196,181,253,.3); border-top-color:#c4b5fd; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  /* ============== Lightbox ============== */
+  #lb { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; }
+  #lb.show { display: flex; }
+  #lb img { max-width: 94vw; max-height: 80vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  #lb .lb-bar { position: absolute; top: env(safe-area-inset-top); left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; }
+  #lb .lb-caption { color: #e5e7eb; font-size: 13px; font-weight: 700; }
+  #lb .lb-close { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; width: 38px; height: 38px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+  #lb .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; width: 46px; height: 46px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  #lb .lb-prev { left: 14px; } #lb .lb-next { right: 14px; }
+  #lb .lb-count { position: absolute; bottom: calc(env(safe-area-inset-bottom) + 18px); color: #cbd5e1; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- =================================================== -->
+<!--  Gate (mock login)                                    -->
+<!-- =================================================== -->
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock"><img src="logo-runner.svg" alt="Runners" style="width:62px;height:62px;border-radius:16px;box-shadow:0 8px 24px rgba(124,58,237,.4)"></div>
+      <div style="text-align:center;font-weight:800;letter-spacing:1px;color:#c4b5fd;font-size:13px;margin-bottom:10px">RUNNERS 2026</div>
+      <h1>아웃팅 기록</h1>
+      <p class="gate-sub">2026년 2학기 · 매달 셀 모임 사진과 이야기를 남겨요</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px;text-align:center;letter-spacing:2px;">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">접속</button>
+      <div id="gate-err" style="color:#fca5a5;font-size:12px;margin-top:10px;min-height:16px;text-align:center;"></div>
+      <div class="gate-note">
+        <strong>📌 안내</strong><br>
+        • 접근 코드는 관리자가 카톡으로 안내합니다 (학기마다 변경됨)<br>
+        • 선생님은 <strong>본인 반</strong>, 관리자는 <strong>전체 반</strong> 아웃팅을 올릴 수 있습니다<br>
+        • 올린 기록은 모든 선생님이 함께 볼 수 있어요
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!--  Main App                                             -->
+<!-- =================================================== -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <div class="greeting">
+        <h1>
+          <span>🎒 아웃팅 기록</span>
+          <span id="my-cell-badge" class="my-cell"></span>
+          <span id="my-admin-badge" class="my-admin" style="display:none">👑 전체</span>
+        </h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn" href="dashboard.html">🏠 Home</a>
+        <button onclick="location.reload()">🔄 새로고침</button>
+        <button class="logout" onclick="logout()">🚪 로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <strong>🎒 아웃팅 기록</strong> — 한 달에 한 번 셀 모임을 남겨요. <strong>날짜 · 사진(여러 장) · 간단한 이야기</strong>를 올리면
+      모든 선생님이 함께 추억을 볼 수 있습니다. 사진은 자동으로 압축돼 빠르게 올라가요.
+    </div>
+
+    <!-- 등록 폼 -->
+    <div class="post-card" id="post-card">
+      <h2>📝 새 아웃팅 올리기</h2>
+      <div class="form-row">
+        <div class="field" id="cell-field">
+          <label>반</label>
+          <select id="f-cell"></select>
+        </div>
+        <div class="field" style="max-width:200px">
+          <label>모임 날짜</label>
+          <input id="f-date" type="date">
+        </div>
+      </div>
+      <div class="field">
+        <label>간단한 이야기 (선택)</label>
+        <textarea id="f-text" placeholder="예) 한강공원에서 치킨 먹고 보드게임! 다들 신났어요 😄" maxlength="500"></textarea>
+      </div>
+      <div class="photo-pick">
+        <label class="pick-btn">📷 사진 선택<input id="f-photos" type="file" accept="image/*" multiple></label>
+        <span class="pick-hint">여러 장 한 번에 선택 가능 · 최대 10장</span>
+      </div>
+      <div class="preview-grid" id="preview-grid"></div>
+      <div class="save-row">
+        <button class="save-btn" id="save-btn" onclick="saveOuting()">저장하기</button>
+        <span class="save-state" id="save-state"></span>
+      </div>
+    </div>
+
+    <!-- 갤러리 -->
+    <div class="gallery-head">
+      <h2>📸 아웃팅 갤러리</h2>
+    </div>
+    <div class="cell-filter" id="cell-filter"></div>
+    <div id="gallery"></div>
+
+    <div class="footnote">
+      🔒 사진은 우리 고등부 전용 저장소(Supabase Storage)에 보관됩니다. 모임 기록 목적으로만 사용해 주세요.<br>
+      삭제는 올린 본인 또는 관리자만 가능합니다. 문제가 있으면 총무(석준원)에게 알려주세요.
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lb" onclick="if(event.target.id==='lb')closeLb()">
+  <div class="lb-bar">
+    <span class="lb-caption" id="lb-caption"></span>
+    <button class="lb-close" onclick="closeLb()">✕</button>
+  </div>
+  <button class="lb-nav lb-prev" onclick="stepLb(-1)">‹</button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-nav lb-next" onclick="stepLb(1)">›</button>
+  <div class="lb-count" id="lb-count"></div>
+</div>
+
+<script>
+/* ============================================================
+ * 0. Supabase 헬퍼 (SDK 없이 REST) — 아웃팅 전용
+ * ============================================================ */
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const BUCKET = 'outing-photos';
+const REST_ST = URL_BASE + '/storage/v1';
+const REST_DB = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
+
+const OutingPhotos = (function () {
+  // 파일 → 비율 유지 리사이즈(가로 최대 maxW) JPEG blob (풍경용)
+  function compress(file, maxW) {
+    maxW = maxW || 1280;
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onerror = () => reject(new Error('파일을 읽지 못했습니다'));
+      fr.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('이미지를 열지 못했습니다'));
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          cv.getContext('2d').drawImage(img, 0, 0, w, h);
+          cv.toBlob(b => b ? resolve(b) : reject(new Error('압축 실패')), 'image/jpeg', 0.8);
+        };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+  async function upload(key, blob) {
+    const res = await fetch(REST_ST + '/object/' + BUCKET + '/' + encodeURIComponent(key), {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'image/jpeg', 'x-upsert': 'true', 'cache-control': '3600' }, H),
+      body: blob
+    });
+    if (!res.ok) {
+      let t = ''; try { t = await res.text(); } catch (e) {}
+      throw new Error('사진 업로드 실패 (' + res.status + ') ' + t);
+    }
+    return true;
+  }
+  function url(key) { return REST_ST + '/object/public/' + BUCKET + '/' + encodeURIComponent(key); }
+  return { compress, upload, url };
+})();
+
+const OutingDB = {
+  async list() {
+    const res = await fetch(REST_DB + '/outings?active=eq.true&order=date.desc,created_at.desc&select=*', { headers: H });
+    if (!res.ok) throw new Error('목록 불러오기 실패 (' + res.status + ')');
+    return await res.json();
+  },
+  async insert(rec) {
+    const res = await fetch(REST_DB + '/outings', {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, H),
+      body: JSON.stringify(rec)
+    });
+    if (!res.ok) {
+      let t = ''; try { t = await res.text(); } catch (e) {}
+      throw new Error('저장 실패 (' + res.status + ') ' + t);
+    }
+    return true;
+  },
+  async update(id, patch) {
+    const res = await fetch(REST_DB + '/outings?id=eq.' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: Object.assign({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, H),
+      body: JSON.stringify(patch)
+    });
+    if (!res.ok) throw new Error('수정 실패 (' + res.status + ')');
+    return true;
+  }
+};
+
+// 접속 기록 (Supabase access_log, 30분 쓰로틀)
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch(REST_DB + '/access_log', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page }) }).catch(function () {});
+}
+
+/* ============================================================
+ * 1. 선생님 / 셀 데이터
+ * ============================================================ */
+const TEACHERS = [
+  {name:'오신영', cell:null,    role:'담당 목사',  admin:true},
+  {name:'안종범', cell:null,    role:'부장집사',   admin:true},
+  {name:'석준원', cell:'셀11',  role:'담임·총무',  admin:true},
+  {name:'김광현', cell:null,    role:'교육국장',   admin:true},
+  {name:'송진우', cell:'셀7',   role:'부담임·예배국장', admin:true},
+  {name:'오덕현', cell:'셀9',   role:'담임·미디어국장', admin:true},
+  {name:'이유성', cell:'셀8',   role:'담임·홍보국장',   admin:true},
+  {name:'이윤정', cell:'셀1',   role:'담임 (대가족장)'},
+  {name:'정명경', cell:'셀2',   role:'담임'},
+  {name:'전성희', cell:'셀3',   role:'담임 (대가족장)'},
+  {name:'박대철', cell:'셀4',   role:'담임'},
+  {name:'이수지', cell:'셀5',   role:'담임 (대가족장)'},
+  {name:'정유빈', cell:'셀6',   role:'담임'},
+  {name:'양지현', cell:'셀7',   role:'담임 (대가족장)'},
+  {name:'최희승', cell:'셀10',  role:'담임'},
+  {name:'고은솔', cell:'셀12',  role:'담임'},
+  {name:'이승헌', cell:'셀1',   role:'부담임'},
+  {name:'조세경', cell:'셀2',   role:'부담임'},
+  {name:'김희원', cell:'셀4',   role:'부담임'},
+  {name:'박해니', cell:'셀5',   role:'부담임'},
+  {name:'이규리', cell:'셀8',   role:'부담임'},
+  {name:'김주영', cell:'셀9',   role:'부담임'},
+  {name:'오은규', cell:'셀12',  role:'부담임'},
+];
+
+const CELL_TEACHERS = {
+  '셀1':{homeroom:'이윤정',sub:'이승헌'}, '셀2':{homeroom:'정명경',sub:'조세경'},
+  '셀3':{homeroom:'전성희',sub:''}, '셀4':{homeroom:'박대철',sub:'김희원'},
+  '셀5':{homeroom:'이수지',sub:'박해니'}, '셀6':{homeroom:'정유빈',sub:''},
+  '셀7':{homeroom:'양지현',sub:'송진우'}, '셀8':{homeroom:'이유성',sub:'이규리'},
+  '셀9':{homeroom:'오덕현',sub:'김주영'}, '셀10':{homeroom:'최희승',sub:''},
+  '셀11':{homeroom:'석준원',sub:''}, '셀12':{homeroom:'고은솔',sub:'오은규'},
+};
+
+const OUTING_CELLS = ['셀1','셀2','셀3','셀4','셀5','셀6','셀7','셀8','셀9','셀10','셀11','셀12'];
+
+/* ============================================================
+ * 2. 인증 (PIN + 본인 선택)
+ * ============================================================ */
+const PRIVATE_KEY = 'nsdhs2026h2';
+
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  const groups = [
+    {label:'👑 관리자 (국장단·목사)', filter: t => t.admin},
+    {label:'🌟 셀 담임', filter: t => !t.admin && t.role.includes('담임') && !t.role.includes('부담임')},
+    {label:'🤝 부담임', filter: t => !t.admin && t.role.includes('부담임')},
+  ];
+  groups.forEach(g => {
+    const og = document.createElement('optgroup');
+    og.label = g.label;
+    TEACHERS.filter(g.filter).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.name;
+      const cellLabel = t.cell ? ' (' + t.cell + ')' : '';
+      opt.textContent = t.name + cellLabel + ' · ' + t.role;
+      og.appendChild(opt);
+    });
+    if (og.children.length > 0) sel.appendChild(og);
+  });
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved) sel.value = saved;
+}
+
+function showErr(msg) { const el = document.getElementById('gate-err'); if (el) el.textContent = msg || ''; }
+
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  if (pin !== PRIVATE_KEY) { showErr('❌ 접근 코드가 일치하지 않습니다'); return; }
+  if (!name) { showErr('❌ 본인 이름을 선택해 주세요'); return; }
+  showErr('');
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+
+function logout() {
+  localStorage.removeItem('mock_teacher');
+  document.getElementById('app-root').style.display = 'none';
+  document.getElementById('gate-root').style.display = '';
+}
+
+/* ============================================================
+ * 3. 권한: 내가 올릴 수 있는 셀
+ * ============================================================ */
+function myPostCells(me) {
+  if (me.admin) return OUTING_CELLS.slice();
+  const cells = [];
+  Object.entries(CELL_TEACHERS).forEach(([cell, t]) => {
+    if (t.homeroom === me.name || t.sub === me.name) cells.push(cell);
+  });
+  if (cells.length === 0 && me.cell && OUTING_CELLS.includes(me.cell)) cells.push(me.cell);
+  return cells;
+}
+
+/* ============================================================
+ * 4. 상태
+ * ============================================================ */
+let MY = null;
+let OUTINGS = [];          // 서버에서 불러온 전체 아웃팅
+let FILTER_CELL = 'all';   // 갤러리 셀 필터
+let PENDING = [];          // 등록 폼 대기 사진 [{blob, url}]
+const MAX_PHOTOS = 10;
+
+// 라이트박스 상태
+let LB_KEYS = [];
+let LB_IDX = 0;
+
+/* ============================================================
+ * 5. 진입
+ * ============================================================ */
+async function showApp() {
+  const name = localStorage.getItem('mock_teacher');
+  const me = TEACHERS.find(t => t.name === name);
+  if (!me) { logout(); return; }
+  MY = me;
+  window.CURRENT_ME = me;
+  logAccess(me.name, 'outings');
+
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+
+  const cellBadge = document.getElementById('my-cell-badge');
+  cellBadge.textContent = me.cell ? (me.name + ' · ' + me.cell) : me.name;
+  cellBadge.style.display = '';
+  document.getElementById('my-admin-badge').style.display = me.admin ? '' : 'none';
+
+  setupForm();
+  renderCellFilter();
+  await loadGallery();
+}
+
+/* ============================================================
+ * 6. 등록 폼
+ * ============================================================ */
+function setupForm() {
+  const postCells = myPostCells(MY);
+  const cellField = document.getElementById('cell-field');
+  const sel = document.getElementById('f-cell');
+
+  if (postCells.length === 0) {
+    document.getElementById('post-card').innerHTML =
+      '<div style="font-size:13px;color:#fca5a5;text-align:center;padding:8px">배정된 셀이 없어 아웃팅을 올릴 수 없습니다. 아래 갤러리는 볼 수 있어요.</div>';
+    return;
+  }
+  if (MY.admin) {
+    cellField.innerHTML = '<label>반</label><select id="f-cell"></select>';
+    const s = document.getElementById('f-cell');
+    s.innerHTML = postCells.map(c => '<option value="' + c + '">' + c + '</option>').join('');
+  } else if (postCells.length === 1) {
+    cellField.innerHTML = '<label>반</label><span class="cell-fixed" id="f-cell-fixed">' + postCells[0] + '</span>';
+  } else {
+    cellField.innerHTML = '<label>반</label><select id="f-cell"></select>';
+    const s = document.getElementById('f-cell');
+    s.innerHTML = postCells.map(c => '<option value="' + c + '">' + c + '</option>').join('');
+  }
+
+  // 날짜 기본 = 오늘
+  const t = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('f-date').value = t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate());
+
+  document.getElementById('f-photos').addEventListener('change', handlePick);
+}
+
+function selectedCell() {
+  const fixed = document.getElementById('f-cell-fixed');
+  if (fixed) return fixed.textContent.trim();
+  const sel = document.getElementById('f-cell');
+  return sel ? sel.value : '';
+}
+
+async function handlePick(e) {
+  const files = [...(e.target.files || [])];
+  e.target.value = '';
+  if (!files.length) return;
+  const stateEl = document.getElementById('save-state');
+  for (const file of files) {
+    if (PENDING.length >= MAX_PHOTOS) {
+      stateEl.className = 'save-state err';
+      stateEl.textContent = '⚠️ 사진은 최대 ' + MAX_PHOTOS + '장까지예요';
+      break;
+    }
+    try {
+      const blob = await OutingPhotos.compress(file, 1280);
+      PENDING.push({ blob, url: URL.createObjectURL(blob) });
+    } catch (err) {
+      console.error(err);
+      stateEl.className = 'save-state err';
+      stateEl.textContent = '❌ ' + (err.message || '사진 처리 실패');
+    }
+  }
+  renderPreview();
+}
+
+function renderPreview() {
+  const grid = document.getElementById('preview-grid');
+  grid.innerHTML = PENDING.map((p, i) =>
+    '<div class="preview-cell"><img src="' + p.url + '" alt=""><button class="rm" title="제거" onclick="removePending(' + i + ')">✕</button></div>'
+  ).join('');
+}
+
+function removePending(i) {
+  const p = PENDING[i];
+  if (p && p.url) URL.revokeObjectURL(p.url);
+  PENDING.splice(i, 1);
+  renderPreview();
+}
+
+async function saveOuting() {
+  const cell = selectedCell();
+  const date = document.getElementById('f-date').value;
+  const text = document.getElementById('f-text').value.trim();
+  const stateEl = document.getElementById('save-state');
+  const btn = document.getElementById('save-btn');
+
+  if (!cell) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 반을 선택해 주세요'; return; }
+  if (!date) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 모임 날짜를 골라 주세요'; return; }
+  if (PENDING.length === 0 && !text) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 사진이나 이야기 중 하나는 있어야 해요'; return; }
+
+  btn.disabled = true;
+  stateEl.className = 'save-state';
+  stateEl.innerHTML = '<span class="spin"></span>업로드 중…';
+
+  const id = 'O' + Date.now();
+  const keys = [];
+  try {
+    for (let i = 0; i < PENDING.length; i++) {
+      const key = id + '_' + i + '.jpg';
+      await OutingPhotos.upload(key, PENDING[i].blob);
+      keys.push(key);
+    }
+    await OutingDB.insert({ id, cell, date, text: text || null, photos: keys, teacher: MY.name });
+    // 정리 + 즉시 반영
+    PENDING.forEach(p => p.url && URL.revokeObjectURL(p.url));
+    PENDING = [];
+    renderPreview();
+    document.getElementById('f-text').value = '';
+    stateEl.className = 'save-state ok';
+    stateEl.textContent = '✅ 저장 완료 — 모든 선생님에게 공유됨';
+    OUTINGS.unshift({ id, cell, date, text: text || null, photos: keys, teacher: MY.name, active: true });
+    renderGallery();
+  } catch (e) {
+    console.error(e);
+    stateEl.className = 'save-state err';
+    stateEl.textContent = '❌ ' + (e.message || '저장 실패 — 인터넷 확인 후 다시 시도');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ============================================================
+ * 7. 갤러리
+ * ============================================================ */
+function renderCellFilter() {
+  const wrap = document.getElementById('cell-filter');
+  const cells = ['all'].concat(OUTING_CELLS);
+  wrap.innerHTML = cells.map(c => {
+    const label = c === 'all' ? '전체' : c;
+    const active = c === FILTER_CELL ? ' active' : '';
+    return '<button class="' + active.trim() + '" onclick="setFilter(\'' + c + '\')">' + label + '</button>';
+  }).join('');
+}
+
+function setFilter(c) {
+  FILTER_CELL = c;
+  renderCellFilter();
+  renderGallery();
+}
+
+async function loadGallery() {
+  const gal = document.getElementById('gallery');
+  gal.innerHTML = '<div class="empty"><span class="spin"></span>아웃팅을 불러오는 중…</div>';
+  try {
+    OUTINGS = await OutingDB.list();
+  } catch (e) {
+    console.error(e);
+    gal.innerHTML = '<div class="empty">목록을 불러오지 못했어요. 새로고침 해주세요.</div>';
+    return;
+  }
+  renderGallery();
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function fmtDate(d) {
+  // 'YYYY-MM-DD' → 'YYYY. M. D. (요일)'
+  if (!d) return '';
+  const parts = String(d).substring(0, 10).split('-');
+  if (parts.length !== 3) return d;
+  const y = +parts[0], m = +parts[1], day = +parts[2];
+  const wk = ['일','월','화','수','목','금','토'];
+  let w = '';
+  try { w = ' (' + wk[new Date(y, m - 1, day).getDay()] + ')'; } catch (e) {}
+  return y + '. ' + m + '. ' + day + '.' + w;
+}
+
+function canDelete(o) {
+  return MY && (MY.admin || o.teacher === MY.name);
+}
+
+function renderGallery() {
+  const gal = document.getElementById('gallery');
+  let list = OUTINGS.slice();
+  if (FILTER_CELL !== 'all') list = list.filter(o => o.cell === FILTER_CELL);
+
+  if (list.length === 0) {
+    gal.innerHTML = '<div class="empty">' + (FILTER_CELL === 'all'
+      ? '아직 등록된 아웃팅이 없어요. 첫 모임을 남겨보세요! 🎒'
+      : FILTER_CELL + ' 아웃팅이 아직 없어요.') + '</div>';
+    return;
+  }
+
+  gal.innerHTML = list.map(o => {
+    const photos = Array.isArray(o.photos) ? o.photos : [];
+    const photosJson = encodeURIComponent(JSON.stringify(photos));
+    const thumbs = photos.map((k, i) =>
+      '<div class="thumb" onclick="openLb(\'' + photosJson + '\',' + i + ',\'' + escapeHtml(o.cell) + ' · ' + fmtDate(o.date) + '\')">' +
+        '<img src="' + OutingPhotos.url(k) + '" loading="lazy" alt=""></div>'
+    ).join('');
+    return '<div class="outing-card">' +
+      '<div class="oc-head">' +
+        '<span class="oc-cell">' + escapeHtml(o.cell) + '</span>' +
+        '<span class="oc-date">' + fmtDate(o.date) + '</span>' +
+        (o.teacher ? '<span class="oc-author">' + escapeHtml(o.teacher) + ' 선생님</span>' : '') +
+        (canDelete(o) ? '<button class="oc-del" onclick="deleteOuting(\'' + escapeHtml(o.id) + '\')">🗑 삭제</button>' : '') +
+      '</div>' +
+      (o.text ? '<div class="oc-text">' + escapeHtml(o.text) + '</div>' : '') +
+      (photos.length ? '<div class="oc-photos">' + thumbs + '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+async function deleteOuting(id) {
+  const o = OUTINGS.find(x => x.id === id);
+  if (!o || !canDelete(o)) return;
+  if (!confirm('이 아웃팅 기록을 삭제하시겠습니까?\n(사진 파일은 저장소에 남지만 목록에서 사라집니다)')) return;
+  try {
+    await OutingDB.update(id, { active: false });
+    OUTINGS = OUTINGS.filter(x => x.id !== id);
+    renderGallery();
+  } catch (e) {
+    console.error(e);
+    alert('삭제 실패 — 인터넷 확인 후 다시 시도해 주세요');
+  }
+}
+
+/* ============================================================
+ * 8. 라이트박스
+ * ============================================================ */
+function openLb(photosJson, idx, caption) {
+  try { LB_KEYS = JSON.parse(decodeURIComponent(photosJson)); } catch (e) { LB_KEYS = []; }
+  if (!LB_KEYS.length) return;
+  LB_IDX = idx || 0;
+  document.getElementById('lb-caption').textContent = caption || '';
+  renderLb();
+  document.getElementById('lb').classList.add('show');
+}
+function renderLb() {
+  document.getElementById('lb-img').src = OutingPhotos.url(LB_KEYS[LB_IDX]);
+  document.getElementById('lb-count').textContent = (LB_IDX + 1) + ' / ' + LB_KEYS.length;
+  const multi = LB_KEYS.length > 1;
+  document.querySelector('#lb .lb-prev').style.display = multi ? '' : 'none';
+  document.querySelector('#lb .lb-next').style.display = multi ? '' : 'none';
+}
+function stepLb(d) {
+  if (!LB_KEYS.length) return;
+  LB_IDX = (LB_IDX + d + LB_KEYS.length) % LB_KEYS.length;
+  renderLb();
+}
+function closeLb() { document.getElementById('lb').classList.remove('show'); }
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lb').classList.contains('show')) return;
+  if (e.key === 'Escape') closeLb();
+  else if (e.key === 'ArrowLeft') stepLb(-1);
+  else if (e.key === 'ArrowRight') stepLb(1);
+});
+
+/* ============================================================
+ * 9. 초기화
+ * ============================================================ */
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && TEACHERS.find(t => t.name === savedName)) {
+  showApp();
+}
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') mockLogin();
+});
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 (현재 페이지=아웃팅) */
+(function () {
+  const KEY = 'nsdhs2026h2';
+  const ITEMS = [
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['__sep__'],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['relations.html', '🕸 관계도', '?key=' + KEY],
+    ['attendance-overview.html', '📊 전체 출석현황', ''],
+    ['photos.html', '📸 사진 등록', ''],
+    ['outings.html', '🎒 아웃팅', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    it[0] === '__sep__'
+      ? '<span class="site-nav-sep" aria-hidden="true"></span>'
+      : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
+</body>
+</html>

@@ -41,9 +41,9 @@
 | 교적부 시트 (학생 상세) | https://docs.google.com/spreadsheets/d/1N_ORB4RTRSmoxY8ueJUozLEu2DUE5v3g_HeFJZOtmKg |
 | **Supabase 프로젝트** (학생 사진) | `hycwzggbgnimuuhporwf` (jwseokCEOSTAFF's Project, ap-southeast-1) |
 | Supabase URL | `https://hycwzggbgnimuuhporwf.supabase.co` |
-| Storage 버킷 | `student-photos` (public read, 2MB, jpeg/png/webp) |
-| anon 키 | 각 HTML의 `Photos`/`Hub`/`PrayerDB`/`logAccess` 헬퍼 안에 내장 (publishable anon 키 — 공개 정상). PIN 변경과 무관 |
-| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`, `schedule` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
+| Storage 버킷 | `student-photos` (public read, 2MB) · `outing-photos` (아웃팅 사진, public read, 3MB, jpeg/png/webp) |
+| anon 키 | 각 HTML의 `Photos`/`Hub`/`PrayerDB`/`OutingDB`/`logAccess` 헬퍼 안에 내장 (publishable anon 키 — 공개 정상). PIN 변경과 무관 |
+| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`, `schedule`, `outings` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
 
 ---
 
@@ -59,12 +59,13 @@
 | `relations.html` | URL `?key=` | 🕸 관계도 (1·2학기 토글) ※ 이전 파일명 index.html |
 | `attendance-overview.html` | PIN | 📊 전체 출석현황 (모든 선생님 접근) |
 | `photos.html` | PIN + 본인 선택 | 📸 학생 사진 업로드 전용 (선생님=본인 셀, 관리자=전체) |
+| `outings.html` | PIN + 본인 선택 | 🎒 월간 아웃팅 기록 — 셀별 날짜·사진(여러 장)·텍스트. 게시=담임·부담임 본인 셀/관리자 전체, 열람=**전체 공개**(셀 필터) |
 | `admin.html` | PIN + 관리자 본인 선택 | 👑 **관리자 페이지** — 접속(지난 7일)·출석누락·사진 현황 + **공지·일정·전체공유 기도 직접 등록**. admin 7명만 |
 | `assignments.html` | 공개 | 🌱 공개용 편성표 (학생·학부모) |
 | `assignments.pdf` | 공개 | 공개용 PDF (인쇄용) |
 
 모든 교사 페이지 상단에 **공통 네비 바**(site-nav, 각 페이지 `</body>` 직전 스크립트가 `<header>` 뒤에 주입) 자동 표시.
-순서: `🏠 Home · 📝 출석입력 · 🙏 학생상황·기도` │ `🗂 셀편성 · 🕸 관계도 · 📊 전체출석현황 · 📸 사진등록` (가운데 구분선 `.site-nav-sep` 로 2그룹). 공개용 `assignments.html` 은 제외.
+순서: `🏠 Home · 📝 출석입력 · 🙏 학생상황·기도` │ `🗂 셀편성 · 🕸 관계도 · 📊 전체출석현황 · 📸 사진등록 · 🎒 아웃팅` (가운데 구분선 `.site-nav-sep` 로 2그룹). 공개용 `assignments.html` 은 제외. **네비 항목 추가/변경 시 8개 페이지(dashboard·attendance·attendance-overview·prayer·teachers·relations·photos·admin)의 ITEMS 배열을 모두 수정** (각 페이지에 복제됨).
 
 기존 페이지:
 - `cells.html` — tombstone 페이지 (부담임 지원 폐지)
@@ -109,7 +110,8 @@
 - **`attendance`** (cell, week, student, status, note, teacher, updated_at · PK=week+student) — **출석 공유 원본**. attendance.html 저장 시 내가 수정한 것만 upsert(`merge-duplicates`, DIRTY 추적으로 남의 입력 보호). dashboard/attendance-overview/attendance/admin 가 로드 시 병합(`Hub.loadAttendance`) → 전 선생님 공유
 - **`prayers`** (id, date, type, student, cell, family, teacher, text, share, urgent, active) — **기도제목 전체 공유 원본**. prayer.html에서 "전체 공유 ON" 토글 시 자동 upsert(`PrayerDB.upsert`), OFF/삭제 시 share=false/active=false. dashboard "전체 공유 기도제목" 카드·prayer "다같이" 뷰·admin이 `share=true&active=true` 로드. **GitHub JSON 복사·commit 수동 단계는 폐지**(data/prayers.json은 관리자 선택 채널로만 잔존, 둘 다 병합 표시)
 - **`notices`** (id, date, author, title, body, urgent, active) / **`schedule`** (id, date, title, note, active) — **공지·일정**. admin.html "직접 등록" 폼에서 `Hub.upsert`로 즉시 등록, 삭제는 `Hub.update`(PATCH active=false). dashboard가 data/{notices,schedule}.json + Supabase 병합 표시. (GitHub JSON 편집은 고급 옵션으로만 잔존)
-- 삭제·초기화는 Supabase `execute_sql`(truncate)로. 학기 말 데이터 정리 시 사용
+- **`outings`** (id, cell, date, text, photos jsonb=storage 키 배열, teacher, created_at, active) — **월간 아웃팅 기록**. `outings.html`에서 등록(사진은 `outing-photos` 버킷 업로드 후 키 배열 저장), 전체 공개 갤러리. 소프트 삭제(active=false). 사진 파일은 Storage `outing-photos`(public read, 3MB, anon SEL/INS/UPD, DEL 미허용 — 학생 사진과 동일)
+- 삭제·초기화는 Supabase `execute_sql`(truncate)로. 학기 말 데이터 정리 시 사용. ⚠️ Storage 객체는 직접 SQL 삭제 불가(보호 트리거) → Storage API(HTTP DELETE) 또는 대시보드 사용
 - 관리자가 직접 보려면: admin.html (접속·출석누락·사진·기도 현황 한 화면)
 
 ### 4. 코드에 하드코딩 (정적 데이터)
@@ -236,6 +238,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **월간 아웃팅 기록 기능 (`outings.html` 신규)** — 셀별 모임을 **날짜 + 사진 여러 장(최대 10) + 간단한 텍스트**로 기록·공유. 새 테이블 `outings`(id·cell·date·text·photos jsonb·teacher·active) + 새 버킷 `outing-photos`(public, 3MB, 가로 1280px 압축). 게시=담임·부담임 본인 셀/관리자 전체, 열람=전체 공개(셀 필터), 라이트박스, 작성자·관리자 소프트 삭제. `OutingDB`/`OutingPhotos` 헬퍼(REST). 공통 네비에 `🎒 아웃팅` 추가(8개 페이지). 설계: `docs/superpowers/specs/2026-06-06-outings-design.md`
 0. **장결자(보고 싶은 친구들) 셀 배정 표기 + 각 반 DB 기록** — Sp1~6(24명)은 그대로 두되, PPT 라인업 기준으로 각 학생을 같은 대가족 내 두 셀에 2명씩 배정(`HOME_CELL` 맵, 단일 기준). ① 교사용 5개 페이지(dashboard·attendance·attendance-overview·teachers·prayer)에 `🏠 소그룹반 N`(그 외) / `💛 보고 싶은 친구`(자기 반 안) 꼬리표. ② **출석**: 담임 자기 셀 로스터에 배정 장결자 합류(`cellRoster`), `STUDENT_TO_CELL[장결자]=배정셀`로 어느 탭에서 입력해도 배정 셀로 저장. ③ **기도**: 담임 기도 드롭다운 + 학생별 모아보기에 배정 장결자 추가(`ALL_STUDENTS_FLAT` 보강) → 기도제목 cell=배정셀. DB 스키마 변경 없음(학생명 기준). 공개 assignments·관계도 제외. 설계: `docs/superpowers/specs/2026-06-06-jangkyeolja-cell-assignment-design.md`
 0. **라인업 PDF·PPT (발표/인쇄용)** — 전체 라인업 1장 PDF(`lineup.pdf`) + 발표용 PPT(`lineup.pptx`, 타이틀+대가족 6장, 이름 22pt 크게·성별 색상). 웹 UI엔 미연결(파일만). 생성기 `make_lineup_pdf.py`/`make_lineup_pptx.py`
 0. **오신영 목사님 전용 처리** — Home 환영문구 "💛 사랑하는 오신영 목사님 환영합니다 + 🎉 우리 목사님 최고!!!" (이름 `'오신영'` 기준, 다른 관리자/선생님엔 미적용) + 내 반 카드에 대가족 1~6 선택기로 **전체 열람**. 관리자 페이지는 그대로 admin 전용. 접속 현황은 **지난 7일** 기준 통계
@@ -306,6 +309,7 @@ publish/
 ├── attendance-overview.html
 ├── prayer.html
 ├── photos.html (학생 사진 업로드 전용 — Supabase Storage)
+├── outings.html (월간 아웃팅 기록 — outings 테이블 + outing-photos 버킷)
 ├── admin.html (관리자 — 접속·출석·사진 현황 + 공지·일정·기도 등록)
 ├── logo-runner.svg (러너 로고 · 브라우저 탭 favicon)
 ├── manifest.webmanifest (PWA · 홈화면 이름 "내수동 경주자 2026")
