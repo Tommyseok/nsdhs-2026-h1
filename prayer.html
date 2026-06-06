@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>기도제목 · 내수동 고등부 · 2026 2학기</title>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --card: #1e293b;
+    --border: #334155;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --accent: #a78bfa;
+    --accent2: #7c3aed;
+    --ok: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --share: #ec4899;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+  .container { max-width: 700px; margin: 0 auto; padding: 16px; }
+
+  /* Gate */
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px 26px; max-width: 380px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+  .gate-card .lock { font-size: 44px; margin-bottom: 14px; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 18px; color: #f1f5f9; }
+  .gate-card .gate-sub { margin: 0 0 22px; font-size: 13px; color: var(--muted); }
+  .gate-card input, .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; text-align: center; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .gate-card .gate-err { color: #fca5a5; font-size: 12px; margin-top: 10px; min-height: 16px; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%);
+    padding: 16px 0;
+    border-bottom: 2px solid var(--accent);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 17px;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  header h1 .my-cell {
+    background: rgba(167,139,250,.2);
+    color: #c4b5fd;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(167,139,250,.4);
+    font-weight: 700;
+  }
+  .back-link {
+    color: #cbd5e1;
+    text-decoration: none;
+    background: rgba(255,255,255,.06);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,.12);
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 4px;
+    border-radius: 12px;
+  }
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    padding: 10px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(124,58,237,.4);
+  }
+
+  /* New prayer form */
+  .new-prayer {
+    margin-top: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .new-prayer h2 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .form-row { margin-bottom: 10px; }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+  .form-row select, .form-row textarea, .form-row input {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+  }
+  .form-row textarea { min-height: 80px; }
+  .form-row .toggle-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+  }
+  .form-row .toggle-row input[type=checkbox] {
+    width: auto;
+    margin: 0;
+  }
+  .form-row .toggle-row .toggle-text {
+    flex: 1;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .form-row .toggle-row .toggle-text .toggle-hint {
+    display: block;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .form-row.share-row .toggle-row {
+    background: rgba(236,72,153,.08);
+    border-color: rgba(236,72,153,.3);
+  }
+  .form-row.share-row .toggle-row.checked {
+    background: rgba(236,72,153,.15);
+    border-color: var(--share);
+  }
+  .form-row.urgent-row .toggle-row {
+    background: rgba(239,68,68,.08);
+    border-color: rgba(239,68,68,.3);
+  }
+  .form-row.urgent-row .toggle-row.checked {
+    background: rgba(239,68,68,.15);
+    border-color: var(--danger);
+  }
+  .form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .form-actions button {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .form-actions .add {
+    background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+    color: #fff;
+  }
+  .form-actions .clear {
+    background: rgba(255,255,255,.06);
+    color: #cbd5e1;
+    flex: 0 0 80px;
+  }
+
+  /* Prayer list */
+  .prayer-list { margin-top: 14px; }
+  .prayer-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .prayer-card.shared { border-color: rgba(236,72,153,.4); }
+  .prayer-card.urgent { border-color: rgba(239,68,68,.5); }
+  .prayer-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .prayer-student {
+    font-weight: 800;
+    color: #f1f5f9;
+    font-size: 15px;
+  }
+  .prayer-source {
+    font-size: 11px;
+    color: var(--muted);
+    background: rgba(255,255,255,.04);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .prayer-date {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .prayer-text {
+    font-size: 13.5px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .prayer-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .tag.share { background: rgba(236,72,153,.15); color: #fbcfe8; border: 1px solid rgba(236,72,153,.35); }
+  .tag.urgent { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.35); }
+  .tag.mine { background: rgba(167,139,250,.15); color: #c4b5fd; border: 1px solid rgba(167,139,250,.35); }
+  .prayer-actions {
+    display: flex;
+    gap: 6px;
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding-top: 10px;
+  }
+  .prayer-actions button {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    color: #cbd5e1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .prayer-actions button.delete {
+    color: #fca5a5;
+    border-color: rgba(239,68,68,.25);
+  }
+  .prayer-actions button.toggle-share {
+    color: #fbcfe8;
+    border-color: rgba(236,72,153,.3);
+  }
+  .prayer-actions button.toggle-share.on {
+    background: rgba(236,72,153,.18);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-style: italic;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(16,185,129,.95);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast.pink { background: rgba(236,72,153,.95); }
+
+  .no-class {
+    margin-top: 30px;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .no-class .icon { font-size: 40px; margin-bottom: 10px; }
+  .no-class a { color: var(--accent); text-decoration: none; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- Gate -->
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock">🙏</div>
+      <h1>기도제목 입력</h1>
+      <p class="gate-sub">학생별 기도제목 등록 · 다함께 기도 공유</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="letter-spacing: 2px;">
+      <select id="teacher-select"></select>
+      <button onclick="login()">접속</button>
+      <div class="gate-err" id="gate-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1>
+        <span id="my-name">…</span>
+        <span id="my-cell-badge" class="my-cell"></span>
+      </h1>
+      <a class="back-link" href="dashboard.html">← 대시보드</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="mine" onclick="switchTab('mine')">📝 내 반</button>
+      <button class="tab-btn" data-tab="shared" onclick="switchTab('shared')">🙏 다함께 공유</button>
+    </div>
+
+    <!-- 새 기도제목 폼 (내 반 탭에서만) -->
+    <div class="new-prayer" id="new-prayer">
+      <h2>+ 새 기도제목 추가</h2>
+      <div class="form-row">
+        <label class="form-label">👤 학생</label>
+        <select id="form-student"></select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">📝 기도 내용</label>
+        <textarea id="form-content" placeholder="예: 학업 스트레스 회복, 가정 평안, 신앙 결단 등"></textarea>
+      </div>
+      <div class="form-row share-row">
+        <label class="toggle-row" id="form-share-row">
+          <input type="checkbox" id="form-share" onchange="toggleShareUi()">
+          <span class="toggle-text">
+            🌸 다함께 기도해 주세요
+            <span class="toggle-hint">체크하면 전체 선생님 대시보드에 표시됩니다</span>
+          </span>
+        </label>
+      </div>
+      <div class="form-row urgent-row">
+        <label class="toggle-row" id="form-urgent-row">
+          <input type="checkbox" id="form-urgent" onchange="toggleUrgentUi()">
+          <span class="toggle-text">
+            🚨 긴급
+            <span class="toggle-hint">대시보드에서 빨강 박스로 강조 표시</span>
+          </span>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="clear" onclick="clearForm()">취소</button>
+        <button class="add" onclick="addPrayer()">+ 추가</button>
+      </div>
+    </div>
+
+    <div class="prayer-list" id="prayer-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PRIVATE_KEY = 'nsdhs2026h2';
+
+/* ===== 데이터 (attendance.html 와 동일) ===== */
+const TEACHERS = [
+  {name:'이윤정', cell:'셀1',  role:'담임'},{name:'이승헌', cell:'셀1',  role:'부담임'},
+  {name:'정명경', cell:'셀2',  role:'담임'},{name:'조세경', cell:'셀2',  role:'부담임'},
+  {name:'전성희', cell:'셀3',  role:'담임'},
+  {name:'박대철', cell:'셀4',  role:'담임'},{name:'김희원', cell:'셀4',  role:'부담임'},
+  {name:'이수지', cell:'셀5',  role:'담임'},{name:'박해니', cell:'셀5',  role:'부담임'},
+  {name:'정유빈', cell:'셀6',  role:'담임'},
+  {name:'양지현', cell:'셀7',  role:'담임'},{name:'송진우', cell:'셀7',  role:'부담임'},
+  {name:'이유성', cell:'셀8',  role:'담임'},{name:'이규리', cell:'셀8',  role:'부담임'},
+  {name:'오덕현', cell:'셀9',  role:'담임'},{name:'김주영', cell:'셀9',  role:'부담임'},
+  {name:'최희승', cell:'셀10', role:'담임'},
+  {name:'석준원', cell:'셀11', role:'담임'},
+  {name:'고은솔', cell:'셀12', role:'담임'},{name:'오은규', cell:'셀12', role:'부담임'},
+];
+
+const CELL_STUDENTS = {
+  '셀1':['권하율','하은유','홍기진','서이수','장지현','김은'],
+  '셀2':['강은교','명주원','조인상','연해준','유나린'],
+  '셀3':['박지호','한채은','김준수','김라일','안민혁'],
+  '셀4':['원대연','이준호','전지훈','오현우','이빛가온'],
+  '셀5':['민예원','김도연','최지은','김나현','윤서희'],
+  '셀6':['조한나','김한결','이서후','임태민','박지웅'],
+  '셀7':['조강인','이에녹','최민호','김정록','정태율'],
+  '셀8':['심희은','김은우','최가은','양소희','오은수'],
+  '셀9':['나정인','주성','곽지원','양인혁','김다은','박재영'],
+  '셀10':['이주형','윤성하','나호윤','이소현','배유나'],
+  '셀11':['최유현','이가영','최수지','박동하','송준원'],
+  '셀12':['정승빈','김주하','김채은','유재희','김강은'],
+};
+
+/* ===== 상태 ===== */
+let MY = null;
+let CURRENT_TAB = 'mine';
+
+/* ===== 로그인 ===== */
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 선택 —</option>';
+  TEACHERS.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.name;
+    opt.textContent = `${t.name} · ${t.cell} ${t.role}`;
+    sel.appendChild(opt);
+  });
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved) sel.value = saved;
+}
+
+function login() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  const errEl = document.getElementById('gate-err');
+  if (pin !== PRIVATE_KEY) { errEl.textContent = '❌ 접근 코드 불일치'; return; }
+  if (!name) { errEl.textContent = '❌ 본인을 선택해 주세요'; return; }
+  const me = TEACHERS.find(t => t.name === name);
+  if (!me) { errEl.textContent = '❌ 알 수 없는 선생님'; return; }
+  errEl.textContent = '';
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  MY = me;
+  showApp();
+}
+
+/* ===== Storage ===== */
+function loadPrayers() {
+  try {
+    return JSON.parse(localStorage.getItem('prayer_data') || '[]');
+  } catch { return []; }
+}
+function savePrayers(arr) {
+  localStorage.setItem('prayer_data', JSON.stringify(arr));
+}
+
+function addPrayer() {
+  const student = document.getElementById('form-student').value;
+  const content = document.getElementById('form-content').value.trim();
+  const share = document.getElementById('form-share').checked;
+  const urgent = document.getElementById('form-urgent').checked;
+  if (!student) { showToast('❌ 학생을 선택해 주세요', 'pink'); return; }
+  if (!content) { showToast('❌ 기도 내용을 입력해 주세요', 'pink'); return; }
+  const prayers = loadPrayers();
+  prayers.unshift({
+    id: 'P' + Date.now(),
+    date: new Date().toISOString().substring(0, 10),
+    student,
+    cell: MY.cell,
+    author: MY.name,
+    content,
+    share,
+    urgent,
+  });
+  savePrayers(prayers);
+  clearForm();
+  renderPrayers();
+  showToast(share ? '✓ 추가됨 (다함께 기도로 공유)' : '✓ 기도제목 추가됨');
+}
+
+function clearForm() {
+  document.getElementById('form-content').value = '';
+  document.getElementById('form-share').checked = false;
+  document.getElementById('form-urgent').checked = false;
+  toggleShareUi();
+  toggleUrgentUi();
+}
+
+function toggleShareUi() {
+  const checked = document.getElementById('form-share').checked;
+  document.getElementById('form-share-row').classList.toggle('checked', checked);
+}
+function toggleUrgentUi() {
+  const checked = document.getElementById('form-urgent').checked;
+  document.getElementById('form-urgent-row').classList.toggle('checked', checked);
+}
+
+function deletePrayer(id) {
+  if (!confirm('이 기도제목을 삭제하시겠습니까?')) return;
+  const prayers = loadPrayers().filter(p => p.id !== id);
+  savePrayers(prayers);
+  renderPrayers();
+  showToast('🗑 삭제됨');
+}
+
+function toggleShare(id) {
+  const prayers = loadPrayers();
+  const p = prayers.find(x => x.id === id);
+  if (!p) return;
+  p.share = !p.share;
+  savePrayers(prayers);
+  renderPrayers();
+  showToast(p.share ? '🌸 다함께 기도로 공유됨' : '공유 해제됨', p.share ? 'pink' : '');
+}
+
+/* ===== 렌더링 ===== */
+function fillStudentSelect() {
+  if (!MY || !MY.cell) return;
+  const sel = document.getElementById('form-student');
+  const students = CELL_STUDENTS[MY.cell] || [];
+  sel.innerHTML = '<option value="">— 학생 선택 —</option>' +
+    students.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+function renderPrayers() {
+  if (!MY) return;
+  const all = loadPrayers();
+  let items;
+  if (CURRENT_TAB === 'mine') {
+    items = all.filter(p => p.cell === MY.cell);
+  } else {
+    items = all.filter(p => p.share);
+  }
+  const list = document.getElementById('prayer-list');
+  if (items.length === 0) {
+    list.innerHTML = `<div class="empty">${CURRENT_TAB === 'mine' ? '아직 등록된 기도제목이 없습니다. 위에서 추가해 주세요.' : '아직 공유된 기도제목이 없습니다.'}</div>`;
+    return;
+  }
+  list.innerHTML = items.map(p => {
+    const isMine = p.cell === MY.cell && p.author === MY.name;
+    const cardCls = (p.share ? 'shared' : '') + (p.urgent ? ' urgent' : '');
+    return `
+      <div class="prayer-card ${cardCls}">
+        <div class="prayer-head">
+          <span class="prayer-student">${p.urgent ? '🚨 ' : ''}${escapeHtml(p.student)}</span>
+          <span class="prayer-source">${escapeHtml(p.cell)} · ${escapeHtml(p.author)}T</span>
+          <span class="prayer-date">${escapeHtml(p.date.substring(5))}</span>
+        </div>
+        <div class="prayer-text">${escapeHtml(p.content)}</div>
+        <div class="prayer-tags">
+          ${p.share ? '<span class="tag share">🌸 다함께 기도</span>' : ''}
+          ${p.urgent ? '<span class="tag urgent">🚨 긴급</span>' : ''}
+          ${isMine ? '<span class="tag mine">내가 등록</span>' : ''}
+        </div>
+        ${isMine ? `
+          <div class="prayer-actions">
+            <button class="toggle-share ${p.share ? 'on' : ''}" onclick="toggleShare('${p.id}')">${p.share ? '🌸 공유 ON' : '공유 OFF'}</button>
+            <button class="delete" onclick="deletePrayer('${p.id}')">🗑 삭제</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function switchTab(tab) {
+  if (CURRENT_TAB === tab) return;
+  CURRENT_TAB = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+  });
+  // 폼은 '내 반' 탭에서만
+  document.getElementById('new-prayer').style.display = tab === 'mine' ? '' : 'none';
+  renderPrayers();
+}
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ===== 진입 ===== */
+function showApp() {
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('my-name').textContent = MY.name + ' 선생님';
+  if (MY.cell) {
+    document.getElementById('my-cell-badge').textContent = MY.cell + ' · ' + MY.role;
+  }
+  if (!MY.cell || !CELL_STUDENTS[MY.cell]) {
+    document.querySelector('.tab-bar').style.display = 'none';
+    document.getElementById('new-prayer').style.display = 'none';
+    document.getElementById('prayer-list').innerHTML = `
+      <div class="no-class">
+        <div class="icon">👑</div>
+        담당 셀이 없습니다. 다함께 공유된 기도제목만 볼 수 있습니다.<br><br>
+        <a href="#" onclick="switchTab('shared');return false;">공유 기도제목 보기 →</a>
+      </div>
+    `;
+    return;
+  }
+  fillStudentSelect();
+  renderPrayers();
+}
+
+function checkAutoLogin() {
+  const pin = localStorage.getItem('access_pin');
+  const name = localStorage.getItem('mock_teacher');
+  if (pin === PRIVATE_KEY && name) {
+    const me = TEACHERS.find(t => t.name === name);
+    if (me) { MY = me; showApp(); return; }
+  }
+  fillSelect();
+  document.getElementById('pin-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') login();
+  });
+}
+
+fillSelect();
+checkAutoLogin();
+</script>
+
+</body>
+</html>

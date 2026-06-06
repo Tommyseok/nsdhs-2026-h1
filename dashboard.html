@@ -1022,12 +1022,29 @@ function renderBirthdays(me) {
 /* ===== 기도제목 ===== */
 function renderPrayers() {
   const list = document.getElementById('prayer-list');
-  document.getElementById('prayer-count').textContent = `${PRAYERS.length}건`;
-  if (PRAYERS.length === 0) {
-    list.innerHTML = '<div class="prayer-empty">공유된 기도제목이 없습니다</div>';
+  // localStorage(prayer.html에서 등록)에서 공유된 것 + Mock 기본 데이터 병합
+  let stored = [];
+  try {
+    stored = JSON.parse(localStorage.getItem('prayer_data') || '[]')
+      .filter(p => p.share)
+      .map(p => ({
+        student: p.student,
+        cell: p.cell,
+        teacher: p.author,
+        text: p.content,
+        date: p.date,
+        urgent: p.urgent,
+        _user: true,
+      }));
+  } catch {}
+  // 사용자 등록이 있으면 그것만, 없으면 Mock 데이터
+  const items = stored.length > 0 ? stored : PRAYERS;
+  document.getElementById('prayer-count').textContent = `${items.length}건`;
+  if (items.length === 0) {
+    list.innerHTML = '<div class="prayer-empty">공유된 기도제목이 없습니다. <a href="prayer.html" style="color:#a78bfa;text-decoration:underline">+ 추가하기</a></div>';
     return;
   }
-  list.innerHTML = PRAYERS.map(p => {
+  list.innerHTML = items.map(p => {
     const d = new Date(p.date + 'T00:00:00');
     const dateStr = `${d.getMonth()+1}/${d.getDate()}`;
     return `
@@ -1149,7 +1166,7 @@ function renderMyClass(me) {
     </table>
     <div class="my-class-actions">
       <button onclick="location.href='attendance.html'">📋 출석 입력</button>
-      <button class="secondary" onclick="alert('기도제목 추가 화면 — 다음 단계에서 구현 예정')">+ 기도제목 추가</button>
+      <button class="secondary" onclick="location.href='prayer.html'">+ 기도제목 추가</button>
     </div>
   `;
 }
@@ -1157,13 +1174,14 @@ function renderMyClass(me) {
 /* ===== 빠른 이동 ===== */
 function renderQuickMenu(me) {
   const links = [
-    {label:'🌱 공개용 편성표', href:'assignments.html'},
+    {label:'📋 출석 입력', href:'attendance.html'},
+    {label:'🙏 기도제목', href:'prayer.html'},
     {label:'📋 학생 상세 (셀편성)', href:'teachers.html?key=nsdhs2026h2'},
     {label:'🕸 관계도 (1·2학기)', href:'index.html?key=nsdhs2026h2'},
-    {label:'📞 연락처·가족', href:'teachers.html?key=nsdhs2026h2&tab=contact', note:'tab placeholder'},
+    {label:'🌱 공개용 편성표', href:'assignments.html'},
   ];
   if (me.admin) {
-    links.push({label:'👑 관리자 페이지', href:'#', admin:true, click:"alert('관리자 페이지 — Phase 5 에서 구현')"});
+    links.push({label:'👑 관리자 페이지', href:'#', admin:true, click:"alert('관리자 페이지 — 다음 단계에서 구현')"});
   }
   const root = document.getElementById('quick-menu');
   root.innerHTML = links.map(l => {
