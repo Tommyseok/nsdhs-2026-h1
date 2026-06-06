@@ -565,17 +565,25 @@ const PRIVATE_KEY = 'nsdhs2026h2';
 
 /* ===== 데이터 ===== */
 const TEACHERS = [
+  // 관리자 7명 — 학생별 모아보기 전체 학생 볼 수 있음
+  {name:'오신영', cell:null,    role:'담당 목사',   admin:true},
+  {name:'안종범', cell:null,    role:'부장집사',    admin:true},
+  {name:'석준원', cell:'셀11', role:'담임 · 총무',  admin:true},
+  {name:'김광현', cell:null,    role:'교육국장',    admin:true},
+  {name:'송진우', cell:'셀7',  role:'부담임 · 예배국장', admin:true},
+  {name:'오덕현', cell:'셀9',  role:'담임 · 미디어국장', admin:true},
+  {name:'이유성', cell:'셀8',  role:'담임 · 홍보국장', admin:true},
+  // 담임/부담임 — 학생별 모아보기는 본인 대가족만
   {name:'이윤정', cell:'셀1',  role:'담임'},{name:'이승헌', cell:'셀1',  role:'부담임'},
   {name:'정명경', cell:'셀2',  role:'담임'},{name:'조세경', cell:'셀2',  role:'부담임'},
   {name:'전성희', cell:'셀3',  role:'담임'},
   {name:'박대철', cell:'셀4',  role:'담임'},{name:'김희원', cell:'셀4',  role:'부담임'},
   {name:'이수지', cell:'셀5',  role:'담임'},{name:'박해니', cell:'셀5',  role:'부담임'},
   {name:'정유빈', cell:'셀6',  role:'담임'},
-  {name:'양지현', cell:'셀7',  role:'담임'},{name:'송진우', cell:'셀7',  role:'부담임'},
-  {name:'이유성', cell:'셀8',  role:'담임'},{name:'이규리', cell:'셀8',  role:'부담임'},
-  {name:'오덕현', cell:'셀9',  role:'담임'},{name:'김주영', cell:'셀9',  role:'부담임'},
+  {name:'양지현', cell:'셀7',  role:'담임'},
+  {name:'이규리', cell:'셀8',  role:'부담임'},
+  {name:'김주영', cell:'셀9',  role:'부담임'},
   {name:'최희승', cell:'셀10', role:'담임'},
-  {name:'석준원', cell:'셀11', role:'담임'},
   {name:'고은솔', cell:'셀12', role:'담임'},{name:'오은규', cell:'셀12', role:'부담임'},
 ];
 
@@ -786,7 +794,20 @@ function copyShareJson() {
 }
 
 /* ===== 학생별 모아보기 ===== */
+function canViewStudent(name) {
+  if (MY.admin) return true;
+  const stInfo = ALL_STUDENTS_FLAT.find(s => s.name === name);
+  if (!stInfo) return false;
+  const myFam = myFamily(MY);
+  if (!myFam) return false;
+  return CELL_FAMILY[stInfo.cell] === myFam;
+}
+
 function pickStudent(name) {
+  if (!canViewStudent(name)) {
+    showToast('❌ 본인 대가족 학생만 조회 가능합니다', 'pink');
+    return;
+  }
   PICKED_STUDENT = name;
   renderPrayers();
 }
@@ -797,23 +818,39 @@ function unpickStudent() {
 function renderStudentPicker() {
   const q = (document.getElementById('student-search').value || '').trim();
   const all = allPrayers();
-  // 학생별 기록 카운트
   const counts = {};
   all.forEach(p => {
-    if (p.type === 'teacher') return; // 선생님 개인은 제외
-    const key = p.student;
-    counts[key] = (counts[key] || 0) + 1;
+    if (p.type === 'teacher') return;
+    counts[p.student] = (counts[p.student] || 0) + 1;
   });
-  // 검색 필터
-  const filtered = ALL_STUDENTS_FLAT.filter(s =>
-    !q || s.name.includes(q)
-  );
+
+  // 권한 필터: 관리자 → 전체, 비관리자 → 본인 대가족만
+  const myFam = myFamily(MY);
+  const myFamCells = myFam ? familyCells(myFam) : [];
+  const isAdmin = !!MY.admin;
+  let scoped;
+  if (isAdmin) {
+    scoped = ALL_STUDENTS_FLAT;
+  } else if (myFam) {
+    scoped = ALL_STUDENTS_FLAT.filter(s => myFamCells.includes(s.cell));
+  } else {
+    scoped = [];
+  }
+  const filtered = scoped.filter(s => !q || s.name.includes(q));
+
   const grid = document.getElementById('student-grid');
+  // 권한 안내 배너
+  const scopeBanner = isAdmin
+    ? `<div style="font-size:11.5px;color:#fcd34d;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);padding:8px 12px;border-radius:8px;margin-bottom:10px">👑 관리자 권한 — 전체 학생 (${ALL_STUDENTS_FLAT.length}명) 조회 가능</div>`
+    : myFam
+      ? `<div style="font-size:11.5px;color:#c4b5fd;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.3);padding:8px 12px;border-radius:8px;margin-bottom:10px">👨‍👩 대가족 ${myFam} 학생 (${scoped.length}명) 만 조회 가능. 전체 조회는 관리자에게 문의.</div>`
+      : `<div style="font-size:11.5px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);padding:8px 12px;border-radius:8px;margin-bottom:10px">담당 셀이 없어 학생을 조회할 수 없습니다.</div>`;
+
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty">검색 결과 없음</div>';
+    grid.innerHTML = scopeBanner + '<div class="empty">검색 결과 없음</div>';
     return;
   }
-  grid.innerHTML = filtered.map(s => {
+  grid.innerHTML = scopeBanner + filtered.map(s => {
     const n = counts[s.name] || 0;
     return `
       <button class="student-tile ${PICKED_STUDENT === s.name ? 'active' : ''}" onclick="pickStudent('${s.name}')">
