@@ -80,7 +80,7 @@ def draw_chip(c, s, x, y, font, size):
     return x + c.stringWidth(sf, font, size)
 
 
-def draw_wrapped_chips(c, students, x, y, max_w, font='Malgun', size=8.5, leading=10.5):
+def draw_wrapped_chips(c, students, x, y, max_w, font='Malgun', size=11.5, leading=14):
     if not students:
         return y
     c.setFont(font, size)
@@ -110,33 +110,33 @@ def draw_wrapped_chips(c, students, x, y, max_w, font='Malgun', size=8.5, leadin
 def draw_cell_section(c, x, y, w, h, cell_id, fam):
     c.setLineWidth(0.3); c.setStrokeColor(colors.HexColor('#c4b5fd')); c.setDash()
     c.rect(x, y, w, h, stroke=1, fill=0); c.setStrokeColor(colors.black)
-    pad = 1.6*mm; top = y + h
+    pad = 2*mm; top = y + h
     students = sort_students(CELL_STUDENTS[cell_id])
-    c.setFont('MalgunBold', 9.5); c.drawString(x + pad, top - 4.2*mm, f'소그룹반 {cell_id}')
-    c.setFont('Malgun', 7.5); c.drawRightString(x + w - pad, top - 4.2*mm, f'{len(students)}명')
-    ty = top - 8.5*mm
-    c.setFont('MalgunBold', 7.5); c.drawString(x + pad, ty, '담임')
-    c.setFont('Malgun', 9); name = HOMEROOM[cell_id]; c.drawString(x + pad + 10*mm, ty, name)
+    c.setFont('MalgunBold', 12); c.drawString(x + pad, top - 5*mm, f'소그룹반 {cell_id}')
+    c.setFont('Malgun', 9); c.drawRightString(x + w - pad, top - 5*mm, f'{len(students)}명')
+    ty = top - 10.5*mm
+    c.setFont('MalgunBold', 9); c.drawString(x + pad, ty, '담임')
+    c.setFont('Malgun', 11.5); name = HOMEROOM[cell_id]; c.drawString(x + pad + 12*mm, ty, name)
     if LEADERS[fam] == cell_id:
-        nw = c.stringWidth(name, 'Malgun', 9); c.setFont('MalgunBold', 6.8)
-        c.drawString(x + pad + 10*mm + nw + 1.5*mm, ty, '★가족장')
-    sub = SUB[cell_id]; ty -= 3.8*mm
-    c.setFont('MalgunBold', 7.5); c.drawString(x + pad, ty, '부담임')
-    c.setFont('Malgun', 9); c.drawString(x + pad + 10*mm, ty, sub if sub else '—')
-    sep_y = ty - 2*mm
+        nw = c.stringWidth(name, 'Malgun', 11.5); c.setFont('MalgunBold', 8)
+        c.drawString(x + pad + 12*mm + nw + 1.8*mm, ty, '★가족장')
+    sub = SUB[cell_id]; ty -= 5*mm
+    c.setFont('MalgunBold', 9); c.drawString(x + pad, ty, '부담임')
+    c.setFont('Malgun', 11.5); c.drawString(x + pad + 12*mm, ty, sub if sub else '—')
+    sep_y = ty - 2.4*mm
     c.setLineWidth(0.25); c.setDash(1, 1.5); c.line(x + pad, sep_y, x + w - pad, sep_y); c.setDash()
-    draw_wrapped_chips(c, students, x + pad, sep_y - 3.4*mm, w - 2*pad, size=8.5, leading=10.2)
+    draw_wrapped_chips(c, students, x + pad, sep_y - 4.6*mm, w - 2*pad, size=11.5, leading=14)
 
 
 def draw_special_section(c, x, y, w, h, fam):
     c.setLineWidth(0.4); c.setStrokeColor(colors.HexColor('#fdba74')); c.setDash(2.2, 1.4)
     c.rect(x, y, w, h, stroke=1, fill=0); c.setDash(); c.setStrokeColor(colors.black)
-    pad = 1.6*mm; top = y + h
+    pad = 2*mm; top = y + h
     students = sort_students(SPECIAL[fam])
-    c.setFont('MalgunBold', 9.5); c.drawString(x + pad, top - 4.2*mm, '더 자주 보고 싶은 친구들')
-    c.setFont('Malgun', 7.5); c.drawRightString(x + w - pad, top - 4.2*mm, f'{len(students)}명')
-    c.setFont('Malgun', 6.5); c.drawString(x + pad, top - 7*mm, '대가족 선생님이 더 자주 함께해요')
-    draw_wrapped_chips(c, students, x + pad, top - 10*mm, w - 2*pad, size=8.5, leading=10.2)
+    c.setFont('MalgunBold', 12); c.drawString(x + pad, top - 5*mm, '더 자주 보고 싶은 친구들')
+    c.setFont('Malgun', 9); c.drawRightString(x + w - pad, top - 5*mm, f'{len(students)}명')
+    c.setFont('Malgun', 8); c.drawString(x + pad, top - 8.6*mm, '대가족 선생님이 더 자주 함께해요')
+    draw_wrapped_chips(c, students, x + pad, top - 12.6*mm, w - 2*pad, size=11.5, leading=14)
 
 
 def draw_family_box(c, x, y, w, h, fam):
@@ -145,14 +145,14 @@ def draw_family_box(c, x, y, w, h, fam):
     c.setLineWidth(0.3); c.setStrokeColor(colors.HexColor('#c4b5fd')); c.rect(x + 1*mm, y + 1*mm, w - 2*mm, h - 2*mm, stroke=1, fill=0)
     c.setStrokeColor(colors.black); c.setFillColor(colors.black)
     pad = 2*mm; top = y + h
-    header_h = 9*mm; header_y = top - header_h
+    header_h = 10.5*mm; header_y = top - header_h
     c.setLineWidth(1.0); c.line(x, header_y, x + w, header_y)
-    c.setFont('MalgunBold', 12); c.drawString(x + pad, header_y + 4.6*mm, f'대가족반 {fam}')
-    c.setFont('Malgun', 8); c.drawRightString(x + w - pad, header_y + 4.6*mm, f'★ 가족장 {HOMEROOM[LEADERS[fam]]}')
+    c.setFont('MalgunBold', 14); c.drawString(x + pad, header_y + 5.3*mm, f'대가족반 {fam}')
+    c.setFont('Malgun', 9.5); c.drawRightString(x + w - pad, header_y + 5.3*mm, f'★ 가족장 {HOMEROOM[LEADERS[fam]]}')
     c1, c2 = FAMILY_TO_CELLS[fam]
     total = len(CELL_STUDENTS[c1]) + len(CELL_STUDENTS[c2]) + len(SPECIAL[fam])
-    c.setFont('Malgun', 7.5); c.drawRightString(x + w - pad, header_y + 1.5*mm, f'총 {total}명')
-    c.drawString(x + pad, header_y + 1.5*mm, '(소그룹 2 + 보고 싶은 친구들 1)')
+    c.setFont('Malgun', 8.5); c.drawRightString(x + w - pad, header_y + 1.8*mm, f'총 {total}명')
+    c.drawString(x + pad, header_y + 1.8*mm, '(소그룹 2 + 보고 싶은 친구들 1)')
     body_top = header_y; body_h = body_top - y; gap = 1.2*mm
     n1, n2, ns = len(CELL_STUDENTS[c1]), len(CELL_STUDENTS[c2]), len(SPECIAL[fam])
     weights = [max(3.5, 3 + n1*0.5), max(3.5, 3 + n2*0.5), max(3.5, 3 + ns*0.5)]
@@ -174,8 +174,8 @@ def main():
     c.setFillColor(colors.HexColor('#16a34a')); c.roundRect(M, title_y - 9*mm, 9*mm, 9*mm, 1.6*mm, stroke=0, fill=1)
     c.setFillColor(colors.white); c.setFont('MalgunBold', 11); c.drawCentredString(M + 4.5*mm, title_y - 6.4*mm, 'R')
     c.setFillColor(colors.black)
-    c.setFont('MalgunBold', 15); c.drawString(M + 11.5*mm, title_y - 5*mm, '내수동 경주자 2026 · 전체 라인업')
-    c.setFont('Malgun', 9); c.drawString(M + 11.5*mm, title_y - 10*mm, '6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명 · 담임/부담임 & 명단')
+    c.setFont('MalgunBold', 16.5); c.drawString(M + 11.5*mm, title_y - 5*mm, '내수동 경주자 2026 · 전체 라인업')
+    c.setFont('Malgun', 9.5); c.drawString(M + 11.5*mm, title_y - 10.2*mm, '6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명 · 담임/부담임 & 명단')
 
     c.setFont('Malgun', 8); today = date.today().strftime('%Y-%m-%d')
     c.drawRightString(W - M, title_y - 5*mm, f'발행 {today}')
