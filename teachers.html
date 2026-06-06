@@ -160,7 +160,7 @@
   .nav-link:hover { background: rgba(255,255,255,.15); }
   .nav-link.relations { background: rgba(59,130,246,.18); border-color: rgba(59,130,246,.4); }
   .nav-link.public { background: rgba(16,185,129,.18); border-color: rgba(16,185,129,.4); }
-  .nav-link.attend { background: rgba(168,85,247,.18); border-color: rgba(168,85,247,.4); opacity: 0.7; cursor: not-allowed; }
+  .nav-link.attend { background: rgba(168,85,247,.18); border-color: rgba(168,85,247,.4); }
   .nav-link.attend:hover { background: rgba(168,85,247,.25); }
   .nav-link.logout { background: rgba(239,68,68,.18); border-color: rgba(239,68,68,.4); margin-left: auto; }
 
@@ -888,7 +888,7 @@
       <div class="nav-row">
         <a class="nav-link relations" href="index.html?key=nsdhs2026h2" target="_blank">🕸 관계도 (1·2학기 토글)</a>
         <a class="nav-link public" href="assignments.html" target="_blank">🌱 공개용 편성표</a>
-        <a class="nav-link attend" href="javascript:void(0)" onclick="alert('출석현황 집계 페이지는 추후 연결됩니다.')" title="추후 연결 예정">📊 출석현황 (준비 중)</a>
+        <a class="nav-link attend" href="attendance-overview.html">📊 출석현황</a>
         <a class="nav-link logout" href="javascript:void(0)" onclick="logout()">🚪 로그아웃</a>
       </div>
       <div class="notice-bar">
@@ -937,9 +937,9 @@ const Photos = (function () {
   function avatarImg(name, gender, size) {
     size = size || 28; const def = defaultAvatar(gender); const ver = _vers.get(slug(name));
     const src = ver ? publicUrl(name, ver) : def; const nm = String(name).replace(/"/g, '&quot;');
-    return '<img class="stu-photo" data-name="' + nm + '" src="' + src + '" data-def="' + def + '" ' +
-      'onerror="this.onerror=null;this.src=this.dataset.def;" ' +
-      'style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#0f172a;vertical-align:middle;" alt="">';
+    return '<img class="stu-photo" data-name="' + nm + '" data-gender="' + (gender || '') + '" src="' + src + '" data-def="' + def + '" ' +
+      'onerror="this.onerror=null;this.src=this.dataset.def;" title="클릭하면 크게 보기" ' +
+      'style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#0f172a;vertical-align:middle;cursor:zoom-in;" alt="">';
   }
   function refresh() {
     document.querySelectorAll('img.stu-photo[data-name]').forEach(img => {
@@ -954,9 +954,34 @@ const Photos = (function () {
     } catch (e) { console.warn('photo load failed', e); }
     return _vers;
   }
-  return { slug, publicUrl, defaultAvatar, avatarImg, load, refresh };
+  // 클릭 확대 라이트박스
+  function openLightbox(src, name) {
+    let lb = document.getElementById('photo-lb');
+    if (!lb) {
+      lb = document.createElement('div'); lb.id = 'photo-lb';
+      lb.innerHTML = '<div class="lb-inner"><img id="photo-lb-img" alt=""><div id="photo-lb-cap"></div><div class="lb-hint">아무 곳이나 누르면 닫힘</div></div>';
+      lb.addEventListener('click', () => lb.classList.remove('show'));
+      document.body.appendChild(lb);
+      const st = document.createElement('style');
+      st.textContent = '#photo-lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:10000;padding:24px}#photo-lb.show{display:flex}#photo-lb .lb-inner{text-align:center}#photo-lb img{max-width:min(86vw,400px);max-height:74vh;border-radius:18px;border:3px solid #a78bfa;background:#0f172a;box-shadow:0 20px 60px rgba(0,0,0,.6);object-fit:contain}#photo-lb #photo-lb-cap{margin-top:14px;color:#fff;font-size:19px;font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.6)}#photo-lb .lb-hint{margin-top:6px;color:#cbd5e1;font-size:12px}';
+      document.head.appendChild(st);
+    }
+    document.getElementById('photo-lb-img').src = src;
+    document.getElementById('photo-lb-cap').textContent = name || '';
+    lb.classList.add('show');
+  }
+  function enableLightbox() {
+    if (window.__photoLbOn) return; window.__photoLbOn = true;
+    document.addEventListener('click', e => {
+      const img = e.target.closest && e.target.closest('img.stu-photo');
+      if (!img || img.closest('.photo-edit')) return;
+      openLightbox(img.src, img.getAttribute('data-name'));
+    });
+  }
+  return { slug, publicUrl, defaultAvatar, avatarImg, load, refresh, openLightbox, enableLightbox };
 })();
 Photos.load();
+Photos.enableLightbox();
 
 /* ====================================================================
  * 0. 비밀번호 게이트
@@ -2355,5 +2380,32 @@ function render() {
 authorize();
 </script>
 
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 + 사진 등록 링크 (assignments 공개 페이지 제외) */
+(function () {
+  const KEY = 'nsdhs2026h2';
+  const ITEMS = [
+    ['dashboard.html', '🏠 대시보드', ''],
+    ['attendance.html', '📋 출석 입력', ''],
+    ['attendance-overview.html', '📊 출석 현황', ''],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['index.html', '🕸 관계도', '?key=' + KEY],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['photos.html', '📸 사진 등록', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
 </body>
 </html>

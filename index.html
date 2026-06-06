@@ -1845,5 +1845,33 @@ window.activateCard = activateCard;
 window.openPrayerModal = openPrayerModal;
 </script>
 
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 + 사진 등록 링크 (assignments 공개 페이지 제외) */
+(function () {
+  const KEY = 'nsdhs2026h2';
+  const ITEMS = [
+    ['dashboard.html', '🏠 대시보드', ''],
+    ['attendance.html', '📋 출석 입력', ''],
+    ['attendance-overview.html', '📊 출석 현황', ''],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['index.html', '🕸 관계도', '?key=' + KEY],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['photos.html', '📸 사진 등록', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
+
 </body>
 </html>

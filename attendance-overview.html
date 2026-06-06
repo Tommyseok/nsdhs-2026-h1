@@ -237,6 +237,72 @@
 </div>
 
 <script>
+/* ============================================================
+ * 학생 사진 헬퍼 (Supabase Storage, SDK 없이 REST · 표시 전용)
+ *    업로드는 photos.html 에서만. 여기선 이름 옆 아바타 + 클릭 확대.
+ * ============================================================ */
+const Photos = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const BUCKET = 'student-photos';
+  const REST = URL_BASE + '/storage/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
+  let _vers = new Map();
+  function slug(name) { const b = new TextEncoder().encode(name); let h = ''; for (let i = 0; i < b.length; i++) h += b[i].toString(16).padStart(2, '0'); return h; }
+  function publicUrl(name, ver) { let u = REST + '/object/public/' + BUCKET + '/' + slug(name) + '.jpg'; if (ver) u += '?v=' + encodeURIComponent(ver); return u; }
+  function defaultAvatar(gender) {
+    const isF = gender === '여'; const bg = isF ? '#3a2435' : '#1e2a44'; const fg = isF ? '#ec8fc0' : '#6ba6e8';
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="' + bg + '"/><circle cx="32" cy="25" r="11" fill="' + fg + '"/><path d="M13 58c0-11 8.5-18 19-18s19 7 19 18z" fill="' + fg + '"/></svg>';
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+  function avatarImg(name, gender, size) {
+    size = size || 28; const def = defaultAvatar(gender); const ver = _vers.get(slug(name));
+    const src = ver ? publicUrl(name, ver) : def; const nm = String(name).replace(/"/g, '&quot;');
+    return '<img class="stu-photo" data-name="' + nm + '" data-gender="' + (gender || '') + '" src="' + src + '" data-def="' + def + '" ' +
+      'onerror="this.onerror=null;this.src=this.dataset.def;" title="클릭하면 크게 보기" ' +
+      'style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#0f172a;vertical-align:middle;cursor:zoom-in;" alt="">';
+  }
+  function refresh() {
+    document.querySelectorAll('img.stu-photo[data-name]').forEach(img => {
+      const ver = _vers.get(slug(img.getAttribute('data-name')));
+      if (ver) img.src = publicUrl(img.getAttribute('data-name'), ver);
+    });
+  }
+  async function load() {
+    try {
+      const res = await fetch(REST + '/object/list/' + BUCKET, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ prefix: '', limit: 1000 }) });
+      if (res.ok) { const arr = await res.json(); const m = new Map(); (arr || []).forEach(o => { if (o && o.name && /\.jpg$/i.test(o.name)) m.set(o.name.replace(/\.jpg$/i, ''), o.updated_at || o.created_at || ''); }); _vers = m; refresh(); }
+    } catch (e) { console.warn('photo load failed', e); }
+    return _vers;
+  }
+  function openLightbox(src, name) {
+    let lb = document.getElementById('photo-lb');
+    if (!lb) {
+      lb = document.createElement('div'); lb.id = 'photo-lb';
+      lb.innerHTML = '<div class="lb-inner"><img id="photo-lb-img" alt=""><div id="photo-lb-cap"></div><div class="lb-hint">아무 곳이나 누르면 닫힘</div></div>';
+      lb.addEventListener('click', () => lb.classList.remove('show'));
+      document.body.appendChild(lb);
+      const st = document.createElement('style');
+      st.textContent = '#photo-lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:10000;padding:24px}#photo-lb.show{display:flex}#photo-lb .lb-inner{text-align:center}#photo-lb img{max-width:min(86vw,400px);max-height:74vh;border-radius:18px;border:3px solid #a78bfa;background:#0f172a;box-shadow:0 20px 60px rgba(0,0,0,.6);object-fit:contain}#photo-lb #photo-lb-cap{margin-top:14px;color:#fff;font-size:19px;font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.6)}#photo-lb .lb-hint{margin-top:6px;color:#cbd5e1;font-size:12px}';
+      document.head.appendChild(st);
+    }
+    document.getElementById('photo-lb-img').src = src;
+    document.getElementById('photo-lb-cap').textContent = name || '';
+    lb.classList.add('show');
+  }
+  function enableLightbox() {
+    if (window.__photoLbOn) return; window.__photoLbOn = true;
+    document.addEventListener('click', e => {
+      const img = e.target.closest && e.target.closest('img.stu-photo');
+      if (!img || img.closest('.photo-edit')) return;
+      openLightbox(img.src, img.getAttribute('data-name'));
+    });
+  }
+  return { slug, publicUrl, defaultAvatar, avatarImg, load, refresh, openLightbox, enableLightbox };
+})();
+Photos.load();
+Photos.enableLightbox();
+
 const PRIVATE_KEY = 'nsdhs2026h2';
 
 /* ===== 데이터 ===== */
@@ -523,7 +589,7 @@ function renderAll() {
           const cumText = s.cum === null ? '—' : s.cum + '%';
           html += `<div class="student-row">
             <span class="sname">
-              ${escapeHtml(s.name)}
+              ${Photos.avatarImg(s.name, s.s, 28)} ${escapeHtml(s.name)}
               <span class="gender-pill ${s.s === '남' ? 'male' : 'female'}">${s.s}</span>
               <span class="grade-meta">${s.g}학</span>
             </span>
@@ -557,7 +623,7 @@ function renderAll() {
       const cumText = s.cum === null ? '—' : s.cum + '%';
       html += `<div class="student-row" style="padding:8px 12px;background:rgba(255,255,255,.02);border-radius:6px;margin-bottom:4px;border-bottom:none">
         <span class="sname">
-          ${escapeHtml(s.name)}
+          ${Photos.avatarImg(s.name, s.s, 28)} ${escapeHtml(s.name)}
           <span class="gender-pill ${s.s === '남' ? 'male' : 'female'}">${s.s}</span>
           <span class="grade-meta">${s.g}학 · ${escapeHtml(s.cell)}</span>
         </span>
@@ -589,5 +655,32 @@ function checkAutoLogin() {
 checkAutoLogin();
 </script>
 
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 + 사진 등록 링크 (assignments 공개 페이지 제외) */
+(function () {
+  const KEY = 'nsdhs2026h2';
+  const ITEMS = [
+    ['dashboard.html', '🏠 대시보드', ''],
+    ['attendance.html', '📋 출석 입력', ''],
+    ['attendance-overview.html', '📊 출석 현황', ''],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['index.html', '🕸 관계도', '?key=' + KEY],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['photos.html', '📸 사진 등록', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
 </body>
 </html>
