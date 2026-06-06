@@ -444,6 +444,10 @@
     background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
     color: #1c1410;
   }
+  /* 목사님 전체 보기 — 대가족 선택기 */
+  .family-tabs.admin-fam { margin-bottom: 8px; }
+  .family-tab.fam-pick { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.3); color: #fcd34d; }
+  .family-tab.fam-pick.active { background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); color: #1c1410; border-color: #f59e0b; box-shadow: 0 4px 10px rgba(245,158,11,.3); }
   /* ===== Prayers ===== */
   .prayer-list {
     display: flex;
@@ -732,7 +736,7 @@
     <div class="container">
       <div class="greeting">
         <h1>
-          <span>👋 환영합니다, <span id="my-name">…</span> 선생님</span>
+          <span id="greeting-text">👋 환영합니다, <span id="my-name">…</span> 선생님</span>
           <span id="my-cell-badge" class="my-cell"></span>
           <span id="my-position-badge" class="my-position" style="display:none"></span>
           <span class="badge-proto">PROTO</span>
@@ -1221,20 +1225,24 @@ function showApp() {
   document.getElementById('app-root').style.display = '';
 
   // 헤더
-  document.getElementById('my-name').textContent = me.name;
+  const greetEl = document.getElementById('greeting-text');
   const cellBadge = document.getElementById('my-cell-badge');
-  if (me.cell) {
-    cellBadge.textContent = me.cell + ' · ' + me.role;
-    cellBadge.style.display = '';
-  } else {
-    cellBadge.style.display = 'none';
-  }
   const posBadge = document.getElementById('my-position-badge');
-  if (me.position) {
-    posBadge.textContent = me.position;
+  if (me.name === '오신영') {
+    // 담당 목사님 전용 환영 문구
+    greetEl.innerHTML = '💛 사랑하는 <strong style="color:#fde68a">오신영 목사님</strong> 환영합니다';
+    cellBadge.style.display = 'none';
+    posBadge.textContent = '🎉 우리 목사님 최고!!!';
     posBadge.style.display = '';
+    posBadge.style.background = 'linear-gradient(135deg,#ec4899,#f59e0b)';
+    posBadge.style.color = '#fff';
+    posBadge.style.borderColor = 'transparent';
   } else {
-    posBadge.style.display = 'none';
+    greetEl.innerHTML = '👋 환영합니다, ' + escapeHtml(me.name) + ' 선생님';
+    if (me.cell) { cellBadge.textContent = me.cell + ' · ' + me.role; cellBadge.style.display = ''; }
+    else { cellBadge.style.display = 'none'; }
+    if (me.position) { posBadge.textContent = me.position; posBadge.style.display = ''; }
+    else { posBadge.style.display = 'none'; }
   }
 
   renderSchedule();
@@ -1473,7 +1481,9 @@ let SELECTED_CELL = null;
 function renderMyClass(me) {
   const titleEl = document.getElementById('my-class-title');
   const bodyEl = document.getElementById('my-class-body');
-  if (!me.cell) {
+  const seeAll = (me.name === '오신영');  // 담당 목사님: Home에서 전체(모든 셀) 보기
+  // 담임 셀 없는 '일반' 케이스(목사님 제외)만 안내 표시
+  if (!me.cell && !seeAll) {
     titleEl.textContent = '내 반';
     bodyEl.innerHTML = `
       <div class="no-class">
@@ -1485,12 +1495,19 @@ function renderMyClass(me) {
     return;
   }
 
-  // 대가족 셀 토글
-  if (!SELECTED_CELL) SELECTED_CELL = me.cell;
-  const myFamN = CELL_FAMILY[me.cell];
-  const famCells = familyCells(myFamN);
-  // 내 셀이 먼저, 그 다음 같은 대가족 다른 셀들, 마지막 Special
-  const sortedFamCells = [me.cell, ...famCells.filter(c => c !== me.cell)];
+  // 셀 토글 (목사님은 대가족 1~6 전체 선택기로 모든 셀 열람)
+  if (!SELECTED_CELL) SELECTED_CELL = me.cell || '셀1';
+  const navFamN = CELL_FAMILY[SELECTED_CELL];
+  let famSelectorHtml = '';
+  if (seeAll) {
+    famSelectorHtml = '<div class="family-tabs admin-fam">' + [1,2,3,4,5,6].map(f =>
+      `<button class="family-tab fam-pick${f === navFamN ? ' active' : ''}" onclick="SELECTED_CELL=familyCells(${f})[0];renderMyClass(window.CURRENT_ME);">대가족 ${f}</button>`
+    ).join('') + '</div>';
+  }
+  const famCells = familyCells(navFamN);
+  const sortedFamCells = (me.cell && CELL_FAMILY[me.cell] === navFamN)
+    ? [me.cell, ...famCells.filter(c => c !== me.cell)]
+    : famCells;
   const tabsHtml = sortedFamCells.map(c => {
     const isActive = c === SELECTED_CELL;
     const isMy = c === me.cell;
@@ -1514,7 +1531,7 @@ function renderMyClass(me) {
     return a.name.localeCompare(b.name, 'ko');
   });
 
-  titleEl.innerHTML = `내 반 + 대가족 ${myFamN}`;
+  titleEl.innerHTML = seeAll ? `🌟 전체 보기 · 대가족 ${navFamN}` : `내 반 + 대가족 ${navFamN}`;
 
   // 출석 데이터: localStorage(attendance.html에서 입력) 또는 Mock fallback
   const attendanceFromStorage = loadAttendanceFromStorage();
@@ -1556,6 +1573,7 @@ function renderMyClass(me) {
   const rate = total4w > 0 ? Math.round(sum4w / total4w * 100) : null;
 
   const summaryHtml = `
+    ${famSelectorHtml}
     <div class="family-tabs">${tabsHtml}</div>
     <div class="my-class-summary">
       <span class="stat"><strong style="color:#f1f5f9">${escapeHtml(cellTitle)}</strong></span>
