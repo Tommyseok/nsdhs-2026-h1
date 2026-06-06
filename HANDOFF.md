@@ -216,6 +216,7 @@ cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
 - `relations.html` — students 배열 (관계도, 이전 index.html)
 - `make_assignment_pdf.py` — CELL_STUDENTS (공개 편성표 assignments.pdf 재생성)
 - `make_lineup_pdf.py` — CELL_STUDENTS (전체 라인업 lineup.pdf 1장 재생성 · `python make_lineup_pdf.py`)
+- `make_lineup_pptx.py` — 라인업 PPT(lineup.pptx, 타이틀+대가족 6장) 재생성 · `python make_lineup_pptx.py` (python-pptx 필요)
 
 → 변경 후 PDF 재생성:
 ```bash
