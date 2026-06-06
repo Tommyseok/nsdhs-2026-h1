@@ -623,14 +623,15 @@ function renderWeek() {
 }
 
 // 학생 누적 출석률 (1학기 historical + 2학기 사용자 입력)
+// 모든 학생이 동일한 분모 (17주) 로 비교되도록 빈 칸도 결석으로 처리
 function cumulativeRate(name) {
   let total = 0, sum = 0;
-  // 1학기 historical
+  // 1학기 historical — 17주 전체 카운트 (빈 칸 = 결석)
   const hStr = HISTORICAL_ATTENDANCE[name];
   if (hStr) {
+    total += HISTORICAL_WEEKS.length;
     [...hStr].forEach(c => {
-      if (c === 'O') { total++; sum++; }
-      else if (c === 'X') { total++; }
+      if (c === 'O') sum++;
     });
   }
   // 사용자 입력 (2학기)

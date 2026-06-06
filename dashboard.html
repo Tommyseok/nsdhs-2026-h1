@@ -1401,22 +1401,24 @@ function getRecentWeeks(n) {
 }
 
 // 학생의 전체 누적 출석률 계산 (historical 1학기 + 사용자 입력 2학기)
+// 모든 학생이 동일한 분모 (전체 운영 주차 수)로 비교되도록 빈 칸도 결석으로 처리
 function cumulativeAttRate(name) {
   const userData = loadAttendanceFromStorage();
   let total = 0, sum = 0;
-  // 1학기 historical
+  // 1학기 historical — 신규 학생이 아니면 17주 전체 카운트 (빈 칸 = 결석)
   const hStr = HISTORICAL_ATTENDANCE[name];
   if (hStr) {
+    total += HISTORICAL_WEEKS.length;
     [...hStr].forEach(c => {
-      if (c === 'O') { total++; sum++; }
-      else if (c === 'X') { total++; }
+      if (c === 'O') sum++;
+      // X 또는 '-' (빈 칸) 모두 결석 처리 — 분모만 카운트
     });
   }
-  // 사용자 입력 (historical 주차는 user 데이터 우선)
+  // 사용자 입력 (2학기 주차)
   Object.keys(userData).forEach(week => {
+    if (HISTORICAL_WEEKS.includes(week)) return;
     const rec = userData[week][name];
     if (!rec || !rec.status) return;
-    if (HISTORICAL_WEEKS.includes(week)) return; // historical 우선
     total++;
     if (rec.status === 'full') sum++;
     else if (rec.status === 'partial') sum += 0.5;
