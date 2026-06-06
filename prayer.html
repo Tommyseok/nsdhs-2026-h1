@@ -670,6 +670,26 @@ function familyCells(famNum) {
   return Object.keys(CELL_FAMILY).filter(c => CELL_FAMILY[c] === famNum);
 }
 
+/* ===== 장결자(더 자주 보고 싶은 친구들) 배정 셀 — PPT 라인업 기준 ===== */
+const HOME_CELL = {
+  '김민채':'셀1','송성모':'셀1','최승아':'셀2','고예나':'셀2',
+  '최서윤':'셀3','최지윤':'셀3','백결':'셀4','조혁준':'셀4',
+  '김유진':'셀5','김강희':'셀5','김재원':'셀6','박서연':'셀6',
+  '박시우':'셀7','하어림':'셀7','박진서':'셀8','임소명':'셀8',
+  '오희수':'셀9','장세민':'셀9','정원영':'셀10','박민주':'셀10',
+  '김도헌':'셀11','이하준':'셀11','이서현':'셀12','이소민':'셀12',
+};
+const SPECIAL_SET = new Set(Object.keys(HOME_CELL));
+const specialsOfCell = c => Object.keys(HOME_CELL).filter(n => HOME_CELL[n] === c);
+function specialTag(name, ctxCell) {
+  if (!SPECIAL_SET.has(name)) return '';
+  const home = HOME_CELL[name];
+  const inHome = ctxCell === home;
+  const txt = inHome ? '💛 보고 싶은 친구' : '🏠 소그룹반 ' + home.slice(1);
+  const bg = inHome ? '#fce7f3' : '#fef3c7', fg = inHome ? '#9d174d' : '#92400e';
+  return `<span title="${inHome ? '더 자주 보고 싶은 친구(장결자) · 이 반 소속' : '배정 반(장결자 소속) → ' + home}" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:${bg};color:${fg};margin-left:5px;white-space:nowrap;vertical-align:middle">${txt}</span>`;
+}
+
 /* ===== 상태 ===== */
 let MY = null;
 let CURRENT_TAB = 'mine';
@@ -682,6 +702,8 @@ const ALL_STUDENTS_FLAT = [];
 Object.entries(CELL_STUDENTS).forEach(([cell, list]) => {
   list.forEach(name => ALL_STUDENTS_FLAT.push({name, cell}));
 });
+// 장결자(보고 싶은 친구들) — 배정 셀로 합류 (학생별 모아보기·기도 기록 대상)
+Object.keys(HOME_CELL).forEach(n => ALL_STUDENTS_FLAT.push({name: n, cell: HOME_CELL[n]}));
 
 /* ===== 로그인 ===== */
 function fillSelect() {
@@ -895,7 +917,7 @@ function renderStudentPicker() {
     return `
       <button class="student-tile ${PICKED_STUDENT === s.name ? 'active' : ''}" onclick="pickStudent('${s.name}')">
         <div style="display:flex;justify-content:center;margin-bottom:6px">${Photos.avatarImg(s.name, STUDENT_GENDER[s.name], 42)}</div>
-        <div class="st-name">${escapeHtml(s.name)}</div>
+        <div class="st-name">${escapeHtml(s.name)}${specialTag(s.name, s.cell)}</div>
         <div class="st-meta">${escapeHtml(s.cell)}</div>
         <span class="st-count ${n > 0 ? 'has' : 'zero'}">${n}건</span>
       </button>
@@ -908,8 +930,10 @@ function fillStudentSelect() {
   if (!MY || !MY.cell) return;
   const sel = document.getElementById('form-student');
   const students = CELL_STUDENTS[MY.cell] || [];
+  const sp = specialsOfCell(MY.cell);
   sel.innerHTML = '<option value="">— 학생 선택 —</option>' +
-    students.map(s => `<option value="${s}">${s}</option>`).join('');
+    students.map(s => `<option value="${s}">${s}</option>`).join('') +
+    sp.map(s => `<option value="${s}">💛 ${s} (보고 싶은 친구)</option>`).join('');
 }
 
 function allPrayers() {
@@ -1008,7 +1032,7 @@ function renderPrayers() {
     pickedEl.innerHTML = `
       <div class="ps-name">
         ${Photos.avatarImg(PICKED_STUDENT, STUDENT_GENDER[PICKED_STUDENT], 40)} ${escapeHtml(PICKED_STUDENT)}
-        ${stInfo ? `<span style="font-size:12px;color:#c4b5fd;background:rgba(167,139,250,.18);padding:3px 10px;border-radius:999px;border:1px solid rgba(167,139,250,.35)">${escapeHtml(stInfo.cell)} · 대가족 ${famNum}</span>` : ''}
+        ${stInfo ? `<span style="font-size:12px;color:#c4b5fd;background:rgba(167,139,250,.18);padding:3px 10px;border-radius:999px;border:1px solid rgba(167,139,250,.35)">${escapeHtml(stInfo.cell)} · 대가족 ${famNum}</span>` : ''}${specialTag(PICKED_STUDENT, stInfo && stInfo.cell)}
         <button class="ps-back" onclick="unpickStudent()">← 학생 선택으로</button>
       </div>
       <div class="ps-att">

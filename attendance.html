@@ -699,6 +699,34 @@ const SP_STUDENT_INFO = {
 };
 Object.assign(STUDENT_INFO, SP_STUDENT_INFO);
 
+/* ===== 장결자(더 자주 보고 싶은 친구들) 배정 셀 — PPT 라인업 기준 ===== */
+const HOME_CELL = {
+  '김민채':'셀1','송성모':'셀1','최승아':'셀2','고예나':'셀2',
+  '최서윤':'셀3','최지윤':'셀3','백결':'셀4','조혁준':'셀4',
+  '김유진':'셀5','김강희':'셀5','김재원':'셀6','박서연':'셀6',
+  '박시우':'셀7','하어림':'셀7','박진서':'셀8','임소명':'셀8',
+  '오희수':'셀9','장세민':'셀9','정원영':'셀10','박민주':'셀10',
+  '김도헌':'셀11','이하준':'셀11','이서현':'셀12','이소민':'셀12',
+};
+const SPECIAL_SET = new Set(Object.keys(HOME_CELL));
+const specialsOfCell = c => Object.keys(HOME_CELL).filter(n => HOME_CELL[n] === c);
+// 장결자 출석 저장 셀 = 배정 셀 (Sp 탭에서 입력해도 배정 셀로 저장)
+Object.keys(HOME_CELL).forEach(n => { STUDENT_TO_CELL[n] = HOME_CELL[n]; });
+// 일반 셀 로스터 = 셀 학생 + 배정 장결자 (담임이 자기 반에서 직접 입력)
+function cellRoster(cell) {
+  const base = (CELL_STUDENTS[cell] || []).slice();
+  if (cell && !cell.startsWith('Sp')) specialsOfCell(cell).forEach(n => { if (!base.includes(n)) base.push(n); });
+  return base;
+}
+function specialTag(name, ctxCell) {
+  if (!SPECIAL_SET.has(name)) return '';
+  const home = HOME_CELL[name];
+  const inHome = ctxCell === home;
+  const txt = inHome ? '💛 보고 싶은 친구' : '🏠 소그룹반 ' + home.slice(1);
+  const bg = inHome ? '#fce7f3' : '#fef3c7', fg = inHome ? '#9d174d' : '#92400e';
+  return `<span title="${inHome ? '더 자주 보고 싶은 친구(장결자) · 이 반 소속' : '배정 반(장결자 소속) → ' + home}" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:${bg};color:${fg};margin-left:5px;white-space:nowrap;vertical-align:middle">${txt}</span>`;
+}
+
 /* =========================================================
  * 로그인
  * ========================================================= */
@@ -842,7 +870,7 @@ function cumulativeRate(name) {
 function renderStudents() {
   if (!MY || !MY.cell) return;
   if (!SELECTED_CELL) SELECTED_CELL = MY.cell;
-  const students = CELL_STUDENTS[SELECTED_CELL] || [];
+  const students = cellRoster(SELECTED_CELL);
   const sorted = students.slice().sort((a, b) => {
     const ga = (STUDENT_INFO[a]||{}).g||9, gb = (STUDENT_INFO[b]||{}).g||9;
     if (ga !== gb) return gb - ga;
@@ -872,7 +900,7 @@ function renderStudents() {
     return `
       <div class="student ${rec.status ? 'selected' : ''} ${rec.note ? 'show-note' : ''}" data-name="${name}">
         <div class="student-head">
-          <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(name, info.s, 34)}<span class="student-name">${escapeHtml(name)}</span></span>
+          <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(name, info.s, 34)}<span class="student-name">${escapeHtml(name)}</span></span>${specialTag(name, SELECTED_CELL)}
           <span class="gender-pill ${gCls}">${info.s}</span>
           <span class="student-meta">${info.g}학년</span>
           ${histTag}
@@ -922,7 +950,7 @@ function renderCellTabs() {
 }
 
 function renderSummary() {
-  const students = CELL_STUDENTS[SELECTED_CELL] || [];
+  const students = cellRoster(SELECTED_CELL);
   const week = ATTENDANCE[CURRENT_WEEK] || {};
   let full=0, partial=0, absent=0, pending=0;
   students.forEach(s => {

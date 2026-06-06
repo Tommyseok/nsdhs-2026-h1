@@ -1896,7 +1896,7 @@ function studentHtml(s, sameCellNames, splitWithinCell, keepWithinCell) {
   return `
     <div class="${cls}" data-name="${escapeHtml(s.name)}">
       <div class="student-head">
-        <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(s.name, s.gender, 34)}<span class="student-name">${escapeHtml(s.name)}</span></span>
+        <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(s.name, s.gender, 34)}<span class="student-name">${escapeHtml(s.name)}</span></span>${specialTag(s.name)}
         <span class="pill ${genderCls}">${escapeHtml(s.gender)}</span>
         <span class="pill grade${s.grade}">${s.grade}학년</span>
         <span class="pill ${attClass(att)}">${attText(att)}</span>
@@ -1957,6 +1957,26 @@ function cellHtml(cell, familyId, sameCellNames) {
       </div>
     </div>
   `;
+}
+
+/* ===== 장결자(더 자주 보고 싶은 친구들) 배정 셀 — PPT 라인업 기준 ===== */
+const HOME_CELL = {
+  '김민채':'셀1','송성모':'셀1','최승아':'셀2','고예나':'셀2',
+  '최서윤':'셀3','최지윤':'셀3','백결':'셀4','조혁준':'셀4',
+  '김유진':'셀5','김강희':'셀5','김재원':'셀6','박서연':'셀6',
+  '박시우':'셀7','하어림':'셀7','박진서':'셀8','임소명':'셀8',
+  '오희수':'셀9','장세민':'셀9','정원영':'셀10','박민주':'셀10',
+  '김도헌':'셀11','이하준':'셀11','이서현':'셀12','이소민':'셀12',
+};
+const SPECIAL_SET = new Set(Object.keys(HOME_CELL));
+const specialsOfCell = c => Object.keys(HOME_CELL).filter(n => HOME_CELL[n] === c);
+function specialTag(name, ctxCell) {
+  if (!SPECIAL_SET.has(name)) return '';
+  const home = HOME_CELL[name];
+  const inHome = ctxCell === home;
+  const txt = inHome ? '💛 보고 싶은 친구' : '🏠 소그룹반 ' + home.slice(1);
+  const bg = inHome ? '#fce7f3' : '#fef3c7', fg = inHome ? '#9d174d' : '#92400e';
+  return `<span title="${inHome ? '더 자주 보고 싶은 친구(장결자) · 이 반 소속' : '배정 반(장결자 소속) → ' + home}" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:${bg};color:${fg};margin-left:5px;white-space:nowrap;vertical-align:middle">${txt}</span>`;
 }
 
 function specialHtml(special, familyId) {
@@ -2061,7 +2081,7 @@ function contactStudentHtml(s) {
   return `
     <div class="${cls}" data-name="${escapeHtml(s.name)}">
       <div class="student-head">
-        <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(s.name, s.gender, 34)}<span class="student-name">${escapeHtml(s.name)}</span></span>
+        <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(s.name, s.gender, 34)}<span class="student-name">${escapeHtml(s.name)}</span></span>${specialTag(s.name)}
         <span class="pill ${genderCls}">${escapeHtml(s.gender)}</span>
         <span class="pill grade${s.grade}">${s.grade}학년</span>
         <span class="pill ${attClass(att)}">${attText(att)}</span>
@@ -2183,7 +2203,7 @@ function shareStudentHtml(s) {
   const genderCls = s.gender === '남' ? 'male' : 'female';
   return `
     <div class="share-student">
-      <span class="sname">${escapeHtml(s.name)}</span>
+      <span class="sname">${escapeHtml(s.name)}</span>${specialTag(s.name)}
       <span class="sgrade g${s.grade}">${s.grade}학년</span>
       <span class="sgender ${genderCls}">${escapeHtml(s.gender)}</span>
     </div>

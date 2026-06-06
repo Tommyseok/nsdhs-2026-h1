@@ -122,6 +122,7 @@
 - `STUDENT_NOTES` (teachers.html) — 학생 케어 메모
 - `PREV_INFO` (teachers.html) — 1학기 담임
 - `HISTORICAL_ATTENDANCE` — 1학기 출석 데이터 (1/11~5/31, 21주, 84명)
+- `HOME_CELL` — **장결자(Sp1~6) 24명 → 배정 셀 매핑** (꼬리표·출석·기도 입력의 단일 기준). dashboard·attendance·attendance-overview·teachers·prayer **5개 파일에 동일 복제** (한 곳 바꾸면 5곳 모두 동기화 필수). PPT 라인업(`04_개인_리소스/Tommy/경주자/lineup.pptx`) 기준
 
 학생 정보 변경 시: 위 데이터 객체들을 코드에서 직접 수정 + git push
 
@@ -207,6 +208,8 @@ cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
 - ⚠️ 각 페이지 하단 **공통 네비 주입 스크립트의 `const KEY = 'nsdhs2026h2'`** 도 함께 치환 (teachers/관계도 링크에 사용)
 
 ### 학생 정보 변경
+> ⚠️ **장결자(Sp1~6) 배정 셀 변경 시**: `HOME_CELL` 맵을 dashboard·attendance·attendance-overview·teachers·prayer **5개 파일에서 동일하게** 수정 (한 곳만 바꾸면 페이지마다 꼬리표·입력이 어긋남).
+
 학생 셀 이동 / 추가 / 정보 수정 시 수정해야 할 파일:
 - `assignments.html` — FAMILY_GROUPS
 - `teachers.html` — FAMILY_GROUPS, CONTACT, STUDENT_NOTES, PREV_INFO
@@ -233,6 +236,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **장결자(보고 싶은 친구들) 셀 배정 표기 + 각 반 DB 기록** — Sp1~6(24명)은 그대로 두되, PPT 라인업 기준으로 각 학생을 같은 대가족 내 두 셀에 2명씩 배정(`HOME_CELL` 맵, 단일 기준). ① 교사용 5개 페이지(dashboard·attendance·attendance-overview·teachers·prayer)에 `🏠 소그룹반 N`(그 외) / `💛 보고 싶은 친구`(자기 반 안) 꼬리표. ② **출석**: 담임 자기 셀 로스터에 배정 장결자 합류(`cellRoster`), `STUDENT_TO_CELL[장결자]=배정셀`로 어느 탭에서 입력해도 배정 셀로 저장. ③ **기도**: 담임 기도 드롭다운 + 학생별 모아보기에 배정 장결자 추가(`ALL_STUDENTS_FLAT` 보강) → 기도제목 cell=배정셀. DB 스키마 변경 없음(학생명 기준). 공개 assignments·관계도 제외. 설계: `docs/superpowers/specs/2026-06-06-jangkyeolja-cell-assignment-design.md`
 0. **라인업 PDF·PPT (발표/인쇄용)** — 전체 라인업 1장 PDF(`lineup.pdf`) + 발표용 PPT(`lineup.pptx`, 타이틀+대가족 6장, 이름 22pt 크게·성별 색상). 웹 UI엔 미연결(파일만). 생성기 `make_lineup_pdf.py`/`make_lineup_pptx.py`
 0. **오신영 목사님 전용 처리** — Home 환영문구 "💛 사랑하는 오신영 목사님 환영합니다 + 🎉 우리 목사님 최고!!!" (이름 `'오신영'` 기준, 다른 관리자/선생님엔 미적용) + 내 반 카드에 대가족 1~6 선택기로 **전체 열람**. 관리자 페이지는 그대로 admin 전용. 접속 현황은 **지난 7일** 기준 통계
 0. **'Special' → '더 자주 보고 싶은 친구들' 명칭 변경** — 장기결석 그룹 라벨이 예민한 청소년에게 낙인/오해가 될 수 있어 따뜻한 이름으로 전면 교체(웹 전 페이지 + 공개편성표/라인업 PDF·PPT). "특별케어" 문구도 "대가족 선생님이 더 자주 함께"로 순화. **내부 코드 Sp1~6는 그대로 유지**(미변경), 좁은 탭엔 "💛 보고 싶은 친구들" 단축 표기
