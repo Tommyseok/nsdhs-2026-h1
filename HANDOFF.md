@@ -48,20 +48,21 @@
 
 | URL | 인증 | 용도 |
 |---|---|---|
-| `dashboard.html` | PIN + 본인 선택 | 🏠 **교사 메인 화면** (진입점) |
-| `attendance.html` | PIN + 본인 선택 | 📋 출석 입력 (본인 + 같은 대가족 셀) |
-| `attendance-overview.html` | PIN | 📊 **전체 출석 현황** (모든 선생님 접근) |
+| `index.html` | 공개 | 🔀 **루트 → dashboard.html 리다이렉트** (메인 화면 = Home) |
+| `dashboard.html` | PIN + 본인 선택 | 🏠 **Home · 교사 메인 화면** (진입점) |
+| `attendance.html` | PIN + 본인 선택 | 📝 출석 입력 (본인 + 같은 대가족 셀) |
 | `prayer.html` | PIN + 본인 선택 | 🙏 학생상황+기도제목 (3개 탭) |
-| `photos.html` | PIN + 본인 선택 | 📸 **학생 사진 업로드 전용** (선생님=본인 셀, 관리자=전체). 업로드는 여기서만 |
-| `teachers.html` | URL `?key=` | 📋 학생 상세·연락처·교적부·옷사이즈 |
-
-모든 교사 페이지 상단에 **공통 네비게이션 바**(site-nav) 자동 주입 → 대시보드·출석입력·출석현황·셀편성·관계도·기도·사진등록 상호 이동. (공개용 `assignments.html` 은 제외)
-| `index.html` | URL `?key=` | 🕸 관계도 (1·2학기 토글) |
+| `teachers.html` | URL `?key=` | 🗂 셀편성 — 학생 상세·연락처·교적부·옷사이즈 |
+| `relations.html` | URL `?key=` | 🕸 관계도 (1·2학기 토글) ※ 이전 파일명 index.html |
+| `attendance-overview.html` | PIN | 📊 전체 출석현황 (모든 선생님 접근) |
+| `photos.html` | PIN + 본인 선택 | 📸 학생 사진 업로드 전용 (선생님=본인 셀, 관리자=전체) |
 | `assignments.html` | 공개 | 🌱 공개용 편성표 (학생·학부모) |
 | `assignments.pdf` | 공개 | 공개용 PDF (인쇄용) |
 
-기존 페이지 (현재 비공개 처리):
-- `index.html` — 이전엔 공개였으나 PIN 추가
+모든 교사 페이지 상단에 **공통 네비 바**(site-nav, 각 페이지 `</body>` 직전 스크립트가 `<header>` 뒤에 주입) 자동 표시.
+순서: `🏠 Home · 📝 출석입력 · 🙏 학생상황·기도` │ `🗂 셀편성 · 🕸 관계도 · 📊 전체출석현황 · 📸 사진등록` (가운데 구분선 `.site-nav-sep` 로 2그룹). 공개용 `assignments.html` 은 제외.
+
+기존 페이지:
 - `cells.html` — tombstone 페이지 (부담임 지원 폐지)
 
 ---
@@ -91,7 +92,7 @@
 - 버킷 `student-photos`, 파일 키 = **`{학생이름 UTF-8 hex}.jpg`** (Storage 키가 한글 불가 → hex 인코딩)
 - **업로드는 `photos.html` 전용 페이지에서만.** 학생 카드 카메라 배지(📷) 클릭 → 파일 선택 → 브라우저에서 정사각 크롭+압축(가로 400px, JPEG) → 즉시 저장
 - **권한** (UI 레벨·신뢰 기반): photos.html 에서 일반 선생님 = 본인 셀, 관리자 = 전체 학생
-- **표시**: dashboard / attendance / attendance-overview / prayer / teachers 의 이름 옆에 원형 아바타. 없으면 성별 디폴트 SVG. **아바타 클릭 시 라이트박스로 크게 보기**(`#photo-lb`). 공개용 assignments.html·관계도 index.html 노드에는 사진 미표시(개인정보)
+- **표시**: dashboard / attendance / attendance-overview / prayer / teachers 의 이름 옆에 원형 아바타. 없으면 성별 디폴트 SVG. **아바타 클릭 시 라이트박스로 크게 보기**(`#photo-lb`). 공개용 assignments.html·관계도 relations.html 노드에는 사진 미표시(개인정보)
 - 각 페이지 상단 `Photos` 헬퍼: 표시 페이지는 표시+라이트박스(`avatarImg`/`load`/`refresh`/`enableLightbox`), `photos.html` 만 업로드(`compress`/`upload`) 담당. SDK 없이 `fetch` REST
 - 로드 시 Storage `list` 1회 → `_vers` 맵 → 아바타 src 세팅(캐시버스팅 `?v=updated_at`)
 - Storage 정책: anon SELECT/INSERT/UPDATE 허용, **DELETE 미허용**
@@ -187,8 +188,9 @@ cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
 ```
 파일 목록:
 - `dashboard.html`, `attendance.html`, `attendance-overview.html`
-- `prayer.html`, `teachers.html`, `index.html`
+- `prayer.html`, `teachers.html`, `relations.html`, `photos.html`
 - `dashboard_backend.gs`, `DASHBOARD_DEPLOY.md`
+- ⚠️ 각 페이지 하단 **공통 네비 주입 스크립트의 `const KEY = 'nsdhs2026h2'`** 도 함께 치환 (teachers/관계도 링크에 사용)
 
 ### 학생 정보 변경
 학생 셀 이동 / 추가 / 정보 수정 시 수정해야 할 파일:
@@ -200,7 +202,7 @@ cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
 - `prayer.html` — CELL_STUDENTS, **STUDENT_GENDER** (디폴트 아바타용 성별 맵)
 - `attendance-overview.html` — CELL_STUDENTS (이름 옆 아바타)
 - `photos.html` — TEACHERS, CELL_TEACHERS, CELL_STUDENTS (업로드 그리드)
-- `index.html` — students 배열
+- `relations.html` — students 배열 (관계도, 이전 index.html)
 - `make_assignment_pdf.py` — CELL_STUDENTS (PDF 재생성 필요)
 
 → 변경 후 PDF 재생성:
@@ -215,6 +217,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **메인 화면 = Home(대시보드)** — 루트 `index.html` 을 dashboard.html 리다이렉트로 변경, 기존 관계도 → `relations.html` 로 분리. 공통 네비 라벨 "대시보드"→"Home", 순서 재정렬: `Home·출석입력·학생상황기도` │ `셀편성·관계도·전체출석현황·사진등록` (구분선 2그룹)
 0. **학생 사진 + 페이지 네비 통합** — ① 업로드 전용 `photos.html` (선생님=본인 셀, 관리자=전체). ② dashboard/attendance/attendance-overview/prayer/teachers 이름 옆 아바타 + **클릭 시 라이트박스 확대**. ③ 모든 교사 페이지 상단 공통 네비 바(셀편성·출석현황 등 상호 연결, teachers의 "출석현황 준비중" → 실제 연결). 공개 assignments·관계도 노드엔 사진 미표시. 키=이름 UTF-8 hex
   - (이력: 전용 페이지 → 대시보드 인라인 → 다시 전용 photos.html + 네비/라이트박스 로 정착)
 1. **학생별 모아보기 권한 제한** — 관리자만 전체, 일반은 본인 대가족만
@@ -276,7 +279,8 @@ publish/
 ├── prayer.html
 ├── photos.html (학생 사진 업로드 전용 — Supabase Storage)
 ├── teachers.html
-├── index.html (관계도)
+├── index.html (루트 → dashboard.html 리다이렉트)
+├── relations.html (관계도 · 이전 index.html)
 ├── assignments.html (공개용)
 ├── assignments.pdf (공개용 PDF)
 ├── cells.html (tombstone)

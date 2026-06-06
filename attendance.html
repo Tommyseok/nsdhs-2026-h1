@@ -407,7 +407,7 @@
         <span id="my-name">…</span>
         <span id="my-cell-badge" class="my-cell"></span>
       </h1>
-      <a class="back-link" href="dashboard.html">← 대시보드</a>
+      <a class="back-link" href="dashboard.html">🏠 Home</a>
     </div>
   </header>
 
@@ -924,7 +924,7 @@ function showApp() {
       <div class="no-class">
         <div class="icon">👑</div>
         담당 셀이 없습니다 (관리자·헬퍼 역할).<br><br>
-        <a href="dashboard.html">대시보드로 돌아가기 →</a>
+        <a href="dashboard.html">🏠 Home으로 →</a>
       </div>
     `;
     return;
@@ -958,22 +958,25 @@ checkAutoLogin();
 (function () {
   const KEY = 'nsdhs2026h2';
   const ITEMS = [
-    ['dashboard.html', '🏠 대시보드', ''],
-    ['attendance.html', '📋 출석 입력', ''],
-    ['attendance-overview.html', '📊 출석 현황', ''],
-    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
-    ['index.html', '🕸 관계도', '?key=' + KEY],
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
     ['prayer.html', '🙏 학생상황·기도', ''],
+    ['__sep__'],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['relations.html', '🕸 관계도', '?key=' + KEY],
+    ['attendance-overview.html', '📊 전체 출석현황', ''],
     ['photos.html', '📸 사진 등록', ''],
   ];
   const cur = location.pathname.split('/').pop() || 'dashboard.html';
   const nav = document.createElement('nav');
   nav.className = 'site-nav';
   nav.innerHTML = ITEMS.map(it =>
-    '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+    it[0] === '__sep__'
+      ? '<span class="site-nav-sep" aria-hidden="true"></span>'
+      : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
   ).join('');
   const style = document.createElement('style');
-  style.textContent = '.site-nav{display:flex;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
   document.head.appendChild(style);
   const header = document.querySelector('header');
   if (header) header.insertAdjacentElement('afterend', nav);
