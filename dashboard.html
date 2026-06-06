@@ -1068,10 +1068,30 @@ function renderMyClass(me) {
 
   titleEl.textContent = `내 반 — 소그룹반 ${cellNum}`;
 
+  // 출석 데이터: localStorage(attendance.html에서 입력) 또는 Mock fallback
+  const attendanceFromStorage = loadAttendanceFromStorage();
+  const recentWeeks = getRecentWeeks(4);
+  function attStringFor(name) {
+    return recentWeeks.map(w => {
+      const rec = (attendanceFromStorage[w] || {})[name];
+      if (!rec || !rec.status) {
+        // 백업: Mock 데이터 사용
+        return null;
+      }
+      if (rec.status === 'full') return '●';
+      if (rec.status === 'partial') return '◐';
+      if (rec.status === 'absent') return '○';
+      return '•';
+    });
+  }
+
   // 출석 통계
   let total4w = 0, sum4w = 0, alerts = [];
   students.forEach(s => {
-    const att = MOCK_ATTENDANCE[s.name] || '••••';
+    const dots = attStringFor(s.name);
+    let att = dots.map(d => d || '•').join('');
+    // 입력 0건이면 Mock 사용
+    if (dots.every(d => !d)) att = MOCK_ATTENDANCE[s.name] || '••••';
     [...att].forEach(c => {
       if (c === '•') return;
       total4w++;
@@ -1093,7 +1113,9 @@ function renderMyClass(me) {
   `;
 
   const rows = students.map(s => {
-    const att = MOCK_ATTENDANCE[s.name] || '••••';
+    const dots = attStringFor(s.name);
+    let att = dots.map(d => d || '•').join('');
+    if (dots.every(d => !d)) att = MOCK_ATTENDANCE[s.name] || '••••';
     const attHtml = [...att].map(c => {
       if (c === '○') return '<span class="miss">○</span>';
       if (c === '◐') return '<span class="partial">◐</span>';
@@ -1109,7 +1131,7 @@ function renderMyClass(me) {
           <span class="col-meta"> ${s.grade}학년</span>
         </td>
         <td><span class="att-dots">${attHtml}</span></td>
-        <td class="right"><button class="att-action">✏️ 입력</button></td>
+        <td class="right"><button class="att-action" onclick="location.href='attendance.html'">✏️ 입력</button></td>
       </tr>
     `;
   }).join('');
@@ -1126,8 +1148,8 @@ function renderMyClass(me) {
       <tbody>${rows}</tbody>
     </table>
     <div class="my-class-actions">
-      <button onclick="alert('출석 입력 화면 — Phase 3 에서 구현')">📋 오늘 출석 일괄 입력</button>
-      <button class="secondary" onclick="alert('기도제목 추가 화면 — Phase 4 에서 구현')">+ 기도제목 추가</button>
+      <button onclick="location.href='attendance.html'">📋 출석 입력</button>
+      <button class="secondary" onclick="alert('기도제목 추가 화면 — 다음 단계에서 구현 예정')">+ 기도제목 추가</button>
     </div>
   `;
 }
@@ -1154,6 +1176,27 @@ function renderQuickMenu(me) {
 /* ===== 유틸 ===== */
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function loadAttendanceFromStorage() {
+  try {
+    return JSON.parse(localStorage.getItem('attendance_data') || '{}');
+  } catch { return {}; }
+}
+
+function getRecentWeeks(n) {
+  // 가장 최근 일요일부터 n주 전까지, 왼쪽이 가장 오래된, 오른쪽이 최신
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() - today.getDay());
+  const weeks = [];
+  for (let i = n-1; i >= 0; i--) {
+    const d = new Date(sunday);
+    d.setDate(sunday.getDate() - i*7);
+    weeks.push(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+  }
+  return weeks;
 }
 
 /* ============================================================
