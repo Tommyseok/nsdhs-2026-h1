@@ -1,23 +1,29 @@
 {
-  "_doc": "다함께 기도제목. 모든 선생님이 함께 기도할 항목. items 배열에 추가/수정.",
+  "_doc": "다함께 기도제목 + 선생님 개인 기도제목 + 대가족 공유. items 배열에 추가/수정.",
   "_format": {
-    "id": "고유 ID (P001, P002 등)",
+    "id": "고유 ID (P001 ... 또는 P1234567890)",
     "date": "YYYY-MM-DD",
-    "student": "학생 이름 (또는 일반 대상)",
-    "cell": "셀 1 / Sp 3 등 (일반 항목은 빈 칸)",
-    "teacher": "담당 선생님 (선택)",
+    "type": "'student' (학생 기도) | 'teacher' (선생님 본인 기도)",
+    "student": "학생 이름 또는 '선생님 이름 선생님'",
+    "cell": "셀 1 / Sp 3 등 (선생님의 담당 셀)",
+    "family": "1~6 (대가족 번호, 자동 계산)",
+    "teacher": "작성자 선생님 이름",
     "text": "기도 내용",
-    "urgent": "true/false (true 면 빨강 강조)",
+    "share": "true/false (다함께 기도해주세요)",
+    "urgent": "true/false (긴급)",
     "active": "true/false"
   },
   "items": [
     {
       "id": "P001",
       "date": "2026-06-06",
+      "type": "student",
       "student": "오신영 목사님",
       "cell": "",
+      "family": null,
       "teacher": "",
       "text": "목사님의 건강 회복을 위해 기도해 주세요!",
+      "share": true,
       "urgent": false,
       "active": true
     }
