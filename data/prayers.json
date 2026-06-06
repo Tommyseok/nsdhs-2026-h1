@@ -1,0 +1,65 @@
+{
+  "_doc": "다함께 기도제목. 모든 선생님이 함께 기도할 항목. items 배열에 추가/수정.",
+  "_format": {
+    "id": "고유 ID (P001, P002 등)",
+    "date": "YYYY-MM-DD",
+    "student": "학생 이름",
+    "cell": "셀 1 / Sp 3 등",
+    "teacher": "담당 선생님",
+    "text": "기도 내용",
+    "urgent": "true/false (true 면 빨강 강조)",
+    "active": "true/false"
+  },
+  "items": [
+    {
+      "id": "P001",
+      "date": "2026-06-04",
+      "student": "권하율",
+      "cell": "셀 1",
+      "teacher": "이윤정",
+      "text": "자퇴 후 부모님과의 관계 회복 — 부모 기대 매우 크며 본인은 자해 신호 보였던 경험. 새 텀 셀에 적응할 수 있도록.",
+      "urgent": true,
+      "active": true
+    },
+    {
+      "id": "P002",
+      "date": "2026-06-03",
+      "student": "강은교",
+      "cell": "셀 2",
+      "teacher": "정명경",
+      "text": "우울증 약 미성년자 최대치 복용 중 + 텀 변화로 인한 불안. 우나린·연해준 매칭 잘 된 상태.",
+      "urgent": false,
+      "active": true
+    },
+    {
+      "id": "P003",
+      "date": "2026-06-02",
+      "student": "김재원",
+      "cell": "Sp 3",
+      "teacher": "이수지",
+      "text": "어머니도 교회에 안 나오시는 상황. 가정 신앙 회복과 본인의 첫 출석.",
+      "urgent": true,
+      "active": true
+    },
+    {
+      "id": "P004",
+      "date": "2026-05-30",
+      "student": "김나현",
+      "cell": "셀 5",
+      "teacher": "이수지",
+      "text": "1학기 거의 출석 X (장결자 → 2학기 정규 합류). 단톡방 안 나갔지만 회피성 답변만. 김도헌(같은 학교) 통한 접촉 검토 중.",
+      "urgent": false,
+      "active": true
+    },
+    {
+      "id": "P005",
+      "date": "2026-05-28",
+      "student": "전지훈",
+      "cell": "셀 4",
+      "teacher": "박대철",
+      "text": "1학기에 '교회 안 나가겠어' 통보 + 연해준과 분리됨. 이수지T 라포 유지하면서 박대철T 새 라포 형성 중.",
+      "urgent": false,
+      "active": true
+    }
+  ]
+}

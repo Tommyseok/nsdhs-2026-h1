@@ -1,0 +1,92 @@
+# 관리자 가이드 — 공지·일정·기도제목 등록
+
+대시보드의 일정·공지·기도제목은 **GitHub 파일**에 저장되어 있습니다.
+관리자가 직접 GitHub에서 파일을 수정하면 1~2분 후 모든 선생님 화면에 자동 반영됩니다.
+
+## 📂 파일 3개
+
+| 파일 | 용도 | 링크 |
+|---|---|---|
+| `data/schedule.json` | 일정 | [편집](https://github.com/Tommyseok/nsdhs-2026-h1/edit/main/publish/data/schedule.json) |
+| `data/notices.json` | 공지 | [편집](https://github.com/Tommyseok/nsdhs-2026-h1/edit/main/publish/data/notices.json) |
+| `data/prayers.json` | 다함께 기도제목 | [편집](https://github.com/Tommyseok/nsdhs-2026-h1/edit/main/publish/data/prayers.json) |
+
+## ✏️ 수정 방법
+
+1. 위 표에서 해당 파일의 **[편집]** 링크 클릭 (GitHub 로그인 필요)
+2. 화면에서 파일 직접 편집
+3. 페이지 맨 아래 **"Commit changes..."** 버튼 클릭
+4. 그대로 **"Commit changes"** 한번 더 클릭
+5. **1~2분 후** 모든 선생님 대시보드에 반영
+
+## 📝 추가 예시
+
+### 공지 추가 (notices.json)
+
+`items` 배열의 **맨 위**에 새 객체 추가:
+
+```json
+{
+  "items": [
+    {
+      "id": "N002",
+      "date": "2026-06-08",
+      "author": "교육국장",
+      "title": "여름 수련회 신청 안내",
+      "body": "안녕하세요 선생님.\n여름 수련회 신청서를 6/15까지 제출 부탁드립니다.",
+      "active": true
+    },
+    {
+      "id": "N001",
+      "date": "2026-06-07",
+      ...
+    }
+  ]
+}
+```
+
+**핵심 규칙**:
+- 콤마(`,`) 빠뜨리지 않기
+- 따옴표(`"`)는 그대로 유지
+- 줄바꿈은 `\n` 으로
+- `id`는 N002, N003 ... 순서대로
+
+### 일정 추가 (schedule.json)
+
+```json
+{"date": "2026-06-29", "title": "헌신예배", "note": "11시", "active": true}
+```
+
+### 다함께 기도제목 추가 (prayers.json)
+
+```json
+{
+  "id": "P006",
+  "date": "2026-06-08",
+  "student": "학생이름",
+  "cell": "셀 X",
+  "teacher": "작성자",
+  "text": "기도 내용...",
+  "urgent": false,
+  "active": true
+}
+```
+
+`urgent: true` 면 대시보드에서 빨강 박스로 강조됩니다.
+
+## 🗑 항목 삭제 / 숨김
+
+**옵션 1**: 항목을 그대로 두고 `"active": false` 로 변경 → 화면에서 안 보임 (복구 가능)
+
+**옵션 2**: JSON 배열에서 해당 객체 + 콤마 통째로 삭제 (영구 삭제)
+
+## ❓ JSON 문법이 어렵다면
+
+- 콤마 위치 헷갈리면 [JSONLint](https://jsonlint.com) 에 붙여넣어 검증
+- 또는 저(관리자)에게 카톡으로 추가할 내용 보내면 제가 직접 처리
+
+## 🔄 변경 후 확인
+
+1. GitHub commit 후 **1~2분 대기**
+2. dashboard 새로고침 → 반영 확인
+3. 안 보이면: JSON 문법 오류 가능 → 위 JSONLint로 검증

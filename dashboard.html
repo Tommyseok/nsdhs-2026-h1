@@ -849,35 +849,21 @@ Object.entries(CELL_STUDENTS).forEach(([cell, list]) => {
 });
 
 /* ============================================================
- * 4. Mock 데이터 + 시트 fetch
- *    시트 공개 권한 활성화 후 자동으로 시트 데이터로 교체됨
- *    fetch 실패 시 Mock 사용 (개발/오프라인 안전망)
+ * 4. 데이터 — GitHub JSON 파일에서 fetch
+ *    관리자가 data/*.json 파일을 GitHub web에서 직접 수정 + commit
+ *    → 1~2분 후 모든 선생님 화면에 자동 반영
+ *    fetch 실패 시 Mock 데이터 fallback (안전망)
  * ============================================================ */
-const PUBLIC_SHEET_ID = '1D5B3NWKFsX7wp4qdP2G5uox69VR0bRQMK0qS_5wa77w';
-
-async function fetchSheet(sheetName) {
-  const url = `https://docs.google.com/spreadsheets/d/${PUBLIC_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&cb=${Date.now()}`;
+async function fetchJson(filename) {
+  // cache-busting 으로 최신 데이터 가져옴
+  const url = `data/${filename}.json?cb=${Date.now()}`;
   try {
     const r = await fetch(url, {cache: 'no-store'});
     if (!r.ok) return null;
-    const text = await r.text();
-    const start = text.indexOf('{');
-    const end = text.lastIndexOf('}');
-    if (start < 0 || end < 0) return null;
-    const json = JSON.parse(text.substring(start, end + 1));
-    if (!json.table) return null;
-    const labels = json.table.cols.map(c => c.label || c.id);
-    return (json.table.rows || []).map(row => {
-      const obj = {};
-      (row.c || []).forEach((cell, i) => {
-        let v = cell ? cell.v : '';
-        if (cell && cell.f) v = cell.f; // formatted value (날짜 등)
-        obj[labels[i] || ('c' + i)] = v;
-      });
-      return obj;
-    });
+    const json = await r.json();
+    return Array.isArray(json) ? json : (json.items || null);
   } catch (e) {
-    console.warn('Sheet fetch failed:', sheetName, e);
+    console.warn('JSON fetch failed:', filename, e);
     return null;
   }
 }
@@ -1015,32 +1001,39 @@ function showApp() {
 
 async function refreshFromSheet() {
   const [schedule, prayers, notices] = await Promise.all([
-    fetchSheet('일정'),
-    fetchSheet('기도제목'),
-    fetchSheet('공지'),
+    fetchJson('schedule'),
+    fetchJson('prayers'),
+    fetchJson('notices'),
   ]);
-  if (schedule && schedule.length > 0) {
+  if (schedule) {
     SCHEDULE.length = 0;
-    schedule.filter(r => String(r['활성']).toUpperCase() !== 'FALSE').forEach(r => {
-      SCHEDULE.push({date: String(r['날짜']||'').substring(0,10), title: r['제목'] || '', note: r['설명'] || ''});
+    schedule.filter(r => r.active !== false).forEach(r => {
+      SCHEDULE.push({date: r.date, title: r.title || '', note: r.note || ''});
     });
     renderSchedule();
   }
-  if (prayers && prayers.length > 0) {
+  if (prayers) {
     SHEET_PRAYERS = prayers
-      .filter(r => String(r['활성']).toUpperCase() !== 'FALSE' && String(r['공유']).toUpperCase() === 'TRUE')
+      .filter(r => r.active !== false)
       .map(r => ({
-        student: r['학생'] || '',
-        cell:    r['셀'] || '',
-        teacher: r['작성자'] || '',
-        text:    r['내용'] || '',
-        date:    String(r['등록일']||'').substring(0,10),
-        urgent:  String(r['긴급']).toUpperCase() === 'TRUE',
+        student: r.student,
+        cell:    r.cell,
+        teacher: r.teacher,
+        text:    r.text,
+        date:    r.date,
+        urgent:  !!r.urgent,
       }));
     renderPrayers();
   }
-  if (notices && notices.length > 0) {
-    SHEET_NOTICES = notices.filter(r => String(r['활성']).toUpperCase() !== 'FALSE');
+  if (notices) {
+    SHEET_NOTICES = notices
+      .filter(r => r.active !== false)
+      .map(r => ({
+        '등록일': r.date,
+        '작성자': r.author,
+        '제목':   r.title,
+        '내용':   r.body,
+      }));
     renderNotices();
   }
 }
