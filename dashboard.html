@@ -893,6 +893,48 @@ const PRAYERS = [];
 const MOCK_ATTENDANCE = {};
 
 /* ============================================================
+ * 1학기 historical 출석 데이터 (2026-01-11 ~ 2026-05-03)
+ * - O = 전참, X = 결석, - = 데이터 없음
+ * - 2학기 시작 (6/7) 이전 주차 누적 출석률 계산에 사용
+ * ============================================================ */
+const HISTORICAL_WEEKS = ["2026-01-11","2026-01-18","2026-01-25","2026-02-01","2026-02-08","2026-02-15","2026-02-22","2026-03-01","2026-03-08","2026-03-15","2026-03-22","2026-03-29","2026-04-05","2026-04-12","2026-04-19","2026-04-26","2026-05-03"];
+const HISTORICAL_ATTENDANCE = {
+  '이윤서':'OXOOXXXXXXXXXXXXX','이하준':'XXXXXXXXXXXXXXXXX','김다은':'OOOOOOOOOOXOOOXOO','나정인':'OOOOXOOOOOOOOOOOO',
+  '서이수':'OOOOOOOOOOOOOOOOO','최승아':'XXXXXXXXXXXXXXXXX','나호윤':'OO---OOOOOOOOOOOO','안민혁':'XOO--OOOOOOOOOOXO',
+  '이주형':'OOO--OOOOOOOOOOOO','박진서':'OXO--XOOXXXXXXXXX','임소명':'OXO--XOOXXXXXXXXX','박민주':'XXXXXXXXXXXXXXXXX',
+  '이빛가온':'OXOOOXOOOOOOOOOOO','이서후':'XOOXOOOOOXOOOOOOO','김주하':'OOXOXXXXOXOOXXXXO','배유나':'XXXXXXXXXXXXOXXXX',
+  '임태민':'XOXOOXXXXXXOXOXXX','김한결':'OOXOOXOOOOOOOOOOO','최수지':'OOOOOOOOOOOOOOOOO','강은교':'OOOOOOOOXOOOOOOOO',
+  '연해준':'OOOOOOOOOOOOOOOOO','원대연':'OOOOOOOOOOOOOOXOO','김재원':'XXXXXXXXXXXXXXXXX','하은유':'OOOOOOOOOOOOOXOOO',
+  '김유진':'XXXXXXXXXXXXXXXXX','민예원':'OOOOOOOOOOOOOXXOO','김도연':'OOOOOOOOOOOOOXXOO','전지훈':'XXXXXXXXXXOOXXXXO',
+  '오현우':'OOOOOOOOOOOOOOOOO','하어림':'XXXXXXXXXXXXXXXXX','김나현':'XXXXXXXXXXXXXXXXX','유재희':'OOOXOXOOOOOOOOOOO',
+  '이준호':'XXXXOOOOOXXXXXXXX','홍기진':'OOOOOXOOOOOOOOOOO','송준원':'X-------------XXX','장지현':'XOOOOOOOOOOOOOOOO',
+  '유나린':'OOOOOOOOOOOOOOOOO','이가영':'XOOOOOOOXXXXXXXXO','박시우':'XXXXXXXXXXXXXXXXX','조한나':'OOOOOOOOXOOOOOOOO',
+  '최유현':'OOXOOOOOOOOXOXOOO','김라일':'OOOOOOOOOOOOOOOOO','김채은':'XXXXXXOXXOXXOXXXX','최민호':'--------OOOXXXOOO',
+  '양소희':'XXOOOOXXOOOXXXXXO','박동하':'OOXOOXXXXXOXXOXXX','오은수':'OXXOOOOOOOOOOXOOO','곽지원':'OXXOXXXOXXXXOXXOO',
+  '박지호':'XXXXOOOOOOOOOOOOO','정원영':'XXXXXXXXXXXOXXXXX','조인상':'OOOOOOOOOOOOOOOOO','김강희':'XXXXXXXXXXXXXXXXX',
+  '박서연':'OOOOOOOOOOOOOOXXX','박지웅':'OXOOOOOOOOOOOOOOO','백결':'XXXXXXOXXXXXXXXXX','조강인':'XXXXXOOOO-X-XXXOO',
+  '조혁준':'XXXXXXXXXXXXXXXXX','고예나':'XXXXXXXXXXXXXXOXO','김정록':'OOOOOOOOOOOOOOOOO','김민채':'XXXXXXXXXXXXXXXXX',
+  '송성모':'XXXXXXXXXXXXXXXXX','양인혁':'OOOOOOOOOOOOOOOOO','한채은':'OOOOOOOOOOOOOOOOO','정태율':'OXOOOOOOOOOOOOOOO',
+  '최지은':'OOOOOOOOOOOOOOXOO','김도헌':'XXXXXXXOXXXXXXXXX','김준수':'OXOOOXXOXOOOOXOOO','정승빈':'OOOOOOOOOOOOOOOOO',
+  '최지윤':'XXXXXXXXXXXXXXXXX','권하율':'OOOOOOOOOOOOOOXXO','김강은':'OOOOOOOOOOOOOOOOO','명주원':'OOXOOOOOOOOOOOOOO',
+  '오희수':'OOOXXXXXXXXXXXXXX','최가은':'OOOOOXOOOOOXOXXOX','최서윤':'XXXXXXXXXXXXXXXXX','윤성하':'OOXOOOOXOOOXOOXO-',
+  '이서현':'XXXXXXXXXXXXXXXX-','김은우':'OOOOOOOXOOOOXOXO-','심희은':'OOOOOOOOOOOOOOOO-','이소민':'XXXXOXXXXXXXXXXX-',
+  '이에녹':'OOOOOOOOOOOOOOOO-','장세민':'XXXXXXOOXXXXXXXX-',
+};
+
+// historical 데이터를 일반 record 형식으로 변환
+function historicalRec(name, week) {
+  const idx = HISTORICAL_WEEKS.indexOf(week);
+  if (idx < 0) return null;
+  const str = HISTORICAL_ATTENDANCE[name];
+  if (!str) return null;
+  const c = str[idx];
+  if (c === 'O') return {status: 'full', historical: true};
+  if (c === 'X') return {status: 'absent', historical: true};
+  return null;
+}
+
+/* ============================================================
  * 5. Mock 로그인
  * ============================================================ */
 function fillSelect() {
@@ -1216,15 +1258,20 @@ function renderMyClass(me) {
   const recentWeeks = getRecentWeeks(4);
   function attStringFor(name) {
     return recentWeeks.map(w => {
+      // 사용자 입력 우선
       const rec = (attendanceFromStorage[w] || {})[name];
-      if (!rec || !rec.status) {
-        // 백업: Mock 데이터 사용
-        return null;
+      if (rec && rec.status) {
+        if (rec.status === 'full') return '●';
+        if (rec.status === 'partial') return '◐';
+        if (rec.status === 'absent') return '○';
       }
-      if (rec.status === 'full') return '●';
-      if (rec.status === 'partial') return '◐';
-      if (rec.status === 'absent') return '○';
-      return '•';
+      // historical 1학기 데이터
+      const h = historicalRec(name, w);
+      if (h) {
+        if (h.status === 'full') return '●';
+        if (h.status === 'absent') return '○';
+      }
+      return null;
     });
   }
 
@@ -1353,13 +1400,23 @@ function getRecentWeeks(n) {
   return weeks;
 }
 
-// 학생의 전체 누적 출석률 계산 (모든 주차 기준)
+// 학생의 전체 누적 출석률 계산 (historical 1학기 + 사용자 입력 2학기)
 function cumulativeAttRate(name) {
-  const data = loadAttendanceFromStorage();
+  const userData = loadAttendanceFromStorage();
   let total = 0, sum = 0;
-  Object.keys(data).forEach(week => {
-    const rec = data[week][name];
+  // 1학기 historical
+  const hStr = HISTORICAL_ATTENDANCE[name];
+  if (hStr) {
+    [...hStr].forEach(c => {
+      if (c === 'O') { total++; sum++; }
+      else if (c === 'X') { total++; }
+    });
+  }
+  // 사용자 입력 (historical 주차는 user 데이터 우선)
+  Object.keys(userData).forEach(week => {
+    const rec = userData[week][name];
     if (!rec || !rec.status) return;
+    if (HISTORICAL_WEEKS.includes(week)) return; // historical 우선
     total++;
     if (rec.status === 'full') sum++;
     else if (rec.status === 'partial') sum += 0.5;

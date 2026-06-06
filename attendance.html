@@ -200,6 +200,35 @@
   .cum-rate.cum-ok  { background: rgba(16,185,129,.15);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.35); }
   .cum-rate.cum-mid { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
   .cum-rate.cum-low { background: rgba(239,68,68,.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,.35); }
+  .hist-tag {
+    margin-left: auto;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: rgba(148,163,184,.12);
+    color: #94a3b8;
+    border: 1px solid rgba(148,163,184,.3);
+  }
+  .hist-tag + .cum-rate { margin-left: 6px; }
+  .week-bar.historical {
+    background: rgba(148,163,184,.05);
+    border-color: rgba(148,163,184,.3);
+  }
+  .week-bar .term-tag {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(148,163,184,.15);
+    color: #94a3b8;
+    margin-left: 6px;
+    display: inline-block;
+  }
+  .week-bar .term-tag.h2 {
+    background: rgba(167,139,250,.15);
+    color: #c4b5fd;
+  }
 
   /* Status buttons */
   .status-row {
@@ -434,6 +463,46 @@ const STUDENT_INFO = {
 };
 
 /* =========================================================
+ * 1학기 historical 출석 데이터 (2026-01-11 ~ 2026-05-03)
+ * O = 전참, X = 결석, - = 데이터 없음
+ * ========================================================= */
+const HISTORICAL_WEEKS = ["2026-01-11","2026-01-18","2026-01-25","2026-02-01","2026-02-08","2026-02-15","2026-02-22","2026-03-01","2026-03-08","2026-03-15","2026-03-22","2026-03-29","2026-04-05","2026-04-12","2026-04-19","2026-04-26","2026-05-03"];
+const HISTORICAL_ATTENDANCE = {
+  '이윤서':'OXOOXXXXXXXXXXXXX','이하준':'XXXXXXXXXXXXXXXXX','김다은':'OOOOOOOOOOXOOOXOO','나정인':'OOOOXOOOOOOOOOOOO',
+  '서이수':'OOOOOOOOOOOOOOOOO','최승아':'XXXXXXXXXXXXXXXXX','나호윤':'OO---OOOOOOOOOOOO','안민혁':'XOO--OOOOOOOOOOXO',
+  '이주형':'OOO--OOOOOOOOOOOO','박진서':'OXO--XOOXXXXXXXXX','임소명':'OXO--XOOXXXXXXXXX','박민주':'XXXXXXXXXXXXXXXXX',
+  '이빛가온':'OXOOOXOOOOOOOOOOO','이서후':'XOOXOOOOOXOOOOOOO','김주하':'OOXOXXXXOXOOXXXXO','배유나':'XXXXXXXXXXXXOXXXX',
+  '임태민':'XOXOOXXXXXXOXOXXX','김한결':'OOXOOXOOOOOOOOOOO','최수지':'OOOOOOOOOOOOOOOOO','강은교':'OOOOOOOOXOOOOOOOO',
+  '연해준':'OOOOOOOOOOOOOOOOO','원대연':'OOOOOOOOOOOOOOXOO','김재원':'XXXXXXXXXXXXXXXXX','하은유':'OOOOOOOOOOOOOXOOO',
+  '김유진':'XXXXXXXXXXXXXXXXX','민예원':'OOOOOOOOOOOOOXXOO','김도연':'OOOOOOOOOOOOOXXOO','전지훈':'XXXXXXXXXXOOXXXXO',
+  '오현우':'OOOOOOOOOOOOOOOOO','하어림':'XXXXXXXXXXXXXXXXX','김나현':'XXXXXXXXXXXXXXXXX','유재희':'OOOXOXOOOOOOOOOOO',
+  '이준호':'XXXXOOOOOXXXXXXXX','홍기진':'OOOOOXOOOOOOOOOOO','송준원':'X-------------XXX','장지현':'XOOOOOOOOOOOOOOOO',
+  '유나린':'OOOOOOOOOOOOOOOOO','이가영':'XOOOOOOOXXXXXXXXO','박시우':'XXXXXXXXXXXXXXXXX','조한나':'OOOOOOOOXOOOOOOOO',
+  '최유현':'OOXOOOOOOOOXOXOOO','김라일':'OOOOOOOOOOOOOOOOO','김채은':'XXXXXXOXXOXXOXXXX','최민호':'--------OOOXXXOOO',
+  '양소희':'XXOOOOXXOOOXXXXXO','박동하':'OOXOOXXXXXOXXOXXX','오은수':'OXXOOOOOOOOOOXOOO','곽지원':'OXXOXXXOXXXXOXXOO',
+  '박지호':'XXXXOOOOOOOOOOOOO','정원영':'XXXXXXXXXXXOXXXXX','조인상':'OOOOOOOOOOOOOOOOO','김강희':'XXXXXXXXXXXXXXXXX',
+  '박서연':'OOOOOOOOOOOOOOXXX','박지웅':'OXOOOOOOOOOOOOOOO','백결':'XXXXXXOXXXXXXXXXX','조강인':'XXXXXOOOO-X-XXXOO',
+  '조혁준':'XXXXXXXXXXXXXXXXX','고예나':'XXXXXXXXXXXXXXOXO','김정록':'OOOOOOOOOOOOOOOOO','김민채':'XXXXXXXXXXXXXXXXX',
+  '송성모':'XXXXXXXXXXXXXXXXX','양인혁':'OOOOOOOOOOOOOOOOO','한채은':'OOOOOOOOOOOOOOOOO','정태율':'OXOOOOOOOOOOOOOOO',
+  '최지은':'OOOOOOOOOOOOOOXOO','김도헌':'XXXXXXXOXXXXXXXXX','김준수':'OXOOOXXOXOOOOXOOO','정승빈':'OOOOOOOOOOOOOOOOO',
+  '최지윤':'XXXXXXXXXXXXXXXXX','권하율':'OOOOOOOOOOOOOOXXO','김강은':'OOOOOOOOOOOOOOOOO','명주원':'OOXOOOOOOOOOOOOOO',
+  '오희수':'OOOXXXXXXXXXXXXXX','최가은':'OOOOOXOOOOOXOXXOX','최서윤':'XXXXXXXXXXXXXXXXX','윤성하':'OOXOOOOXOOOXOOXO-',
+  '이서현':'XXXXXXXXXXXXXXXX-','김은우':'OOOOOOOXOOOOXOXO-','심희은':'OOOOOOOOOOOOOOOO-','이소민':'XXXXOXXXXXXXXXXX-',
+  '이에녹':'OOOOOOOOOOOOOOOO-','장세민':'XXXXXXOOXXXXXXXX-',
+};
+
+function historicalRec(name, week) {
+  const idx = HISTORICAL_WEEKS.indexOf(week);
+  if (idx < 0) return null;
+  const str = HISTORICAL_ATTENDANCE[name];
+  if (!str) return null;
+  const c = str[idx];
+  if (c === 'O') return {status: 'full', note: '', historical: true};
+  if (c === 'X') return {status: 'absent', note: '', historical: true};
+  return null;
+}
+
+/* =========================================================
  * 상태
  * ========================================================= */
 let MY = null;          // 본인 선생님 객체
@@ -536,23 +605,37 @@ function renderWeek() {
   const d = new Date(CURRENT_WEEK + 'T00:00:00');
   const label = document.getElementById('week-label');
   const sub = document.getElementById('week-sub');
-  label.textContent = fmtKor(d);
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  if (ymd(d) === thisSunday()) label.innerHTML = fmtKor(d) + ' <span class="today-mark">· 이번 주</span>';
-  sub.textContent = `${d.getFullYear()}년 ${d.getMonth()+1}월 셋째 주`;
-  // 셋째 주 계산은 단순화 — 실제로는 정확하지 않으나 분위기용
+  const isHistorical = HISTORICAL_WEEKS.includes(CURRENT_WEEK);
+  const termTag = isHistorical
+    ? '<span class="term-tag">🗓️ 1학기</span>'
+    : '<span class="term-tag h2">2학기</span>';
+  label.innerHTML = fmtKor(d) + ' ' + termTag;
+  if (ymd(d) === thisSunday()) {
+    label.innerHTML = fmtKor(d) + ' <span class="today-mark">· 이번 주</span> ' + termTag;
+  }
   const diff = Math.round((d - getSundayOf(new Date())) / 86400000 / 7);
   if (diff === 0) sub.textContent = '오늘 주차';
   else if (diff < 0) sub.textContent = `${-diff}주 전`;
   else sub.textContent = `${diff}주 후`;
+  // 주차 박스 색상
+  document.querySelector('.week-bar').classList.toggle('historical', isHistorical);
   renderStudents();
 }
 
-// 학생 누적 출석률 (전체 주차)
+// 학생 누적 출석률 (1학기 historical + 2학기 사용자 입력)
 function cumulativeRate(name) {
   let total = 0, sum = 0;
+  // 1학기 historical
+  const hStr = HISTORICAL_ATTENDANCE[name];
+  if (hStr) {
+    [...hStr].forEach(c => {
+      if (c === 'O') { total++; sum++; }
+      else if (c === 'X') { total++; }
+    });
+  }
+  // 사용자 입력 (2학기)
   Object.keys(ATTENDANCE).forEach(w => {
+    if (HISTORICAL_WEEKS.includes(w)) return;
     const rec = ATTENDANCE[w][name];
     if (!rec || !rec.status) return;
     total++;
@@ -572,10 +655,18 @@ function renderStudents() {
     return a.localeCompare(b, 'ko');
   });
   const week = ATTENDANCE[CURRENT_WEEK] || {};
+  const isHistorical = HISTORICAL_WEEKS.includes(CURRENT_WEEK);
   const list = document.getElementById('student-list');
   list.innerHTML = sorted.map(name => {
     const info = STUDENT_INFO[name] || {g:'?', s:'?'};
-    const rec = week[name] || {status:'', note:''};
+    // 사용자 입력 우선, 없으면 historical
+    let rec = week[name];
+    let fromHistorical = false;
+    if (!rec || !rec.status) {
+      const h = historicalRec(name, CURRENT_WEEK);
+      if (h) { rec = h; fromHistorical = true; }
+    }
+    rec = rec || {status:'', note:''};
     const gCls = info.s === '남' ? 'male' : 'female';
     const cum = cumulativeRate(name);
     let cumBadge = '';
@@ -583,12 +674,14 @@ function renderStudents() {
       const cls = cum.rate >= 85 ? 'cum-ok' : cum.rate >= 50 ? 'cum-mid' : 'cum-low';
       cumBadge = `<span class="cum-rate ${cls}" title="누적 출석률 (전체 ${cum.total}주)">📊 ${cum.rate}%</span>`;
     }
+    const histTag = fromHistorical ? '<span class="hist-tag" title="1학기 기록">🗓️ 1학기</span>' : '';
     return `
       <div class="student ${rec.status ? 'selected' : ''} ${rec.note ? 'show-note' : ''}" data-name="${name}">
         <div class="student-head">
           <span class="student-name">${escapeHtml(name)}</span>
           <span class="gender-pill ${gCls}">${info.s}</span>
           <span class="student-meta">${info.g}학년</span>
+          ${histTag}
           ${cumBadge}
         </div>
         <div class="status-row">
