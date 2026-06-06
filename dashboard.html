@@ -194,6 +194,51 @@
     margin-left: 4px;
   }
 
+  /* ============== Notices ============== */
+  .notice-card {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(245,158,11,.12) 0%, rgba(249,115,22,.08) 100%);
+    border: 1px solid rgba(245,158,11,.35);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  }
+  .notice-card .notice-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color: #1c1410;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    margin-right: 8px;
+  }
+  .notice-card .notice-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .notice-card .notice-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fcd34d;
+  }
+  .notice-card .notice-meta {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .notice-card .notice-body {
+    font-size: 13.5px;
+    color: #e2e8f0;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .notice-card + .notice-card { margin-top: 8px; }
+
   /* ============== Grid Layout ============== */
   .dashboard-grid {
     display: grid;
@@ -614,6 +659,7 @@
   </header>
 
   <div class="container">
+    <div id="notices-area"></div>
     <div class="dashboard-grid">
       <!-- 📅 일정 -->
       <div class="card">
@@ -803,8 +849,39 @@ Object.entries(CELL_STUDENTS).forEach(([cell, list]) => {
 });
 
 /* ============================================================
- * 4. Mock 데이터 (실제로는 시트에서 fetch)
+ * 4. Mock 데이터 + 시트 fetch
+ *    시트 공개 권한 활성화 후 자동으로 시트 데이터로 교체됨
+ *    fetch 실패 시 Mock 사용 (개발/오프라인 안전망)
  * ============================================================ */
+const PUBLIC_SHEET_ID = '1D5B3NWKFsX7wp4qdP2G5uox69VR0bRQMK0qS_5wa77w';
+
+async function fetchSheet(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${PUBLIC_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&cb=${Date.now()}`;
+  try {
+    const r = await fetch(url, {cache: 'no-store'});
+    if (!r.ok) return null;
+    const text = await r.text();
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start < 0 || end < 0) return null;
+    const json = JSON.parse(text.substring(start, end + 1));
+    if (!json.table) return null;
+    const labels = json.table.cols.map(c => c.label || c.id);
+    return (json.table.rows || []).map(row => {
+      const obj = {};
+      (row.c || []).forEach((cell, i) => {
+        let v = cell ? cell.v : '';
+        if (cell && cell.f) v = cell.f; // formatted value (날짜 등)
+        obj[labels[i] || ('c' + i)] = v;
+      });
+      return obj;
+    });
+  } catch (e) {
+    console.warn('Sheet fetch failed:', sheetName, e);
+    return null;
+  }
+}
+
 const SCHEDULE = [
   {date:'2026-06-08', title:'주일 예배 (GBS)', note:'9시·11시'},
   {date:'2026-06-15', title:'여름 수련회 1차 모집 마감', note:'신청서 제출 필수'},
@@ -931,6 +1008,71 @@ function showApp() {
   renderPrayers();
   renderMyClass(me);
   renderQuickMenu(me);
+
+  // 시트에서 최신 데이터 가져와 다시 렌더 (성공 시)
+  refreshFromSheet();
+}
+
+async function refreshFromSheet() {
+  const [schedule, prayers, notices] = await Promise.all([
+    fetchSheet('일정'),
+    fetchSheet('기도제목'),
+    fetchSheet('공지'),
+  ]);
+  if (schedule && schedule.length > 0) {
+    SCHEDULE.length = 0;
+    schedule.filter(r => String(r['활성']).toUpperCase() !== 'FALSE').forEach(r => {
+      SCHEDULE.push({date: String(r['날짜']||'').substring(0,10), title: r['제목'] || '', note: r['설명'] || ''});
+    });
+    renderSchedule();
+  }
+  if (prayers && prayers.length > 0) {
+    SHEET_PRAYERS = prayers
+      .filter(r => String(r['활성']).toUpperCase() !== 'FALSE' && String(r['공유']).toUpperCase() === 'TRUE')
+      .map(r => ({
+        student: r['학생'] || '',
+        cell:    r['셀'] || '',
+        teacher: r['작성자'] || '',
+        text:    r['내용'] || '',
+        date:    String(r['등록일']||'').substring(0,10),
+        urgent:  String(r['긴급']).toUpperCase() === 'TRUE',
+      }));
+    renderPrayers();
+  }
+  if (notices && notices.length > 0) {
+    SHEET_NOTICES = notices.filter(r => String(r['활성']).toUpperCase() !== 'FALSE');
+    renderNotices();
+  }
+}
+
+let SHEET_PRAYERS = null;
+let SHEET_NOTICES = null;
+
+function renderNotices() {
+  const root = document.getElementById('notices-area');
+  if (!SHEET_NOTICES || SHEET_NOTICES.length === 0) {
+    root.innerHTML = '';
+    return;
+  }
+  // 가장 최근 공지 3건만
+  const sorted = SHEET_NOTICES.slice().sort((a, b) => {
+    const da = new Date(String(a['등록일']||'').substring(0,10)).getTime() || 0;
+    const db = new Date(String(b['등록일']||'').substring(0,10)).getTime() || 0;
+    return db - da;
+  }).slice(0, 3);
+  root.innerHTML = sorted.map(n => {
+    const date = String(n['등록일']||'').substring(0,10);
+    return `
+      <div class="notice-card">
+        <div class="notice-head">
+          <span class="notice-tag">📢 공지</span>
+          <span class="notice-title">${escapeHtml(n['제목']||'')}</span>
+          <span class="notice-meta">${escapeHtml(n['작성자']||'')} · ${escapeHtml(date.substring(5))}</span>
+        </div>
+        <div class="notice-body">${escapeHtml(n['내용']||'')}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 /* ===== 일정 ===== */
@@ -1022,7 +1164,7 @@ function renderBirthdays(me) {
 /* ===== 기도제목 ===== */
 function renderPrayers() {
   const list = document.getElementById('prayer-list');
-  // localStorage(prayer.html에서 등록)에서 공유된 것 + Mock 기본 데이터 병합
+  // 우선순위: 1) 시트(공유 기도제목) 2) localStorage(prayer.html) 3) Mock
   let stored = [];
   try {
     stored = JSON.parse(localStorage.getItem('prayer_data') || '[]')
@@ -1034,11 +1176,12 @@ function renderPrayers() {
         text: p.content,
         date: p.date,
         urgent: p.urgent,
-        _user: true,
       }));
   } catch {}
-  // 사용자 등록이 있으면 그것만, 없으면 Mock 데이터
-  const items = stored.length > 0 ? stored : PRAYERS;
+  let items;
+  if (SHEET_PRAYERS && SHEET_PRAYERS.length > 0) items = SHEET_PRAYERS;
+  else if (stored.length > 0) items = stored;
+  else items = PRAYERS;
   document.getElementById('prayer-count').textContent = `${items.length}건`;
   if (items.length === 0) {
     list.innerHTML = '<div class="prayer-empty">공유된 기도제목이 없습니다. <a href="prayer.html" style="color:#a78bfa;text-decoration:underline">+ 추가하기</a></div>';
