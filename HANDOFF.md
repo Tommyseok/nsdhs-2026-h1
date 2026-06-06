@@ -228,6 +228,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **모바일 홈화면(PWA)** — 매니페스트 + apple-touch-icon으로 홈화면 추가 시 이름 "내수동 경주자 2026", 아이콘 = **녹색 바탕 흰 R**(`icon-*.png`/`apple-touch-icon.png`). 탭 favicon(보라 러너)과는 별개. 전 페이지 `<head>`에 manifest·apple 메타 추가
 0. **브랜딩(Runners 2026) + 관리자 공지·일정 등록** — 모든 페이지 제목 "Runners 2026 · X", 러너 로고(`logo-runner.svg`) favicon + 게이트 표시. 관리자 페이지에서 공지(`notices`)·일정(`schedule`)·전체공유 기도(`prayers`) 직접 등록/삭제 → 대시보드 즉시 반영. (GitHub JSON 편집 불필요)
 0. **기도제목 자동 공유(Supabase)** — prayer.html의 "GitHub 공유(JSON 복사·commit)" 수동 UI 폐지. "전체 공유 ON" 토글 시 `prayers` 테이블에 자동 upsert → dashboard·admin·prayer 에 즉시 공유. (사용자 화면에서 개발자스러운 JSON 단계 제거)
 0. **관리자 페이지(admin.html) + 출석 중앙화** — Supabase 테이블 `access_log`·`attendance` 신규. 모든 로그인에 접속 기록, 출석 저장 시 Supabase upsert(전 선생님 공유, dashboard/overview/attendance 병합). admin.html(관리자 7명): 접속 현황·미접속 / 셀별 출석 입력·누락(주차 선택) / 사진 등록 현황·미등록 / 기도·공지 현황+GitHub 편집 링크
@@ -293,7 +294,9 @@ publish/
 ├── prayer.html
 ├── photos.html (학생 사진 업로드 전용 — Supabase Storage)
 ├── admin.html (관리자 — 접속·출석·사진 현황 + 공지·일정·기도 등록)
-├── logo-runner.svg (러너 로고 · favicon)
+├── logo-runner.svg (러너 로고 · 브라우저 탭 favicon)
+├── manifest.webmanifest (PWA · 홈화면 이름 "내수동 경주자 2026")
+├── icon-192.png / icon-512.png / apple-touch-icon.png (홈화면 아이콘 · 녹색 R)
 ├── teachers.html
 ├── index.html (루트 → dashboard.html 리다이렉트)
 ├── relations.html (관계도 · 이전 index.html)
