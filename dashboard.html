@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="googlebot" content="noindex, nofollow">
-<title>내수동 고등부 교사 대시보드 (프로토타입) · 2026</title>
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<title>Runners 2026 · Home</title>
 <style>
   :root {
     --bg: #0b0f17;
@@ -700,7 +701,8 @@
 <div id="gate-root">
   <div class="gate">
     <div class="gate-card">
-      <div class="lock">🌱</div>
+      <div class="lock"><img src="logo-runner.svg" alt="Runners" style="width:62px;height:62px;border-radius:16px;box-shadow:0 8px 24px rgba(124,58,237,.4)"></div>
+      <div style="text-align:center;font-weight:800;letter-spacing:1px;color:#c4b5fd;font-size:13px;margin-bottom:10px">RUNNERS 2026</div>
       <h1>내수동 고등부 교사 대시보드</h1>
       <p class="gate-sub">2026년 2학기 (6~8월) · 자기 반 학생을 깊이 케어하기 위한 통합 화면</p>
       <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px;text-align:center;letter-spacing:2px;">
@@ -1245,45 +1247,34 @@ function showApp() {
 }
 
 async function refreshFromSheet() {
-  const [schedule, prayers, notices, supaPrayers] = await Promise.all([
+  const [schedule, prayers, notices, supaPrayers, supaSchedule, supaNotices] = await Promise.all([
     fetchJson('schedule'),
     fetchJson('prayers'),
     fetchJson('notices'),
     Hub.select('prayers?select=id,student,cell,teacher,text,date,urgent&share=eq.true&active=eq.true'),
+    Hub.select('schedule?select=date,title,note&active=eq.true'),
+    Hub.select('notices?select=date,author,title,body,urgent&active=eq.true'),
   ]);
   SUPA_PRAYERS = (supaPrayers || []).map(r => ({ id: r.id, student: r.student, cell: r.cell, teacher: r.teacher, text: r.text, date: r.date, urgent: !!r.urgent }));
   renderPrayers();
-  if (schedule) {
-    SCHEDULE.length = 0;
-    schedule.filter(r => r.active !== false).forEach(r => {
-      SCHEDULE.push({date: r.date, title: r.title || '', note: r.note || ''});
-    });
-    renderSchedule();
-  }
+  // 일정: data/schedule.json + Supabase(관리자 등록) 병합 → 날짜순
+  SCHEDULE.length = 0;
+  (schedule || []).filter(r => r.active !== false).forEach(r => SCHEDULE.push({ date: r.date, title: r.title || '', note: r.note || '' }));
+  (supaSchedule || []).forEach(r => SCHEDULE.push({ date: r.date, title: r.title || '', note: r.note || '' }));
+  SCHEDULE.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  renderSchedule();
   if (prayers) {
     SHEET_PRAYERS = prayers
       .filter(r => r.active !== false)
-      .map(r => ({
-        student: r.student,
-        cell:    r.cell,
-        teacher: r.teacher,
-        text:    r.text,
-        date:    r.date,
-        urgent:  !!r.urgent,
-      }));
+      .map(r => ({ student: r.student, cell: r.cell, teacher: r.teacher, text: r.text, date: r.date, urgent: !!r.urgent }));
     renderPrayers();
   }
-  if (notices) {
-    SHEET_NOTICES = notices
-      .filter(r => r.active !== false)
-      .map(r => ({
-        '등록일': r.date,
-        '작성자': r.author,
-        '제목':   r.title,
-        '내용':   r.body,
-      }));
-    renderNotices();
-  }
+  // 공지: Supabase(관리자 등록, 최신 우선) + data/notices.json 병합
+  SHEET_NOTICES = [];
+  (supaNotices || []).forEach(r => SHEET_NOTICES.push({ '등록일': r.date, '작성자': r.author, '제목': r.title, '내용': r.body }));
+  (notices || []).filter(r => r.active !== false).forEach(r => SHEET_NOTICES.push({ '등록일': r.date, '작성자': r.author, '제목': r.title, '내용': r.body }));
+  SHEET_NOTICES.sort((a, b) => (b['등록일'] || '').localeCompare(a['등록일'] || ''));
+  renderNotices();
 }
 
 let SHEET_PRAYERS = null;

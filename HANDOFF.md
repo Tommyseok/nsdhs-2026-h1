@@ -105,6 +105,7 @@
 - **`access_log`** (id, teacher, page, at) — 로그인/입장 시 1줄 기록(브라우저별 30분 쓰로틀, localStorage `lastlog_*`). admin.html 접속 현황·미접속 명단에 사용
 - **`attendance`** (cell, week, student, status, note, teacher, updated_at · PK=week+student) — **출석 공유 원본**. attendance.html 저장 시 내가 수정한 것만 upsert(`merge-duplicates`, DIRTY 추적으로 남의 입력 보호). dashboard/attendance-overview/attendance/admin 가 로드 시 병합(`Hub.loadAttendance`) → 전 선생님 공유
 - **`prayers`** (id, date, type, student, cell, family, teacher, text, share, urgent, active) — **기도제목 전체 공유 원본**. prayer.html에서 "전체 공유 ON" 토글 시 자동 upsert(`PrayerDB.upsert`), OFF/삭제 시 share=false/active=false. dashboard "전체 공유 기도제목" 카드·prayer "다같이" 뷰·admin이 `share=true&active=true` 로드. **GitHub JSON 복사·commit 수동 단계는 폐지**(data/prayers.json은 관리자 선택 채널로만 잔존, 둘 다 병합 표시)
+- **`notices`** (id, date, author, title, body, urgent, active) / **`schedule`** (id, date, title, note, active) — **공지·일정**. admin.html "직접 등록" 폼에서 `Hub.upsert`로 즉시 등록, 삭제는 `Hub.update`(PATCH active=false). dashboard가 data/{notices,schedule}.json + Supabase 병합 표시. (GitHub JSON 편집은 고급 옵션으로만 잔존)
 - 삭제·초기화는 Supabase `execute_sql`(truncate)로. 학기 말 데이터 정리 시 사용
 - 관리자가 직접 보려면: admin.html (접속·출석누락·사진·기도 현황 한 화면)
 
@@ -227,6 +228,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **브랜딩(Runners 2026) + 관리자 공지·일정 등록** — 모든 페이지 제목 "Runners 2026 · X", 러너 로고(`logo-runner.svg`) favicon + 게이트 표시. 관리자 페이지에서 공지(`notices`)·일정(`schedule`)·전체공유 기도(`prayers`) 직접 등록/삭제 → 대시보드 즉시 반영. (GitHub JSON 편집 불필요)
 0. **기도제목 자동 공유(Supabase)** — prayer.html의 "GitHub 공유(JSON 복사·commit)" 수동 UI 폐지. "전체 공유 ON" 토글 시 `prayers` 테이블에 자동 upsert → dashboard·admin·prayer 에 즉시 공유. (사용자 화면에서 개발자스러운 JSON 단계 제거)
 0. **관리자 페이지(admin.html) + 출석 중앙화** — Supabase 테이블 `access_log`·`attendance` 신규. 모든 로그인에 접속 기록, 출석 저장 시 Supabase upsert(전 선생님 공유, dashboard/overview/attendance 병합). admin.html(관리자 7명): 접속 현황·미접속 / 셀별 출석 입력·누락(주차 선택) / 사진 등록 현황·미등록 / 기도·공지 현황+GitHub 편집 링크
 0. **메인 화면 = Home(대시보드)** — 루트 `index.html` 을 dashboard.html 리다이렉트로 변경, 기존 관계도 → `relations.html` 로 분리. 공통 네비 라벨 "대시보드"→"Home", 순서 재정렬: `Home·출석입력·학생상황기도` │ `셀편성·관계도·전체출석현황·사진등록` (구분선 2그룹)
@@ -290,7 +292,8 @@ publish/
 ├── attendance-overview.html
 ├── prayer.html
 ├── photos.html (학생 사진 업로드 전용 — Supabase Storage)
-├── admin.html (관리자 페이지 — 접속·출석·사진·기도 현황)
+├── admin.html (관리자 — 접속·출석·사진 현황 + 공지·일정·기도 등록)
+├── logo-runner.svg (러너 로고 · favicon)
 ├── teachers.html
 ├── index.html (루트 → dashboard.html 리다이렉트)
 ├── relations.html (관계도 · 이전 index.html)
