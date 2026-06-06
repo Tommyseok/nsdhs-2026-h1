@@ -702,7 +702,7 @@
       <div class="card col-full">
         <div class="card-head">
           <span class="card-icon">🙏</span>
-          <span class="card-title">다함께 기도해 주세요 (선생님들 공유)</span>
+          <span class="card-title">🌸 전체 공유 학생상황+기도제목</span>
           <span class="card-count" id="prayer-count"></span>
         </div>
         <div class="prayer-list" id="prayer-list"></div>
@@ -1209,7 +1209,7 @@ function renderPrayers() {
   else items = PRAYERS;
   document.getElementById('prayer-count').textContent = `${items.length}건`;
   if (items.length === 0) {
-    list.innerHTML = '<div class="prayer-empty">공유된 기도제목이 없습니다. <a href="prayer.html" style="color:#a78bfa;text-decoration:underline">+ 추가하기</a></div>';
+    list.innerHTML = '<div class="prayer-empty">전체 공유된 학생상황·기도제목이 없습니다. <a href="prayer.html" style="color:#a78bfa;text-decoration:underline">+ 추가하기</a></div>';
     return;
   }
   list.innerHTML = items.map(p => {
@@ -1349,7 +1349,7 @@ function renderMyClass(me) {
     </table>
     <div class="my-class-actions">
       <button onclick="location.href='attendance.html'">📋 출석 입력</button>
-      <button class="secondary" onclick="location.href='prayer.html'">+ 기도제목 추가</button>
+      <button class="secondary" onclick="location.href='prayer.html'">+ 학생상황·기도 추가</button>
     </div>
   `;
 }
@@ -1358,7 +1358,8 @@ function renderMyClass(me) {
 function renderQuickMenu(me) {
   const links = [
     {label:'📋 출석 입력', href:'attendance.html'},
-    {label:'🙏 기도제목', href:'prayer.html'},
+    {label:'📊 전체 출석 현황', href:'attendance-overview.html'},
+    {label:'🙏 학생상황+기도제목', href:'prayer.html'},
     {label:'📋 학생 상세 (셀편성)', href:'teachers.html?key=nsdhs2026h2'},
     {label:'🕸 관계도 (1·2학기)', href:'index.html?key=nsdhs2026h2'},
     {label:'🌱 공개용 편성표', href:'assignments.html'},

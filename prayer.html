@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="googlebot" content="noindex, nofollow">
-<title>기도제목 · 내수동 고등부 · 2026 2학기</title>
+<title>학생상황+기도제목 · 내수동 고등부 · 2026 2학기</title>
 <style>
   :root {
     --bg: #0b0f17; --card: #1e293b; --border: #334155;
@@ -303,6 +303,156 @@
   .toast.show { opacity: 1; }
   .toast.pink { background: rgba(236,72,153,.95); }
   .toast.orange { background: rgba(245,158,11,.95); }
+
+  /* 학생 선택기 */
+  .student-picker {
+    margin-top: 14px;
+  }
+  .student-picker input[type=search] {
+    width: 100%;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    margin-bottom: 12px;
+  }
+  .student-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .student-tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .student-tile:hover {
+    border-color: var(--accent);
+    background: rgba(167,139,250,.08);
+    transform: translateY(-1px);
+  }
+  .student-tile.active {
+    background: rgba(167,139,250,.15);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(124,58,237,.3);
+  }
+  .student-tile .st-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 4px;
+  }
+  .student-tile .st-meta {
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+  .student-tile .st-count {
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .student-tile .st-count.has {
+    background: rgba(167,139,250,.18);
+    color: #c4b5fd;
+  }
+  .student-tile .st-count.zero {
+    background: rgba(148,163,184,.1);
+    color: var(--muted);
+  }
+  .picked-student {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(167,139,250,.12) 0%, rgba(124,58,237,.06) 100%);
+    border: 1px solid rgba(167,139,250,.3);
+    border-radius: 12px;
+  }
+  .picked-student .ps-name {
+    font-size: 17px;
+    font-weight: 800;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .picked-student .ps-back {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #cbd5e1;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-left: auto;
+  }
+  .picked-student .ps-att {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #cbd5e1;
+  }
+  .picked-student .ps-att .ps-stat {
+    background: rgba(255,255,255,.04);
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .picked-student .ps-att .stat-num {
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  /* 시계열 */
+  .timeline {
+    margin-top: 14px;
+    position: relative;
+    padding-left: 18px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 4px; bottom: 4px;
+    width: 2px;
+    background: rgba(167,139,250,.3);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -18px; top: 18px;
+    width: 12px; height: 12px;
+    background: var(--accent2);
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+  }
+  .timeline-group {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 18px 0 10px;
+    padding: 6px 12px;
+    background: rgba(167,139,250,.06);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
@@ -312,8 +462,8 @@
   <div class="gate">
     <div class="gate-card">
       <div class="lock">🙏</div>
-      <h1>기도제목</h1>
-      <p class="gate-sub">학생 · 본인 · 대가족 · 전체 공유</p>
+      <h1>학생상황+기도제목</h1>
+      <p class="gate-sub">학생 상황 · 기도제목 · 대가족 공유</p>
       <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="letter-spacing: 2px;">
       <select id="teacher-select"></select>
       <button onclick="login()">접속</button>
@@ -339,18 +489,17 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="mine" onclick="switchTab('mine')">📝 우리 셀</button>
       <button class="tab-btn" data-tab="family" onclick="switchTab('family')">👨‍👩‍👧 우리 대가족</button>
-      <button class="tab-btn" data-tab="shared" onclick="switchTab('shared')">🙏 다함께 공유</button>
-      <button class="tab-btn" data-tab="timeline" onclick="switchTab('timeline')">📅 시계열</button>
+      <button class="tab-btn" data-tab="byStudent" onclick="switchTab('byStudent')">🔍 학생별 모아보기</button>
     </div>
 
-    <!-- 새 기도제목 폼 (mine 탭에서만) -->
+    <!-- 새 학생상황+기도제목 폼 (mine 탭에서만) -->
     <div class="new-prayer" id="new-prayer">
-      <h2>+ 새 기도제목 추가</h2>
+      <h2>+ 새 학생상황 · 기도제목 추가</h2>
       <div class="form-row">
         <label class="form-label">📋 종류</label>
         <div class="type-row">
-          <button type="button" class="type-btn active" id="type-student" onclick="setType('student')">👤 학생 기도제목</button>
-          <button type="button" class="type-btn" id="type-teacher" onclick="setType('teacher')">🧑 내 개인 기도제목</button>
+          <button type="button" class="type-btn active" id="type-student" onclick="setType('student')">👤 학생 상황·기도</button>
+          <button type="button" class="type-btn" id="type-teacher" onclick="setType('teacher')">🧑 내 개인 기도</button>
         </div>
       </div>
       <div class="form-row" id="student-row">
@@ -358,15 +507,15 @@
         <select id="form-student"></select>
       </div>
       <div class="form-row">
-        <label class="form-label">📝 기도 내용</label>
-        <textarea id="form-content" placeholder="예: 학업 회복, 가정 평안, 본인 신앙 갈등 등"></textarea>
+        <label class="form-label">📝 상황 · 기도 내용</label>
+        <textarea id="form-content" placeholder="예: 가정 형편, 신앙 갈등, 학업/진로 상황, 출석 패턴 변화, 기도 부탁 등"></textarea>
       </div>
       <div class="form-row share-row">
         <label class="toggle-row" id="form-share-row">
           <input type="checkbox" id="form-share" onchange="toggleShareUi()">
           <span class="toggle-text">
-            🌸 다함께 기도해 주세요
-            <span class="toggle-hint">체크하면 전체 선생님에게 공유 (대가족 외)</span>
+            🌸 전체 공유 (선택)
+            <span class="toggle-hint">체크하면 전체 선생님 대시보드에도 노출 (대가족 공유는 기본)</span>
           </span>
         </label>
       </div>
@@ -385,15 +534,14 @@
       </div>
     </div>
 
-    <!-- 시계열 필터 -->
-    <div class="filter-bar" id="filter-bar" style="display:none">
-      <button class="filter-btn active" data-f="all" onclick="setFilter('all')">전체</button>
-      <button class="filter-btn" data-f="mine" onclick="setFilter('mine')">우리 셀</button>
-      <button class="filter-btn" data-f="family" onclick="setFilter('family')">우리 대가족</button>
-      <button class="filter-btn" data-f="teacher" onclick="setFilter('teacher')">선생님 기도</button>
-      <button class="filter-btn" data-f="shared" onclick="setFilter('shared')">다함께 공유</button>
-      <button class="filter-btn" data-f="urgent" onclick="setFilter('urgent')">🚨 긴급</button>
+    <!-- 학생별 모아보기 - 학생 선택기 -->
+    <div class="student-picker" id="student-picker" style="display:none">
+      <input type="search" id="student-search" placeholder="🔍 학생 이름으로 검색..." oninput="renderStudentPicker()">
+      <div class="student-grid" id="student-grid"></div>
     </div>
+
+    <!-- 학생별 모아보기 - 선택된 학생 헤더 -->
+    <div class="picked-student" id="picked-student" style="display:none"></div>
 
     <div class="prayer-list" id="prayer-list"></div>
 
@@ -467,8 +615,14 @@ function familyCells(famNum) {
 let MY = null;
 let CURRENT_TAB = 'mine';
 let CURRENT_TYPE = 'student';
-let CURRENT_FILTER = 'all';
+let PICKED_STUDENT = null; // 학생별 모아보기에서 선택된 학생
 let SHARED_PRAYERS = null; // GitHub data/prayers.json fetch 결과
+
+// 모든 학생 + 셀 매핑
+const ALL_STUDENTS_FLAT = [];
+Object.entries(CELL_STUDENTS).forEach(([cell, list]) => {
+  list.forEach(name => ALL_STUDENTS_FLAT.push({name, cell}));
+});
 
 /* ===== 로그인 ===== */
 function fillSelect() {
@@ -542,7 +696,7 @@ function addPrayer() {
   } else {
     student = MY.name + ' 선생님';
   }
-  if (!content) { showToast('❌ 기도 내용을 입력해 주세요', 'pink'); return; }
+  if (!content) { showToast('❌ 내용을 입력해 주세요', 'pink'); return; }
   const prayers = loadPrayers();
   prayers.unshift({
     id: 'P' + Date.now(),
@@ -559,7 +713,7 @@ function addPrayer() {
   savePrayers(prayers);
   clearForm();
   renderPrayers();
-  showToast(share ? '✓ 추가됨 (다함께 기도 공유)' : '✓ 기도제목 추가됨');
+  showToast(share ? '✓ 추가됨 (전체 공유)' : '✓ 추가됨 (대가족 공유)');
 }
 
 function clearForm() {
@@ -591,7 +745,7 @@ function toggleShare(id) {
   p.share = !p.share;
   savePrayers(prayers);
   renderPrayers();
-  showToast(p.share ? '🌸 다함께 기도로 공유됨' : '공유 해제됨', p.share ? 'pink' : '');
+  showToast(p.share ? '🌸 전체 공유 ON' : '전체 공유 OFF', p.share ? 'pink' : '');
 }
 
 /* ===== 공유 JSON 출력 ===== */
@@ -631,13 +785,44 @@ function copyShareJson() {
   });
 }
 
-/* ===== 필터 ===== */
-function setFilter(f) {
-  CURRENT_FILTER = f;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('data-f') === f);
-  });
+/* ===== 학생별 모아보기 ===== */
+function pickStudent(name) {
+  PICKED_STUDENT = name;
   renderPrayers();
+}
+function unpickStudent() {
+  PICKED_STUDENT = null;
+  renderPrayers();
+}
+function renderStudentPicker() {
+  const q = (document.getElementById('student-search').value || '').trim();
+  const all = allPrayers();
+  // 학생별 기록 카운트
+  const counts = {};
+  all.forEach(p => {
+    if (p.type === 'teacher') return; // 선생님 개인은 제외
+    const key = p.student;
+    counts[key] = (counts[key] || 0) + 1;
+  });
+  // 검색 필터
+  const filtered = ALL_STUDENTS_FLAT.filter(s =>
+    !q || s.name.includes(q)
+  );
+  const grid = document.getElementById('student-grid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty">검색 결과 없음</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(s => {
+    const n = counts[s.name] || 0;
+    return `
+      <button class="student-tile ${PICKED_STUDENT === s.name ? 'active' : ''}" onclick="pickStudent('${s.name}')">
+        <div class="st-name">${escapeHtml(s.name)}</div>
+        <div class="st-meta">${escapeHtml(s.cell)}</div>
+        <span class="st-count ${n > 0 ? 'has' : 'zero'}">${n}건</span>
+      </button>
+    `;
+  }).join('');
 }
 
 /* ===== 렌더링 ===== */
@@ -686,8 +871,8 @@ function prayerCardHtml(p, opts={}) {
       </div>
       <div class="prayer-text">${escapeHtml(p.content)}</div>
       <div class="prayer-tags">
-        ${isTeacherPrayer ? '<span class="tag teacher">🧑 선생님 기도</span>' : ''}
-        ${p.share ? '<span class="tag share">🌸 다함께 기도</span>' : ''}
+        ${isTeacherPrayer ? '<span class="tag teacher">🧑 선생님 본인</span>' : ''}
+        ${p.share ? '<span class="tag share">🌸 전체 공유</span>' : ''}
         ${p.urgent ? '<span class="tag urgent">🚨 긴급</span>' : ''}
         ${p.family ? `<span class="tag family">👨‍👩 대가족 ${p.family}</span>` : ''}
         ${isMine ? '<span class="tag mine">내가 등록</span>' : ''}
@@ -709,48 +894,72 @@ function renderPrayers() {
   const myFam = myFamily(MY);
   const famCells = myFam ? familyCells(myFam) : [];
   let items;
+  const list = document.getElementById('prayer-list');
+  const pickedEl = document.getElementById('picked-student');
+  const pickerEl = document.getElementById('student-picker');
 
   if (CURRENT_TAB === 'mine') {
-    // 본인 셀 (학생 기도제목 + 본인 등록 본인 개인)
+    pickerEl.style.display = 'none';
+    pickedEl.style.display = 'none';
     items = all.filter(p =>
       p.cell === MY.cell || (p.type === 'teacher' && p.author === MY.name)
     );
   } else if (CURRENT_TAB === 'family') {
-    // 우리 대가족 (같은 대가족 셀의 모든 기도제목 + 같은 대가족 선생님 개인)
+    pickerEl.style.display = 'none';
+    pickedEl.style.display = 'none';
     items = all.filter(p =>
-      famCells.includes(p.cell) || (p.type === 'teacher' && TEACHERS.find(t => t.name === p.author && CELL_FAMILY[t.cell] === myFam))
+      famCells.includes(p.cell) ||
+      (p.type === 'teacher' && TEACHERS.find(t => t.name === p.author && CELL_FAMILY[t.cell] === myFam))
     );
-  } else if (CURRENT_TAB === 'shared') {
-    items = all.filter(p => p.share);
-  } else if (CURRENT_TAB === 'timeline') {
-    items = all.slice();
-    // 필터 적용
-    if (CURRENT_FILTER === 'mine') items = items.filter(p => p.cell === MY.cell);
-    else if (CURRENT_FILTER === 'family') items = items.filter(p => famCells.includes(p.cell));
-    else if (CURRENT_FILTER === 'teacher') items = items.filter(p => p.type === 'teacher');
-    else if (CURRENT_FILTER === 'shared') items = items.filter(p => p.share);
-    else if (CURRENT_FILTER === 'urgent') items = items.filter(p => p.urgent);
-    // 날짜순 정렬 (최신 → 오래된)
+  } else if (CURRENT_TAB === 'byStudent') {
+    // 학생별 모아보기
+    if (!PICKED_STUDENT) {
+      pickerEl.style.display = '';
+      pickedEl.style.display = 'none';
+      renderStudentPicker();
+      list.innerHTML = '<div class="empty">위에서 학생을 선택하면 시계열로 모아 보입니다.</div>';
+      return;
+    }
+    pickerEl.style.display = 'none';
+    pickedEl.style.display = '';
+    items = all.filter(p => p.student === PICKED_STUDENT && p.type !== 'teacher');
     items.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    // 선택된 학생 헤더
+    const stInfo = ALL_STUDENTS_FLAT.find(s => s.name === PICKED_STUDENT);
+    const famNum = stInfo ? CELL_FAMILY[stInfo.cell] : null;
+    const cumRate = getCumulativeRate(PICKED_STUDENT);
+    pickedEl.innerHTML = `
+      <div class="ps-name">
+        👤 ${escapeHtml(PICKED_STUDENT)}
+        ${stInfo ? `<span style="font-size:12px;color:#c4b5fd;background:rgba(167,139,250,.18);padding:3px 10px;border-radius:999px;border:1px solid rgba(167,139,250,.35)">${escapeHtml(stInfo.cell)} · 대가족 ${famNum}</span>` : ''}
+        <button class="ps-back" onclick="unpickStudent()">← 학생 선택으로</button>
+      </div>
+      <div class="ps-att">
+        <span class="ps-stat">총 기록 <span class="stat-num">${items.length}</span>건</span>
+        ${cumRate !== null ? `<span class="ps-stat">누적 출석률 <span class="stat-num">${cumRate}%</span></span>` : ''}
+      </div>
+    `;
   }
 
-  const list = document.getElementById('prayer-list');
   if (!items || items.length === 0) {
-    const emptyMsg = CURRENT_TAB === 'mine' ? '아직 등록된 기도제목이 없습니다.'
-      : CURRENT_TAB === 'family' ? '우리 대가족 기도제목이 없습니다.'
-      : CURRENT_TAB === 'shared' ? '다함께 공유된 기도제목이 없습니다.'
-      : '필터에 맞는 기도제목이 없습니다.';
-    list.innerHTML = `<div class="empty">${emptyMsg}</div>`;
+    if (CURRENT_TAB === 'byStudent') {
+      list.innerHTML = '<div class="empty">이 학생의 기록이 아직 없습니다.<br>우리 셀 탭에서 추가해 주세요.</div>';
+    } else {
+      const emptyMsg = CURRENT_TAB === 'mine'
+        ? '아직 등록된 학생상황·기도제목이 없습니다. 위에서 추가해 주세요.'
+        : '우리 대가족 기록이 없습니다.';
+      list.innerHTML = `<div class="empty">${emptyMsg}</div>`;
+    }
     return;
   }
 
-  if (CURRENT_TAB === 'timeline') {
-    // 날짜별 그룹핑
+  if (CURRENT_TAB === 'byStudent') {
+    // 시계열 표시
     let html = '<div class="timeline">';
     let lastDate = '';
     items.forEach(p => {
       if (p.date !== lastDate) {
-        html += `<div class="timeline-group">📅 ${escapeHtml(p.date)}</div>`;
+        html += `<div class="timeline-group">📅 ${escapeHtml(p.date || '날짜 없음')}</div>`;
         lastDate = p.date;
       }
       html += `<div class="timeline-item">${prayerCardHtml(p)}</div>`;
@@ -758,8 +967,29 @@ function renderPrayers() {
     html += '</div>';
     list.innerHTML = html;
   } else {
+    // 최신순 정렬
+    items.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     list.innerHTML = items.map(p => prayerCardHtml(p)).join('');
   }
+}
+
+// 학생 누적 출석률 (1학기 historical + 2학기 localStorage)
+function getCumulativeRate(name) {
+  const HIST_LEN = 21;
+  let total = 0, sum = 0;
+  // 1학기 historical 데이터는 attendance.html에 있는 것과 동일 — 여기선 localStorage 만 사용
+  try {
+    const userData = JSON.parse(localStorage.getItem('attendance_data') || '{}');
+    Object.keys(userData).forEach(w => {
+      const rec = userData[w][name];
+      if (!rec || !rec.status) return;
+      total++;
+      if (rec.status === 'full') sum++;
+      else if (rec.status === 'partial') sum += 0.5;
+    });
+  } catch {}
+  if (total === 0) return null;
+  return Math.round(sum / total * 100);
 }
 
 function switchTab(tab) {
@@ -769,8 +999,8 @@ function switchTab(tab) {
     b.classList.toggle('active', b.getAttribute('data-tab') === tab);
   });
   document.getElementById('new-prayer').style.display = tab === 'mine' ? '' : 'none';
-  document.getElementById('filter-bar').style.display = tab === 'timeline' ? '' : 'none';
   document.getElementById('share-banner').style.display = 'none';
+  if (tab !== 'byStudent') PICKED_STUDENT = null;
   renderPrayers();
 }
 

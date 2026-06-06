@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>전체 출석 현황 · 내수동 고등부 · 2026</title>
+<style>
+  :root {
+    --bg: #0b0f17; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8;
+    --accent: #a78bfa; --accent2: #7c3aed;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%);
+    color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px 26px; max-width: 380px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,.5); text-align: center; }
+  .gate-card .lock { font-size: 44px; margin-bottom: 14px; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 18px; color: #f1f5f9; }
+  .gate-card .gate-sub { margin: 0 0 22px; font-size: 13px; color: var(--muted); }
+  .gate-card input { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; text-align: center; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .gate-card .gate-err { color: #fca5a5; font-size: 12px; margin-top: 10px; min-height: 16px; }
+
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 16px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .back-link { color: #cbd5e1; text-decoration: none; background: rgba(255,255,255,.06); padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,.12); margin-left: auto; }
+
+  /* Filter / Sort */
+  .filter-bar {
+    margin-top: 16px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    background: var(--card); border: 1px solid var(--border);
+    padding: 10px 12px; border-radius: 10px;
+    align-items: center;
+  }
+  .filter-bar input[type=search] {
+    flex: 1;
+    min-width: 180px;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; font-size: 13px; font-family: inherit;
+  }
+  .filter-bar select {
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 13px; font-family: inherit;
+  }
+  .filter-bar .filter-label {
+    font-size: 11.5px; color: var(--muted); font-weight: 700;
+  }
+
+  /* Family blocks */
+  .family-section {
+    margin-top: 16px;
+    border: 2px solid #6d28d9;
+    border-radius: 14px;
+    padding: 14px;
+    background: linear-gradient(180deg, rgba(91,33,182,.12) 0%, rgba(76,29,149,.06) 100%);
+  }
+  .family-header {
+    padding: 8px 12px;
+    background: #2e1065;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .family-name { font-size: 15px; font-weight: 800; color: #f1f5f9; }
+  .family-meta { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+  .cell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 10px;
+  }
+  .cell-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .cell-head {
+    display: flex; align-items: center; gap: 6px;
+    padding-bottom: 8px; margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    flex-wrap: wrap;
+  }
+  .cell-name { font-size: 14px; font-weight: 800; color: #f1f5f9; }
+  .cell-teachers { font-size: 11px; color: var(--muted); }
+  .cell-rate {
+    margin-left: auto;
+    font-size: 12px; font-weight: 800;
+    padding: 2px 8px; border-radius: 999px;
+  }
+  .cell-rate.ok   { background: rgba(16,185,129,.15);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.35); }
+  .cell-rate.mid  { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
+  .cell-rate.low  { background: rgba(239,68,68,.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,.35); }
+
+  .student-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 13px;
+    border-bottom: 1px dotted rgba(255,255,255,.05);
+  }
+  .student-row:last-child { border-bottom: none; }
+  .student-row .sname {
+    font-weight: 700; color: #f1f5f9;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .gender-pill {
+    font-size: 9.5px; font-weight: 700;
+    padding: 1px 5px; border-radius: 3px;
+  }
+  .gender-pill.male  { color: #93c5fd; background: rgba(96,165,250,.12); border: 1px solid rgba(96,165,250,.3); }
+  .gender-pill.female{ color: #fbcfe8; background: rgba(244,114,182,.12); border: 1px solid rgba(244,114,182,.3); }
+  .grade-meta { font-size: 10px; color: var(--muted); margin-left: 2px; }
+  .att-dots {
+    font-family: monospace; font-size: 14px;
+    letter-spacing: 0.5px; color: #6ee7b7;
+  }
+  .att-dots .miss { color: #fca5a5; }
+  .att-dots .partial { color: #fcd34d; }
+  .att-dots .empty { color: var(--muted); opacity: 0.4; }
+  .cum-rate {
+    font-size: 11px; font-weight: 800;
+    padding: 2px 7px; border-radius: 4px;
+    min-width: 50px; text-align: center;
+  }
+  .cum-rate.ok   { background: rgba(16,185,129,.15);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.35); }
+  .cum-rate.mid  { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
+  .cum-rate.low  { background: rgba(239,68,68,.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,.35); }
+  .cum-rate.none { background: rgba(148,163,184,.08); color: var(--muted); border: 1px solid rgba(148,163,184,.2); }
+
+  /* Top stats */
+  .top-stats {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    text-align: center;
+  }
+  .stat-card .stat-num {
+    font-size: 24px; font-weight: 800;
+    color: #f1f5f9; display: block;
+  }
+  .stat-card .stat-label {
+    font-size: 11px; color: var(--muted); font-weight: 600;
+  }
+
+  /* Legend */
+  .legend {
+    margin-top: 14px;
+    background: rgba(0,0,0,.2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex; flex-wrap: wrap; gap: 12px;
+    font-size: 11.5px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; color: var(--muted); }
+  .legend-item .legend-icon { font-family: monospace; }
+</style>
+</head>
+<body>
+
+<!-- Gate -->
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock">📊</div>
+      <h1>전체 출석 현황</h1>
+      <p class="gate-sub">모든 셀 학생의 출석률·최근 4주</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="letter-spacing: 2px;">
+      <button onclick="login()">접속</button>
+      <div class="gate-err" id="gate-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <h1>📊 전체 출석 현황
+        <a class="back-link" href="dashboard.html">← 대시보드</a>
+      </h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="filter-bar">
+      <input id="search" type="search" placeholder="🔍 학생 이름 검색...">
+      <span class="filter-label">정렬:</span>
+      <select id="sort" onchange="renderAll()">
+        <option value="cell">셀 순서</option>
+        <option value="cumAsc">누적 출석률 ↑ (낮은순)</option>
+        <option value="cumDesc">누적 출석률 ↓ (높은순)</option>
+        <option value="recentAsc">최근 4주 ↑ (낮은순)</option>
+      </select>
+      <span class="filter-label">필터:</span>
+      <select id="filterRate" onchange="renderAll()">
+        <option value="all">전체</option>
+        <option value="low">⚠️ 50% 미만</option>
+        <option value="absent4">🚨 최근 4주 결석자</option>
+        <option value="newOnly">🆕 신규 학생</option>
+      </select>
+    </div>
+
+    <div class="top-stats" id="top-stats"></div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="legend-icon" style="color:#6ee7b7">●</span> 전참</span>
+      <span class="legend-item"><span class="legend-icon" style="color:#fcd34d">◐</span> 부분</span>
+      <span class="legend-item"><span class="legend-icon" style="color:#fca5a5">○</span> 불참</span>
+      <span class="legend-item"><span class="legend-icon" style="opacity:.4">·</span> 미입력</span>
+      <span class="legend-item">누적: <span style="color:#6ee7b7">85%+</span> / <span style="color:#fcd34d">50-84%</span> / <span style="color:#fca5a5">50%미만</span></span>
+    </div>
+
+    <div id="content"></div>
+  </div>
+</div>
+
+<script>
+const PRIVATE_KEY = 'nsdhs2026h2';
+
+/* ===== 데이터 ===== */
+const CELL_STUDENTS = {
+  '셀1':[
+    {name:'권하율',g:1,s:'남'},{name:'하은유',g:1,s:'여'},{name:'홍기진',g:2,s:'남'},
+    {name:'서이수',g:3,s:'여'},{name:'장지현',g:2,s:'여'},{name:'김은',g:1,s:'여',isNew:true},
+  ],
+  '셀2':[
+    {name:'강은교',g:2,s:'여'},{name:'명주원',g:3,s:'남'},{name:'조인상',g:3,s:'여'},
+    {name:'연해준',g:2,s:'남'},{name:'유나린',g:2,s:'여'},
+  ],
+  '셀3':[
+    {name:'박지호',g:3,s:'여'},{name:'한채은',g:3,s:'여'},{name:'김준수',g:3,s:'남'},
+    {name:'김라일',g:2,s:'남'},{name:'안민혁',g:1,s:'남'},
+  ],
+  '셀4':[
+    {name:'원대연',g:2,s:'남'},{name:'이준호',g:2,s:'남'},{name:'전지훈',g:2,s:'남'},
+    {name:'오현우',g:1,s:'남'},{name:'이빛가온',g:1,s:'남'},
+  ],
+  '셀5':[
+    {name:'민예원',g:2,s:'여'},{name:'김도연',g:2,s:'여'},{name:'최지은',g:1,s:'여'},
+    {name:'김나현',g:2,s:'여'},{name:'윤서희',g:2,s:'여',isNew:true},
+  ],
+  '셀6':[
+    {name:'조한나',g:1,s:'여'},{name:'김한결',g:1,s:'남'},{name:'이서후',g:1,s:'여'},
+    {name:'임태민',g:2,s:'남'},{name:'박지웅',g:1,s:'남'},
+  ],
+  '셀7':[
+    {name:'조강인',g:3,s:'남'},{name:'이에녹',g:3,s:'남'},{name:'최민호',g:2,s:'남'},
+    {name:'김정록',g:1,s:'남'},{name:'정태율',g:1,s:'남'},
+  ],
+  '셀8':[
+    {name:'심희은',g:3,s:'여'},{name:'김은우',g:3,s:'여'},{name:'최가은',g:3,s:'여'},
+    {name:'양소희',g:2,s:'여'},{name:'오은수',g:1,s:'여'},
+  ],
+  '셀9':[
+    {name:'나정인',g:3,s:'여'},{name:'주성',g:3,s:'남',isNew:true},{name:'곽지원',g:3,s:'남'},
+    {name:'양인혁',g:3,s:'남'},{name:'김다은',g:3,s:'여'},{name:'박재영',g:1,s:'남',isNew:true},
+  ],
+  '셀10':[
+    {name:'이주형',g:1,s:'여'},{name:'윤성하',g:1,s:'남'},{name:'나호윤',g:1,s:'남'},
+    {name:'이소현',g:1,s:'여',isNew:true},{name:'배유나',g:2,s:'여'},
+  ],
+  '셀11':[
+    {name:'최유현',g:1,s:'여'},{name:'이가영',g:2,s:'여'},{name:'최수지',g:1,s:'여'},
+    {name:'박동하',g:1,s:'남'},{name:'송준원',g:1,s:'남'},
+  ],
+  '셀12':[
+    {name:'정승빈',g:3,s:'여'},{name:'김주하',g:2,s:'여'},{name:'김채은',g:2,s:'여'},
+    {name:'유재희',g:2,s:'여'},{name:'김강은',g:1,s:'여'},
+  ],
+  'Sp1':[{name:'고예나',g:1,s:'여'},{name:'김민채',g:3,s:'여'},{name:'송성모',g:3,s:'남'},{name:'최승아',g:3,s:'여'}],
+  'Sp2':[{name:'최지윤',g:3,s:'여'},{name:'최서윤',g:3,s:'여'},{name:'백결',g:3,s:'남'},{name:'조혁준',g:3,s:'남'}],
+  'Sp3':[{name:'김재원',g:1,s:'남'},{name:'김유진',g:2,s:'여'},{name:'김강희',g:1,s:'여'},{name:'박서연',g:1,s:'여'}],
+  'Sp4':[{name:'박시우',g:1,s:'남'},{name:'하어림',g:1,s:'남'},{name:'박진서',g:3,s:'여'},{name:'임소명',g:3,s:'여'}],
+  'Sp5':[{name:'오희수',g:3,s:'여'},{name:'박민주',g:1,s:'여'},{name:'장세민',g:3,s:'남'},{name:'정원영',g:3,s:'남'}],
+  'Sp6':[{name:'이서현',g:1,s:'여'},{name:'이소민',g:3,s:'여'},{name:'김도헌',g:3,s:'남'},{name:'이하준',g:1,s:'남'}],
+};
+
+const CELL_TEACHERS = {
+  '셀1':{h:'이윤정',s:'이승헌'},'셀2':{h:'정명경',s:'조세경'},'셀3':{h:'전성희',s:''},
+  '셀4':{h:'박대철',s:'김희원'},'셀5':{h:'이수지',s:'박해니'},'셀6':{h:'정유빈',s:''},
+  '셀7':{h:'양지현',s:'송진우'},'셀8':{h:'이유성',s:'이규리'},'셀9':{h:'오덕현',s:'김주영'},
+  '셀10':{h:'최희승',s:''},'셀11':{h:'석준원',s:''},'셀12':{h:'고은솔',s:'오은규'},
+};
+
+const CELL_FAMILY = {
+  '셀1':1,'셀2':1,'Sp1':1,
+  '셀3':2,'셀4':2,'Sp2':2,
+  '셀5':3,'셀6':3,'Sp3':3,
+  '셀7':4,'셀8':4,'Sp4':4,
+  '셀9':5,'셀10':5,'Sp5':5,
+  '셀11':6,'셀12':6,'Sp6':6,
+};
+
+const HISTORICAL_WEEKS = ["2026-01-11","2026-01-18","2026-01-25","2026-02-01","2026-02-08","2026-02-15","2026-02-22","2026-03-01","2026-03-08","2026-03-15","2026-03-22","2026-03-29","2026-04-05","2026-04-12","2026-04-19","2026-04-26","2026-05-03","2026-05-10","2026-05-17","2026-05-24","2026-05-31"];
+const HISTORICAL_ATTENDANCE = {
+  '이윤서':'OXOOXXXXXXXXXXXXXXXXX','이하준':'XXXXXXXXXXXXXXXXXXXXX','김다은':'OOOOOOOOOOXOOOXOOXOXO','나정인':'OOOOXOOOOOOOOOOOOOOOO',
+  '서이수':'OOOOOOOOOOOOOOOOOOOOO','최승아':'XXXXXXXXXXXXXXXXXXX--','나호윤':'OO---OOOOOOOOOOOOOO--','안민혁':'XOO--OOOOOOOOOOXOOO--',
+  '이주형':'OOO--OOOOOOOOOOOOOX--','박진서':'OXO--XOOXXXXXXXXXXX--','임소명':'OXO--XOOXXXXXXXXXXX--','박민주':'XXXXXXXXXXXXXXXXXXX--',
+  '이빛가온':'OXOOOXOOOOOOOOOOOOO--','이서후':'XOOXOOOOOXOOOOOOOOO--','김주하':'OOXOXXXXOXOOXXXXOOO--','배유나':'XXXXXXXXXXXXOXXXXXX--',
+  '임태민':'XOXOOXXXXXXOXOXXXOX--','김한결':'OOXOOXOOOOOOOOOOOOOO-','최수지':'OOOOOOOOOOOOOOOOOOOO-','강은교':'OOOOOOOOXOOOOOOOOOOO-',
+  '연해준':'OOOOOOOOOOOOOOOOOOOO-','원대연':'OOOOOOOOOOOOOOXOOOOO-','한미소':'-XXXXXXXXXXXXXOXXXXX-','김재원':'XXXXXXXXXXXXXXXXXXX--',
+  '하은유':'OOOOOOOOOOOOOXOOOOO--','김유진':'XXXXXXXXXXXXXXXXXXX--','민예원':'OOOOOOOOOOOOOXXOOOO--','김도연':'OOOOOOOOOOOOOXXOOOO--',
+  '전지훈':'XXXXXXXXXXOOXXXXOOO--','오현우':'OOOOOOOOOOOOOOOOOOOXO','하어림':'XXXXXXXXXXXXXXXXXXXXX','김나현':'XXXXXXXXXXXXXXXXXXXXX',
+  '유재희':'OOOXOXOOOOOOOOOOOOOOO','이준호':'XXXXOOOOOXXXXXXXXXXXX','홍기진':'OOOOOXOOOOOOOOOOOOOOO','송준원':'X-------------XXXXO--',
+  '이주안':'XXXXXXXXXXXXXXXXXXX--','장지현':'XOOOOOOOOOOOOOOOOOO--','유나린':'OOOOOOOOOOOOOOOOOOO--','이가영':'XOOOOOOOXXXXXXXXOOO--',
+  '박시우':'XXXXXXXXXXXXXXXXXXX--','조한나':'OOOOOOOOXOOOOOOOOOO--','최유현':'OOXOOOOOOOOXOXOOOOO--','김라일':'OOOOOOOOOOOOOOOOOOO--',
+  '김채은':'XXXXXXOXXOXXOXXXXXO--','최민호':'--------OOOXXXOOOXX--','양소희':'XXOOOOXXOOOXXXXXOXX--','박동하':'OOXOOXXXXXOXXOXXXXXX-',
+  '오은수':'OXXOOOOOOOOOOXOOOXOO-','곽지원':'OXXOXXXOXXXXOXXOOOOX-','박지호':'XXXXOOOOOOOOOOOOOOOO-','정원영':'XXXXXXXXXXXOXXXXXOOX-',
+  '조인상':'OOOOOOOOOOOOOOOOOOOO-','김강희':'XXXXXXXXXXXXXXXXXXX--','박서연':'OOOOOOOOOOOOOOXXXXX--','박지웅':'OXOOOOOOOOOOOOOOOOO--',
+  '백결':'XXXXXXOXXXXXXXXXXXX--','조강인':'XXXXXOOOO-X-XXXOOOO--','조혁준':'XXXXXXXXXXXXXXXXXXX--','고예나':'XXXXXXXXXXXXXXOXOXX--',
+  '김정록':'OOOOOOOOOOOOOOOOOOO--','김민채':'XXXXXXXXXXXXXXXXXXX--','송성모':'XXXXXXXXXXXXXXXXXXX--','양인혁':'OOOOOOOOOOOOOOOOOOO--',
+  '한채은':'OOOOOOOOOOOOOOOOOOO--','정태율':'OXOOOOOOOOOOOOOOOOO--','최지은':'OOOOOOOOOOOOOOXOOOO--','김도헌':'XXXXXXXOXXXXXXXXXXX--',
+  '김준수':'OXOOOXXOXOOOOXOOOOO--','정승빈':'OOOOOOOOOOOOOOOOOOO--','최지윤':'XXXXXXXXXXXXXXXXXXX--','권하율':'OOOOOOOOOOOOOOXXOOOOO',
+  '김강은':'OOOOOOOOOOOOOOOOOOOOO','명주원':'OOXOOOOOOOOOOOOOOOOXO','오희수':'OOOXXXXXXXXXXXXXXXXXX','최가은':'OOOOOXOOOOOXOXXOXOOOO',
+  '최서윤':'XXXXXXXXXXXXXXXXXXXXX','윤성하':'OOXOOOOXOOOXOOXO-OO--','이서현':'XXXXXXXXXXXXXXXX-XX--','김은우':'OOOOOOOXOOOOXOXO-OX--',
+  '심희은':'OOOOOOOOOOOOOOOO-OO--','이소민':'XXXXOXXXXXXXXXXX-XO--','이에녹':'OOOOOOOOOOOOOOOO-OO--','장세민':'XXXXXXOOXXXXXXXX-OO--',
+};
+
+/* ===== Auth ===== */
+function login() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  if (pin !== PRIVATE_KEY) { document.getElementById('gate-err').textContent = '❌ 접근 코드 불일치'; return; }
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+
+/* ===== 출석 데이터 헬퍼 ===== */
+function userAtt() {
+  try { return JSON.parse(localStorage.getItem('attendance_data') || '{}'); }
+  catch { return {}; }
+}
+
+function recentWeeks(n) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const sunday = new Date(today); sunday.setDate(today.getDate() - today.getDay());
+  const weeks = [];
+  for (let i = n-1; i >= 0; i--) {
+    const d = new Date(sunday); d.setDate(sunday.getDate() - i*7);
+    weeks.push(d.toISOString().substring(0,10));
+  }
+  return weeks;
+}
+
+function cumulativeRate(name, isNew) {
+  if (isNew) return null; // 신규 학생은 데이터 없음
+  let total = 0, sum = 0;
+  const hStr = HISTORICAL_ATTENDANCE[name];
+  if (hStr) {
+    total += HISTORICAL_WEEKS.length;
+    [...hStr].forEach(c => { if (c === 'O') sum++; });
+  }
+  const data = userAtt();
+  Object.keys(data).forEach(w => {
+    if (HISTORICAL_WEEKS.includes(w)) return;
+    const rec = data[w][name];
+    if (!rec || !rec.status) return;
+    total++;
+    if (rec.status === 'full') sum++;
+    else if (rec.status === 'partial') sum += 0.5;
+  });
+  if (total === 0) return null;
+  return Math.round(sum / total * 100);
+}
+
+function recent4String(name) {
+  const data = userAtt();
+  return recentWeeks(4).map(w => {
+    const rec = (data[w] || {})[name];
+    if (rec && rec.status) {
+      if (rec.status === 'full') return '●';
+      if (rec.status === 'partial') return '◐';
+      if (rec.status === 'absent') return '○';
+    }
+    const idx = HISTORICAL_WEEKS.indexOf(w);
+    if (idx >= 0) {
+      const c = (HISTORICAL_ATTENDANCE[name] || '')[idx];
+      if (c === 'O') return '●';
+      if (c === 'X') return '○';
+    }
+    return '·';
+  }).join('');
+}
+
+function recent4Rate(name) {
+  const s = recent4String(name);
+  let total = 0, sum = 0;
+  [...s].forEach(c => {
+    if (c === '·') return;
+    total++;
+    if (c === '●') sum++;
+    else if (c === '◐') sum += 0.5;
+  });
+  if (total === 0) return null;
+  return Math.round(sum / total * 100);
+}
+
+/* ===== 렌더링 ===== */
+function rateCls(rate) {
+  if (rate === null) return 'none';
+  if (rate >= 85) return 'ok';
+  if (rate >= 50) return 'mid';
+  return 'low';
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderAll() {
+  const search = (document.getElementById('search').value || '').trim();
+  const sort = document.getElementById('sort').value;
+  const filter = document.getElementById('filterRate').value;
+
+  // 모든 학생 + 셀 정보 + 출석률
+  const allStudents = [];
+  Object.entries(CELL_STUDENTS).forEach(([cell, students]) => {
+    students.forEach(st => {
+      const cum = cumulativeRate(st.name, st.isNew);
+      const r4 = recent4Rate(st.name);
+      allStudents.push({...st, cell, cum, r4, fam: CELL_FAMILY[cell]});
+    });
+  });
+
+  // 검색 + 필터
+  let filtered = allStudents.slice();
+  if (search) filtered = filtered.filter(s => s.name.includes(search));
+  if (filter === 'low') filtered = filtered.filter(s => s.cum !== null && s.cum < 50);
+  else if (filter === 'absent4') filtered = filtered.filter(s => {
+    const r = recent4String(s.name);
+    return r === '○○○○';
+  });
+  else if (filter === 'newOnly') filtered = filtered.filter(s => s.isNew);
+
+  // 통계
+  const totalN = allStudents.length;
+  const matchN = filtered.length;
+  const ok85 = allStudents.filter(s => s.cum !== null && s.cum >= 85).length;
+  const low50 = allStudents.filter(s => s.cum !== null && s.cum < 50).length;
+  const absent4 = allStudents.filter(s => recent4String(s.name) === '○○○○').length;
+  document.getElementById('top-stats').innerHTML = `
+    <div class="stat-card"><span class="stat-num">${totalN}</span><span class="stat-label">총 학생 수</span></div>
+    <div class="stat-card"><span class="stat-num" style="color:#6ee7b7">${ok85}</span><span class="stat-label">85%+ 안정 출석</span></div>
+    <div class="stat-card"><span class="stat-num" style="color:#fca5a5">${low50}</span><span class="stat-label">50% 미만</span></div>
+    <div class="stat-card"><span class="stat-num" style="color:#f97316">${absent4}</span><span class="stat-label">최근 4주 연속 결석</span></div>
+  `;
+
+  // 정렬 후 렌더
+  const content = document.getElementById('content');
+  if (sort === 'cell') {
+    // 대가족 → 셀별 그룹
+    const families = {};
+    Object.keys(CELL_FAMILY).forEach(c => {
+      const fam = CELL_FAMILY[c];
+      if (!families[fam]) families[fam] = {};
+      families[fam][c] = [];
+    });
+    filtered.forEach(s => {
+      if (families[s.fam] && families[s.fam][s.cell]) families[s.fam][s.cell].push(s);
+    });
+    let html = '';
+    for (let famN = 1; famN <= 6; famN++) {
+      const fam = families[famN];
+      if (!fam) continue;
+      const totalStudents = Object.values(fam).flat();
+      if (totalStudents.length === 0) continue;
+      const famRate = totalStudents.filter(s => s.cum !== null).reduce((sum, s) => sum + s.cum, 0)
+                    / Math.max(1, totalStudents.filter(s => s.cum !== null).length);
+      html += `<section class="family-section">
+        <div class="family-header">
+          <span class="family-name">👨‍👩‍👧‍👦 대가족 ${famN}</span>
+          <span class="family-meta">${totalStudents.length}명 · 평균 ${Math.round(famRate)}%</span>
+        </div>
+        <div class="cell-grid">`;
+      Object.keys(fam).forEach(cellName => {
+        const sts = fam[cellName];
+        if (sts.length === 0) return;
+        const isSp = cellName.startsWith('Sp');
+        const t = CELL_TEACHERS[cellName];
+        const tHtml = isSp ? '<span class="cell-teachers">목회자·특별케어</span>'
+                          : `<span class="cell-teachers">담임 ${t?.h||''}${t?.s ? ' · 부담임 ' + t.s : ''}</span>`;
+        const cellAvg = sts.filter(s => s.cum !== null).reduce((sum, s) => sum + s.cum, 0)
+                      / Math.max(1, sts.filter(s => s.cum !== null).length);
+        const cellRateCls = rateCls(cellAvg);
+        html += `<div class="cell-card">
+          <div class="cell-head">
+            <span class="cell-name">${escapeHtml(cellName.startsWith('Sp') ? 'Special '+cellName.slice(2) : '소그룹반 '+cellName.slice(1))}</span>
+            ${tHtml}
+            <span class="cell-rate ${cellRateCls}">${Math.round(cellAvg)}%</span>
+          </div>`;
+        // 학생 정렬: 학년 내림차순 → 이름
+        sts.sort((a,b) => a.g !== b.g ? b.g - a.g : a.name.localeCompare(b.name,'ko'));
+        sts.forEach(s => {
+          const r4 = recent4String(s.name);
+          const r4Html = [...r4].map(c => {
+            if (c === '○') return '<span class="miss">○</span>';
+            if (c === '◐') return '<span class="partial">◐</span>';
+            if (c === '●') return '●';
+            return '<span class="empty">·</span>';
+          }).join('');
+          const cumCls = rateCls(s.cum);
+          const cumText = s.cum === null ? '—' : s.cum + '%';
+          html += `<div class="student-row">
+            <span class="sname">
+              ${escapeHtml(s.name)}
+              <span class="gender-pill ${s.s === '남' ? 'male' : 'female'}">${s.s}</span>
+              <span class="grade-meta">${s.g}학</span>
+            </span>
+            <span class="att-dots">${r4Html}</span>
+            <span class="cum-rate ${cumCls}">${cumText}</span>
+          </div>`;
+        });
+        html += '</div>';
+      });
+      html += '</div></section>';
+    }
+    content.innerHTML = html || '<div class="empty" style="text-align:center;padding:40px;color:#94a3b8">검색 결과 없음</div>';
+  } else {
+    // flat 리스트 정렬
+    if (sort === 'cumAsc') filtered.sort((a,b) => (a.cum ?? 999) - (b.cum ?? 999));
+    else if (sort === 'cumDesc') filtered.sort((a,b) => (b.cum ?? -1) - (a.cum ?? -1));
+    else if (sort === 'recentAsc') filtered.sort((a,b) => (a.r4 ?? 999) - (b.r4 ?? 999));
+    let html = `<section class="family-section" style="border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.05)">
+      <div class="family-header" style="background:rgba(124,58,237,.25)">
+        <span class="family-name">📋 ${matchN}명 ${filter !== 'all' ? '(필터 적용)' : ''}</span>
+      </div>`;
+    filtered.forEach(s => {
+      const r4 = recent4String(s.name);
+      const r4Html = [...r4].map(c => {
+        if (c === '○') return '<span class="miss">○</span>';
+        if (c === '◐') return '<span class="partial">◐</span>';
+        if (c === '●') return '●';
+        return '<span class="empty">·</span>';
+      }).join('');
+      const cumCls = rateCls(s.cum);
+      const cumText = s.cum === null ? '—' : s.cum + '%';
+      html += `<div class="student-row" style="padding:8px 12px;background:rgba(255,255,255,.02);border-radius:6px;margin-bottom:4px;border-bottom:none">
+        <span class="sname">
+          ${escapeHtml(s.name)}
+          <span class="gender-pill ${s.s === '남' ? 'male' : 'female'}">${s.s}</span>
+          <span class="grade-meta">${s.g}학 · ${escapeHtml(s.cell)}</span>
+        </span>
+        <span class="att-dots">${r4Html}</span>
+        <span class="cum-rate ${cumCls}">${cumText}</span>
+      </div>`;
+    });
+    html += '</section>';
+    content.innerHTML = html;
+  }
+}
+
+function showApp() {
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('search').addEventListener('input', renderAll);
+  renderAll();
+}
+
+function checkAutoLogin() {
+  if (localStorage.getItem('access_pin') === PRIVATE_KEY) showApp();
+  else {
+    document.getElementById('pin-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') login();
+    });
+  }
+}
+
+checkAutoLogin();
+</script>
+
+</body>
+</html>
