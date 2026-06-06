@@ -1,7 +1,8 @@
 # 내수동 고등부 2학기 시스템 — 세션 핸드오프 문서
 
 > **새 Claude 세션에서 이 프로젝트를 이어 작업할 때 가장 먼저 읽을 통합 컨텍스트 문서**
-> 마지막 업데이트: 2026-06-06
+> 마지막 업데이트: 2026-06-06 (전체 백업 스냅샷 · 모든 작업 GitHub push 완료, 작업트리 clean)
+> 최신 커밋: `9d8b7a9` (Special→'더 자주 보고 싶은 친구들' 명칭 변경)
 
 ---
 
@@ -12,8 +13,9 @@
    ```bash
    cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish" && git log --oneline -20
    ```
-3. dashboard.html, attendance.html, prayer.html 등 최근 수정 파일 훑어보기
-4. 사용자에게 "이전 작업 이어서 어떤 것을 진행할까요?" 물어봄
+3. 주요 파일 훑어보기: dashboard.html(Home) · admin.html(관리자) · photos.html · attendance.html · prayer.html
+4. **현재 시스템 한눈에**: 정적 사이트(GitHub Pages) + Supabase(Storage=사진, Postgres=출석/접속/기도/공지/일정 5개 테이블). 브랜딩 "Runners 2026 / 내수동 경주자 2026". 모든 작업은 commit→push 시 1~2분 후 라이브 반영
+5. 사용자에게 "이전 작업 이어서 어떤 것을 진행할까요?" 물어봄
 
 ---
 
@@ -22,7 +24,7 @@
 - **목적**: 내수동교회 고등부 2026년 2학기 (6월~8월) 교사·관리자 운영 시스템
 - **기능**: 셀편성 조회 / 출석 입력·통합 / 학생상황·기도제목 / 공지·일정 / 대시보드
 - **사용자**: 28명 선생님 (담임 12 + 부담임 8 + 관리자 7명 + 예비 5명)
-- **학생**: 86명 (12 소그룹반 + 6 Special)
+- **학생**: 86명 (12 소그룹반 + '더 자주 보고 싶은 친구들' 6그룹 · 내부 코드는 Sp1~6)
 - **아키텍처**: 완전 정적 사이트, 백엔드 없음, GitHub Pages 호스팅
 
 ---
@@ -40,7 +42,8 @@
 | **Supabase 프로젝트** (학생 사진) | `hycwzggbgnimuuhporwf` (jwseokCEOSTAFF's Project, ap-southeast-1) |
 | Supabase URL | `https://hycwzggbgnimuuhporwf.supabase.co` |
 | Storage 버킷 | `student-photos` (public read, 2MB, jpeg/png/webp) |
-| anon 키 | publishable 키. 코드에 내장(공개 정상). 각 HTML `Photos` 헬퍼 안 |
+| anon 키 | 각 HTML의 `Photos`/`Hub`/`PrayerDB`/`logAccess` 헬퍼 안에 내장 (publishable anon 키 — 공개 정상). PIN 변경과 무관 |
+| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`, `schedule` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
 
 ---
 
@@ -56,7 +59,7 @@
 | `relations.html` | URL `?key=` | 🕸 관계도 (1·2학기 토글) ※ 이전 파일명 index.html |
 | `attendance-overview.html` | PIN | 📊 전체 출석현황 (모든 선생님 접근) |
 | `photos.html` | PIN + 본인 선택 | 📸 학생 사진 업로드 전용 (선생님=본인 셀, 관리자=전체) |
-| `admin.html` | PIN + 관리자 본인 선택 | 👑 **관리자 페이지** (접속·출석누락·사진·기도 현황) — admin 7명만 접근 |
+| `admin.html` | PIN + 관리자 본인 선택 | 👑 **관리자 페이지** — 접속(지난 7일)·출석누락·사진 현황 + **공지·일정·전체공유 기도 직접 등록**. admin 7명만 |
 | `assignments.html` | 공개 | 🌱 공개용 편성표 (학생·학부모) |
 | `assignments.pdf` | 공개 | 공개용 PDF (인쇄용) |
 
@@ -171,8 +174,10 @@
 | ❌ Apps Script 백엔드 | 보류 → 정적 사이트 운영 |
 | ❌ 구글시트 데이터 운영 | 보류 → GitHub JSON 파일로 |
 | ❌ 이메일 알림 | 보류 → 화면 알림만 |
-| ❌ PWA 변환 | 이번 학기 보류 (추후 가능하게 구조만 유지) |
+| ✅ PWA 홈화면 | **적용됨** — manifest + apple-touch-icon, 홈화면 추가 시 이름 "내수동 경주자 2026", 녹색 R 아이콘 (서비스워커·푸시는 미적용) |
 | ❌ 카카오 알림톡 | 보류 |
+| ✅ 사진/출석/기도/접속 Supabase | 정적 사이트 유지하되 공유 데이터는 Supabase(Storage+Postgres)로 |
+| ✅ Special 명칭 변경 | "더 자주 보고 싶은 친구들" (낙인 방지) |
 | ✅ 학기별 PIN 변경 | h2 → h3 → h4 → 내년 h1 |
 | ✅ 라벨 변경 | "기도제목" → "학생상황+기도제목" |
 | ✅ 학생별 모아보기 권한 | 관리자만 전체, 일반은 본인 대가족 |
@@ -183,10 +188,8 @@
 ## 🎯 운영 워크플로
 
 ### 공지·일정·기도제목 추가 (관리자)
-1. GitHub repo → `publish/data/{notices,schedule,prayers}.json` 편집
-2. `items` 배열 맨 위에 새 객체 추가
-3. **Commit changes...** 클릭 2번
-4. 1~2분 후 모든 대시보드에 자동 반영
+- **권장: `admin.html` (👑 관리자 페이지) "직접 등록" 폼** — 공지·일정·전체공유 기도를 바로 등록/삭제 → Supabase(notices/schedule/prayers) 저장 → 즉시 대시보드 반영 (GitHub 편집 불필요)
+- 대안(고급): GitHub repo `publish/data/{notices,schedule}.json` 직접 편집 + commit → 1~2분 후 반영 (admin 폼 데이터와 병합 표시)
 
 → 자세한 가이드: `publish/ADMIN_GUIDE.md`
 
@@ -230,6 +233,8 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **라인업 PDF·PPT (발표/인쇄용)** — 전체 라인업 1장 PDF(`lineup.pdf`) + 발표용 PPT(`lineup.pptx`, 타이틀+대가족 6장, 이름 22pt 크게·성별 색상). 웹 UI엔 미연결(파일만). 생성기 `make_lineup_pdf.py`/`make_lineup_pptx.py`
+0. **오신영 목사님 전용 처리** — Home 환영문구 "💛 사랑하는 오신영 목사님 환영합니다 + 🎉 우리 목사님 최고!!!" (이름 `'오신영'` 기준, 다른 관리자/선생님엔 미적용) + 내 반 카드에 대가족 1~6 선택기로 **전체 열람**. 관리자 페이지는 그대로 admin 전용. 접속 현황은 **지난 7일** 기준 통계
 0. **'Special' → '더 자주 보고 싶은 친구들' 명칭 변경** — 장기결석 그룹 라벨이 예민한 청소년에게 낙인/오해가 될 수 있어 따뜻한 이름으로 전면 교체(웹 전 페이지 + 공개편성표/라인업 PDF·PPT). "특별케어" 문구도 "대가족 선생님이 더 자주 함께"로 순화. **내부 코드 Sp1~6는 그대로 유지**(미변경), 좁은 탭엔 "💛 보고 싶은 친구들" 단축 표기
 0. **모바일 홈화면(PWA)** — 매니페스트 + apple-touch-icon으로 홈화면 추가 시 이름 "내수동 경주자 2026", 아이콘 = **녹색 바탕 흰 R**(`icon-*.png`/`apple-touch-icon.png`). 탭 favicon(보라 러너)과는 별개. 전 페이지 `<head>`에 manifest·apple 메타 추가
 0. **브랜딩(Runners 2026) + 관리자 공지·일정 등록** — 모든 페이지 제목 "Runners 2026 · X", 러너 로고(`logo-runner.svg`) favicon + 게이트 표시. 관리자 페이지에서 공지(`notices`)·일정(`schedule`)·전체공유 기도(`prayers`) 직접 등록/삭제 → 대시보드 즉시 반영. (GitHub JSON 편집 불필요)
@@ -261,7 +266,7 @@ python make_assignment_pdf.py
 2. **백엔드 없음** — 실시간 동기화·이메일 발송 X (사용자 결정)
 3. **OAuth 자동화 어려움** — Apps Script 권한 부여 시 Chrome popup이 별도 window로 떠서 browser-harness 잡기 어려움
 4. **시트 fetch 사용 안 함** — 한때 시도했으나 사용자가 GitHub JSON 방식 선호
-5. **PWA·푸시 보류** — 코드 구조는 유지하되 활성화 X
+5. **PWA 홈화면 적용 / 푸시·오프라인 미적용** — 홈화면 추가(이름·아이콘)는 지원. 서비스워커·오프라인 캐시·푸시알림은 없음
 
 ---
 
@@ -270,7 +275,8 @@ python make_assignment_pdf.py
 - **Frontend**: HTML + 바닐라 CSS + 바닐라 JS (프레임워크 없음)
 - **저장소**: localStorage + GitHub JSON 파일 + **Supabase Storage (사진) + Supabase Postgres (접속 access_log·출석 attendance)**
 - **호스팅**: GitHub Pages (정적)
-- **PDF 생성**: Python reportlab (`make_assignment_pdf.py`)
+- **PDF/PPT 생성**: reportlab (`make_assignment_pdf.py` 공개편성표, `make_lineup_pdf.py` 라인업 1장) · python-pptx (`make_lineup_pptx.py` 라인업 슬라이드) · 렌더 QA는 PowerPoint COM(win32com) 또는 PyMuPDF(fitz)
+- **Supabase MCP**: DB 테이블/정책/데이터 작업 (프로젝트 `hycwzggbgnimuuhporwf`) — `execute_sql`, `apply_migration` 등
 - **데이터 변환**: Python (`_make_historical.py` 등 임시 스크립트)
 - **MCP 도구**: google-sheets (시트 조회), google-drive (파일 메타), 기타
 - **browser-harness**: 브라우저 자동화 (Apps Script 셋업 시도 등)
@@ -304,9 +310,14 @@ publish/
 ├── index.html (루트 → dashboard.html 리다이렉트)
 ├── relations.html (관계도 · 이전 index.html)
 ├── assignments.html (공개용)
-├── assignments.pdf (공개용 PDF)
+├── assignments.pdf (공개용 편성표 PDF)
+├── lineup.pdf (전체 라인업 1장 PDF · 인쇄용)
+├── lineup.pptx (전체 라인업 PPT · 발표용, 7장)
 ├── cells.html (tombstone)
-├── make_assignment_pdf.py (PDF 생성기)
+├── make_assignment_pdf.py (공개 편성표 PDF 생성기)
+├── make_lineup_pdf.py (라인업 1장 PDF 생성기)
+├── make_lineup_pptx.py (라인업 PPT 생성기 · python-pptx)
+├── docs/superpowers/specs/ (설계 문서: 학생 사진 기능 등)
 ├── dashboard_backend.gs (Apps Script — 사용 안 함, 보관용)
 └── apps_script_backend.gs (구 부담임 지원, 사용 안 함)
 ```
