@@ -794,6 +794,50 @@
 
 <script>
 /* ============================================================
+ * 0. 학생 사진 헬퍼 (Supabase Storage, SDK 없이 REST · 표시 전용)
+ *    업로드는 photos.html 에서. 여기선 이름 옆 아바타 표시만.
+ * ============================================================ */
+const Photos = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const BUCKET = 'student-photos';
+  const REST = URL_BASE + '/storage/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
+  let _vers = new Map();
+  // Storage 키는 영숫자만 허용(한글 불가) → 이름을 UTF-8 hex 로 인코딩
+  function slug(name) { const b = new TextEncoder().encode(name); let h = ''; for (let i = 0; i < b.length; i++) h += b[i].toString(16).padStart(2, '0'); return h; }
+  function publicUrl(name, ver) { let u = REST + '/object/public/' + BUCKET + '/' + slug(name) + '.jpg'; if (ver) u += '?v=' + encodeURIComponent(ver); return u; }
+  function defaultAvatar(gender) {
+    const isF = gender === '여'; const bg = isF ? '#3a2435' : '#1e2a44'; const fg = isF ? '#ec8fc0' : '#6ba6e8';
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="' + bg + '"/><circle cx="32" cy="25" r="11" fill="' + fg + '"/><path d="M13 58c0-11 8.5-18 19-18s19 7 19 18z" fill="' + fg + '"/></svg>';
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+  // 이름 옆 작은 원형 아바타. 사진 없으면 성별 디폴트. 로드 후 refresh() 가 자동 교체.
+  function avatarImg(name, gender, size) {
+    size = size || 28; const def = defaultAvatar(gender); const ver = _vers.get(slug(name));
+    const src = ver ? publicUrl(name, ver) : def; const nm = String(name).replace(/"/g, '&quot;');
+    return '<img class="stu-photo" data-name="' + nm + '" src="' + src + '" data-def="' + def + '" ' +
+      'onerror="this.onerror=null;this.src=this.dataset.def;" ' +
+      'style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#0f172a;vertical-align:middle;" alt="">';
+  }
+  function refresh() {
+    document.querySelectorAll('img.stu-photo[data-name]').forEach(img => {
+      const ver = _vers.get(slug(img.getAttribute('data-name')));
+      if (ver) img.src = publicUrl(img.getAttribute('data-name'), ver);
+    });
+  }
+  async function load() {
+    try {
+      const res = await fetch(REST + '/object/list/' + BUCKET, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ prefix: '', limit: 1000 }) });
+      if (res.ok) { const arr = await res.json(); const m = new Map(); (arr || []).forEach(o => { if (o && o.name && /\.jpg$/i.test(o.name)) m.set(o.name.replace(/\.jpg$/i, ''), o.updated_at || o.created_at || ''); }); _vers = m; refresh(); }
+    } catch (e) { console.warn('photo load failed', e); }
+    return _vers;
+  }
+  return { slug, publicUrl, defaultAvatar, avatarImg, load, refresh };
+})();
+Photos.load();
+
+/* ============================================================
  * 1. 선생님 데이터 (실제로는 시트에서 가져옴)
  * ============================================================ */
 const TEACHERS = [
@@ -1472,7 +1516,7 @@ function renderMyClass(me) {
     return `
       <tr>
         <td>
-          <span class="col-name">${escapeHtml(s.name)}</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(s.name, s.gender, 32)}<span class="col-name">${escapeHtml(s.name)}</span></span>
           <span class="gender-pill ${gCls}">${s.gender}</span>
           <span class="col-meta"> ${s.grade}학년</span>
         </td>
@@ -1508,6 +1552,7 @@ function renderQuickMenu(me) {
     {label:'📋 출석 입력', href:'attendance.html'},
     {label:'📊 전체 출석 현황', href:'attendance-overview.html'},
     {label:'🙏 학생상황+기도제목', href:'prayer.html'},
+    {label:'📸 학생 사진 관리', href:'photos.html'},
     {label:'📋 학생 상세 (셀편성)', href:'teachers.html?key=nsdhs2026h2'},
     {label:'🕸 관계도 (1·2학기)', href:'index.html?key=nsdhs2026h2'},
     {label:'🌱 공개용 편성표', href:'assignments.html'},

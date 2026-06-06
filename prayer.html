@@ -561,6 +561,70 @@
 <div class="toast" id="toast"></div>
 
 <script>
+/* ============================================================
+ * 학생 사진 헬퍼 (Supabase Storage, SDK 없이 REST · 표시 전용)
+ *    업로드는 photos.html 에서. 여기선 이름 옆 아바타 표시만.
+ * ============================================================ */
+const Photos = (function () {
+  const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const BUCKET = 'student-photos';
+  const REST = URL_BASE + '/storage/v1';
+  const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
+  let _vers = new Map();
+  function slug(name) { const b = new TextEncoder().encode(name); let h = ''; for (let i = 0; i < b.length; i++) h += b[i].toString(16).padStart(2, '0'); return h; }
+  function publicUrl(name, ver) { let u = REST + '/object/public/' + BUCKET + '/' + slug(name) + '.jpg'; if (ver) u += '?v=' + encodeURIComponent(ver); return u; }
+  function defaultAvatar(gender) {
+    const isF = gender === '여'; const bg = isF ? '#3a2435' : '#1e2a44'; const fg = isF ? '#ec8fc0' : '#6ba6e8';
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="' + bg + '"/><circle cx="32" cy="25" r="11" fill="' + fg + '"/><path d="M13 58c0-11 8.5-18 19-18s19 7 19 18z" fill="' + fg + '"/></svg>';
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+  function avatarImg(name, gender, size) {
+    size = size || 28; const def = defaultAvatar(gender); const ver = _vers.get(slug(name));
+    const src = ver ? publicUrl(name, ver) : def; const nm = String(name).replace(/"/g, '&quot;');
+    return '<img class="stu-photo" data-name="' + nm + '" src="' + src + '" data-def="' + def + '" ' +
+      'onerror="this.onerror=null;this.src=this.dataset.def;" ' +
+      'style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#0f172a;vertical-align:middle;" alt="">';
+  }
+  function refresh() {
+    document.querySelectorAll('img.stu-photo[data-name]').forEach(img => {
+      const ver = _vers.get(slug(img.getAttribute('data-name')));
+      if (ver) img.src = publicUrl(img.getAttribute('data-name'), ver);
+    });
+  }
+  async function load() {
+    try {
+      const res = await fetch(REST + '/object/list/' + BUCKET, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ prefix: '', limit: 1000 }) });
+      if (res.ok) { const arr = await res.json(); const m = new Map(); (arr || []).forEach(o => { if (o && o.name && /\.jpg$/i.test(o.name)) m.set(o.name.replace(/\.jpg$/i, ''), o.updated_at || o.created_at || ''); }); _vers = m; refresh(); }
+    } catch (e) { console.warn('photo load failed', e); }
+    return _vers;
+  }
+  return { slug, publicUrl, defaultAvatar, avatarImg, load, refresh };
+})();
+Photos.load();
+
+// 학생 성별 (디폴트 아바타용) — dashboard.html CELL_STUDENTS 와 동일
+const STUDENT_GENDER = {
+  '권하율':'남','하은유':'여','홍기진':'남','서이수':'여','장지현':'여','김은':'여',
+  '강은교':'여','명주원':'남','조인상':'여','연해준':'남','유나린':'여',
+  '박지호':'여','한채은':'여','김준수':'남','김라일':'남','안민혁':'남',
+  '원대연':'남','이준호':'남','전지훈':'남','오현우':'남','이빛가온':'남',
+  '민예원':'여','김도연':'여','최지은':'여','김나현':'여','윤서희':'여',
+  '조한나':'여','김한결':'남','이서후':'여','임태민':'남','박지웅':'남',
+  '조강인':'남','이에녹':'남','최민호':'남','김정록':'남','정태율':'남',
+  '심희은':'여','김은우':'여','최가은':'여','양소희':'여','오은수':'여',
+  '나정인':'여','주성':'남','곽지원':'남','양인혁':'남','김다은':'여','박재영':'남',
+  '이주형':'여','윤성하':'남','나호윤':'남','이소현':'여','배유나':'여',
+  '최유현':'여','이가영':'여','최수지':'여','박동하':'남','송준원':'남',
+  '정승빈':'여','김주하':'여','김채은':'여','유재희':'여','김강은':'여',
+  '고예나':'여','김민채':'여','송성모':'남','최승아':'여',
+  '최지윤':'여','최서윤':'여','백결':'남','조혁준':'남',
+  '김재원':'남','김유진':'여','김강희':'여','박서연':'여',
+  '박시우':'남','하어림':'남','박진서':'여','임소명':'여',
+  '오희수':'여','박민주':'여','장세민':'남','정원영':'남',
+  '이서현':'여','이소민':'여','김도헌':'남','이하준':'남',
+};
+
 const PRIVATE_KEY = 'nsdhs2026h2';
 
 /* ===== 데이터 ===== */
@@ -854,6 +918,7 @@ function renderStudentPicker() {
     const n = counts[s.name] || 0;
     return `
       <button class="student-tile ${PICKED_STUDENT === s.name ? 'active' : ''}" onclick="pickStudent('${s.name}')">
+        <div style="display:flex;justify-content:center;margin-bottom:6px">${Photos.avatarImg(s.name, STUDENT_GENDER[s.name], 42)}</div>
         <div class="st-name">${escapeHtml(s.name)}</div>
         <div class="st-meta">${escapeHtml(s.cell)}</div>
         <span class="st-count ${n > 0 ? 'has' : 'zero'}">${n}건</span>
@@ -967,7 +1032,7 @@ function renderPrayers() {
     const cumRate = getCumulativeRate(PICKED_STUDENT);
     pickedEl.innerHTML = `
       <div class="ps-name">
-        👤 ${escapeHtml(PICKED_STUDENT)}
+        ${Photos.avatarImg(PICKED_STUDENT, STUDENT_GENDER[PICKED_STUDENT], 40)} ${escapeHtml(PICKED_STUDENT)}
         ${stInfo ? `<span style="font-size:12px;color:#c4b5fd;background:rgba(167,139,250,.18);padding:3px 10px;border-radius:999px;border:1px solid rgba(167,139,250,.35)">${escapeHtml(stInfo.cell)} · 대가족 ${famNum}</span>` : ''}
         <button class="ps-back" onclick="unpickStudent()">← 학생 선택으로</button>
       </div>
