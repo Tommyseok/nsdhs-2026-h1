@@ -911,7 +911,7 @@ function renderCellTabs() {
     const isMy = c === MY.cell;
     const isSp = c.startsWith('Sp');
     const label = isSp
-      ? `Special ${c.slice(2)}`
+      ? `💛 보고 싶은 친구들`
       : `소그룹반 ${c.slice(1)}${isMy ? ' (내반)' : ''}`;
     const cls = ['cell-tab'];
     if (isActive) cls.push('active');

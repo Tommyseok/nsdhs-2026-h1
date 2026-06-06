@@ -230,6 +230,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **'Special' → '더 자주 보고 싶은 친구들' 명칭 변경** — 장기결석 그룹 라벨이 예민한 청소년에게 낙인/오해가 될 수 있어 따뜻한 이름으로 전면 교체(웹 전 페이지 + 공개편성표/라인업 PDF·PPT). "특별케어" 문구도 "대가족 선생님이 더 자주 함께"로 순화. **내부 코드 Sp1~6는 그대로 유지**(미변경), 좁은 탭엔 "💛 보고 싶은 친구들" 단축 표기
 0. **모바일 홈화면(PWA)** — 매니페스트 + apple-touch-icon으로 홈화면 추가 시 이름 "내수동 경주자 2026", 아이콘 = **녹색 바탕 흰 R**(`icon-*.png`/`apple-touch-icon.png`). 탭 favicon(보라 러너)과는 별개. 전 페이지 `<head>`에 manifest·apple 메타 추가
 0. **브랜딩(Runners 2026) + 관리자 공지·일정 등록** — 모든 페이지 제목 "Runners 2026 · X", 러너 로고(`logo-runner.svg`) favicon + 게이트 표시. 관리자 페이지에서 공지(`notices`)·일정(`schedule`)·전체공유 기도(`prayers`) 직접 등록/삭제 → 대시보드 즉시 반영. (GitHub JSON 편집 불필요)
 0. **기도제목 자동 공유(Supabase)** — prayer.html의 "GitHub 공유(JSON 복사·commit)" 수동 UI 폐지. "전체 공유 ON" 토글 시 `prayers` 테이블에 자동 upsert → dashboard·admin·prayer 에 즉시 공유. (사용자 화면에서 개발자스러운 JSON 단계 제거)

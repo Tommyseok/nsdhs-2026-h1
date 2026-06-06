@@ -133,9 +133,9 @@ def draw_special_section(c, x, y, w, h, fam):
     c.rect(x, y, w, h, stroke=1, fill=0); c.setDash(); c.setStrokeColor(colors.black)
     pad = 1.6*mm; top = y + h
     students = sort_students(SPECIAL[fam])
-    c.setFont('MalgunBold', 9.5); c.drawString(x + pad, top - 4.2*mm, f'Special {fam}')
+    c.setFont('MalgunBold', 9.5); c.drawString(x + pad, top - 4.2*mm, '더 자주 보고 싶은 친구들')
     c.setFont('Malgun', 7.5); c.drawRightString(x + w - pad, top - 4.2*mm, f'{len(students)}명')
-    c.setFont('Malgun', 6.5); c.drawString(x + pad, top - 7*mm, '목회자·대가족 교사가 특별 케어')
+    c.setFont('Malgun', 6.5); c.drawString(x + pad, top - 7*mm, '대가족 선생님이 더 자주 함께해요')
     draw_wrapped_chips(c, students, x + pad, top - 10*mm, w - 2*pad, size=8.5, leading=10.2)
 
 
@@ -152,7 +152,7 @@ def draw_family_box(c, x, y, w, h, fam):
     c1, c2 = FAMILY_TO_CELLS[fam]
     total = len(CELL_STUDENTS[c1]) + len(CELL_STUDENTS[c2]) + len(SPECIAL[fam])
     c.setFont('Malgun', 7.5); c.drawRightString(x + w - pad, header_y + 1.5*mm, f'총 {total}명')
-    c.drawString(x + pad, header_y + 1.5*mm, '(소그룹 2 + Special 1)')
+    c.drawString(x + pad, header_y + 1.5*mm, '(소그룹 2 + 보고 싶은 친구들 1)')
     body_top = header_y; body_h = body_top - y; gap = 1.2*mm
     n1, n2, ns = len(CELL_STUDENTS[c1]), len(CELL_STUDENTS[c2]), len(SPECIAL[fam])
     weights = [max(3.5, 3 + n1*0.5), max(3.5, 3 + n2*0.5), max(3.5, 3 + ns*0.5)]
@@ -175,7 +175,7 @@ def main():
     c.setFillColor(colors.white); c.setFont('MalgunBold', 11); c.drawCentredString(M + 4.5*mm, title_y - 6.4*mm, 'R')
     c.setFillColor(colors.black)
     c.setFont('MalgunBold', 15); c.drawString(M + 11.5*mm, title_y - 5*mm, '내수동 경주자 2026 · 전체 라인업')
-    c.setFont('Malgun', 9); c.drawString(M + 11.5*mm, title_y - 10*mm, '6 대가족반 · 12 소그룹반 + 6 Special · 총 86명 · 담임/부담임 & 명단')
+    c.setFont('Malgun', 9); c.drawString(M + 11.5*mm, title_y - 10*mm, '6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명 · 담임/부담임 & 명단')
 
     c.setFont('Malgun', 8); today = date.today().strftime('%Y-%m-%d')
     c.drawRightString(W - M, title_y - 5*mm, f'발행 {today}')

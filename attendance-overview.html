@@ -615,14 +615,14 @@ function renderAll() {
         if (sts.length === 0) return;
         const isSp = cellName.startsWith('Sp');
         const t = CELL_TEACHERS[cellName];
-        const tHtml = isSp ? '<span class="cell-teachers">목회자·특별케어</span>'
+        const tHtml = isSp ? '<span class="cell-teachers">대가족 선생님이 더 자주 함께</span>'
                           : `<span class="cell-teachers">담임 ${t?.h||''}${t?.s ? ' · 부담임 ' + t.s : ''}</span>`;
         const cellAvg = sts.filter(s => s.cum !== null).reduce((sum, s) => sum + s.cum, 0)
                       / Math.max(1, sts.filter(s => s.cum !== null).length);
         const cellRateCls = rateCls(cellAvg);
         html += `<div class="cell-card">
           <div class="cell-head">
-            <span class="cell-name">${escapeHtml(cellName.startsWith('Sp') ? 'Special '+cellName.slice(2) : '소그룹반 '+cellName.slice(1))}</span>
+            <span class="cell-name">${escapeHtml(cellName.startsWith('Sp') ? '💛 더 자주 보고 싶은 친구들' : '소그룹반 '+cellName.slice(1))}</span>
             ${tHtml}
             <span class="cell-rate ${cellRateCls}">${Math.round(cellAvg)}%</span>
           </div>`;

@@ -813,7 +813,7 @@ const TERM_CONFIG = {
       if (c === '헬퍼') return '🤝 헬퍼';
       if (c === '미편성') return '🚪 2학기 미편성';
       if (c.startsWith('셀')) return `소그룹반 ${parseInt(c.slice(1),10)}`;
-      if (c.startsWith('Sp')) return `Special ${c.slice(2)}`;
+      if (c.startsWith('Sp')) return `💛 더 자주 보고 싶은 친구들`;
       return c;
     },
   },
@@ -873,7 +873,7 @@ function setTerm(t) {
   document.getElementById('term-2').classList.toggle('active', t === 'h2');
   // 헤더 부제 갱신
   const sub = document.querySelector('header .subtitle');
-  if (sub) sub.textContent = t === 'h1' ? '2026 1학기 · 17반 편성' : '2026 2학기 · 12 소그룹 + 6 Special';
+  if (sub) sub.textContent = t === 'h1' ? '2026 1학기 · 17반 편성' : '2026 2학기 · 12 소그룹 + 보고 싶은 친구들 6';
   if (typeof rebuild === 'function') rebuild();
   else { if (typeof buildGroups==='function') buildGroups(); if (typeof buildIndex==='function') buildIndex(); }
 }

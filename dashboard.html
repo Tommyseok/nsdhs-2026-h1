@@ -1513,7 +1513,7 @@ function renderMyClass(me) {
     const isMy = c === me.cell;
     const isSp = c.startsWith('Sp');
     const label = isSp
-      ? `Special ${c.slice(2)}`
+      ? `💛 보고 싶은 친구들`
       : `소그룹반 ${c.slice(1)}${isMy ? ' (내반)' : ''}`;
     const cls = ['family-tab'];
     if (isActive) cls.push('active');
@@ -1524,8 +1524,8 @@ function renderMyClass(me) {
 
   const cell = SELECTED_CELL;
   const isSp = cell.startsWith('Sp');
-  const teachers = CELL_TEACHERS[cell] || {homeroom:'(목회자·특별케어)', sub:''};
-  const cellTitle = isSp ? `Special ${cell.slice(2)}` : `소그룹반 ${cell.slice(1)}`;
+  const teachers = CELL_TEACHERS[cell] || {homeroom:'(대가족 선생님 함께)', sub:''};
+  const cellTitle = isSp ? `💛 더 자주 보고 싶은 친구들` : `소그룹반 ${cell.slice(1)}`;
   const students = (CELL_STUDENTS[cell] || []).slice().sort((a,b) => {
     if (a.grade !== b.grade) return b.grade - a.grade;
     return a.name.localeCompare(b.name, 'ko');

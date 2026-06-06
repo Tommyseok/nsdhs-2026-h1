@@ -89,12 +89,12 @@ def cell_card(slide, x, y, w, h, title, count, homeroom, sub, is_leader, student
     tf.margin_left=Inches(0.24); tf.margin_right=Inches(0.18); tf.margin_top=Inches(0.2); tf.margin_bottom=Inches(0.12)
     # 헤더 줄: 소그룹반 N  + 인원
     p0=tf.paragraphs[0]; p0.space_after=Pt(2); p0.alignment=PP_ALIGN.LEFT
-    runs(p0, [(title, 21, True, ORANGE if special else PURPLE),
+    runs(p0, [(title, 17 if special else 21, True, ORANGE if special else PURPLE),
               (f'   {count}명', 13, False, MUTED)])
-    # 담임/부담임 또는 Special 안내
+    # 담임/부담임 또는 안내
     if special:
         p1=tf.add_paragraph(); p1.space_after=Pt(8)
-        runs(p1, [('목회자·대가족 교사 특별 케어', 12, False, MUTED)])
+        runs(p1, [('대가족 선생님이 더 자주 함께해요', 12, False, MUTED)])
     else:
         p1=tf.add_paragraph(); p1.space_after=Pt(1)
         runs(p1, [('담임 ', 13, True, INK), (homeroom, 18, True, INK),
@@ -116,7 +116,7 @@ def add_title_slide(prs):
     tb=s.shapes.add_textbox(Inches(2.7), Inches(2.35), Inches(9.6), Inches(2.9)); tf=tb.text_frame; tf.word_wrap=True
     p=tf.paragraphs[0]; runs(p,[('내수동 경주자 ',46,True,WHITE),('2026',46,True,LILAC)])
     p2=tf.add_paragraph(); p2.space_before=Pt(2); runs(p2,[('전체 라인업',32,True,GREEN)])
-    p3=tf.add_paragraph(); p3.space_before=Pt(14); runs(p3,[('6 대가족반 · 12 소그룹반 + 6 Special · 총 86명',18,False,RGBColor(0xCB,0xD5,0xE1))])
+    p3=tf.add_paragraph(); p3.space_before=Pt(14); runs(p3,[('6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명',18,False,RGBColor(0xCB,0xD5,0xE1))])
     p4=tf.add_paragraph(); p4.space_before=Pt(6)
     r=p4.add_run(); r.text='“나는 선한 싸움을 싸우고 나의 달려갈 길을 마치고” — 딤후 4:7'; r.font.size=Pt(13); r.font.italic=True; r.font.color.rgb=RGBColor(0x94,0xA3,0xB8); r.font.name=FONT
     ftb=s.shapes.add_textbox(Inches(0.9), Inches(6.9), Inches(11), Inches(0.4)); ftf=ftb.text_frame
@@ -131,7 +131,7 @@ def add_family_slide(prs, fam):
     tb=s.shapes.add_textbox(Inches(1.35), Inches(0.34), Inches(8.5), Inches(1.0)); tf=tb.text_frame; tf.word_wrap=True
     p=tf.paragraphs[0]; runs(p,[(f'대가족반 {fam}',34,True,DARK)])
     c1,c2=FAM_CELLS[fam]; total=len(CELL_STUDENTS[c1])+len(CELL_STUDENTS[c2])+len(SPECIAL[fam])
-    p2=tf.add_paragraph(); runs(p2,[(f'★ 가족장 {HOMEROOM[LEADERS[fam]]}    ·    총 {total}명 (소그룹 2 + Special 1)',15,False,MUTED)])
+    p2=tf.add_paragraph(); runs(p2,[(f'★ 가족장 {HOMEROOM[LEADERS[fam]]}    ·    총 {total}명 (소그룹 2 + 보고 싶은 친구들 1)',15,False,MUTED)])
     # 우상단 브랜드
     rb=s.shapes.add_textbox(Inches(9.8), Inches(0.5), Inches(3.1), Inches(0.5)); rtf=rb.text_frame
     rr=rtf.paragraphs[0]; rr.alignment=PP_ALIGN.RIGHT
@@ -142,7 +142,7 @@ def add_family_slide(prs, fam):
     card_h=prs.slide_height - top - Inches(0.4)
     cell_card(s, left, top, card_w, card_h, f'소그룹반 {c1}', len(CELL_STUDENTS[c1]), HOMEROOM[c1], SUB[c1], LEADERS[fam]==c1, CELL_STUDENTS[c1])
     cell_card(s, left+card_w+gap, top, card_w, card_h, f'소그룹반 {c2}', len(CELL_STUDENTS[c2]), HOMEROOM[c2], SUB[c2], LEADERS[fam]==c2, CELL_STUDENTS[c2])
-    cell_card(s, left+(card_w+gap)*2, top, card_w, card_h, f'Special {fam}', len(SPECIAL[fam]), '', '', False, SPECIAL[fam], special=True)
+    cell_card(s, left+(card_w+gap)*2, top, card_w, card_h, '더 자주 보고 싶은 친구들', len(SPECIAL[fam]), '', '', False, SPECIAL[fam], special=True)
 
 def main():
     prs=Presentation(); prs.slide_width=Inches(13.333); prs.slide_height=Inches(7.5)

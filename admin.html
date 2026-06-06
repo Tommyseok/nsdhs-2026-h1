@@ -358,7 +358,7 @@ function attTable(att){
       <div class="kpi danger"><div class="n">${missing}</div><div class="l">미입력 셀</div></div>
     </div>
     <table><thead><tr><th>셀</th><th>담임·부담임</th><th class="c">입력</th><th class="c">상태</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="muted-note">※ Special 셀은 출석 입력 대상이 아니라 제외했습니다. 미입력 셀 담임 선생님께 안내해 주세요.</div>`;
+    <div class="muted-note">※ '더 자주 보고 싶은 친구들'은 출석 입력 대상이 아니라 제외했습니다. 미입력 셀 담임 선생님께 안내해 주세요.</div>`;
 }
 
 /* 3) 사진 등록 현황 */
@@ -372,7 +372,7 @@ function sectionPhotos(photoSet){
   });
   const total=ALL_CELLS.reduce((a,c)=>a+(CELL_STUDENTS[c]||[]).length,0);
   const missTotal=total-have;
-  const missHtml=missingByCell.map(g=>`<div style="margin-top:8px"><b>${g.cell}</b> <span class="tag muted">${g.miss.length}명</span><div class="chips" style="margin-top:5px">${g.miss.map(s=>`<span class="chip"><img class="stu-photo-sm" src="${Photos.defaultAvatar(s.gender)}" alt="">${esc(s.name)}</span>`).join('')}</div></div>`).join('');
+  const missHtml=missingByCell.map(g=>`<div style="margin-top:8px"><b>${g.cell.startsWith('Sp')?'💛 보고 싶은 친구들':g.cell}</b> <span class="tag muted">${g.miss.length}명</span><div class="chips" style="margin-top:5px">${g.miss.map(s=>`<span class="chip"><img class="stu-photo-sm" src="${Photos.defaultAvatar(s.gender)}" alt="">${esc(s.name)}</span>`).join('')}</div></div>`).join('');
   return `
   <div class="card">
     <h2>📸 사진 등록 현황</h2>

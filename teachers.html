@@ -890,7 +890,7 @@
       <h1>🔒 내수동 고등부 2학기 셀편성
         <span class="badge-private">🔐 교사용 비공개</span>
       </h1>
-      <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 6 Special · 총 86명 · 학생별 케어 정보 포함</div>
+      <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명 · 학생별 케어 정보 포함</div>
       <div class="nav-row">
         <a class="nav-link relations" href="relations.html?key=nsdhs2026h2" target="_blank">🕸 관계도 (1·2학기 토글)</a>
         <a class="nav-link public" href="assignments.html" target="_blank">🌱 공개용 편성표</a>
@@ -1740,7 +1740,7 @@ const FAMILY_GROUPS = [
       {name:"조인상", grade:3, gender:"여"},{name:"연해준", grade:2, gender:"남"},
       {name:"유나린", grade:2, gender:"여"},
     ]},
-  ], special: { name: "Special 1", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"고예나", grade:1, gender:"여"},{name:"김민채", grade:3, gender:"여"},
     {name:"송성모", grade:3, gender:"남"},{name:"최승아", grade:3, gender:"여"},
   ]}},
@@ -1755,7 +1755,7 @@ const FAMILY_GROUPS = [
       {name:"전지훈", grade:2, gender:"남"},{name:"오현우", grade:1, gender:"남"},
       {name:"이빛가온", grade:1, gender:"남"},
     ]},
-  ], special: { name: "Special 2", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"최지윤", grade:3, gender:"여"},{name:"최서윤", grade:3, gender:"여"},
     {name:"백결",   grade:3, gender:"남"},{name:"조혁준", grade:3, gender:"남"},
   ]}},
@@ -1771,7 +1771,7 @@ const FAMILY_GROUPS = [
       {name:"이서후", grade:1, gender:"여"},{name:"임태민", grade:2, gender:"남"},
       {name:"박지웅", grade:1, gender:"남"},
     ]},
-  ], special: { name: "Special 3", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"김재원", grade:1, gender:"남", label:'urgent'},
     {name:"김유진", grade:2, gender:"여"},{name:"김강희", grade:1, gender:"여"},
     {name:"박서연", grade:1, gender:"여"},
@@ -1787,7 +1787,7 @@ const FAMILY_GROUPS = [
       {name:"최가은", grade:3, gender:"여"},{name:"양소희", grade:2, gender:"여"},
       {name:"오은수", grade:1, gender:"여"},
     ]},
-  ], special: { name: "Special 4", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"박시우", grade:1, gender:"남", label:'urgent'},
     {name:"하어림", grade:1, gender:"남"},{name:"박진서", grade:3, gender:"여"},
     {name:"임소명", grade:3, gender:"여"},
@@ -1806,7 +1806,7 @@ const FAMILY_GROUPS = [
       {name:"이소현", grade:1, gender:"여", label:'new'},
       {name:"배유나", grade:2, gender:"여", label:'rejoin'},
     ]},
-  ], special: { name: "Special 5", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"오희수", grade:3, gender:"여"},{name:"박민주", grade:1, gender:"여"},
     {name:"장세민", grade:3, gender:"남"},{name:"정원영", grade:3, gender:"남"},
   ]}},
@@ -1821,7 +1821,7 @@ const FAMILY_GROUPS = [
       {name:"김채은", grade:2, gender:"여"},{name:"유재희", grade:2, gender:"여"},
       {name:"김강은", grade:1, gender:"여"},
     ]},
-  ], special: { name: "Special 6", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"이서현", grade:1, gender:"여"},{name:"이소민", grade:3, gender:"여"},
     {name:"김도헌", grade:3, gender:"남"},{name:"이하준", grade:1, gender:"남"},
   ]}},
@@ -1973,7 +1973,7 @@ function specialHtml(special, familyId) {
         <span class="special-name">${escapeHtml(special.name)}</span>
         <span class="special-meta">${special.students.length}명</span>
       </div>
-      <div class="special-note">목회자/대가족 소속 교사가 특별케어 (처음 반 맡았을 때 반드시 연락)</div>
+      <div class="special-note">대가족 선생님들이 더 자주 연락하며 함께 달려가는 친구들 (처음 맡으면 먼저 따뜻하게 연락 :))</div>
       <div class="student-list">
         ${sorted.map(s => {
           const {splits, keeps} = pairsForStudent(s.name, cellNames);
@@ -1992,7 +1992,7 @@ function familyHtml(family) {
   const leader = FAMILY_LEADERS[familyId];
   const sameCellNames = namesInGroup(family);
   const metaParts = [`${family.cells.length}개 소그룹반`];
-  if (family.special) metaParts.push('Special 1개');
+  if (family.special) metaParts.push('보고 싶은 친구들 1모임');
   metaParts.push(`총 ${total}명`);
   return `
     <section class="family-section" id="${familyId}">
@@ -2141,7 +2141,7 @@ function contactFamilyHtml(family) {
   const specialCount = family.special ? family.special.students.length : 0;
   const total = regularCount + specialCount;
   const metaParts = [`${family.cells.length}개 소그룹반`];
-  if (family.special) metaParts.push('Special 1개');
+  if (family.special) metaParts.push('보고 싶은 친구들 1모임');
   metaParts.push(`총 ${total}명`);
   return `
     <section class="family-section" id="${familyId}-contact">

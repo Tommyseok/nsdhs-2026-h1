@@ -266,14 +266,14 @@ def draw_special_section(c, x, y, w, h, fam):
 
     students = sort_students(SPECIAL[fam])
     c.setFont('MalgunBold', 9)
-    c.drawString(x + pad, top - 4*mm, f'Special {fam}')
+    c.drawString(x + pad, top - 4*mm, '더 자주 보고 싶은 친구들')
     c.setFont('Malgun', 7)
     c.drawRightString(x + w - pad, top - 4*mm, f'{len(students)}명')
 
     c.setFont('Malgun', 6.5)
     c.setFont('Malgun', 6)
-    note_line1 = '목회자/대가족 소속 교사가 특별케어'
-    note_line2 = '(처음 반 맡았을 때 반드시 연락)'
+    note_line1 = '대가족 선생님이 더 자주 연락하며'
+    note_line2 = '함께 달려가는 친구들 :)'
     c.drawString(x + pad, top - 6.5*mm, note_line1)
     c.drawString(x + pad, top - 9*mm, note_line2)
     c.setFont('Malgun', 7.5)
@@ -323,7 +323,7 @@ def draw_family_box(c, x, y, w, h, fam):
     total = len(CELL_STUDENTS[c1]) + len(CELL_STUDENTS[c2]) + len(SPECIAL[fam])
     c.setFont('Malgun', 7.5)
     c.drawRightString(x + w - pad, header_y + 1.8*mm, f'총 {total}명')
-    c.drawString(x + pad, header_y + 1.8*mm, '(소그룹 2 + Special 1)')
+    c.drawString(x + pad, header_y + 1.8*mm, '(소그룹 2 + 보고 싶은 친구들 1)')
 
     # 본문 영역: 소그룹반 2개 + Special 1개 = 3 sections
     body_top = header_y
@@ -375,7 +375,7 @@ def main():
     c.drawString(M, title_y - 5*mm, '내수동 고등부 2026 2학기 셀편성표')
 
     c.setFont('Malgun', 9)
-    c.drawString(M, title_y - 10*mm, '6 대가족반 · 12 소그룹반 + 6 Special · 총 86명 · 학생·학부모 공유용')
+    c.drawString(M, title_y - 10*mm, '6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명 · 학생·학부모 공유용')
 
     # 발행일자
     c.setFont('Malgun', 8)

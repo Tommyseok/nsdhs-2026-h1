@@ -725,7 +725,7 @@
 <header>
   <div class="container">
     <h1>🌱 내수동 고등부 2학기 편성 <span class="badge-public">공개용</span></h1>
-    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 6 Special · 총 86명 · 학생·학부모 공유용</div>
+    <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명 · 학생·학부모 공유용</div>
     <div class="legend-box">
       <span class="legend-title">📌 라벨</span>
       <span class="legend-item"><span class="member-label new">🆕 새신자</span><span class="legend-desc">첫 출석</span></span>
@@ -853,7 +853,7 @@ const FAMILY_HELPERS = {
 };
 
 /* ========== 편성 (대가족반 → 소그룹반/Special → 학생) ========== */
-// 정규 소그룹반 = 출석 학생, Special = 장기결석자 (목회자·별도 교사 특별관리)
+// 정규 소그룹반 = 출석 학생, '더 자주 보고 싶은 친구들' = 더 자주 만나고 싶은(장기 미출석) 친구들 — 대가족 교사가 더 자주 연락
 // label: 'new' (새신자) | 'rejoin' (정규 합류) | 'urgent' (즉시 접촉)
 const FAMILY_GROUPS = [
   { name: "대가족반 1", cells: [
@@ -872,7 +872,7 @@ const FAMILY_GROUPS = [
       {name:"연해준", grade:2, gender:"남"},
       {name:"유나린", grade:2, gender:"여"},
     ]},
-  ], special: { name: "Special 1", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"고예나", grade:1, gender:"여"},
     {name:"김민채", grade:3, gender:"여"},
     {name:"송성모", grade:3, gender:"남"},
@@ -893,7 +893,7 @@ const FAMILY_GROUPS = [
       {name:"오현우", grade:1, gender:"남"},
       {name:"이빛가온", grade:1, gender:"남"},
     ]},
-  ], special: { name: "Special 2", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"최지윤", grade:3, gender:"여"},
     {name:"최서윤", grade:3, gender:"여"},
     {name:"백결",   grade:3, gender:"남"},
@@ -914,7 +914,7 @@ const FAMILY_GROUPS = [
       {name:"임태민", grade:2, gender:"남"},
       {name:"박지웅", grade:1, gender:"남"},
     ]},
-  ], special: { name: "Special 3", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"김재원", grade:1, gender:"남", label:'urgent'},
     {name:"김유진", grade:2, gender:"여"},
     {name:"김강희", grade:1, gender:"여"},
@@ -935,7 +935,7 @@ const FAMILY_GROUPS = [
       {name:"양소희", grade:2, gender:"여"},
       {name:"오은수", grade:1, gender:"여"},
     ]},
-  ], special: { name: "Special 4", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"박시우", grade:1, gender:"남", label:'urgent'},
     {name:"하어림", grade:1, gender:"남"},
     {name:"박진서", grade:3, gender:"여"},
@@ -957,7 +957,7 @@ const FAMILY_GROUPS = [
       {name:"이소현", grade:1, gender:"여", label:'new'},
       {name:"배유나", grade:2, gender:"여", label:'rejoin'},
     ]},
-  ], special: { name: "Special 5", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"오희수", grade:3, gender:"여"},
     {name:"박민주", grade:1, gender:"여"},
     {name:"장세민", grade:3, gender:"남"},
@@ -978,7 +978,7 @@ const FAMILY_GROUPS = [
       {name:"유재희", grade:2, gender:"여"},
       {name:"김강은", grade:1, gender:"여"},
     ]},
-  ], special: { name: "Special 6", students: [
+  ], special: { name: "더 자주 보고 싶은 친구들", students: [
     {name:"이서현", grade:1, gender:"여"},
     {name:"이소민", grade:3, gender:"여"},
     {name:"김도헌", grade:3, gender:"남"},
@@ -1056,7 +1056,7 @@ function specialHtml(special) {
         <span class="special-name">${escapeHtml(special.name)}</span>
         <span class="special-meta">${special.students.length}명</span>
       </div>
-      <div class="special-note">목회자/대가족 소속 교사가 특별케어 (처음 반 맡았을 때 반드시 연락)</div>
+      <div class="special-note">대가족 선생님들이 더 자주 연락하며 함께 달려가는 친구들 :)</div>
       <div class="member-list">${sorted.map(memberHtml).join('')}</div>
     </div>
   `;
@@ -1070,7 +1070,7 @@ function familyHtml(family) {
   const leader = FAMILY_LEADERS[familyId];
   const helper = FAMILY_HELPERS[familyId];
   const metaParts = [`${family.cells.length}개 소그룹반`];
-  if (family.special) metaParts.push(`Special 1개`);
+  if (family.special) metaParts.push(`보고 싶은 친구들 1모임`);
   metaParts.push(`총 ${total}명`);
   return `
     <section class="family-section">
