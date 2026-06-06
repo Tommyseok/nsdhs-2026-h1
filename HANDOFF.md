@@ -214,7 +214,8 @@ cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
 - `attendance-overview.html` — CELL_STUDENTS (이름 옆 아바타)
 - `photos.html` — TEACHERS, CELL_TEACHERS, CELL_STUDENTS (업로드 그리드)
 - `relations.html` — students 배열 (관계도, 이전 index.html)
-- `make_assignment_pdf.py` — CELL_STUDENTS (PDF 재생성 필요)
+- `make_assignment_pdf.py` — CELL_STUDENTS (공개 편성표 assignments.pdf 재생성)
+- `make_lineup_pdf.py` — CELL_STUDENTS (전체 라인업 lineup.pdf 1장 재생성 · `python make_lineup_pdf.py`)
 
 → 변경 후 PDF 재생성:
 ```bash
