@@ -190,6 +190,16 @@
     background: rgba(244,114,182,.12);
     border: 1px solid rgba(244,114,182,.35);
   }
+  .cum-rate {
+    margin-left: auto;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .cum-rate.cum-ok  { background: rgba(16,185,129,.15);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.35); }
+  .cum-rate.cum-mid { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
+  .cum-rate.cum-low { background: rgba(239,68,68,.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,.35); }
 
   /* Status buttons */
   .status-row {
@@ -539,6 +549,20 @@ function renderWeek() {
   renderStudents();
 }
 
+// 학생 누적 출석률 (전체 주차)
+function cumulativeRate(name) {
+  let total = 0, sum = 0;
+  Object.keys(ATTENDANCE).forEach(w => {
+    const rec = ATTENDANCE[w][name];
+    if (!rec || !rec.status) return;
+    total++;
+    if (rec.status === 'full') sum++;
+    else if (rec.status === 'partial') sum += 0.5;
+  });
+  if (total === 0) return null;
+  return { rate: Math.round(sum / total * 100), total };
+}
+
 function renderStudents() {
   if (!MY || !MY.cell) return;
   const students = CELL_STUDENTS[MY.cell] || [];
@@ -553,12 +577,19 @@ function renderStudents() {
     const info = STUDENT_INFO[name] || {g:'?', s:'?'};
     const rec = week[name] || {status:'', note:''};
     const gCls = info.s === '남' ? 'male' : 'female';
+    const cum = cumulativeRate(name);
+    let cumBadge = '';
+    if (cum) {
+      const cls = cum.rate >= 85 ? 'cum-ok' : cum.rate >= 50 ? 'cum-mid' : 'cum-low';
+      cumBadge = `<span class="cum-rate ${cls}" title="누적 출석률 (전체 ${cum.total}주)">📊 ${cum.rate}%</span>`;
+    }
     return `
       <div class="student ${rec.status ? 'selected' : ''} ${rec.note ? 'show-note' : ''}" data-name="${name}">
         <div class="student-head">
           <span class="student-name">${escapeHtml(name)}</span>
           <span class="gender-pill ${gCls}">${info.s}</span>
           <span class="student-meta">${info.g}학년</span>
+          ${cumBadge}
         </div>
         <div class="status-row">
           <button class="status-btn full ${rec.status==='full'?'active':''}" onclick="setStatus('${name}','full')">● 전참</button>

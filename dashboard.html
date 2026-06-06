@@ -476,6 +476,23 @@
   }
   .att-dots .miss { color: #fca5a5; }
   .att-dots .partial { color: #fcd34d; }
+  .cum-rate {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .cum-rate.cum-ok   { background: rgba(16,185,129,.15);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.35); }
+  .cum-rate.cum-mid  { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
+  .cum-rate.cum-low  { background: rgba(239,68,68,.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,.35); }
+  .cum-rate.cum-none { background: rgba(148,163,184,.10); color: #94a3b8; border: 1px solid rgba(148,163,184,.25); }
+  .cum-meta {
+    font-size: 9.5px;
+    color: var(--muted);
+    margin-left: 3px;
+    display: block;
+  }
+  .my-class-table th.center, .my-class-table td.center { text-align: center; }
   .att-action {
     background: rgba(167,139,250,.15);
     color: #c4b5fd;
@@ -868,39 +885,12 @@ async function fetchJson(filename) {
   }
 }
 
-const SCHEDULE = [
-  {date:'2026-06-08', title:'주일 예배 (GBS)', note:'9시·11시'},
-  {date:'2026-06-15', title:'여름 수련회 1차 모집 마감', note:'신청서 제출 필수'},
-  {date:'2026-06-22', title:'광나루 체육대회', note:'고등부 전체 (오후 2시)'},
-  {date:'2026-06-29', title:'5주차 — 청소년 헌신예배', note:''},
-  {date:'2026-07-13', title:'여름 수련회 2차 모집 마감', note:''},
-  {date:'2026-07-25', title:'여름 수련회 1일차', note:'7/25~7/28, 강원도 평창'},
-  {date:'2026-08-09', title:'수련회 후 첫 모임 (간증)', note:''},
-];
+// 시드 (fetch 실패 시 fallback) — 새 텀 시작이라 비어있음. 실제 데이터는 data/*.json
+const SCHEDULE = [];
+const PRAYERS = [];
 
-const PRAYERS = [
-  {student:'권하율', cell:'셀1', teacher:'이윤정', text:'자퇴 후 부모님과의 관계 회복 — 부모 기대 매우 크며 본인은 자해 신호 보였던 경험. 새 텀 셀에 적응할 수 있도록.', date:'2026-06-04', urgent:true},
-  {student:'강은교', cell:'셀2', teacher:'정명경', text:'우울증 약 미성년자 최대치 복용 중 + 텀 변화로 인한 불안. 연해준·유나린 매칭은 잘 됐고, 텀 적응 기간 안정 케어 필요.', date:'2026-06-03'},
-  {student:'김재원', cell:'Sp3', teacher:'이수지', text:'어머니도 교회에 안 나오시는 상황. 가정 신앙 회복과 본인의 첫 출석.', date:'2026-06-02', urgent:true},
-  {student:'김나현', cell:'셀5', teacher:'이수지', text:'1학기 거의 출석 X (장결자 → 2학기 정규 합류). 단톡방은 안 나갔지만 회피성 답변만. 김도헌(같은 학교)을 통한 접촉 검토 중.', date:'2026-05-30'},
-  {student:'전지훈', cell:'셀4', teacher:'박대철', text:'1학기에 "교회 안 나가겠어" 통보 + 연해준과 분리됨. 이수지T 라포 유지하면서 박대철T 새 라포 형성 중.', date:'2026-05-28'},
-];
-
-const MOCK_ATTENDANCE = {
-  // 학생: 최근 4주 출석 (왼쪽이 가장 오래된, 오른쪽이 최근). ●=전참, ◐=부분참, ○=불참
-  '권하율':'●●●○', '하은유':'●●●●', '홍기진':'●●●●', '서이수':'●●●●', '장지현':'●●●○', '김은':'••••',
-  '강은교':'●●●●', '명주원':'●●○●', '조인상':'●●●●', '연해준':'●●●●', '유나린':'●●●●',
-  '박지호':'○○○○', '한채은':'●●●●', '김준수':'●●●●', '김라일':'●●●●', '안민혁':'●○●●',
-  '원대연':'●●●●', '이준호':'○●○○', '전지훈':'○●○○', '오현우':'●●●●', '이빛가온':'●●●●',
-  '민예원':'●●●○', '김도연':'●●●●', '최지은':'●○●●', '김나현':'○○○○', '윤서희':'••••',
-  '조한나':'●●●●', '김한결':'●●●●', '이서후':'●●●○', '임태민':'○●○○', '박지웅':'●●●●',
-  '조강인':'○●○●', '이에녹':'●●●●', '최민호':'••••', '김정록':'●●●●', '정태율':'●●●●',
-  '심희은':'●●●●', '김은우':'●●○●', '최가은':'●●○●', '양소희':'○○●○', '오은수':'●●●○',
-  '나정인':'●●●●', '주성':'••••', '곽지원':'○●○●', '양인혁':'●●●●', '김다은':'●●●○', '박재영':'••••',
-  '이주형':'●●●●', '윤성하':'●●○●', '나호윤':'●●●●', '이소현':'••••', '배유나':'○○○○',
-  '최유현':'●●●○', '이가영':'●○●○', '최수지':'●●●●', '박동하':'○○●○', '송준원':'○○●○',
-  '정승빈':'●●●●', '김주하':'○●●○', '김채은':'○●○●', '유재희':'●●●●', '김강은':'●●●●',
-};
+// 새 텀 시작 — 출석 데이터는 모두 비어있음 (담임이 attendance.html 에서 입력)
+const MOCK_ATTENDANCE = {};
 
 /* ============================================================
  * 5. Mock 로그인
@@ -1276,6 +1266,14 @@ function renderMyClass(me) {
       return '<span class="miss" style="opacity:.3">·</span>';
     }).join('');
     const gCls = s.gender === '남' ? 'male' : 'female';
+    const cum = cumulativeAttRate(s.name);
+    let cumHtml;
+    if (cum) {
+      const cls = cum.rate >= 85 ? 'cum-ok' : cum.rate >= 50 ? 'cum-mid' : 'cum-low';
+      cumHtml = `<span class="cum-rate ${cls}">${cum.rate}%</span><span class="cum-meta">${cum.total}주</span>`;
+    } else {
+      cumHtml = `<span class="cum-rate cum-none">—</span>`;
+    }
     return `
       <tr>
         <td>
@@ -1284,7 +1282,8 @@ function renderMyClass(me) {
           <span class="col-meta"> ${s.grade}학년</span>
         </td>
         <td><span class="att-dots">${attHtml}</span></td>
-        <td class="right"><button class="att-action" onclick="location.href='attendance.html'">✏️ 입력</button></td>
+        <td class="center">${cumHtml}</td>
+        <td class="right"><button class="att-action" onclick="location.href='attendance.html'">✏️</button></td>
       </tr>
     `;
   }).join('');
@@ -1295,7 +1294,8 @@ function renderMyClass(me) {
         <tr>
           <th>학생</th>
           <th>최근 4주</th>
-          <th class="right">출석·기도</th>
+          <th class="center">누적</th>
+          <th class="right">입력</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
@@ -1351,6 +1351,21 @@ function getRecentWeeks(n) {
     weeks.push(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
   }
   return weeks;
+}
+
+// 학생의 전체 누적 출석률 계산 (모든 주차 기준)
+function cumulativeAttRate(name) {
+  const data = loadAttendanceFromStorage();
+  let total = 0, sum = 0;
+  Object.keys(data).forEach(week => {
+    const rec = data[week][name];
+    if (!rec || !rec.status) return;
+    total++;
+    if (rec.status === 'full') sum++;
+    else if (rec.status === 'partial') sum += 0.5;
+  });
+  if (total === 0) return null;
+  return { rate: Math.round(sum / total * 100), total };
 }
 
 /* ============================================================
