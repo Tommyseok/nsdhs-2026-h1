@@ -374,6 +374,70 @@
     padding: 20px;
     font-style: italic;
   }
+  .more-btn {
+    margin-top: 8px;
+    width: 100%;
+    background: rgba(167,139,250,.08);
+    border: 1px dashed rgba(167,139,250,.3);
+    color: #c4b5fd;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .more-btn:hover {
+    background: rgba(167,139,250,.15);
+    border-style: solid;
+  }
+
+  /* 대가족 셀 토글 (내 반 위) */
+  .family-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 12px 0;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .family-tabs::-webkit-scrollbar { height: 4px; }
+  .family-tabs::-webkit-scrollbar-thumb { background: rgba(167,139,250,.3); border-radius: 2px; }
+  .family-tab {
+    flex-shrink: 0;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    color: #cbd5e1;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .family-tab:hover {
+    background: rgba(167,139,250,.1);
+    border-color: var(--accent);
+  }
+  .family-tab.active {
+    background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 4px 10px rgba(124,58,237,.3);
+  }
+  .family-tab.my-cell {
+    border-left: 3px solid #fbbf24;
+  }
+  .family-tab.special {
+    background: rgba(251,146,60,.08);
+    border-color: rgba(251,146,60,.3);
+    color: #fdba74;
+  }
+  .family-tab.special.active {
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    color: #1c1410;
+  }
 
   /* ===== Prayers ===== */
   .prayer-list {
@@ -840,7 +904,44 @@ const CELL_STUDENTS = {
     {name:'김채은', grade:2, gender:'여'},{name:'유재희', grade:2, gender:'여'},
     {name:'김강은', grade:1, gender:'여'},
   ],
+  'Sp1': [
+    {name:'고예나', grade:1, gender:'여'},{name:'김민채', grade:3, gender:'여'},
+    {name:'송성모', grade:3, gender:'남'},{name:'최승아', grade:3, gender:'여'},
+  ],
+  'Sp2': [
+    {name:'최지윤', grade:3, gender:'여'},{name:'최서윤', grade:3, gender:'여'},
+    {name:'백결', grade:3, gender:'남'},{name:'조혁준', grade:3, gender:'남'},
+  ],
+  'Sp3': [
+    {name:'김재원', grade:1, gender:'남'},{name:'김유진', grade:2, gender:'여'},
+    {name:'김강희', grade:1, gender:'여'},{name:'박서연', grade:1, gender:'여'},
+  ],
+  'Sp4': [
+    {name:'박시우', grade:1, gender:'남'},{name:'하어림', grade:1, gender:'남'},
+    {name:'박진서', grade:3, gender:'여'},{name:'임소명', grade:3, gender:'여'},
+  ],
+  'Sp5': [
+    {name:'오희수', grade:3, gender:'여'},{name:'박민주', grade:1, gender:'여'},
+    {name:'장세민', grade:3, gender:'남'},{name:'정원영', grade:3, gender:'남'},
+  ],
+  'Sp6': [
+    {name:'이서현', grade:1, gender:'여'},{name:'이소민', grade:3, gender:'여'},
+    {name:'김도헌', grade:3, gender:'남'},{name:'이하준', grade:1, gender:'남'},
+  ],
 };
+
+// 셀 → 대가족 매핑
+const CELL_FAMILY = {
+  '셀1':1,'셀2':1,'Sp1':1,
+  '셀3':2,'셀4':2,'Sp2':2,
+  '셀5':3,'셀6':3,'Sp3':3,
+  '셀7':4,'셀8':4,'Sp4':4,
+  '셀9':5,'셀10':5,'Sp5':5,
+  '셀11':6,'셀12':6,'Sp6':6,
+};
+function familyCells(famN) {
+  return Object.keys(CELL_FAMILY).filter(c => CELL_FAMILY[c] === famN);
+}
 
 /* ============================================================
  * 3. 생일 데이터 (CONTACT에서 추출)
@@ -1000,6 +1101,7 @@ function showApp() {
   const name = localStorage.getItem('mock_teacher');
   const me = TEACHERS.find(t => t.name === name);
   if (!me) { logout(); return; }
+  window.CURRENT_ME = me;
 
   document.getElementById('gate-root').style.display = 'none';
   document.getElementById('app-root').style.display = '';
@@ -1112,17 +1214,21 @@ function dDay(dateStr) {
   return `${-diff}일전`;
 }
 
+let SCHEDULE_EXPANDED = false;
 function renderSchedule() {
   const list = document.getElementById('schedule-list');
   const today = new Date();
   today.setHours(0,0,0,0);
-  const upcoming = SCHEDULE.filter(s => new Date(s.date + 'T00:00:00') >= today).slice(0, 6);
+  const upcoming = SCHEDULE.filter(s => new Date(s.date + 'T00:00:00') >= today)
+    .sort((a, b) => a.date.localeCompare(b.date));
   document.getElementById('schedule-count').textContent = `${upcoming.length}건`;
   if (upcoming.length === 0) {
-    list.innerHTML = '<div class="prayer-empty">등록된 일정이 없습니다</div>';
+    list.innerHTML = '<div class="prayer-empty">예정된 일정이 없습니다</div>';
     return;
   }
-  list.innerHTML = upcoming.map(s => {
+  const visible = SCHEDULE_EXPANDED ? upcoming : upcoming.slice(0, 3);
+  const remaining = upcoming.length - visible.length;
+  const itemsHtml = visible.map(s => {
     const d = new Date(s.date + 'T00:00:00');
     const dd = dDay(s.date);
     const soon = (dd === '오늘' || dd === '내일' || /^D-[1-7]$/.test(dd));
@@ -1139,9 +1245,16 @@ function renderSchedule() {
       </div>
     `;
   }).join('');
+  const moreBtn = remaining > 0
+    ? `<button class="more-btn" onclick="SCHEDULE_EXPANDED=true;renderSchedule();">+ 더보기 (${remaining}건)</button>`
+    : (SCHEDULE_EXPANDED && upcoming.length > 3
+        ? `<button class="more-btn" onclick="SCHEDULE_EXPANDED=false;renderSchedule();">접기</button>`
+        : '');
+  list.innerHTML = itemsHtml + moreBtn;
 }
 
 /* ===== 생일 ===== */
+let BIRTHDAY_EXPANDED = false;
 function renderBirthdays(me) {
   const list = document.getElementById('birthday-list');
   const today = new Date();
@@ -1154,7 +1267,7 @@ function renderBirthdays(me) {
     let bdThis = new Date(yyyy, m-1, d);
     if (bdThis < today) bdThis = new Date(yyyy+1, m-1, d);
     const diff = Math.round((bdThis - today) / 86400000);
-    if (diff > 60) return; // 60일 이내만
+    if (diff > 60) return;
     upcoming.push({name, mmdd, diff, cell: STUDENT_TO_CELL[name]});
   });
   upcoming.sort((a, b) => a.diff - b.diff);
@@ -1162,17 +1275,20 @@ function renderBirthdays(me) {
   // 자기 반 우선, 그 다음 다른 반
   const myCell = me.cell;
   const myClass = upcoming.filter(b => b.cell === myCell);
-  const others = upcoming.filter(b => b.cell !== myCell).slice(0, Math.max(0, 6 - myClass.length));
-  const merged = [...myClass.slice(0, 5), ...others].slice(0, 6);
+  const others = upcoming.filter(b => b.cell !== myCell);
+  const sorted = [...myClass, ...others];
 
   document.getElementById('bd-count').textContent = `${upcoming.length}명 · 60일내`;
 
-  if (merged.length === 0) {
+  if (sorted.length === 0) {
     list.innerHTML = '<div class="bd-empty">다가오는 생일이 없습니다</div>';
     return;
   }
 
-  list.innerHTML = merged.map(b => {
+  const visible = BIRTHDAY_EXPANDED ? sorted : sorted.slice(0, 3);
+  const remaining = sorted.length - visible.length;
+
+  const itemsHtml = visible.map(b => {
     const isToday = b.diff === 0;
     const ddText = isToday ? '오늘! 🎉' : `D-${b.diff}`;
     const myMark = (b.cell === myCell) ? '⭐ ' : '';
@@ -1184,6 +1300,12 @@ function renderBirthdays(me) {
       </div>
     `;
   }).join('');
+  const moreBtn = remaining > 0
+    ? `<button class="more-btn" onclick="BIRTHDAY_EXPANDED=true;renderBirthdays(window.CURRENT_ME);">+ 더보기 (${remaining}명)</button>`
+    : (BIRTHDAY_EXPANDED && sorted.length > 3
+        ? `<button class="more-btn" onclick="BIRTHDAY_EXPANDED=false;renderBirthdays(window.CURRENT_ME);">접기</button>`
+        : '');
+  list.innerHTML = itemsHtml + moreBtn;
 }
 
 /* ===== 기도제목 ===== */
@@ -1228,7 +1350,9 @@ function renderPrayers() {
   }).join('');
 }
 
-/* ===== 내 반 ===== */
+/* ===== 내 반 + 대가족 셀 토글 ===== */
+let SELECTED_CELL = null;
+
 function renderMyClass(me) {
   const titleEl = document.getElementById('my-class-title');
   const bodyEl = document.getElementById('my-class-body');
@@ -1244,14 +1368,36 @@ function renderMyClass(me) {
     return;
   }
 
-  const cellNum = me.cell.replace('셀','');
-  const teachers = CELL_TEACHERS[me.cell];
-  const students = (CELL_STUDENTS[me.cell] || []).slice().sort((a,b) => {
+  // 대가족 셀 토글
+  if (!SELECTED_CELL) SELECTED_CELL = me.cell;
+  const myFamN = CELL_FAMILY[me.cell];
+  const famCells = familyCells(myFamN);
+  // 내 셀이 먼저, 그 다음 같은 대가족 다른 셀들, 마지막 Special
+  const sortedFamCells = [me.cell, ...famCells.filter(c => c !== me.cell)];
+  const tabsHtml = sortedFamCells.map(c => {
+    const isActive = c === SELECTED_CELL;
+    const isMy = c === me.cell;
+    const isSp = c.startsWith('Sp');
+    const label = isSp
+      ? `Special ${c.slice(2)}`
+      : `소그룹반 ${c.slice(1)}${isMy ? ' (내반)' : ''}`;
+    const cls = ['family-tab'];
+    if (isActive) cls.push('active');
+    if (isMy) cls.push('my-cell');
+    if (isSp) cls.push('special');
+    return `<button class="${cls.join(' ')}" onclick="SELECTED_CELL='${c}';renderMyClass(window.CURRENT_ME);">${label}</button>`;
+  }).join('');
+
+  const cell = SELECTED_CELL;
+  const isSp = cell.startsWith('Sp');
+  const teachers = CELL_TEACHERS[cell] || {homeroom:'(목회자·특별케어)', sub:''};
+  const cellTitle = isSp ? `Special ${cell.slice(2)}` : `소그룹반 ${cell.slice(1)}`;
+  const students = (CELL_STUDENTS[cell] || []).slice().sort((a,b) => {
     if (a.grade !== b.grade) return b.grade - a.grade;
     return a.name.localeCompare(b.name, 'ko');
   });
 
-  titleEl.textContent = `내 반 — 소그룹반 ${cellNum}`;
+  titleEl.innerHTML = `내 반 + 대가족 ${myFamN}`;
 
   // 출석 데이터: localStorage(attendance.html에서 입력) 또는 Mock fallback
   const attendanceFromStorage = loadAttendanceFromStorage();
@@ -1292,12 +1438,14 @@ function renderMyClass(me) {
   });
   const rate = total4w > 0 ? Math.round(sum4w / total4w * 100) : null;
 
-  let summaryHtml = `
+  const summaryHtml = `
+    <div class="family-tabs">${tabsHtml}</div>
     <div class="my-class-summary">
+      <span class="stat"><strong style="color:#f1f5f9">${escapeHtml(cellTitle)}</strong></span>
       <span class="stat"><span class="stat-num">${students.length}</span>명</span>
-      <span class="stat">최근 4주 출석률: <span class="stat-num">${rate !== null ? rate + '%' : '—'}</span></span>
-      <span class="stat">담임 <span style="color:#fcd34d;font-weight:700">${escapeHtml(teachers.homeroom)}</span></span>
-      ${teachers.sub ? `<span class="stat">부담임 <span style="color:#7dd3fc;font-weight:700">${escapeHtml(teachers.sub)}</span></span>` : ''}
+      <span class="stat">최근 4주: <span class="stat-num">${rate !== null ? rate + '%' : '—'}</span></span>
+      ${!isSp ? `<span class="stat">담임 <span style="color:#fcd34d;font-weight:700">${escapeHtml(teachers.homeroom||'')}</span></span>` : ''}
+      ${!isSp && teachers.sub ? `<span class="stat">부담임 <span style="color:#7dd3fc;font-weight:700">${escapeHtml(teachers.sub)}</span></span>` : ''}
       ${alerts.length > 0 ? `<span class="my-class-alert">⚠️ ${alerts.length}건 주의</span>` : ''}
     </div>
   `;

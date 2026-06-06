@@ -230,6 +230,38 @@
     color: #c4b5fd;
   }
 
+  /* 셀 토글 */
+  .cell-tabs {
+    margin-top: 16px;
+    display: flex; gap: 6px; flex-wrap: wrap;
+    background: var(--card); border: 1px solid var(--border);
+    padding: 8px; border-radius: 10px;
+  }
+  .cell-tab {
+    flex-shrink: 0;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    color: #cbd5e1;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cell-tab.my-cell { border-left: 3px solid #fbbf24; }
+  .cell-tab.special { background: rgba(251,146,60,.06); color: #fdba74; border-color: rgba(251,146,60,.25); }
+  .cell-tab.active {
+    background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 3px 8px rgba(124,58,237,.35);
+  }
+  .cell-tab.special.active {
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    color: #1c1410;
+  }
+
   /* Status buttons */
   .status-row {
     display: grid;
@@ -380,6 +412,8 @@
   </header>
 
   <div class="container">
+    <div class="cell-tabs" id="cell-tabs"></div>
+
     <div class="week-bar">
       <button onclick="prevWeek()">◀</button>
       <div class="week-info">
@@ -506,8 +540,40 @@ function historicalRec(name, week) {
  * 상태
  * ========================================================= */
 let MY = null;          // 본인 선생님 객체
+let SELECTED_CELL = null; // 현재 선택된 셀 (본인 셀 + 같은 대가족 셀 입력 가능)
 let CURRENT_WEEK = null; // 'YYYY-MM-DD' 그 주의 일요일
 let ATTENDANCE = {};    // { 'YYYY-MM-DD': { '학생명': {status, note} } }
+
+// 셀 → 대가족
+const CELL_FAMILY_MAP = {
+  '셀1':1,'셀2':1,'Sp1':1,
+  '셀3':2,'셀4':2,'Sp2':2,
+  '셀5':3,'셀6':3,'Sp3':3,
+  '셀7':4,'셀8':4,'Sp4':4,
+  '셀9':5,'셀10':5,'Sp5':5,
+  '셀11':6,'셀12':6,'Sp6':6,
+};
+
+// 추가 셀 학생 (Special 포함)
+const SP_STUDENTS = {
+  'Sp1':['고예나','김민채','송성모','최승아'],
+  'Sp2':['최지윤','최서윤','백결','조혁준'],
+  'Sp3':['김재원','김유진','김강희','박서연'],
+  'Sp4':['박시우','하어림','박진서','임소명'],
+  'Sp5':['오희수','박민주','장세민','정원영'],
+  'Sp6':['이서현','이소민','김도헌','이하준'],
+};
+Object.assign(CELL_STUDENTS, SP_STUDENTS);
+
+const SP_STUDENT_INFO = {
+  '고예나':{g:1,s:'여'},'김민채':{g:3,s:'여'},'송성모':{g:3,s:'남'},'최승아':{g:3,s:'여'},
+  '최지윤':{g:3,s:'여'},'최서윤':{g:3,s:'여'},'백결':{g:3,s:'남'},'조혁준':{g:3,s:'남'},
+  '김재원':{g:1,s:'남'},'김유진':{g:2,s:'여'},'김강희':{g:1,s:'여'},'박서연':{g:1,s:'여'},
+  '박시우':{g:1,s:'남'},'하어림':{g:1,s:'남'},'박진서':{g:3,s:'여'},'임소명':{g:3,s:'여'},
+  '오희수':{g:3,s:'여'},'박민주':{g:1,s:'여'},'장세민':{g:3,s:'남'},'정원영':{g:3,s:'남'},
+  '이서현':{g:1,s:'여'},'이소민':{g:3,s:'여'},'김도헌':{g:3,s:'남'},'이하준':{g:1,s:'남'},
+};
+Object.assign(STUDENT_INFO, SP_STUDENT_INFO);
 
 /* =========================================================
  * 로그인
@@ -649,7 +715,8 @@ function cumulativeRate(name) {
 
 function renderStudents() {
   if (!MY || !MY.cell) return;
-  const students = CELL_STUDENTS[MY.cell] || [];
+  if (!SELECTED_CELL) SELECTED_CELL = MY.cell;
+  const students = CELL_STUDENTS[SELECTED_CELL] || [];
   const sorted = students.slice().sort((a, b) => {
     const ga = (STUDENT_INFO[a]||{}).g||9, gb = (STUDENT_INFO[b]||{}).g||9;
     if (ga !== gb) return gb - ga;
@@ -706,8 +773,30 @@ function renderStudents() {
   renderSummary();
 }
 
+function renderCellTabs() {
+  const tabs = document.getElementById('cell-tabs');
+  if (!MY || !MY.cell) { tabs.style.display = 'none'; return; }
+  const myFamN = CELL_FAMILY_MAP[MY.cell];
+  const famCells = Object.keys(CELL_FAMILY_MAP).filter(c => CELL_FAMILY_MAP[c] === myFamN);
+  // 내 셀이 먼저, 그 다음 같은 대가족 다른 셀들
+  const sortedCells = [MY.cell, ...famCells.filter(c => c !== MY.cell)];
+  tabs.innerHTML = sortedCells.map(c => {
+    const isActive = c === SELECTED_CELL;
+    const isMy = c === MY.cell;
+    const isSp = c.startsWith('Sp');
+    const label = isSp
+      ? `Special ${c.slice(2)}`
+      : `소그룹반 ${c.slice(1)}${isMy ? ' (내반)' : ''}`;
+    const cls = ['cell-tab'];
+    if (isActive) cls.push('active');
+    if (isMy) cls.push('my-cell');
+    if (isSp) cls.push('special');
+    return `<button class="${cls.join(' ')}" onclick="SELECTED_CELL='${c}';renderCellTabs();renderStudents();">${label}</button>`;
+  }).join('');
+}
+
 function renderSummary() {
-  const students = CELL_STUDENTS[MY.cell] || [];
+  const students = CELL_STUDENTS[SELECTED_CELL] || [];
   const week = ATTENDANCE[CURRENT_WEEK] || {};
   let full=0, partial=0, absent=0, pending=0;
   students.forEach(s => {
@@ -774,7 +863,9 @@ function showApp() {
     return;
   }
   loadAttendance();
+  SELECTED_CELL = MY.cell;
   CURRENT_WEEK = thisSunday();
+  renderCellTabs();
   renderWeek();
 }
 
