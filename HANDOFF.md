@@ -48,11 +48,10 @@
 
 | URL | 인증 | 용도 |
 |---|---|---|
-| `dashboard.html` | PIN + 본인 선택 | 🏠 **교사 메인 화면** (진입점) |
+| `dashboard.html` | PIN + 본인 선택 | 🏠 **교사 메인 화면** (진입점) · **내 반 뷰에서 학생 사진 인라인 업로드** |
 | `attendance.html` | PIN + 본인 선택 | 📋 출석 입력 (본인 + 같은 대가족 셀) |
 | `attendance-overview.html` | PIN | 📊 **전체 출석 현황** (모든 선생님 접근) |
 | `prayer.html` | PIN + 본인 선택 | 🙏 학생상황+기도제목 (3개 탭) |
-| `photos.html` | PIN + 본인 선택 | 📸 **학생 사진 업로드** (선생님=본인 셀, 관리자=전체) |
 | `teachers.html` | URL `?key=` | 📋 학생 상세·연락처·교적부·옷사이즈 |
 | `index.html` | URL `?key=` | 🕸 관계도 (1·2학기 토글) |
 | `assignments.html` | 공개 | 🌱 공개용 편성표 (학생·학부모) |
@@ -87,10 +86,11 @@
 
 ### 3. Supabase Storage (학생 사진, 전체 공유)
 - 버킷 `student-photos`, 파일 키 = **`{학생이름 UTF-8 hex}.jpg`** (Storage 키가 한글 불가 → hex 인코딩)
-- 선생님이 `photos.html`에서 업로드 → 브라우저에서 정사각 크롭+압축(가로 400px, JPEG) → 즉시 저장
-- SDK 없이 `fetch`로 REST API 호출 (각 페이지 `Photos` 헬퍼)
+- **업로드 위치 = `dashboard.html` "내 반 + 대가족" 뷰** (별도 페이지 없음). 학생 아바타의 카메라 배지(📷) 클릭 → 파일 선택 → 브라우저에서 정사각 크롭+압축(가로 400px, JPEG) → 즉시 저장 + 토스트
+- **권한** (UI 레벨·신뢰 기반): 일반 선생님 = 본인 대가족(뷰에 보이는 셀들) / 관리자 = 대가족 1~6 선택기로 **전체 학생**. 셀 없는 관리자(목사·부장·교육국장)도 대가족 1~6 탐색 가능
+- SDK 없이 `fetch`로 REST API 호출 (각 페이지 상단 `Photos` 헬퍼). dashboard 헬퍼만 compress/upload/avatarUploaderHtml 포함, 나머지는 표시 전용
 - 표시 페이지(dashboard/attendance/prayer/teachers)는 로드 시 Storage `list` 1회 → 사진 있으면 이름 옆 아바타, 없으면 성별 디폴트 SVG
-- 권한은 **UI 레벨**(신뢰 기반): 선생님=본인 셀, 관리자=전체. Storage 정책은 anon SELECT/INSERT/UPDATE 허용, DELETE 미허용
+- Storage 정책: anon SELECT/INSERT/UPDATE 허용, **DELETE 미허용**
 - 사진 교체: 같은 학생에 다시 업로드(upsert). 삭제: 임시 delete 정책 추가 → REST DELETE → 정책 제거 (또는 Supabase 대시보드)
 
 ### 4. 코드에 하드코딩 (정적 데이터)
@@ -194,7 +194,6 @@ cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
 - `attendance.html` — CELL_STUDENTS, STUDENT_INFO
 - `attendance-overview.html` — CELL_STUDENTS
 - `prayer.html` — CELL_STUDENTS, **STUDENT_GENDER** (디폴트 아바타용 성별 맵)
-- `photos.html` — TEACHERS, CELL_TEACHERS, CELL_STUDENTS (업로드 그리드)
 - `index.html` — students 배열
 - `make_assignment_pdf.py` — CELL_STUDENTS (PDF 재생성 필요)
 
@@ -210,7 +209,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
-0. **학생 사진 기능** — Supabase Storage 연동. `photos.html` 신규(권한별 업로드 그리드) + dashboard/attendance/prayer/teachers 이름 옆 아바타. 사진 없으면 성별 디폴트. 키=이름 UTF-8 hex
+0. **학생 사진 기능** — Supabase Storage 연동. **dashboard "내 반+대가족" 뷰에서 아바타 클릭 → 인라인 업로드**(관리자는 대가족 1~6 선택기로 전체). dashboard/attendance/prayer/teachers 이름 옆 아바타, 사진 없으면 성별 디폴트. 키=이름 UTF-8 hex. (초기엔 전용 photos.html이었으나 인라인 방식으로 변경·제거)
 1. **학생별 모아보기 권한 제한** — 관리자만 전체, 일반은 본인 대가족만
 2. **일정·생일 더보기 + 대가족 셀 토글** — dashboard 상위 3개 + 펼치기 / 같은 대가족 셀 토글로 출석 입력
 3. **prayer.html 대폭 개편** — 탭 4개→3개 (학생별 모아보기 추가, 다함께 공유·시계열 삭제), 라벨 "학생상황+기도제목"
@@ -268,7 +267,6 @@ publish/
 ├── attendance.html
 ├── attendance-overview.html
 ├── prayer.html
-├── photos.html (학생 사진 업로드 — Supabase Storage)
 ├── teachers.html
 ├── index.html (관계도)
 ├── assignments.html (공개용)

@@ -438,6 +438,31 @@
     background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
     color: #1c1410;
   }
+  /* 관리자 대가족 선택기 */
+  .family-tabs.admin-fam { margin-bottom: 8px; }
+  .family-tab.fam-pick { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.3); color: #fcd34d; }
+  .family-tab.fam-pick.active { background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); color: #1c1410; border-color: #f59e0b; box-shadow: 0 4px 10px rgba(245,158,11,.3); }
+
+  /* ===== 인라인 사진 업로더 (내 반 아바타) ===== */
+  .photo-edit { position: relative; display: inline-block; cursor: pointer; vertical-align: middle; line-height: 0; }
+  .photo-edit input[type=file] { display: none; }
+  .photo-edit .stu-photo { display: block; transition: filter .15s; }
+  .photo-edit:hover .stu-photo { filter: brightness(1.12); }
+  .photo-edit .photo-cam {
+    position: absolute; right: -4px; bottom: -4px; width: 17px; height: 17px;
+    border-radius: 50%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+    border: 1.5px solid var(--card); display: flex; align-items: center; justify-content: center;
+    font-size: 9px; line-height: 1;
+  }
+  .photo-edit.uploading { opacity: .45; pointer-events: none; }
+  #photo-toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+    background: #1e293b; color: #e5e7eb; border: 1px solid var(--accent); border-radius: 10px;
+    padding: 11px 18px; font-size: 13.5px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 9999;
+  }
+  #photo-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #photo-toast.err { border-color: var(--danger); color: #fca5a5; }
 
   /* ===== Prayers ===== */
   .prayer-list {
@@ -794,8 +819,9 @@
 
 <script>
 /* ============================================================
- * 0. 학생 사진 헬퍼 (Supabase Storage, SDK 없이 REST · 표시 전용)
- *    업로드는 photos.html 에서. 여기선 이름 옆 아바타 표시만.
+ * 0. 학생 사진 헬퍼 (Supabase Storage, SDK 없이 REST)
+ *    이 페이지(내 반+대가족 뷰)에서 업로드 + 표시 모두 담당.
+ *    다른 표시 페이지(attendance/prayer/teachers)는 표시 전용 헬퍼만 포함.
  * ============================================================ */
 const Photos = (function () {
   const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
@@ -833,9 +859,80 @@ const Photos = (function () {
     } catch (e) { console.warn('photo load failed', e); }
     return _vers;
   }
-  return { slug, publicUrl, defaultAvatar, avatarImg, load, refresh };
+  // 파일 → 중앙 정사각 크롭 + 리사이즈된 JPEG blob
+  function compress(file, maxW) {
+    maxW = maxW || 400;
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onerror = () => reject(new Error('파일을 읽지 못했습니다'));
+      fr.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('이미지를 열지 못했습니다'));
+        img.onload = () => {
+          const side = Math.min(img.width, img.height);
+          const sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+          const out = Math.min(maxW, side);
+          const cv = document.createElement('canvas'); cv.width = out; cv.height = out;
+          cv.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, out, out);
+          cv.toBlob(b => b ? resolve(b) : reject(new Error('압축 실패')), 'image/jpeg', 0.82);
+        };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+  async function upload(name, blob) {
+    const res = await fetch(REST + '/object/' + BUCKET + '/' + slug(name) + '.jpg', {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'image/jpeg', 'x-upsert': 'true', 'cache-control': '60' }, H),
+      body: blob
+    });
+    if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error('업로드 실패 (' + res.status + ') ' + t); }
+    _vers.set(slug(name), String(Date.now()));
+    return true;
+  }
+  // 업로드 가능한 아바타 (카메라 배지 + 숨은 파일 input). onchange=uploadStudentPhoto(this)
+  function avatarUploaderHtml(name, gender, size) {
+    size = size || 36;
+    const nm = String(name).replace(/"/g, '&quot;');
+    return '<label class="photo-edit" title="사진 등록/교체">' + avatarImg(name, gender, size) +
+      '<span class="photo-cam">📷</span>' +
+      '<input type="file" accept="image/*" data-name="' + nm + '" onchange="uploadStudentPhoto(this)"></label>';
+  }
+  return { slug, publicUrl, defaultAvatar, avatarImg, avatarUploaderHtml, load, refresh, compress, upload };
 })();
 Photos.load();
+
+// 인라인 업로드 핸들러 (대시보드 내 반 뷰에서 아바타 클릭 → 사진 등록/교체)
+async function uploadStudentPhoto(input) {
+  const file = input.files && input.files[0];
+  const name = input.dataset.name;
+  input.value = '';
+  if (!file) return;
+  const wrap = input.closest('.photo-edit');
+  const img = wrap ? wrap.querySelector('img.stu-photo') : null;
+  if (wrap) wrap.classList.add('uploading');
+  try {
+    const blob = await Photos.compress(file, 400);
+    await Photos.upload(name, blob);
+    if (img) img.src = Photos.publicUrl(name, String(Date.now()));
+    Photos.refresh();
+    photoToast('📸 ' + name + ' 사진 등록 완료');
+  } catch (e) {
+    console.error(e);
+    photoToast('❌ ' + name + ' 업로드 실패: ' + (e.message || e), true);
+  } finally {
+    if (wrap) wrap.classList.remove('uploading');
+  }
+}
+function photoToast(msg, isErr) {
+  let t = document.getElementById('photo-toast');
+  if (!t) { t = document.createElement('div'); t.id = 'photo-toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.className = isErr ? 'err show' : 'show';
+  clearTimeout(window.__photoToastT);
+  window.__photoToastT = setTimeout(() => { t.className = t.className.replace('show', '').trim(); }, 2600);
+}
 
 /* ============================================================
  * 1. 선생님 데이터 (실제로는 시트에서 가져옴)
@@ -1400,7 +1497,9 @@ let SELECTED_CELL = null;
 function renderMyClass(me) {
   const titleEl = document.getElementById('my-class-title');
   const bodyEl = document.getElementById('my-class-body');
-  if (!me.cell) {
+  const isAdmin = !!me.admin;
+  // 셀 없는 '일반' 선생님만 placeholder. 셀 없는 관리자는 전체 학생 탐색 허용.
+  if (!me.cell && !isAdmin) {
     titleEl.textContent = '내 반';
     bodyEl.innerHTML = `
       <div class="no-class">
@@ -1412,12 +1511,23 @@ function renderMyClass(me) {
     return;
   }
 
-  // 대가족 셀 토글
-  if (!SELECTED_CELL) SELECTED_CELL = me.cell;
-  const myFamN = CELL_FAMILY[me.cell];
-  const famCells = familyCells(myFamN);
-  // 내 셀이 먼저, 그 다음 같은 대가족 다른 셀들, 마지막 Special
-  const sortedFamCells = [me.cell, ...famCells.filter(c => c !== me.cell)];
+  // 초기 선택 셀 (관리자가 담임 셀 없으면 셀1부터)
+  if (!SELECTED_CELL) SELECTED_CELL = me.cell || '셀1';
+  const navFamN = CELL_FAMILY[SELECTED_CELL];
+
+  // (관리자) 대가족 1~6 선택기 — 전체 학생 접근
+  let famSelectorHtml = '';
+  if (isAdmin) {
+    famSelectorHtml = '<div class="family-tabs admin-fam">' + [1,2,3,4,5,6].map(f =>
+      `<button class="family-tab fam-pick${f === navFamN ? ' active' : ''}" onclick="SELECTED_CELL=familyCells(${f})[0];renderMyClass(window.CURRENT_ME);">대가족 ${f}</button>`
+    ).join('') + '</div>';
+  }
+
+  // 셀 탭 (선택된 대가족의 셀들) — 내 셀이 있으면 먼저
+  const famCells = familyCells(navFamN);
+  const sortedFamCells = (me.cell && CELL_FAMILY[me.cell] === navFamN)
+    ? [me.cell, ...famCells.filter(c => c !== me.cell)]
+    : famCells;
   const tabsHtml = sortedFamCells.map(c => {
     const isActive = c === SELECTED_CELL;
     const isMy = c === me.cell;
@@ -1441,7 +1551,7 @@ function renderMyClass(me) {
     return a.name.localeCompare(b.name, 'ko');
   });
 
-  titleEl.innerHTML = `내 반 + 대가족 ${myFamN}`;
+  titleEl.innerHTML = isAdmin ? `학생 사진·출석 · 대가족 ${navFamN}` : `내 반 + 대가족 ${navFamN}`;
 
   // 출석 데이터: localStorage(attendance.html에서 입력) 또는 Mock fallback
   const attendanceFromStorage = loadAttendanceFromStorage();
@@ -1483,6 +1593,7 @@ function renderMyClass(me) {
   const rate = total4w > 0 ? Math.round(sum4w / total4w * 100) : null;
 
   const summaryHtml = `
+    ${famSelectorHtml}
     <div class="family-tabs">${tabsHtml}</div>
     <div class="my-class-summary">
       <span class="stat"><strong style="color:#f1f5f9">${escapeHtml(cellTitle)}</strong></span>
@@ -1516,7 +1627,7 @@ function renderMyClass(me) {
     return `
       <tr>
         <td>
-          <span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle">${Photos.avatarImg(s.name, s.gender, 32)}<span class="col-name">${escapeHtml(s.name)}</span></span>
+          <span style="display:inline-flex;align-items:center;gap:9px;vertical-align:middle">${Photos.avatarUploaderHtml(s.name, s.gender, 36)}<span class="col-name">${escapeHtml(s.name)}</span></span>
           <span class="gender-pill ${gCls}">${s.gender}</span>
           <span class="col-meta"> ${s.grade}학년</span>
         </td>
@@ -1552,7 +1663,6 @@ function renderQuickMenu(me) {
     {label:'📋 출석 입력', href:'attendance.html'},
     {label:'📊 전체 출석 현황', href:'attendance-overview.html'},
     {label:'🙏 학생상황+기도제목', href:'prayer.html'},
-    {label:'📸 학생 사진 관리', href:'photos.html'},
     {label:'📋 학생 상세 (셀편성)', href:'teachers.html?key=nsdhs2026h2'},
     {label:'🕸 관계도 (1·2학기)', href:'index.html?key=nsdhs2026h2'},
     {label:'🌱 공개용 편성표', href:'assignments.html'},
