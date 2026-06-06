@@ -576,15 +576,17 @@
   <div class="gate">
     <div class="gate-card">
       <div class="lock">🌱</div>
-      <h1>내수동 고등부 교사 대시보드 <span class="badge-proto">PROTO</span></h1>
-      <p class="gate-sub">새 텀(2학기 6~8월) 시작 — 자기 반 학생을 깊이 케어하기 위한 통합 화면</p>
+      <h1>내수동 고등부 교사 대시보드</h1>
+      <p class="gate-sub">2026년 2학기 (6~8월) · 자기 반 학생을 깊이 케어하기 위한 통합 화면</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px;text-align:center;letter-spacing:2px;">
       <select id="teacher-select"></select>
-      <button onclick="mockLogin()">선생님으로 로그인</button>
+      <button onclick="mockLogin()">접속</button>
+      <div id="gate-err" style="color:#fca5a5;font-size:12px;margin-top:10px;min-height:16px;text-align:center;"></div>
       <div class="gate-note">
-        <strong>📌 프로토타입 안내</strong><br>
-        이 화면은 디자인 검토용 모형입니다.<br>
-        실제 운영본에서는 <strong>본인 지메일 Google 로그인</strong>으로 바뀝니다.<br>
-        프로토타입의 출석·기도제목 데이터는 모두 가짜(mock)입니다.
+        <strong>📌 안내</strong><br>
+        • 접근 코드는 관리자가 카톡으로 안내합니다 (학기마다 변경됨)<br>
+        • 본인 이름을 선택하면 본인 반 학생 정보가 표시됩니다<br>
+        • 출석·기도제목 데이터는 현재 시범 운영 중 (실데이터 연결 진행 중)
       </div>
     </div>
   </div>
@@ -865,15 +867,33 @@ function fillSelect() {
   if (saved) sel.value = saved;
 }
 
+const PRIVATE_KEY = 'nsdhs2026h2';
+
+function showErr(msg) {
+  const el = document.getElementById('gate-err');
+  if (el) el.textContent = msg || '';
+}
+
 function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
   const name = document.getElementById('teacher-select').value;
-  if (!name) return;
+  if (pin !== PRIVATE_KEY) {
+    showErr('❌ 접근 코드가 일치하지 않습니다');
+    return;
+  }
+  if (!name) {
+    showErr('❌ 본인 이름을 선택해 주세요');
+    return;
+  }
+  showErr('');
   localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
   showApp();
 }
 
 function logout() {
   localStorage.removeItem('mock_teacher');
+  // PIN은 유지 (한 번 입력하면 학기 동안 유효 — PIN 변경 시 자동 logout)
   document.getElementById('app-root').style.display = 'none';
   document.getElementById('gate-root').style.display = '';
 }
@@ -1033,7 +1053,7 @@ function renderMyClass(me) {
       <div class="no-class">
         <div class="icon">👑</div>
         ${escapeHtml(me.position || me.role)} 역할은 담임 셀이 따로 없습니다.<br>
-        <a href="teachers.html?key=nsdhs2026t">전체 셀편성 보기 →</a>
+        <a href="teachers.html?key=nsdhs2026h2">전체 셀편성 보기 →</a>
       </div>
     `;
     return;
@@ -1116,9 +1136,9 @@ function renderMyClass(me) {
 function renderQuickMenu(me) {
   const links = [
     {label:'🌱 공개용 편성표', href:'assignments.html'},
-    {label:'📋 학생 상세 (셀편성)', href:'teachers.html?key=nsdhs2026t'},
-    {label:'🕸 관계도 (1·2학기)', href:'index.html?key=nsdhs2026t'},
-    {label:'📞 연락처·가족', href:'teachers.html?key=nsdhs2026t&tab=contact', note:'tab placeholder'},
+    {label:'📋 학생 상세 (셀편성)', href:'teachers.html?key=nsdhs2026h2'},
+    {label:'🕸 관계도 (1·2학기)', href:'index.html?key=nsdhs2026h2'},
+    {label:'📞 연락처·가족', href:'teachers.html?key=nsdhs2026h2&tab=contact', note:'tab placeholder'},
   ];
   if (me.admin) {
     links.push({label:'👑 관리자 페이지', href:'#', admin:true, click:"alert('관리자 페이지 — Phase 5 에서 구현')"});
@@ -1138,11 +1158,20 @@ function escapeHtml(s) {
 
 /* ============================================================
  * 7. 부팅
+ *    - PIN과 선생님 이름이 모두 localStorage에 있고 PIN이 현재 KEY와 일치하면 자동 진입
+ *    - PIN이 바뀌면 자동 logout 효과 (다시 PIN 입력 필요)
  * ============================================================ */
 fillSelect();
-if (localStorage.getItem('mock_teacher')) {
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName) {
   showApp();
 }
+
+// Enter 키로 접속
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') mockLogin();
+});
 </script>
 
 </body>

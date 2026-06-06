@@ -244,7 +244,11 @@
     header .subtitle { display: none; }
     .search-row { padding: 8px 12px; }
     .chip-row { padding: 6px 10px; }
-    .grade-row { padding: 4px 12px 8px; }
+    .grade-row { padding: 6px 8px 8px; gap: 4px; }
+    .grade-pill { padding: 4px 8px; font-size: 11px; flex: 1 1 calc(25% - 3px); }
+    .toggle-line { padding: 4px 8px; font-size: 11px; margin-left: 0; width: 100%; }
+    .chip-label { font-size: 10px; padding: 0 4px !important; display: none; }
+    #att-row { padding: 6px 8px 8px; }
     main { display: block; height: auto; }
     aside.left, aside.right { display: none; }
     .canvas-wrap { padding: 12px; min-height: calc(100vh - 240px); padding-bottom: 80px; }
@@ -314,7 +318,7 @@
 </div>
 
 <script>
-const PRIVATE_KEY = 'nsdhs2026t';
+const PRIVATE_KEY = 'nsdhs2026h2';
 function showGate(msg) {
   document.getElementById('gate-root').classList.remove('hidden');
   document.getElementById('gate-err').textContent = msg || '';

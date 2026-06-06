@@ -9,13 +9,13 @@
  * 배포: DEPLOY.md 참조
  *
  * 인증 (Phase 1):
- *   - URL 키 ?key=nsdhs2026t (기존 시스템과 호환)
+ *   - URL 키 ?key=nsdhs2026h2 (기존 시스템과 호환)
  *   - 관리자 액션은 ?adminKey= 추가
  *   - Phase 6+ 에서 Google id_token 검증으로 업그레이드 예정
  */
 
 const SHEET_ID = '1N_ORB4RTRSmoxY8ueJUozLEu2DUE5v3g_HeFJZOtmKg';
-const PUBLIC_KEY = 'nsdhs2026t';
+const PUBLIC_KEY = 'nsdhs2026h2';
 const ADMIN_KEY  = 'admin2026t';
 
 const SHEETS = {
@@ -63,7 +63,11 @@ function adminEmails() {
 
 function activeTeacherEmails() {
   return tableOf(SHEETS.TEACHERS)
-    .filter(r => String(r['활성']).toUpperCase() === 'TRUE' && r['이메일'])
+    .filter(r =>
+      String(r['활성']).toUpperCase() === 'TRUE' &&
+      r['이메일'] &&
+      String(r['이메일수신']).toUpperCase() !== 'FALSE'  // FALSE 만 명시적으로 제외 (빈 칸은 기본 TRUE)
+    )
     .map(r => r['이메일']);
 }
 
