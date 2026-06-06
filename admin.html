@@ -297,24 +297,30 @@ async function renderAll(){
   if(wk) wk.addEventListener('change', e=>{ SEL_WEEK=e.target.value; document.getElementById('att-body').innerHTML=attTable(window.__ATT||{}); });
 }
 
-/* 1) 접속 현황 */
+/* 1) 접속 현황 — 지난 7일 기준 */
 function sectionAccess(logs){
+  const cutoff = Date.now() - 7*24*60*60*1000;
   const by={};
-  logs.forEach(l=>{ if(!by[l.teacher]) by[l.teacher]={last:l.at,count:0}; by[l.teacher].count++; if(l.at>by[l.teacher].last) by[l.teacher].last=l.at; });
-  const accessed=TEACHERS.filter(t=>by[t.name]).sort((a,b)=> (by[b.name].last||'').localeCompare(by[a.name].last||''));
-  const never=TEACHERS.filter(t=>!by[t.name]);
-  let rows=accessed.map(t=>`<tr><td>${esc(t.name)} ${t.admin?'<span class="tag warn">관리자</span>':''}</td><td>${esc(t.cell||t.role)}</td><td>${relTime(by[t.name].last)}</td><td class="r">${by[t.name].count}회</td></tr>`).join('');
+  logs.forEach(l=>{
+    const t=new Date(l.at).getTime();
+    if(!by[l.teacher]) by[l.teacher]={lastAll:l.at, weekCount:0, weekLast:null};
+    if(l.at>by[l.teacher].lastAll) by[l.teacher].lastAll=l.at;
+    if(t>=cutoff){ by[l.teacher].weekCount++; if(!by[l.teacher].weekLast || l.at>by[l.teacher].weekLast) by[l.teacher].weekLast=l.at; }
+  });
+  const inWeek = TEACHERS.filter(t=>by[t.name]&&by[t.name].weekCount>0).sort((a,b)=>(by[b.name].weekLast||'').localeCompare(by[a.name].weekLast||''));
+  const notWeek = TEACHERS.filter(t=>!by[t.name]||by[t.name].weekCount===0);
+  const rows = inWeek.map(t=>`<tr><td>${esc(t.name)} ${t.admin?'<span class="tag warn">관리자</span>':''}</td><td>${esc(t.cell||t.role)}</td><td>${relTime(by[t.name].weekLast)}</td><td class="r">${by[t.name].weekCount}회</td></tr>`).join('');
   return `
   <div class="card">
-    <h2>📊 접속 현황</h2>
-    <div class="sub">선생님별 마지막 접속·접속 횟수 (30분 단위 기록)</div>
+    <h2>📊 접속 현황 <span class="tag muted" style="vertical-align:middle">지난 7일</span></h2>
+    <div class="sub">최근 7일 동안의 선생님 접속 통계 (접속 시 30분 단위로 기록)</div>
     <div class="kpis">
-      <div class="kpi ok"><div class="n">${accessed.length}</div><div class="l">접속한 선생님</div></div>
-      <div class="kpi ${never.length?'danger':'ok'}"><div class="n">${never.length}</div><div class="l">아직 미접속</div></div>
+      <div class="kpi ok"><div class="n">${inWeek.length}</div><div class="l">이번 주 접속</div></div>
+      <div class="kpi ${notWeek.length?'danger':'ok'}"><div class="n">${notWeek.length}</div><div class="l">이번 주 미접속</div></div>
       <div class="kpi info"><div class="n">${TEACHERS.length}</div><div class="l">전체 선생님</div></div>
     </div>
-    ${never.length?`<div style="margin-bottom:12px"><b style="color:#fca5a5">아직 한 번도 접속 안 함:</b><div class="chips" style="margin-top:6px">${never.map(t=>`<span class="chip danger">${esc(t.name)}${t.cell?' ('+esc(t.cell)+')':''}</span>`).join('')}</div></div>`:''}
-    <table><thead><tr><th>선생님</th><th>소속</th><th>마지막 접속</th><th class="r">횟수</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="loading">접속 기록이 아직 없습니다.</td></tr>'}</tbody></table>
+    ${notWeek.length?`<div style="margin-bottom:12px"><b style="color:#fca5a5">지난 7일 미접속:</b><div class="chips" style="margin-top:6px">${notWeek.map(t=>{const seen=by[t.name]?` · 마지막 ${relTime(by[t.name].lastAll)}`:' · 기록 없음';return `<span class="chip danger" title="${t.admin?'관리자':esc(t.cell||t.role)}${seen}">${esc(t.name)}${t.cell?' ('+esc(t.cell)+')':''}</span>`;}).join('')}</div></div>`:'<div class="tag ok" style="margin-bottom:12px">🎉 지난 7일간 전원 접속!</div>'}
+    <table><thead><tr><th>선생님</th><th>소속</th><th>최근 접속</th><th class="r">7일 횟수</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="loading">지난 7일간 접속 기록이 없습니다.</td></tr>'}</tbody></table>
   </div>`;
 }
 
