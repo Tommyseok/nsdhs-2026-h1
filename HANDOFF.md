@@ -238,6 +238,7 @@ python make_assignment_pdf.py
 
 ## 📋 최근 작업 이력 (역순, 최신이 먼저)
 
+0. **전체출석현황 주차별(날짜별) 매트릭스** — attendance-overview에 `[📊 요약]/[📅 주차별]` 보기 토글. 주차별 = 행=학생·열=주일 날짜(●◐○·) 매트릭스, 셀 카드별(반별)로 표시 + 행 끝 누적% + 카드 하단 주차별 출석수/재적. 기본 2학기(6/7~이번 주), `☑ 1학기 포함` 토글(1/11~). 이름 열 sticky + 가로 스크롤(모바일 OK). 데이터 변경 없음(기존 병합 로직 재사용). 설계: `docs/superpowers/specs/2026-07-04-weekly-attendance-matrix-design.md`
 0. **월간 아웃팅 기록 기능 (`outings.html` 신규)** — 셀별 모임을 **날짜 + 사진 여러 장(최대 10) + 간단한 텍스트**로 기록·공유. 새 테이블 `outings`(id·cell·date·text·photos jsonb·teacher·active) + 새 버킷 `outing-photos`(public, 3MB, 가로 1280px 압축). 게시=담임·부담임 본인 셀/관리자 전체, 열람=전체 공개(셀 필터), 라이트박스, 작성자·관리자 소프트 삭제. `OutingDB`/`OutingPhotos` 헬퍼(REST). 공통 네비에 `🎒 아웃팅` 추가(8개 페이지). 설계: `docs/superpowers/specs/2026-06-06-outings-design.md`
 0. **장결자(보고 싶은 친구들) 셀 배정 표기 + 각 반 DB 기록** — Sp1~6(24명)은 그대로 두되, PPT 라인업 기준으로 각 학생을 같은 대가족 내 두 셀에 2명씩 배정(`HOME_CELL` 맵, 단일 기준). ① 교사용 5개 페이지(dashboard·attendance·attendance-overview·teachers·prayer)에 `🏠 소그룹반 N`(그 외) / `💛 보고 싶은 친구`(자기 반 안) 꼬리표. ② **출석**: 담임 자기 셀 로스터에 배정 장결자 합류(`cellRoster`), `STUDENT_TO_CELL[장결자]=배정셀`로 어느 탭에서 입력해도 배정 셀로 저장. ③ **기도**: 담임 기도 드롭다운 + 학생별 모아보기에 배정 장결자 추가(`ALL_STUDENTS_FLAT` 보강) → 기도제목 cell=배정셀. DB 스키마 변경 없음(학생명 기준). 공개 assignments·관계도 제외. 설계: `docs/superpowers/specs/2026-06-06-jangkyeolja-cell-assignment-design.md`
 0. **라인업 PDF·PPT (발표/인쇄용)** — 전체 라인업 1장 PDF(`lineup.pdf`) + 발표용 PPT(`lineup.pptx`, 타이틀+대가족 6장, 이름 22pt 크게·성별 색상). 웹 UI엔 미연결(파일만). 생성기 `make_lineup_pdf.py`/`make_lineup_pptx.py`

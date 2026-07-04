@@ -64,6 +64,47 @@
   .filter-bar .filter-label {
     font-size: 11.5px; color: var(--muted); font-weight: 700;
   }
+  .view-toggle { display: inline-flex; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex: 0 0 auto; }
+  .vm-btn {
+    background: var(--bg); color: var(--muted); border: none;
+    padding: 8px 13px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .vm-btn + .vm-btn { border-left: 1px solid var(--border); }
+  .vm-btn.active { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; }
+
+  /* ===== 주차별 매트릭스 ===== */
+  .matrix-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; margin-bottom: 10px;
+  }
+  .matrix-wrap { overflow-x: auto; scrollbar-width: thin; }
+  table.matrix { border-collapse: collapse; min-width: 100%; font-size: 12.5px; }
+  table.matrix th, table.matrix td {
+    padding: 5px 7px; text-align: center; white-space: nowrap;
+    border-bottom: 1px dotted rgba(255,255,255,.06);
+  }
+  table.matrix thead th {
+    font-size: 10.5px; color: var(--muted); font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  table.matrix .col-student {
+    position: sticky; left: 0; background: var(--card); z-index: 2;
+    text-align: left; min-width: 118px;
+    font-weight: 700; color: #f1f5f9;
+  }
+  table.matrix tbody tr:hover td { background: rgba(167,139,250,.06); }
+  table.matrix tbody tr:hover .col-student { background: #26334a; }
+  table.matrix .st-full { color: #6ee7b7; }
+  table.matrix .st-partial { color: #fcd34d; }
+  table.matrix .st-absent { color: #fca5a5; }
+  table.matrix .st-none { opacity: .3; }
+  table.matrix .col-cum { font-weight: 800; }
+  table.matrix .col-cum.ok { color: #6ee7b7; } table.matrix .col-cum.mid { color: #fcd34d; }
+  table.matrix .col-cum.low { color: #fca5a5; } table.matrix .col-cum.none { color: var(--muted); }
+  table.matrix tfoot td {
+    font-size: 10.5px; color: #c4b5fd; font-weight: 700;
+    border-top: 1px solid rgba(255,255,255,.14); border-bottom: none;
+  }
 
   /* Family blocks */
   .family-section {
@@ -212,21 +253,30 @@
 
   <div class="container">
     <div class="filter-bar">
+      <span class="view-toggle">
+        <button id="vm-summary" class="vm-btn active" onclick="setViewMode('summary')">📊 요약</button>
+        <button id="vm-matrix" class="vm-btn" onclick="setViewMode('matrix')">📅 주차별</button>
+      </span>
       <input id="search" type="search" placeholder="🔍 학생 이름 검색...">
-      <span class="filter-label">정렬:</span>
-      <select id="sort" onchange="renderAll()">
-        <option value="cell">셀 순서</option>
-        <option value="cumAsc">누적 출석률 ↑ (낮은순)</option>
-        <option value="cumDesc">누적 출석률 ↓ (높은순)</option>
-        <option value="recentAsc">최근 4주 ↑ (낮은순)</option>
-      </select>
-      <span class="filter-label">필터:</span>
-      <select id="filterRate" onchange="renderAll()">
-        <option value="all">전체</option>
-        <option value="low">⚠️ 50% 미만</option>
-        <option value="absent4">🚨 최근 4주 결석자</option>
-        <option value="newOnly">🆕 신규 학생</option>
-      </select>
+      <span id="summary-controls">
+        <span class="filter-label">정렬:</span>
+        <select id="sort" onchange="renderAll()">
+          <option value="cell">셀 순서</option>
+          <option value="cumAsc">누적 출석률 ↑ (낮은순)</option>
+          <option value="cumDesc">누적 출석률 ↓ (높은순)</option>
+          <option value="recentAsc">최근 4주 ↑ (낮은순)</option>
+        </select>
+        <span class="filter-label">필터:</span>
+        <select id="filterRate" onchange="renderAll()">
+          <option value="all">전체</option>
+          <option value="low">⚠️ 50% 미만</option>
+          <option value="absent4">🚨 최근 4주 결석자</option>
+          <option value="newOnly">🆕 신규 학생</option>
+        </select>
+      </span>
+      <label id="h1-toggle" style="display:none;font-size:12.5px;color:#cbd5e1;cursor:pointer;white-space:nowrap">
+        <input type="checkbox" id="includeH1" onchange="INCLUDE_H1=this.checked;renderAll()" style="vertical-align:-2px"> 1학기 포함
+      </label>
     </div>
 
     <div class="top-stats" id="top-stats"></div>
@@ -553,6 +603,127 @@ function recent4Rate(name) {
   return Math.round(sum / total * 100);
 }
 
+/* ===== 주차별 매트릭스 ===== */
+let VIEW_MODE = 'summary';   // 'summary' | 'matrix'
+let INCLUDE_H1 = false;      // 매트릭스에 1학기 포함 여부
+const H2_START = '2026-06-07';  // 2학기 첫 주일
+
+function setViewMode(m) {
+  VIEW_MODE = m;
+  document.getElementById('vm-summary').classList.toggle('active', m === 'summary');
+  document.getElementById('vm-matrix').classList.toggle('active', m === 'matrix');
+  document.getElementById('summary-controls').style.display = m === 'summary' ? '' : 'none';
+  document.getElementById('h1-toggle').style.display = m === 'matrix' ? '' : 'none';
+  renderAll();
+}
+
+// 시작 주일 ~ 이번 주 일요일까지 (미래 주 제외)
+function matrixWeeks() {
+  const start = new Date((INCLUDE_H1 ? HISTORICAL_WEEKS[0] : H2_START) + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const lastSunday = new Date(today); lastSunday.setDate(today.getDate() - today.getDay());
+  const weeks = [];
+  for (let d = new Date(start); d <= lastSunday; d.setDate(d.getDate() + 7)) {
+    const pad = n => String(n).padStart(2, '0');
+    weeks.push(d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()));
+  }
+  return weeks;
+}
+
+// 주차별 상태: 사용자 입력(Supabase 병합) 우선 → 1학기 historical → 미입력
+function statusFor(name, week, data) {
+  const rec = (data[week] || {})[name];
+  if (rec && rec.status) {
+    if (rec.status === 'full') return '●';
+    if (rec.status === 'partial') return '◐';
+    if (rec.status === 'absent') return '○';
+  }
+  const idx = HISTORICAL_WEEKS.indexOf(week);
+  if (idx >= 0) {
+    const c = (HISTORICAL_ATTENDANCE[name] || '')[idx];
+    if (c === 'O') return '●';
+    if (c === 'X') return '○';
+  }
+  return '·';
+}
+
+function statusCls(ch) {
+  return ch === '●' ? 'st-full' : ch === '◐' ? 'st-partial' : ch === '○' ? 'st-absent' : 'st-none';
+}
+
+function renderMatrix(search) {
+  const content = document.getElementById('content');
+  const weeks = matrixWeeks();
+  const data = userAtt();
+  const wkLabel = w => (+w.substring(5,7)) + '/' + (+w.substring(8,10));
+
+  let html = '';
+  for (let famN = 1; famN <= 6; famN++) {
+    const famCells = Object.keys(CELL_FAMILY).filter(c => CELL_FAMILY[c] === famN);
+    let famHtml = '';
+    let famCount = 0;
+    famCells.forEach(cellName => {
+      let sts = (CELL_STUDENTS[cellName] || []).slice();
+      if (search) sts = sts.filter(s => s.name.includes(search));
+      if (sts.length === 0) return;
+      famCount += sts.length;
+      sts.sort((a,b) => a.g !== b.g ? b.g - a.g : a.name.localeCompare(b.name,'ko'));
+      const isSp = cellName.startsWith('Sp');
+      const t = CELL_TEACHERS[cellName];
+      const tHtml = isSp ? '<span class="cell-teachers">대가족 선생님이 더 자주 함께</span>'
+                        : `<span class="cell-teachers">담임 ${t?.h||''}${t?.s ? ' · 부담임 ' + t.s : ''}</span>`;
+
+      const rows = sts.map(s => {
+        const cells = weeks.map(w => {
+          const ch = statusFor(s.name, w, data);
+          return `<td class="${statusCls(ch)}">${ch}</td>`;
+        }).join('');
+        const cum = cumulativeRate(s.name, s.isNew);
+        const cumText = cum === null ? '—' : cum + '%';
+        return `<tr>
+          <td class="col-student">${Photos.avatarImg(s.name, s.s, 24)} ${escapeHtml(s.name)}${typeof specialTag === 'function' ? specialTag(s.name, s.cell || cellName) : ''}</td>
+          ${cells}
+          <td class="col-cum ${rateCls(cum)}">${cumText}</td>
+        </tr>`;
+      }).join('');
+
+      const foot = weeks.map(w => {
+        let att = 0, entered = 0;
+        sts.forEach(s => {
+          const ch = statusFor(s.name, w, data);
+          if (ch !== '·') entered++;
+          if (ch === '●' || ch === '◐') att++;
+        });
+        return `<td>${entered === 0 ? '·' : att + '/' + sts.length}</td>`;
+      }).join('');
+
+      famHtml += `<div class="matrix-card">
+        <div class="cell-head">
+          <span class="cell-name">${escapeHtml(isSp ? '💛 더 자주 보고 싶은 친구들' : '소그룹반 ' + cellName.slice(1))}</span>
+          ${tHtml}
+          <span class="cell-teachers" style="margin-left:auto">${sts.length}명</span>
+        </div>
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <thead><tr><th class="col-student">학생</th>${weeks.map(w => `<th>${wkLabel(w)}</th>`).join('')}<th>누적</th></tr></thead>
+            <tbody>${rows}</tbody>
+            <tfoot><tr><td class="col-student">출석</td>${foot}<td></td></tr></tfoot>
+          </table>
+        </div>
+      </div>`;
+    });
+    if (famCount === 0) continue;
+    html += `<section class="family-section">
+      <div class="family-header">
+        <span class="family-name">👨‍👩‍👧‍👦 대가족 ${famN}</span>
+        <span class="family-meta">${famCount}명 · ${weeks.length}주 (${wkLabel(weeks[0])}~${wkLabel(weeks[weeks.length-1])})</span>
+      </div>
+      ${famHtml}
+    </section>`;
+  }
+  content.innerHTML = html || '<div class="empty" style="text-align:center;padding:40px;color:#94a3b8">검색 결과 없음</div>';
+}
+
 /* ===== 렌더링 ===== */
 function rateCls(rate) {
   if (rate === null) return 'none';
@@ -602,6 +773,9 @@ function renderAll() {
     <div class="stat-card"><span class="stat-num" style="color:#fca5a5">${low50}</span><span class="stat-label">50% 미만</span></div>
     <div class="stat-card"><span class="stat-num" style="color:#f97316">${absent4}</span><span class="stat-label">최근 4주 연속 결석</span></div>
   `;
+
+  // 주차별 매트릭스 보기
+  if (VIEW_MODE === 'matrix') { renderMatrix(search); return; }
 
   // 정렬 후 렌더
   const content = document.getElementById('content');
