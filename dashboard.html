@@ -1178,6 +1178,7 @@ function historicalRec(name, week) {
  * ============================================================ */
 function fillSelect() {
   const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>';
   // 그룹별 정렬
   const groups = [
     {label:'👑 관리자 (국장단·목사)', filter: t => t.admin},

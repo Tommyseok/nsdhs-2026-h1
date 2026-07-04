@@ -326,6 +326,7 @@ const PRIVATE_KEY = 'nsdhs2026h2';
 
 function fillSelect() {
   const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>';
   const groups = [
     {label:'👑 관리자 (국장단·목사)', filter: t => t.admin},
     {label:'🌟 셀 담임', filter: t => !t.admin && t.role.includes('담임') && !t.role.includes('부담임')},
