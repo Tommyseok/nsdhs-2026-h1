@@ -9,13 +9,13 @@
  * 배포: DEPLOY.md 참조
  *
  * 인증 (Phase 1):
- *   - URL 키 ?key=nsdhs2026h2 (기존 시스템과 호환)
+ *   - URL 키 ?key=runners2026@jesus (기존 시스템과 호환)
  *   - 관리자 액션은 ?adminKey= 추가
  *   - Phase 6+ 에서 Google id_token 검증으로 업그레이드 예정
  */
 
 const SHEET_ID = '1N_ORB4RTRSmoxY8ueJUozLEu2DUE5v3g_HeFJZOtmKg';
-const PUBLIC_KEY = 'nsdhs2026h2';
+const PUBLIC_KEY = 'runners2026@jesus';
 const ADMIN_KEY  = 'admin2026t';
 
 const SHEETS = {

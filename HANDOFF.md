@@ -36,7 +36,7 @@
 | GitHub repo | https://github.com/Tommyseok/nsdhs-2026-h1 |
 | GitHub Pages | https://tommyseok.github.io/nsdhs-2026-h1/ |
 | 로컬 작업 폴더 | `C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish\` |
-| **현재 PIN 코드** | `nsdhs2026h2` (2026년 2학기. 학기마다 변경: h2→h3→h4→내년 h1) |
+| **현재 PIN 코드** | `runners2026@jesus` (2026-07-04 전체 강제 로그아웃 겸 교체. 이전: nsdhs2026h2. 변경 시 아래 "PIN 변경" 절차) |
 | Drive (사용자 개인) | https://drive.google.com (shinycoral@gmail.com) |
 | 교적부 시트 (학생 상세) | https://docs.google.com/spreadsheets/d/1N_ORB4RTRSmoxY8ueJUozLEu2DUE5v3g_HeFJZOtmKg |
 | **Supabase 프로젝트** (학생 사진) | `hycwzggbgnimuuhporwf` (jwseokCEOSTAFF's Project, ap-southeast-1) |
@@ -133,7 +133,7 @@
 ## 🔑 인증·권한 체계
 
 ### PIN 게이트
-- 모든 페이지 공통: `nsdhs2026h2`
+- 모든 페이지 공통: `runners2026@jesus`
 - localStorage에 저장 → 학기 동안 자동 로그인
 - PIN 변경 시 자동 logout 효과 (다음 접속 시 새 PIN 입력 요구)
 
@@ -201,13 +201,13 @@
 ```bash
 # 모든 페이지에서 일괄 치환
 cd "C:\Users\MADUP\Desktop\Claude_Projects\Personal_2\Runners\publish"
-# nsdhs2026h2 → nsdhs2026h3 등
+# runners2026@jesus → (새 PIN) 으로 일괄 치환 — 치환만으로 전 사용자 강제 로그아웃 효과
 ```
 파일 목록:
 - `dashboard.html`, `attendance.html`, `attendance-overview.html`
 - `prayer.html`, `teachers.html`, `relations.html`, `photos.html`, `admin.html`
 - `dashboard_backend.gs`, `DASHBOARD_DEPLOY.md`
-- ⚠️ 각 페이지 하단 **공통 네비 주입 스크립트의 `const KEY = 'nsdhs2026h2'`** 도 함께 치환 (teachers/관계도 링크에 사용)
+- ⚠️ 각 페이지 하단 **공통 네비 주입 스크립트의 `const KEY = 'runners2026@jesus'`** 도 함께 치환 (teachers/관계도 링크에 사용)
 
 ### 학생 정보 변경
 > ⚠️ **장결자(Sp1~6) 배정 셀 변경 시**: `HOME_CELL` 맵을 dashboard·attendance·attendance-overview·teachers·prayer **5개 파일에서 동일하게** 수정 (한 곳만 바꾸면 페이지마다 꼬리표·입력이 어긋남).
@@ -259,7 +259,7 @@ python make_assignment_pdf.py
 6. **GitHub JSON 데이터 전환** — 구글시트 X, data/*.json 사용
 7. **1학기 historical 21주 통합** — 1/11~5/31 출석 데이터
 8. **누적 출석률 분모 통일** — 빈 칸도 결석으로 처리, 모든 학생 21주 기준
-9. **PIN 학기별 변경 체계** — nsdhs2026t → nsdhs2026h2 (학기별)
+9. **PIN 학기별 변경 체계** — nsdhs2026t → nsdhs2026h2 (학기별) → 2026-07-04 runners2026@jesus (강제 로그아웃 겸 교체)
 10. **dashboard.html 프로토타입** — 4개 핵심 박스 + 내 반 미니뷰
 11. **attendance.html 신규** — 주차별 출석 입력
 12. **teachers.html 확장** — 연락처·옷사이즈·가족관계 + 공유용 탭
