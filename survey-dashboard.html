@@ -67,6 +67,18 @@
     font-size:13.5px; font-weight:800; padding:8px 18px; border-radius:999px; cursor:pointer;
   }
   .kind-tabs button.on { background:var(--accent2); color:#fff; }
+  /* 스크롤해도 지금 보는 설문이 무엇인지 계속 보이게 고정한다 */
+  .kind-wrap { position:sticky; top:0; z-index:40;
+               background:linear-gradient(180deg,#0b0f17 70%,rgba(11,15,23,0)); padding:10px 0; }
+  /* 결과 머리말 — 학생/선생님을 색으로도 구분 */
+  .who { display:flex; align-items:center; gap:10px; border-radius:12px;
+         padding:14px 16px; margin-top:14px; font-weight:800; font-size:16px; }
+  .who .badge { font-size:12px; font-weight:800; padding:4px 10px; border-radius:999px; }
+  .who.student { background:rgba(167,139,250,.14); border:1px solid rgba(167,139,250,.45); color:#ddd6fe; }
+  .who.student .badge { background:var(--accent2); color:#fff; }
+  .who.teacher { background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.45); color:#a7f3d0; }
+  .who.teacher .badge { background:#047857; color:#fff; }
+  .who .n { margin-left:auto; font-size:13px; font-weight:700; opacity:.85; }
   .preview {
     background:var(--bg2); border:1px solid var(--border); border-radius:10px;
     padding:12px; font-size:12.5px; color:var(--muted); margin-top:12px;
@@ -185,7 +197,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608081940"></script>
+<script src="survey-questions.js?v=202608081947"></script>
 <script>
 /* ============================================================
  * 수련회 평가 운영 대시보드
@@ -357,8 +369,7 @@ function bar(label, value, total, cls) {
 }
 
 function analyzeKind(host, kindLabel, questions, rows) {
-  var h = el('h2', null, kindLabel + ' (' + rows.length + '명)');
-  host.appendChild(h);
+  host.appendChild(el('h2', null, kindLabel + ' — 선택지 · 척도'));
   if (!rows.length) {
     host.appendChild(el('div', 'note', '아직 응답이 없습니다.'));
     return;
@@ -540,6 +551,14 @@ function renderAnalysis() {
 
   var rows = LAST.filter(function (r) { return r.kind === CUR_KIND; });
 
+  /* 지금 보고 있는 것이 누구의 응답인지 화면 맨 위에 못박는다.
+     학생과 선생님 결과가 섞여 읽히면 해석이 통째로 어긋난다. */
+  var who = el('div', 'who ' + CUR_KIND);
+  who.appendChild(el('span', 'badge', CUR_KIND === 'student' ? '학생' : '선생님'));
+  who.appendChild(el('span', null, KIND_LABEL[CUR_KIND] + ' 설문 결과'));
+  who.appendChild(el('span', 'n', rows.length + '명 응답'));
+  host.appendChild(who);
+
   // 학생일 때만 반별 응답 수
   if (CUR_KIND === 'student' && rows.length) {
     var cnt = {};
@@ -554,7 +573,7 @@ function renderAnalysis() {
   analyzeKind(host, KIND_LABEL[CUR_KIND], SURVEY[CUR_KIND], rows);
 
   if (HAS_TEXTS && rows.length) {
-    host.appendChild(el('h2', null, '주관식 응답'));
+    host.appendChild(el('h2', null, KIND_LABEL[CUR_KIND] + ' — 주관식 응답'));
     host.appendChild(el('div', 'warn', '아래 내용은 익명으로 남긴 글입니다. 수련회TF 안에서만 다뤄주세요. 캡처해서 공유하지 마세요.'));
     renderTexts(host, SURVEY[CUR_KIND], rows);
   }
@@ -660,7 +679,8 @@ function aggRows(q, rows) {
 }
 
 function reportSection(kindKey, label, rows) {
-  var h = ['<h2>' + esc(label) + ' <span class="cnt">' + rows.length + '명 응답</span></h2>'];
+  var h = ['<h2 class="' + kindKey + '">' + esc(label) + ' 설문 결과'
+           + ' <span class="cnt">' + rows.length + '명 응답</span></h2>'];
   if (!rows.length) { h.push('<p class="none">응답이 없습니다.</p>'); return h.join(''); }
 
   if (kindKey === 'student') {
@@ -673,7 +693,7 @@ function reportSection(kindKey, label, rows) {
     h.push('</table>');
   }
 
-  h.push('<h3>선택지 · 척도</h3>');
+  h.push('<h3>' + esc(label) + ' — 선택지 · 척도</h3>');
   SURVEY[kindKey].forEach(function (q) {
     var a = aggRows(q, rows);
     if (!a) return;
@@ -687,7 +707,7 @@ function reportSection(kindKey, label, rows) {
   });
 
   var groups = freeTextGroups(SURVEY[kindKey], rows);
-  h.push('<h3>주관식 원문</h3>');
+  h.push('<h3>' + esc(label) + ' — 주관식 원문</h3>');
   if (!groups.length) {
     h.push('<p class="none">작성된 주관식 응답이 없습니다.</p>');
   } else {
@@ -713,6 +733,9 @@ function buildReport() {
     + 'h1{font-size:24px;margin:0 0 6px}h2{font-size:19px;margin:44px 0 10px;padding-top:14px;'
     + 'border-top:3px solid #7c3aed;page-break-before:always}h2:first-of-type{page-break-before:auto}'
     + 'h3{font-size:15px;margin:26px 0 8px;color:#5b21b6}'
+    + 'h2.student{border-top-color:#7c3aed}h2.teacher{border-top-color:#047857}'
+    + 'h2.student::before{content:"학생 ";background:#7c3aed;color:#fff;font-size:12px;padding:3px 9px;border-radius:999px;margin-right:8px;vertical-align:middle}'
+    + 'h2.teacher::before{content:"선생님 ";background:#047857;color:#fff;font-size:12px;padding:3px 9px;border-radius:999px;margin-right:8px;vertical-align:middle}'
     + '.cnt{font-size:13px;font-weight:400;color:#666}'
     + '.meta{color:#666;font-size:13px;margin-bottom:18px}'
     + '.warn{background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px 14px;margin:16px 0;font-size:13px}'
