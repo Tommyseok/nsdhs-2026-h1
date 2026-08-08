@@ -370,7 +370,7 @@ SURVEY.teacher = [
     ],
     cols:['1','2','3','4','5'] },
 
-  { id:'q3', type:'textarea', section:1, required:false,
+  { id:'q3', type:'textarea', section:1, required:true,
     title:'준비 과정에서 정보가 늦게 오거나 빠져서 현장에서 어려웠던 일이 있었다면 적어주세요.',
     hint:'무엇이 문제였는지, 그래서 어떤 일이 있었는지, 어떻게 하면 좋을지 순으로 적어주시면 좋습니다' },
 
@@ -394,7 +394,7 @@ SURVEY.teacher = [
     title:"[일정] '금·토·일'로 바뀐 일정이 학생들의 참여와 몰입, 주일예배 연결에 어떤 영향을 주었다고 보시나요?",
     scale:{ min:1, max:5, minLabel:'학생 인솔 및 주일 연계가 매우 힘들었다', maxLabel:'학생 참여 및 주일 연계에 매우 효과적이었다' } },
 
-  { id:'q5_1', type:'textarea', section:2, required:false, showIf:T_HOMEROOM,
+  { id:'q5_1', type:'textarea', section:2, required:true, showIf:T_HOMEROOM,
     title:'일정과 관련하여 실제 현장에서 느낀 장점이나 문제점이 있었다면 적어주세요.' },
 
   { id:'q6', type:'checkbox', section:2, required:true, max:3, showIf:T_HOMEROOM,
@@ -421,7 +421,7 @@ SURVEY.teacher = [
     title:'[성경공부 자료] 미리 받으신 교사용 자료와 질문지, 사전 안내는 공과와 나눔을 이끌기에 충분했나요?',
     scale:{ min:1, max:5, minLabel:'매우 부족', maxLabel:'매우 충분' } },
 
-  { id:'q8_1', type:'textarea', section:2, required:false, showIf:T_HOMEROOM,
+  { id:'q8_1', type:'textarea', section:2, required:true, showIf:T_HOMEROOM,
     title:'성경공부·리플렉션 자료나 진행 방식에서 나아졌으면 하는 점을 적어주세요.' },
 
   /* ── SECTION 3 · 헬퍼/담당자 전용 ── */
@@ -457,7 +457,7 @@ SURVEY.teacher = [
       '사진/영상','물품관리','주방/식사','청소','숙소관리'
     ] },
 
-  { id:'q12_1', type:'textarea', section:3, required:false, showIf:T_HELPER,
+  { id:'q12_1', type:'textarea', section:3, required:true, showIf:T_HELPER,
     title:'인력이 부족하거나 배치가 아쉬웠다면, 어떻게 하면 좋을지 적어주세요.' },
 
   /* ── SECTION 4 · 공통 ── */
@@ -511,28 +511,28 @@ SURVEY.teacher = [
       '시간이 걸리더라도 고등부 자체 인원(학생·교사)을 중심으로 찬양팀을 꾸준히 세워간다'
     ] },
 
-  { id:'w4', type:'textarea', section:5, required:false,
+  { id:'w4', type:'textarea', section:5, required:true,
     title:'헌신해 준 찬양팀을 향한 격려의 한마디, 또는 더 깊은 공동체로 나아가기 위한 조언이 있다면 편하게 적어주세요.' },
 
   /* ── SECTION 5 · 마무리 (KPT + 근본원인) ── */
-  { id:'q15_keep', type:'textarea', section:6, required:false,
+  { id:'q15_keep', type:'textarea', section:6, required:true,
     title:'다음 수련회에서도 반드시 이어갔으면 하는 것은 무엇인가요?',
     hint:'제도, 프로그램, 준비 방식 무엇이든 좋습니다. 왜 그런지도 함께 적어주시면 좋습니다' },
 
-  { id:'q15_problem', type:'textarea', section:6, required:false,
+  { id:'q15_problem', type:'textarea', section:6, required:true,
     title:'이번 수련회에서 가장 먼저 고쳐야 한다고 생각하는 문제는 무엇인가요?',
     hint:'사람보다는 일정, 정보 전달, 역할, 프로그램, 인력, 환경 쪽으로 적어주시면 좋습니다' },
 
-  { id:'q15_root', type:'textarea', section:6, required:false,
+  { id:'q15_root', type:'textarea', section:6, required:true,
     title:'그 문제가 생긴 근본 원인은 무엇이라고 보시나요?',
     hint:'예: 준비 기간 부족, 정보가 공유되는 방식, 역할과 책임이 불분명함, 일정 짜임새, 인력 배치, 안내 문서 부족, 현장에서 결정하는 방식' },
 
-  { id:'q15_try', type:'textarea', section:6, required:false,
+  { id:'q15_try', type:'textarea', section:6, required:true,
     title:'다음 수련회에서 실제로 해볼 만한 방법을 제안해주세요.' },
 
-  { id:'q15_next', type:'textarea', section:6, required:false,
+  { id:'q15_next', type:'textarea', section:6, required:true,
     title:'다음 수련회 준비팀이 가장 먼저 결정해야 할 한 가지는 무엇일까요?' },
 
-  { id:'q15_free', type:'textarea', section:6, required:false,
+  { id:'q15_free', type:'textarea', section:6, required:true,
     title:'그 밖에 수련회 준비팀에 전하고 싶은 말이 있다면 자유롭게 적어주세요.' }
 ];

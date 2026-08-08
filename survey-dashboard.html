@@ -57,6 +57,16 @@
   .kw { display:inline-block; background:rgba(167,139,250,.14); border:1px solid rgba(167,139,250,.35);
         color:#ddd6fe; border-radius:999px; padding:3px 10px; font-size:12px; margin:3px 4px 0 0; }
   .hidden { display:none; }
+  /* 결과 종류 선택 — 상단 페이지 탭과 헷갈리지 않게 알약 모양으로 구분한다 */
+  .kind-wrap { display:flex; align-items:center; gap:10px; margin-top:22px; }
+  .kind-lab { font-size:12.5px; font-weight:800; color:var(--muted); flex:0 0 auto; }
+  .kind-tabs { display:flex; gap:6px; background:var(--bg2); border:1px solid var(--border);
+               border-radius:999px; padding:4px; }
+  .kind-tabs button {
+    background:none; border:none; color:var(--muted); font-family:inherit;
+    font-size:13.5px; font-weight:800; padding:8px 18px; border-radius:999px; cursor:pointer;
+  }
+  .kind-tabs button.on { background:var(--accent2); color:#fff; }
   .preview {
     background:var(--bg2); border:1px solid var(--border); border-radius:10px;
     padding:12px; font-size:12.5px; color:var(--muted); margin-top:12px;
@@ -147,26 +157,26 @@
   <!-- ── 탭 3 ── -->
   <section class="panel" id="p3">
     <div class="note">
-      선택지·척도는 코드 없이 볼 수 있습니다.
-      <strong>주관식 원문은 접근 코드를 입력해야 열립니다</strong> —
-      익명으로 남긴 내용이라 수련회TF에서만 다룹니다.
+      <strong>결과는 접근 코드를 입력해야 열립니다.</strong>
+      통계와 주관식 모두 익명으로 남긴 응답이라 수련회TF 안에서만 다룹니다.
     </div>
 
-    <button class="btn btn-primary" id="btn-analyze">📊 분석하기 (선택지·척도)</button>
-
-    <div class="card" style="margin-top:14px">
-      <div style="font-size:13.5px;font-weight:700;margin-bottom:8px">🔒 주관식까지 함께 보기</div>
-      <input type="password" id="pass" placeholder="수련회TF 접근 코드" autocomplete="off">
-      <button class="btn btn-ghost" id="btn-analyze-full">주관식 포함해서 분석하기</button>
+    <div class="card">
+      <div style="font-size:13.5px;font-weight:700;margin-bottom:8px">🔒 수련회TF 접근 코드</div>
+      <input type="password" id="pass" placeholder="접근 코드를 입력하세요" autocomplete="off">
+      <button class="btn btn-primary" id="btn-analyze-full">📊 분석하기</button>
       <div class="note" id="pass-msg"></div>
       <button class="btn btn-ghost" id="btn-report">📄 전체 리포트 내려받기</button>
       <div class="note">학생·선생님 전체를 주관식 원문까지 담아 파일 하나로 저장합니다.
         인터넷 없이 열리고, 인쇄해서 PDF로 저장할 수 있습니다.</div>
     </div>
 
-    <div id="kind-tabs" class="tabs hidden" style="margin-top:20px">
-      <button data-kind="student" class="on">학생</button>
-      <button data-kind="teacher">선생님</button>
+    <div class="kind-wrap">
+      <span class="kind-lab">보기</span>
+      <div id="kind-tabs" class="kind-tabs">
+        <button data-kind="student" class="on">학생</button>
+        <button data-kind="teacher">선생님</button>
+      </div>
     </div>
     <div id="analysis"></div>
   </section>
@@ -175,7 +185,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608081836"></script>
+<script src="survey-questions.js?v=202608081937"></script>
 <script>
 /* ============================================================
  * 수련회 평가 운영 대시보드
@@ -514,7 +524,10 @@ var KIND_LABEL = { student: '학생', teacher: '선생님' };
 function renderAnalysis() {
   var host = document.getElementById('analysis');
   host.innerHTML = '';
-  if (!LAST) return;
+  if (!LAST) {
+    host.appendChild(el('div', 'card', '위에 접근 코드를 입력하고 분석하기를 누르면 결과가 나옵니다.'));
+    return;
+  }
 
   var rows = LAST.filter(function (r) { return r.kind === CUR_KIND; });
 
@@ -565,7 +578,6 @@ function runAnalysis(withTexts, pass, btn, label) {
   }).then(function (data) {
     LAST = data;
     HAS_TEXTS = withTexts;
-    document.getElementById('kind-tabs').classList.remove('hidden');
     renderAnalysis();
     document.getElementById('pass-msg').textContent = withTexts ? '주관식까지 불러왔습니다.' : '';
     toast('응답 ' + data.length + '건을 분석했습니다');
@@ -725,14 +737,17 @@ document.getElementById('btn-report').addEventListener('click', function () {
   toast('리포트를 내려받았습니다');
 });
 
-document.getElementById('btn-analyze').addEventListener('click', function () {
-  runAnalysis(false, null, this, '📊 분석하기 (선택지·척도)');
-});
 document.getElementById('btn-analyze-full').addEventListener('click', function () {
   var pass = document.getElementById('pass').value;
   if (!pass) { document.getElementById('pass-msg').textContent = '접근 코드를 입력해주세요.'; return; }
-  runAnalysis(true, pass, this, '주관식 포함해서 분석하기');
+  runAnalysis(true, pass, this, '📊 분석하기');
 });
+document.getElementById('pass').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') document.getElementById('btn-analyze-full').click();
+});
+
+// 처음 들어왔을 때도 안내가 보이도록 한 번 그려둔다
+renderAnalysis();
 </script>
 </body>
 </html>
