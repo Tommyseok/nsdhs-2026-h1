@@ -164,6 +164,9 @@
       <input type="password" id="pass" placeholder="수련회TF 접근 코드" autocomplete="off">
       <button class="btn btn-ghost" id="btn-analyze-full">주관식 포함해서 분석하기</button>
       <div class="note" id="pass-msg"></div>
+      <button class="btn btn-ghost" id="btn-report">📄 전체 리포트 내려받기</button>
+      <div class="note">학생·선생님·찬양팀 전체를 주관식 원문까지 담아 파일 하나로 저장합니다.
+        인터넷 없이 열리고, 인쇄해서 PDF로 저장할 수 있습니다.</div>
     </div>
 
     <div id="kind-tabs" class="tabs hidden" style="margin-top:20px">
@@ -178,7 +181,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608081647"></script>
+<script src="survey-questions.js?v=202608081654"></script>
 <script>
 /* ============================================================
  * 수련회 평가 운영 대시보드
@@ -461,15 +464,35 @@ function keywords(texts, topN) {
     .map(function (w) { return { w: w, n: freq[w] }; });
 }
 
+/* 주관식으로 볼 대상을 모은다.
+   textarea/text 문항뿐 아니라 '기타 직접입력'(q.id + '__other')도 주관식이다.
+   이걸 빠뜨리면 응답자가 선택지에 없어서 직접 써넣은 말이 통째로 사라진다. */
+function freeTextGroups(questions, rows) {
+  var groups = [];
+  questions.forEach(function (q) {
+    if (q.type === 'text' || q.type === 'textarea') {
+      var t = rows.map(function (r) { return r.answers[q.id]; })
+                  .filter(function (v) { return v && String(v).trim() !== ''; })
+                  .map(function (v) { return String(v).trim(); });
+      if (t.length) groups.push({ title: q.title, texts: t });
+    }
+    if (q.other) {
+      var o = rows.map(function (r) { return r.answers[q.id + '__other']; })
+                  .filter(function (v) { return v && String(v).trim() !== ''; })
+                  .map(function (v) { return String(v).trim(); });
+      if (o.length) groups.push({ title: q.title + '  — 기타 직접입력', texts: o });
+    }
+  });
+  return groups;
+}
+
 function renderTexts(host, questions, rows) {
-  var freeQs = questions.filter(function (q) { return q.type === 'text' || q.type === 'textarea'; });
+  var groups = freeTextGroups(questions, rows);
   var any = false;
 
-  freeQs.forEach(function (q) {
-    var texts = rows.map(function (r) { return r.answers[q.id]; })
-                    .filter(function (v) { return v && String(v).trim() !== ''; })
-                    .map(function (v) { return String(v).trim(); });
-    if (!texts.length) return;
+  groups.forEach(function (g) {
+    var q = { title: g.title };
+    var texts = g.texts;
     any = true;
 
     var box = el('div', 'q');
@@ -568,6 +591,151 @@ function runAnalysis(withTexts, pass, btn, label) {
     btn.disabled = false; btn.textContent = label;
   });
 }
+
+/* ── 오프라인 전체 리포트 ──
+   화면에서 본 것을 그대로, 주관식 원문까지 포함해 파일 하나로 만든다.
+   인터넷 없이 열리고 인쇄(PDF 저장)도 되게 밝은 배경으로 만든다. */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function aggRows(q, rows) {
+  var vals = rows.map(function (r) { return r.answers[q.id]; })
+                 .filter(function (v) { return v !== undefined && v !== null && v !== ''; });
+  if (!vals.length) return null;
+  var out = { note: '', lines: [] };
+
+  if (q.type === 'scale') {
+    var nums = vals.map(Number).filter(function (n) { return !isNaN(n); });
+    var avg = nums.reduce(function (a, b) { return a + b; }, 0) / nums.length;
+    out.note = '평균 ' + avg.toFixed(2) + ' / ' + q.scale.max + '  (응답 ' + nums.length + '명)';
+    var d = {}; nums.forEach(function (n) { d[n] = (d[n] || 0) + 1; });
+    for (var v = q.scale.min; v <= q.scale.max; v++) out.lines.push([v + '점', (d[v] || 0) + '명']);
+
+  } else if (q.type === 'radio') {
+    var dr = {}; vals.forEach(function (v) { dr[v] = (dr[v] || 0) + 1; });
+    q.options.forEach(function (o) { out.lines.push([o, (dr[o] || 0) + '명']); });
+
+  } else if (q.type === 'checkbox' || q.type === 'rank') {
+    if (q.type === 'rank') out.note = '순위 가중치 없이 "3위 안에 든 횟수"로 셉니다';
+    var c = {}; vals.forEach(function (arr) { (arr || []).forEach(function (o) { c[o] = (c[o] || 0) + 1; }); });
+    q.options.slice().sort(function (a, b) { return (c[b] || 0) - (c[a] || 0); })
+      .forEach(function (o) { out.lines.push([o, (c[o] || 0) + '명']); });
+
+  } else if (q.type === 'matrix') {
+    var numeric = q.cols.every(function (c2) { return /^\d+$/.test(c2); });
+    if (numeric) {
+      q.rows.forEach(function (rn) {
+        var ns = vals.map(function (o) { return Number((o || {})[rn]); }).filter(function (n) { return !isNaN(n); });
+        if (ns.length) {
+          var a = ns.reduce(function (x, y) { return x + y; }, 0) / ns.length;
+          out.lines.push([rn, a.toFixed(2) + '점']);
+        }
+      });
+      out.note = '항목별 평균';
+    } else {
+      out.note = '※ 이 문항은 점수가 아니라 방향이 다른 범주입니다. 평균을 내지 않고 분포로만 봅니다.';
+      q.rows.forEach(function (rn) {
+        var d2 = {};
+        vals.forEach(function (o) { var v2 = (o || {})[rn]; if (v2) d2[v2] = (d2[v2] || 0) + 1; });
+        var parts = q.cols.map(function (c3) { return c3 + ' ' + (d2[c3] || 0); });
+        out.lines.push([rn, parts.join('  /  ')]);
+      });
+    }
+  } else {
+    return null;
+  }
+  return out;
+}
+
+function reportSection(kindKey, label, rows) {
+  var h = ['<h2>' + esc(label) + ' <span class="cnt">' + rows.length + '명 응답</span></h2>'];
+  if (!rows.length) { h.push('<p class="none">응답이 없습니다.</p>'); return h.join(''); }
+
+  if (kindKey === 'student') {
+    var cnt = {};
+    rows.forEach(function (r) { cnt[r.token] = (cnt[r.token] || 0) + 1; });
+    h.push('<h3>반별 응답 수</h3><table>');
+    CELLS.forEach(function (c) {
+      h.push('<tr><th>' + esc(c.cell + ' · ' + c.teacher) + '</th><td>' + (cnt[c.token] || 0) + '명</td></tr>');
+    });
+    h.push('</table>');
+  }
+
+  h.push('<h3>선택지 · 척도</h3>');
+  SURVEY[kindKey].forEach(function (q) {
+    var a = aggRows(q, rows);
+    if (!a) return;
+    h.push('<div class="qb"><div class="qt">' + esc(q.title) + '</div>');
+    if (a.note) h.push('<div class="qn">' + esc(a.note) + '</div>');
+    h.push('<table>');
+    a.lines.forEach(function (l) { h.push('<tr><th>' + esc(l[0]) + '</th><td>' + esc(l[1]) + '</td></tr>'); });
+    h.push('</table></div>');
+  });
+
+  var groups = freeTextGroups(SURVEY[kindKey], rows);
+  h.push('<h3>주관식 원문</h3>');
+  if (!groups.length) {
+    h.push('<p class="none">작성된 주관식 응답이 없습니다.</p>');
+  } else {
+    groups.forEach(function (g) {
+      h.push('<div class="qb"><div class="qt">' + esc(g.title) + '</div>');
+      h.push('<div class="qn">' + g.texts.length + '명이 작성</div>');
+      g.texts.forEach(function (t) { h.push('<div class="tx">' + esc(t) + '</div>'); });
+      h.push('</div>');
+    });
+  }
+  return h.join('');
+}
+
+function buildReport() {
+  var byKind = { student: [], teacher: [], praise: [] };
+  LAST.forEach(function (r) { if (byKind[r.kind]) byKind[r.kind].push(r); });
+  var now = new Date().toLocaleString('ko-KR');
+
+  return '<!doctype html><html lang="ko"><head><meta charset="utf-8">'
+    + '<title>26년 여름수련회 평가 리포트</title><style>'
+    + 'body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","맑은 고딕",sans-serif;'
+    + 'max-width:900px;margin:0 auto;padding:32px 24px 80px;color:#111;line-height:1.6;font-size:14px}'
+    + 'h1{font-size:24px;margin:0 0 6px}h2{font-size:19px;margin:44px 0 10px;padding-top:14px;'
+    + 'border-top:3px solid #7c3aed;page-break-before:always}h2:first-of-type{page-break-before:auto}'
+    + 'h3{font-size:15px;margin:26px 0 8px;color:#5b21b6}'
+    + '.cnt{font-size:13px;font-weight:400;color:#666}'
+    + '.meta{color:#666;font-size:13px;margin-bottom:18px}'
+    + '.warn{background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px 14px;margin:16px 0;font-size:13px}'
+    + '.qb{border:1px solid #ddd;border-radius:8px;padding:12px 14px;margin:12px 0;page-break-inside:avoid}'
+    + '.qt{font-weight:700;margin-bottom:6px}.qn{color:#666;font-size:12.5px;margin-bottom:8px}'
+    + 'table{border-collapse:collapse;width:100%}'
+    + 'th{text-align:left;font-weight:500;color:#444;padding:4px 8px 4px 0;width:55%;vertical-align:top}'
+    + 'td{padding:4px 0;font-weight:700}'
+    + '.tx{background:#f6f6f8;border-left:3px solid #a78bfa;padding:9px 12px;margin-top:7px;'
+    + 'white-space:pre-wrap;border-radius:0 6px 6px 0}'
+    + '.none{color:#888}'
+    + '@media print{body{padding:0}.warn{border:1px solid #999}}'
+    + '</style></head><body>'
+    + '<h1>26년 여름수련회 평가 리포트</h1>'
+    + '<div class="meta">생성 ' + esc(now)
+    + ' · 학생 ' + byKind.student.length + '명 · 선생님 ' + byKind.teacher.length + '명 · 찬양팀 ' + byKind.praise.length + '명</div>'
+    + '<div class="warn"><b>대외비 — 수련회TF 전용.</b> 익명으로 남긴 주관식 원문이 그대로 담겨 있습니다. '
+    + '담임 선생님을 포함해 TF 밖으로 공유하지 마세요.</div>'
+    + reportSection('student', '학생', byKind.student)
+    + reportSection('teacher', '선생님', byKind.teacher)
+    + reportSection('praise', '찬양팀', byKind.praise)
+    + '</body></html>';
+}
+
+document.getElementById('btn-report').addEventListener('click', function () {
+  if (!LAST) { toast('먼저 분석하기를 눌러주세요'); return; }
+  if (!HAS_TEXTS) { toast('주관식까지 포함하려면 접근 코드로 분석해 주세요'); return; }
+  var blob = new Blob(['﻿' + buildReport()], { type: 'text/html;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '수련회평가_전체리포트.html';
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  toast('리포트를 내려받았습니다');
+});
 
 document.getElementById('btn-analyze').addEventListener('click', function () {
   runAnalysis(false, null, this, '📊 분석하기 (선택지·척도)');
