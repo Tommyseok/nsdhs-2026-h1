@@ -85,6 +85,10 @@ const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const REST = URL_BASE + '/rest/v1';
 const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
 
+// showIf 조건이 참조하는 문항 id. 이 문항의 값이 바뀌면 화면을 다시 그린다.
+// 지금 분기를 만드는 문항은 교사 Q4 하나뿐이다. 분기가 늘면 여기에 추가한다.
+const BRANCH_IDS = ['q4'];
+
 // Task 2에서 생성한 tokens.csv 의 '전체교사' 행 토큰
 const TEACHER_TOKEN = '<<tokens.csv 전체교사 토큰>>';
 
@@ -117,6 +121,17 @@ function boot() {
 
 let ANSWERS = {};
 let KIND = '';
+let DRAFT_KEY = '';
+
+function saveDraft() {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(ANSWERS)); } catch (e) {}
+}
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (raw) ANSWERS = JSON.parse(raw) || {};
+  } catch (e) { ANSWERS = {}; }
+}
 
 function visibleQuestions(kind) {
   return SURVEY[kind].filter(q => !q.showIf || q.showIf(ANSWERS));
@@ -290,6 +305,9 @@ function collect() {
 
 function renderForm(kind) {
   KIND = kind;
+  DRAFT_KEY = 'survey_draft_' + kind + '_' + TOKEN;
+  loadDraft();
+
   const meta = SURVEY.meta[kind];
   const host = document.getElementById('sc-form');
   host.innerHTML = '';
@@ -299,6 +317,18 @@ function renderForm(kind) {
   list.id = 'q-list';
   host.appendChild(list);
   paintQuestions();
+
+  list.addEventListener('change', e => {
+    collect(); saveDraft();
+    const box = e.target.closest('.q');
+    if (box && BRANCH_IDS.includes(box.dataset.qid)) paintQuestions();
+  });
+  list.addEventListener('click', e => {
+    if (e.target.closest('.scale button') || e.target.closest('.rank-btn')) { collect(); saveDraft(); }
+  });
+  list.addEventListener('input', e => {
+    if (e.target.matches('textarea, input[type=text]')) { collect(); saveDraft(); }
+  });
 }
 
 function paintQuestions() {
