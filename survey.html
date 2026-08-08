@@ -460,7 +460,49 @@ function paintQuestions() {
   window.scrollTo(0, scroll);
 }
 
-function initLanding() {}
+function studentUrl() {
+  return location.origin + location.pathname + '?r=' + encodeURIComponent(TOKEN);
+}
+
+const SHARE_TEXT = '여름수련회 평가 설문이에요. 3~5분이면 끝나요! 솔직하게 남겨주면 다음 수련회가 더 좋아집니다 🙌';
+
+async function doShare() {
+  const url = studentUrl();
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '26년 여름수련회 평가', text: SHARE_TEXT, url });
+      return;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;   // 사용자가 공유창을 닫음
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(SHARE_TEXT + '\n' + url);
+    toast('링크를 복사했어요. 카톡에 붙여넣기 해주세요');
+  } catch (e) {
+    prompt('아래 링크를 복사해서 학생들에게 보내주세요', url);
+  }
+}
+
+async function loadCount() {
+  const box = document.getElementById('landing-count');
+  try {
+    const res = await fetch(
+      REST + '/survey_progress?kind=eq.student&token=eq.' + encodeURIComponent(TOKEN) + '&select=id',
+      { headers: Object.assign({ 'Prefer': 'count=exact', 'Range': '0-0' }, H) }
+    );
+    const cr = res.headers.get('content-range') || '';
+    const n = Number((cr.split('/')[1] || '0'));
+    box.textContent = '우리 반 학생 응답: ' + (isNaN(n) ? 0 : n) + '명';
+  } catch (e) {
+    box.textContent = '응답 현황을 불러오지 못했어요';
+  }
+}
+
+function initLanding() {
+  document.getElementById('btn-share').addEventListener('click', doShare);
+  loadCount();
+}
 
 document.getElementById('btn-teacher').addEventListener('click', () => {
   location.href = 'survey.html?t=' + encodeURIComponent(TEACHER_TOKEN);
