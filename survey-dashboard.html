@@ -46,10 +46,16 @@
   .btn:disabled { opacity:.55; cursor:default; }
 
   .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin-top:12px; }
-  select {
+  select, input[type=password] {
     width:100%; background:var(--bg2); color:var(--text); border:1px solid var(--border);
     border-radius:10px; padding:14px 12px; font-size:16px; font-family:inherit;
   }
+  details { margin-top:8px; }
+  details summary { cursor:pointer; font-size:12.5px; color:var(--accent); font-weight:700; }
+  .txt { background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+         padding:10px 12px; font-size:13px; margin-top:6px; white-space:pre-wrap; line-height:1.6; }
+  .kw { display:inline-block; background:rgba(167,139,250,.14); border:1px solid rgba(167,139,250,.35);
+        color:#ddd6fe; border-radius:999px; padding:3px 10px; font-size:12px; margin:3px 4px 0 0; }
   .hidden { display:none; }
   .preview {
     background:var(--bg2); border:1px solid var(--border); border-radius:10px;
@@ -146,10 +152,25 @@
   <!-- ── 탭 3 ── -->
   <section class="panel" id="p3">
     <div class="note">
-      선택지·척도 문항만 집계합니다. <strong>주관식 원문은 이 화면에 나오지 않습니다</strong> —
-      선생님들이 익명으로 남긴 내용이라 수련회TF 내부에서만 다룹니다.
+      선택지·척도는 코드 없이 볼 수 있습니다.
+      <strong>주관식 원문은 접근 코드를 입력해야 열립니다</strong> —
+      익명으로 남긴 내용이라 수련회TF에서만 다룹니다.
     </div>
-    <button class="btn btn-primary" id="btn-analyze">📊 분석하기</button>
+
+    <button class="btn btn-primary" id="btn-analyze">📊 분석하기 (선택지·척도)</button>
+
+    <div class="card" style="margin-top:14px">
+      <div style="font-size:13.5px;font-weight:700;margin-bottom:8px">🔒 주관식까지 함께 보기</div>
+      <input type="password" id="pass" placeholder="수련회TF 접근 코드" autocomplete="off">
+      <button class="btn btn-ghost" id="btn-analyze-full">주관식 포함해서 분석하기</button>
+      <div class="note" id="pass-msg"></div>
+    </div>
+
+    <div id="kind-tabs" class="tabs hidden" style="margin-top:20px">
+      <button data-kind="student" class="on">학생</button>
+      <button data-kind="teacher">선생님</button>
+      <button data-kind="praise">찬양팀</button>
+    </div>
     <div id="analysis"></div>
   </section>
 
@@ -418,53 +439,143 @@ function analyzeKind(host, kindLabel, questions, rows) {
   });
 }
 
-function renderAnalysis(data) {
+/* ── 주관식 요약 ──
+   진짜 요약(문맥 이해)은 브라우저에서 못 한다. 대신 세 가지를 보여준다:
+   응답 건수 / 자주 나온 낱말 / 원문 전체(접어둠).
+   더 깊은 요약이 필요하면 원문을 놓고 사람이 읽는 편이 정확하다. */
+var STOP = ('그리고 그래서 하지만 그런데 있었 있는 있다 없다 없었 같아요 같습니다 생각 정말 너무 조금 많이 좋았 좋은 좋다 해서 하는 했다 되었 됩니다 것을 것이 저는 제가 우리 학생 선생님 수련회 시간 프로그램 부분 대해 통해 위해 대한 있어서 어요 습니다').split(' ');
+
+function keywords(texts, topN) {
+  var freq = {};
+  texts.forEach(function (t) {
+    String(t).split(/[^가-힣A-Za-z0-9]+/).forEach(function (w) {
+      if (w.length < 2) return;
+      if (STOP.indexOf(w) >= 0) return;
+      freq[w] = (freq[w] || 0) + 1;
+    });
+  });
+  return Object.keys(freq)
+    .filter(function (w) { return freq[w] >= 2; })
+    .sort(function (a, b) { return freq[b] - freq[a]; })
+    .slice(0, topN || 8)
+    .map(function (w) { return { w: w, n: freq[w] }; });
+}
+
+function renderTexts(host, questions, rows) {
+  var freeQs = questions.filter(function (q) { return q.type === 'text' || q.type === 'textarea'; });
+  var any = false;
+
+  freeQs.forEach(function (q) {
+    var texts = rows.map(function (r) { return r.answers[q.id]; })
+                    .filter(function (v) { return v && String(v).trim() !== ''; })
+                    .map(function (v) { return String(v).trim(); });
+    if (!texts.length) return;
+    any = true;
+
+    var box = el('div', 'q');
+    box.appendChild(el('div', 'q-t', q.title));
+    box.appendChild(el('div', 'q-meta', texts.length + '명이 작성했습니다'));
+
+    var kws = keywords(texts);
+    if (kws.length) {
+      var kwrap = el('div');
+      kwrap.appendChild(el('div', 'q-meta', '자주 나온 말'));
+      kws.forEach(function (k) { kwrap.appendChild(el('span', 'kw', k.w + ' ' + k.n)); });
+      box.appendChild(kwrap);
+    }
+
+    var det = document.createElement('details');
+    det.appendChild(el('summary', null, '원문 ' + texts.length + '개 펼쳐보기'));
+    texts.forEach(function (t) { det.appendChild(el('div', 'txt', t)); });
+    box.appendChild(det);
+    host.appendChild(box);
+  });
+
+  if (!any) host.appendChild(el('div', 'note', '작성된 주관식 응답이 없습니다.'));
+}
+
+var LAST = null;      // 마지막으로 받은 데이터
+var HAS_TEXTS = false; // 주관식이 포함된 데이터인지
+var CUR_KIND = 'student';
+var KIND_LABEL = { student: '학생', teacher: '선생님', praise: '찬양팀' };
+
+function renderAnalysis() {
   var host = document.getElementById('analysis');
   host.innerHTML = '';
+  if (!LAST) return;
 
-  if (!data.length) {
-    host.appendChild(el('div', 'card', '아직 응답이 없습니다.'));
-    return;
-  }
+  var rows = LAST.filter(function (r) { return r.kind === CUR_KIND; });
 
-  var byKind = { student: [], teacher: [], praise: [] };
-  data.forEach(function (r) { if (byKind[r.kind]) byKind[r.kind].push(r); });
-
-  // 반별 응답 수
-  if (byKind.student.length) {
+  // 학생일 때만 반별 응답 수
+  if (CUR_KIND === 'student' && rows.length) {
     var cnt = {};
-    byKind.student.forEach(function (r) { cnt[r.token] = (cnt[r.token] || 0) + 1; });
+    rows.forEach(function (r) { cnt[r.token] = (cnt[r.token] || 0) + 1; });
     var wrap = el('div', 'q');
-    wrap.appendChild(el('div', 'q-t', '반별 학생 응답 수'));
+    wrap.appendChild(el('div', 'q-t', '반별 응답 수'));
     var mx = Math.max.apply(null, CELLS.map(function (c) { return cnt[c.token] || 0; }).concat([1]));
     CELLS.forEach(function (c) { wrap.appendChild(bar(c.cell + ' · ' + c.teacher, cnt[c.token] || 0, mx)); });
     host.appendChild(wrap);
   }
 
-  analyzeKind(host, '학생', SURVEY.student, byKind.student);
-  analyzeKind(host, '교사', SURVEY.teacher, byKind.teacher);
-  analyzeKind(host, '찬양팀', SURVEY.praise, byKind.praise);
+  analyzeKind(host, KIND_LABEL[CUR_KIND], SURVEY[CUR_KIND], rows);
+
+  if (HAS_TEXTS && rows.length) {
+    host.appendChild(el('h2', null, '주관식 응답'));
+    host.appendChild(el('div', 'warn', '아래 내용은 익명으로 남긴 글입니다. 수련회TF 안에서만 다뤄주세요. 캡처해서 공유하지 마세요.'));
+    renderTexts(host, SURVEY[CUR_KIND], rows);
+  }
+}
+
+[].slice.call(document.querySelectorAll('#kind-tabs button')).forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('#kind-tabs button').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    CUR_KIND = b.dataset.kind;
+    renderAnalysis();
+    window.scrollTo(0, 0);
+  });
+});
+
+function runAnalysis(withTexts, pass, btn, label) {
+  btn.disabled = true; btn.textContent = '분석 중…';
+  var path = withTexts ? '/rpc/survey_texts' : '/rpc/survey_stats';
+  var body = withTexts ? JSON.stringify({ pass: pass }) : '{}';
+
+  fetch(REST + path, {
+    method: 'POST',
+    headers: Object.assign({ 'Content-Type': 'application/json' }, H),
+    body: body
+  }).then(function (res) {
+    return res.json().then(function (j) {
+      if (!res.ok) throw new Error((j && j.message) || ('조회 실패 (' + res.status + ')'));
+      return j;
+    });
+  }).then(function (data) {
+    LAST = data;
+    HAS_TEXTS = withTexts;
+    document.getElementById('kind-tabs').classList.remove('hidden');
+    renderAnalysis();
+    document.getElementById('pass-msg').textContent = withTexts ? '주관식까지 불러왔습니다.' : '';
+    toast('응답 ' + data.length + '건을 분석했습니다');
+  })['catch'](function (e) {
+    if (withTexts) {
+      document.getElementById('pass-msg').textContent = e.message;
+    } else {
+      document.getElementById('analysis').innerHTML = '';
+      document.getElementById('analysis').appendChild(el('div', 'card', '분석에 실패했습니다: ' + e.message));
+    }
+  }).then(function () {
+    btn.disabled = false; btn.textContent = label;
+  });
 }
 
 document.getElementById('btn-analyze').addEventListener('click', function () {
-  var btn = this;
-  btn.disabled = true; btn.textContent = '분석 중…';
-  fetch(REST + '/rpc/survey_stats', {
-    method: 'POST',
-    headers: Object.assign({ 'Content-Type': 'application/json' }, H),
-    body: '{}'
-  }).then(function (res) {
-    if (!res.ok) throw new Error('조회 실패 (' + res.status + ')');
-    return res.json();
-  }).then(function (data) {
-    renderAnalysis(data);
-    toast('응답 ' + data.length + '건을 분석했습니다');
-  })['catch'](function (e) {
-    document.getElementById('analysis').innerHTML = '';
-    document.getElementById('analysis').appendChild(el('div', 'card', '분석에 실패했습니다: ' + e.message));
-  }).then(function () {
-    btn.disabled = false; btn.textContent = '📊 분석하기';
-  });
+  runAnalysis(false, null, this, '📊 분석하기 (선택지·척도)');
+});
+document.getElementById('btn-analyze-full').addEventListener('click', function () {
+  var pass = document.getElementById('pass').value;
+  if (!pass) { document.getElementById('pass-msg').textContent = '접근 코드를 입력해주세요.'; return; }
+  runAnalysis(true, pass, this, '주관식 포함해서 분석하기');
 });
 </script>
 </body>
