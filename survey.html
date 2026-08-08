@@ -397,6 +397,20 @@ async function post(path, body) {
   }
 }
 
+// 제출 payload는 현재 화면에 보이는 문항만 담는다.
+// 역할(q4)을 바꾸면 이전 분기 답변이 ANSWERS에 남는데,
+// 그대로 보내면 역할과 맞지 않는 응답이 DB에 섞인다.
+// ANSWERS 자체는 유지한다 — 되돌렸을 때 복원돼야 하고 초안에도 남아야 한다.
+function visibleAnswers() {
+  const ids = new Set(visibleQuestions(KIND).map(q => q.id));
+  const out = {};
+  Object.keys(ANSWERS).forEach(k => {
+    const base = k.endsWith('__other') ? k.slice(0, -'__other'.length) : k;
+    if (ids.has(base)) out[k] = ANSWERS[k];
+  });
+  return out;
+}
+
 async function submit() {
   const v = validate();
   if (!v.ok) {
@@ -408,7 +422,7 @@ async function submit() {
   const btn = document.getElementById('btn-submit');
   btn.disabled = true; btn.textContent = '제출 중…';
   try {
-    await post('/survey_responses', { kind: KIND, token: TOKEN, answers: ANSWERS, client_key: clientKey() });
+    await post('/survey_responses', { kind: KIND, token: TOKEN, answers: visibleAnswers(), client_key: clientKey() });
     await post('/survey_progress',  { kind: KIND, token: TOKEN }).catch(() => {});
     localStorage.setItem(DONE_KEY(), '1');
     localStorage.removeItem(DRAFT_KEY);
