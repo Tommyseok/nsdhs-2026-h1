@@ -114,10 +114,6 @@
       ✍️ 선생님 설문하기
       <span class="sub">익명 · 이름도 반 정보도 받지 않습니다</span>
     </a>
-    <a class="btn btn-primary" id="go-praise" href="#">
-      🎵 찬양팀 설문하기
-      <span class="sub">익명 · 파트만 선택합니다</span>
-    </a>
 
     <h2>우리반 학생 설문하기</h2>
     <div class="card">
@@ -143,7 +139,6 @@
     <div class="stats">
       <div class="stat"><div class="n" id="n-student">–</div><div class="l">학생</div></div>
       <div class="stat"><div class="n" id="n-teacher">–</div><div class="l">교사 / 27</div></div>
-      <div class="stat"><div class="n" id="n-praise">–</div><div class="l">찬양팀</div></div>
     </div>
     <h2>반별 학생 응답</h2>
     <div id="cell-progress"></div>
@@ -165,14 +160,13 @@
       <button class="btn btn-ghost" id="btn-analyze-full">주관식 포함해서 분석하기</button>
       <div class="note" id="pass-msg"></div>
       <button class="btn btn-ghost" id="btn-report">📄 전체 리포트 내려받기</button>
-      <div class="note">학생·선생님·찬양팀 전체를 주관식 원문까지 담아 파일 하나로 저장합니다.
+      <div class="note">학생·선생님 전체를 주관식 원문까지 담아 파일 하나로 저장합니다.
         인터넷 없이 열리고, 인쇄해서 PDF로 저장할 수 있습니다.</div>
     </div>
 
     <div id="kind-tabs" class="tabs hidden" style="margin-top:20px">
       <button data-kind="student" class="on">학생</button>
       <button data-kind="teacher">선생님</button>
-      <button data-kind="praise">찬양팀</button>
     </div>
     <div id="analysis"></div>
   </section>
@@ -181,7 +175,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608081812"></script>
+<script src="survey-questions.js?v=202608081824"></script>
 <script>
 /* ============================================================
  * 수련회 평가 운영 대시보드
@@ -197,7 +191,6 @@ var REST = URL_BASE + '/rest/v1';
 var H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
 
 var TEACHER_TOKEN = 'h2rhz';
-var PRAISE_TOKEN  = '2acjn';
 var TEACHER_TOTAL = 27;
 
 var CELLS = [
@@ -245,7 +238,6 @@ function toast(msg) {
 
 /* ── 탭 1: 링크 배포 ── */
 document.getElementById('go-teacher').href = BASE + '?t=' + encodeURIComponent(TEACHER_TOKEN);
-document.getElementById('go-praise').href  = BASE + '?p=' + encodeURIComponent(PRAISE_TOKEN);
 
 var sel = document.getElementById('cell');
 CELLS.forEach(function (c) {
@@ -310,17 +302,14 @@ function loadProgress() {
 
   var jobs = CELLS.map(function (c) { return countFor('student', c.token); });
   jobs.push(countFor('teacher', TEACHER_TOKEN));
-  jobs.push(countFor('praise', PRAISE_TOKEN));
 
   Promise.all(jobs).then(function (res) {
     var cellCounts = res.slice(0, CELLS.length);
     var tCount = res[CELLS.length];
-    var pCount = res[CELLS.length + 1];
 
     var studentTotal = cellCounts.reduce(function (a, b) { return a + (b || 0); }, 0);
     document.getElementById('n-student').textContent = studentTotal;
     document.getElementById('n-teacher').textContent = (tCount == null ? '?' : tCount);
-    document.getElementById('n-praise').textContent  = (pCount == null ? '?' : pCount);
 
     var max = Math.max.apply(null, cellCounts.map(function (n) { return n || 0; }).concat([1]));
     var host = document.getElementById('cell-progress');
@@ -520,7 +509,7 @@ function renderTexts(host, questions, rows) {
 var LAST = null;      // 마지막으로 받은 데이터
 var HAS_TEXTS = false; // 주관식이 포함된 데이터인지
 var CUR_KIND = 'student';
-var KIND_LABEL = { student: '학생', teacher: '선생님', praise: '찬양팀' };
+var KIND_LABEL = { student: '학생', teacher: '선생님' };
 
 function renderAnalysis() {
   var host = document.getElementById('analysis');
@@ -690,7 +679,7 @@ function reportSection(kindKey, label, rows) {
 }
 
 function buildReport() {
-  var byKind = { student: [], teacher: [], praise: [] };
+  var byKind = { student: [], teacher: [] };
   LAST.forEach(function (r) { if (byKind[r.kind]) byKind[r.kind].push(r); });
   var now = new Date().toLocaleString('ko-KR');
 
@@ -716,12 +705,11 @@ function buildReport() {
     + '</style></head><body>'
     + '<h1>26년 여름수련회 평가 리포트</h1>'
     + '<div class="meta">생성 ' + esc(now)
-    + ' · 학생 ' + byKind.student.length + '명 · 선생님 ' + byKind.teacher.length + '명 · 찬양팀 ' + byKind.praise.length + '명</div>'
+    + ' · 학생 ' + byKind.student.length + '명 · 선생님 ' + byKind.teacher.length + '명</div>'
     + '<div class="warn"><b>대외비 — 수련회TF 전용.</b> 익명으로 남긴 주관식 원문이 그대로 담겨 있습니다. '
     + '담임 선생님을 포함해 TF 밖으로 공유하지 마세요.</div>'
     + reportSection('student', '학생', byKind.student)
     + reportSection('teacher', '선생님', byKind.teacher)
-    + reportSection('praise', '찬양팀', byKind.praise)
     + '</body></html>';
 }
 

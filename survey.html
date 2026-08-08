@@ -84,7 +84,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608081812"></script>
+<script src="survey-questions.js?v=202608081824"></script>
 <script>
 /* 라우팅 · 렌더러 · 제출 — Task 4~8에서 채운다 */
 const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
@@ -106,7 +106,6 @@ let MODE = 'none', TOKEN = '';
 if (qs.get('k'))      { MODE = 'landing'; TOKEN = qs.get('k'); }
 else if (qs.get('t')) { MODE = 'teacher'; TOKEN = qs.get('t'); }
 else if (qs.get('r')) { MODE = 'student'; TOKEN = qs.get('r'); }
-else if (qs.get('p')) { MODE = 'praise';  TOKEN = qs.get('p'); }
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(el => el.classList.remove('on'));
