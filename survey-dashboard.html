@@ -185,7 +185,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608081937"></script>
+<script src="survey-questions.js?v=202608081940"></script>
 <script>
 /* ============================================================
  * 수련회 평가 운영 대시보드
@@ -371,6 +371,15 @@ function analyzeKind(host, kindLabel, questions, rows) {
 
     var box = el('div', 'q');
     box.appendChild(el('div', 'q-t', q.title));
+
+    /* 응답자 수를 항상 밝힌다.
+       분기 문항(showIf)은 해당 역할만 보기 때문에 전체 인원보다 적게 나오는데,
+       이 숫자가 없으면 '누가 빼먹었나' 로 오해하게 된다. */
+    var cntMsg = '응답 ' + vals.length + '명 / 전체 ' + rows.length + '명';
+    if (q.showIf && vals.length < rows.length) {
+      cntMsg += '  ·  이 문항은 해당 역할인 분에게만 보입니다';
+    }
+    box.appendChild(el('div', 'q-meta', cntMsg));
 
     if (q.type === 'scale') {
       var nums = vals.map(Number).filter(function (n) { return !isNaN(n); });
@@ -605,7 +614,7 @@ function aggRows(q, rows) {
   var vals = rows.map(function (r) { return r.answers[q.id]; })
                  .filter(function (v) { return v !== undefined && v !== null && v !== ''; });
   if (!vals.length) return null;
-  var out = { note: '', lines: [] };
+  var out = { note: '', lines: [], answered: vals.length };
 
   if (q.type === 'scale') {
     var nums = vals.map(Number).filter(function (n) { return !isNaN(n); });
@@ -669,6 +678,8 @@ function reportSection(kindKey, label, rows) {
     var a = aggRows(q, rows);
     if (!a) return;
     h.push('<div class="qb"><div class="qt">' + esc(q.title) + '</div>');
+    h.push('<div class="qn">' + esc(a.answered + '명 응답 / 전체 ' + rows.length + '명'
+      + (q.showIf && a.answered < rows.length ? '  ·  해당 역할인 분에게만 보이는 문항' : '')) + '</div>');
     if (a.note) h.push('<div class="qn">' + esc(a.note) + '</div>');
     h.push('<table>');
     a.lines.forEach(function (l) { h.push('<tr><th>' + esc(l[0]) + '</th><td>' + esc(l[1]) + '</td></tr>'); });

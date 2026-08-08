@@ -408,7 +408,7 @@ SURVEY.teacher = [
     rows:['저녁집회','GBS','리플렉션'],
     cols:['1','2','3','4','5'] },
 
-  { id:'q7_1', type:'checkbox', section:2, required:false, other:true, showIf:T_HOMEROOM,
+  { id:'q7_1', type:'checkbox', section:2, required:true, other:true, showIf:T_HOMEROOM,
     title:'학생들이 집중하거나 참여하기 어려웠던 이유가 있었다면 골라주세요.',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
@@ -425,7 +425,7 @@ SURVEY.teacher = [
     title:'성경공부·리플렉션 자료나 진행 방식에서 나아졌으면 하는 점을 적어주세요.' },
 
   /* ── SECTION 3 · 헬퍼/담당자 전용 ── */
-  { id:'q9', type:'checkbox', section:3, required:false, other:true, showIf:T_HELPER,
+  { id:'q9', type:'checkbox', section:3, required:true, other:true, showIf:T_HELPER,
     title:'[사전 준비] 맡으신 프로그램을 준비하며 어려웠던 점은 무엇이었나요?',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
@@ -434,7 +434,7 @@ SURVEY.teacher = [
       '수련회 정보 부족','인력 부족','특별한 어려움 없음'
     ] },
 
-  { id:'q11', type:'checkbox', section:3, required:false, other:true, showIf:T_HELPER,
+  { id:'q11', type:'checkbox', section:3, required:true, other:true, showIf:T_HELPER,
     title:'[현장 섬김] 현장에서 맡은 일을 하며 어려움이 있었다면, 그 이유를 골라주세요.',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
@@ -449,12 +449,13 @@ SURVEY.teacher = [
     title:'[인력 및 섬김 배치] 프로그램 진행에 필요한 인력 배치는 적절했나요?',
     scale:{ min:1, max:5, minLabel:'매우 부족', maxLabel:'매우 적절' } },
 
-  { id:'q12_a', type:'checkbox', section:3, required:false, max:3, other:true, showIf:T_HELPER,
+  { id:'q12_a', type:'checkbox', section:3, required:true, max:3, other:true, showIf:T_HELPER,
     title:'인력이 특히 부족했던 영역을 선택해주세요.',
     hint:'최대 3개까지 선택할 수 있습니다',
     options:[
       '전체 수련회 프로그램 진행','방송/음향','안전관리','학생 이동/통제',
-      '사진/영상','물품관리','주방/식사','청소','숙소관리'
+      '사진/영상','물품관리','주방/식사','청소','숙소관리',
+      '특별히 부족했던 영역은 없었다'
     ] },
 
   { id:'q12_1', type:'textarea', section:3, required:true, showIf:T_HELPER,
@@ -471,7 +472,7 @@ SURVEY.teacher = [
       '예상하지 못한 현장의 변수','특별한 문제 없음'
     ] },
 
-  { id:'q14', type:'checkbox', section:4, required:false, other:true,
+  { id:'q14', type:'checkbox', section:4, required:true, other:true,
     title:'다음 수련회에서 시간을 조정하면 좋겠다고 생각하는 것을 골라주세요.',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
@@ -482,17 +483,18 @@ SURVEY.teacher = [
 
   /* ── 찬양팀과 함께한 예배 (section 5, 2026-08-08 추가) ── */
 
-  { id:'w1', type:'checkbox', section:5, required:false, other:true,
+  { id:'w1', type:'checkbox', section:5, required:true, other:true,
     title:'이번 수련회 동안 찬양팀의 섬김을 통해 고등부 예배와 집회에 어떤 도움을 받으셨나요?',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
       '뜨겁고 열정적인 인도 덕분에 집회 분위기가 열리고 몰입할 수 있었다',
       '안정적이고 완성도 높은 연주와 가창으로 예배에 집중하기 좋았다',
       '학생들이 찬양에 마음을 열고 하나님께 나아가는 모습을 볼 수 있었다',
-      '준비 과정부터 현장까지 보여준 찬양팀의 헌신과 수고에 큰 은혜를 받았다'
+      '준비 과정부터 현장까지 보여준 찬양팀의 헌신과 수고에 큰 은혜를 받았다',
+      '특별히 떠오르는 것은 없다'
     ] },
 
-  { id:'w2', type:'checkbox', section:5, required:false, max:2,
+  { id:'w2', type:'checkbox', section:5, required:true, max:2,
     title:'찬양팀과 고등부 공동체(학생·교사)가 더 하나 되어 예배를 준비하려면, 다음 수련회에서 무엇이 가장 강화되면 좋을까요?',
     hint:'가장 중요하다고 생각하는 것 최대 2개를 골라주세요',
     options:[
@@ -503,12 +505,13 @@ SURVEY.teacher = [
       '지금 방식으로도 충분히 잘 이루어지고 있다'
     ] },
 
-  { id:'w3', type:'radio', section:5, required:false, other:true,
+  { id:'w3', type:'radio', section:5, required:true, other:true,
     title:"앞으로 고등부 수련회 찬양팀이 '고등부 공동체 안에서 더 깊이 섬기는 팀'으로 세워지려면, 어떤 모습이 가장 바람직할까요?",
     options:[
       '지금의 찬양팀 구조를 유지하되, 수련회 전 고등부 모임 참석과 사전 교제로 일체감을 높여간다',
       '메인 인도와 연주는 찬양팀이 맡되, 코러스나 보조 세션·기도로 고등부 학생과 교사가 함께 무대에 서는 구조를 만든다',
-      '시간이 걸리더라도 고등부 자체 인원(학생·교사)을 중심으로 찬양팀을 꾸준히 세워간다'
+      '시간이 걸리더라도 고등부 자체 인원(학생·교사)을 중심으로 찬양팀을 꾸준히 세워간다',
+      '잘 모르겠다'
     ] },
 
   { id:'w4', type:'textarea', section:5, required:true,
