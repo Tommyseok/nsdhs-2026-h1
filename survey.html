@@ -23,7 +23,7 @@
   .wrap { max-width:640px; margin:0 auto; padding:20px 16px 120px; }
   .brand { font-size:12px; font-weight:800; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; }
   h1 { font-size:21px; margin:6px 0 4px; }
-  .intro { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; color:var(--muted); font-size:13.5px; margin:16px 0; }
+  .intro { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; color:var(--muted); font-size:13.5px; margin:16px 0; white-space:pre-line; }
   .btn { display:block; width:100%; border:none; border-radius:10px; padding:15px; font-size:15px; font-weight:800; font-family:inherit; cursor:pointer; margin-top:10px; }
   .btn-primary { background:linear-gradient(135deg,var(--accent2) 0%,var(--accent) 100%); color:#fff; }
   .btn-ghost { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.15); color:#e2e8f0; }
@@ -44,14 +44,14 @@
   .scale button.sel { background:var(--accent2); border-color:var(--accent2); color:#fff; }
   .scale-lab { display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-top:6px; }
   .mtx-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:10px; }
-  .mtx { width:100%; border-collapse:collapse; font-size:12.5px; }
+  .mtx { width:100%; min-width:340px; border-collapse:collapse; font-size:12.5px; }
   .mtx th { color:var(--muted); font-weight:700; padding:6px 2px; text-align:center; }
   .mtx td { padding:7px 2px; text-align:center; border-top:1px solid var(--border); }
   .mtx td.rowlab { text-align:left; font-size:13px; font-weight:600; }
   .rank-btn { display:flex; align-items:center; gap:10px; padding:11px 12px; border:1px solid var(--border); border-radius:9px; margin-top:7px; cursor:pointer; font-size:14px; }
   .rank-btn.sel { border-color:var(--accent); background:rgba(167,139,250,.10); }
   .rank-no { flex:0 0 24px; height:24px; border-radius:50%; background:var(--accent2); color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
-  textarea, input[type=text] { width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; color:var(--text); padding:11px; font-family:inherit; font-size:14px; margin-top:8px; }
+  textarea, input[type=text] { width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; color:var(--text); padding:11px; font-family:inherit; font-size:16px; margin-top:8px; }
   textarea { min-height:88px; resize:vertical; }
   .err { border-color:var(--danger) !important; }
   .q.err { border-color:var(--danger); }
@@ -113,11 +113,16 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('on'), 2200);
 }
 
+function doneFlag() {
+  try { return localStorage.getItem('survey_done_' + MODE + '_' + TOKEN); }
+  catch (e) { return null; }
+}
+
 function boot() {
   if (MODE === 'none')    { showScreen('sc-none'); return; }
   if (MODE === 'landing') { showScreen('sc-landing'); initLanding(); return; }
   KIND = MODE;
-  if (localStorage.getItem('survey_done_' + MODE + '_' + TOKEN)) {
+  if (doneFlag()) {
     const host = document.getElementById('sc-done');
     host.innerHTML = '';
     host.appendChild(el('div', 'intro', '이미 응답을 제출하셨습니다. 감사합니다.'));
@@ -138,7 +143,10 @@ function saveDraft() {
 function loadDraft() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
-    if (raw) ANSWERS = JSON.parse(raw) || {};
+    if (raw) {
+      const v = JSON.parse(raw);
+      ANSWERS = (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
+    }
   } catch (e) { ANSWERS = {}; }
 }
 
@@ -365,7 +373,8 @@ function validate() {
   document.querySelectorAll('#sc-form .q').forEach(b => b.classList.remove('err'));
   visibleQuestions(KIND).forEach(q => {
     if (!q.required) return;
-    if (isEmpty(q, ANSWERS[q.id])) {
+    const hasOther = q.other && String(ANSWERS[q.id + '__other'] || '').trim() !== '';
+    if (isEmpty(q, ANSWERS[q.id]) && !hasOther) {
       if (!firstBadId) firstBadId = q.id;
       const box = document.querySelector('#sc-form .q[data-qid="' + q.id + '"]');
       if (box) box.classList.add('err');
@@ -377,10 +386,12 @@ function validate() {
 const DONE_KEY = () => 'survey_done_' + KIND + '_' + TOKEN;
 
 function clientKey() {
-  let k = localStorage.getItem('survey_client_key');
+  const storeKey = 'survey_client_key_' + KIND;
+  let k = null;
+  try { k = localStorage.getItem(storeKey); } catch (e) {}
   if (!k) {
     k = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    try { localStorage.setItem('survey_client_key', k); } catch (e) {}
+    try { localStorage.setItem(storeKey, k); } catch (e) {}
   }
   return k;
 }
@@ -424,8 +435,8 @@ async function submit() {
   try {
     await post('/survey_responses', { kind: KIND, token: TOKEN, answers: visibleAnswers(), client_key: clientKey() });
     await post('/survey_progress',  { kind: KIND, token: TOKEN }).catch(() => {});
-    localStorage.setItem(DONE_KEY(), '1');
-    localStorage.removeItem(DRAFT_KEY);
+    try { localStorage.setItem(DONE_KEY(), '1'); } catch (e) {}
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
     showDone();
   } catch (e) {
     btn.disabled = false; btn.textContent = '제출하기';
@@ -508,7 +519,14 @@ document.getElementById('btn-teacher').addEventListener('click', () => {
   location.href = 'survey.html?t=' + encodeURIComponent(TEACHER_TOKEN);
 });
 
-boot();
+try {
+  boot();
+} catch (e) {
+  const host = document.getElementById('sc-none');
+  host.innerHTML = '';
+  host.appendChild(el('div', 'intro', '화면을 여는 중 문제가 생겼습니다. 브라우저 설정에서 쿠키·데이터 저장이 차단되어 있다면 허용한 뒤 다시 열어주세요. 계속 안 되면 담당 선생님께 알려주세요.'));
+  showScreen('sc-none');
+}
 </script>
 </body>
 </html>
