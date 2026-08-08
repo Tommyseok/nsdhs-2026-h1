@@ -197,7 +197,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608081947"></script>
+<script src="survey-questions.js?v=202608082009"></script>
 <script>
 /* ============================================================
  * 수련회 평가 운영 대시보드
@@ -357,14 +357,32 @@ loadProgress();
 
 /* ── 탭 3: 결과 분석 ──
  * survey_stats() 는 폐쇄형 문항만 돌려준다. 주관식은 서버에서 아예 내보내지 않는다. */
-function bar(label, value, total, cls) {
+
+/* 순위형 가중 집계 — 1순위 3점, 2순위 2점, 3순위 1점.
+   가중 점수만 보면 '1순위 몰표'와 '골고루 3순위'가 구분되지 않으므로
+   선택 횟수도 함께 돌려준다. 배점은 pick 수에 맞춰 자동으로 정해진다. */
+function rankScores(q, vals) {
+  var pick = q.pick || 3;
+  var score = {}, count = {};
+  vals.forEach(function (arr) {
+    (arr || []).forEach(function (o, idx) {
+      score[o] = (score[o] || 0) + Math.max(pick - idx, 0);
+      count[o] = (count[o] || 0) + 1;
+    });
+  });
+  return q.options.slice()
+    .map(function (o) { return { o: o, s: score[o] || 0, c: count[o] || 0 }; })
+    .sort(function (a, b) { return b.s - a.s || b.c - a.c; });
+}
+
+function bar(label, value, total, cls, suffix) {
   var row = el('div', 'bar-row');
   row.appendChild(el('div', 'lab', label));
   var track = el('div', 'bar-track');
   var fill = el('div', 'bar-fill' + (cls ? ' ' + cls : ''));
   fill.style.width = (total ? (value / total * 100) : 0) + '%';
   track.appendChild(fill); row.appendChild(track);
-  row.appendChild(el('div', 'val', value + '명'));
+  row.appendChild(el('div', 'val', value + (suffix === undefined ? '명' : suffix)));
   return row;
 }
 
@@ -414,12 +432,12 @@ function analyzeKind(host, kindLabel, questions, rows) {
         .forEach(function (o) { box.appendChild(bar(o, c[o] || 0, vals.length)); });
 
     } else if (q.type === 'rank') {
-      // 순위를 가중치 없이 집합으로 본다 (설계 5.3) — "3위 안에 들었는가"만 센다
-      box.appendChild(el('div', 'q-meta', '순위 가중치 없이 "3위 안에 든 횟수"로 셉니다'));
-      var rc = {};
-      vals.forEach(function (arr) { (arr || []).forEach(function (o) { rc[o] = (rc[o] || 0) + 1; }); });
-      q.options.slice().sort(function (a, b) { return (rc[b] || 0) - (rc[a] || 0); })
-        .forEach(function (o) { box.appendChild(bar(o, rc[o] || 0, vals.length)); });
+      box.appendChild(el('div', 'q-meta', '1순위 3점 · 2순위 2점 · 3순위 1점으로 매긴 가중 점수입니다. 괄호는 고른 사람 수입니다.'));
+      var rs = rankScores(q, vals);
+      var mxs = Math.max.apply(null, rs.map(function (x) { return x.s; }).concat([1]));
+      rs.forEach(function (x) {
+        box.appendChild(bar(x.o + '  (' + x.c + '명)', x.s, mxs, null, '점'));
+      });
 
     } else if (q.type === 'matrix') {
       var numericCols = q.cols.every(function (c2) { return /^\d+$/.test(c2); });
@@ -646,8 +664,13 @@ function aggRows(q, rows) {
     var dr = {}; vals.forEach(function (v) { dr[v] = (dr[v] || 0) + 1; });
     q.options.forEach(function (o) { out.lines.push([o, (dr[o] || 0) + '명']); });
 
-  } else if (q.type === 'checkbox' || q.type === 'rank') {
-    if (q.type === 'rank') out.note = '순위 가중치 없이 "3위 안에 든 횟수"로 셉니다';
+  } else if (q.type === 'rank') {
+    out.note = '1순위 3점 · 2순위 2점 · 3순위 1점 가중 점수 (괄호는 고른 사람 수)';
+    rankScores(q, vals).forEach(function (x) {
+      out.lines.push([x.o, x.s + '점  (' + x.c + '명)']);
+    });
+
+  } else if (q.type === 'checkbox') {
     var c = {}; vals.forEach(function (arr) { (arr || []).forEach(function (o) { c[o] = (c[o] || 0) + 1; }); });
     q.options.slice().sort(function (a, b) { return (c[b] || 0) - (c[a] || 0); })
       .forEach(function (o) { out.lines.push([o, (c[o] || 0) + '명']); });
