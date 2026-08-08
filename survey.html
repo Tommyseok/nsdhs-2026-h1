@@ -280,6 +280,15 @@ function renderQuestion(q, idx) {
     });
     box.dataset.rank = JSON.stringify(picked);
     paint();
+    // 순위형에도 '기타' 직접입력을 지원한다 (학생 q4). collect()는 타입과 무관하게
+    // input[data-other] 를 따로 읽으므로 여기서 칸만 만들어 주면 된다.
+    if (q.other) {
+      const oi = document.createElement('input');
+      oi.type = 'text'; oi.placeholder = '기타 (직접 입력)';
+      oi.dataset.other = '1';
+      oi.value = ANSWERS[q.id + '__other'] || '';
+      box.appendChild(oi);
+    }
   }
 
   else if (q.type === 'text' || q.type === 'textarea') {

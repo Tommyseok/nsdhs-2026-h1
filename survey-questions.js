@@ -28,8 +28,8 @@ SURVEY.meta = {
   },
   praise: {
     title: '찬양팀 설문',
-    sections: ['기본', '사전 준비', '선곡', '현장', '영적·시간', '마무리'],
-    intro: '이 설문은 익명입니다. 파트 외에는 개인을 식별하는 정보를 받지 않습니다.'
+    sections: ['준비하는 동안', '집회를 진행하며', '돌아보며'],
+    intro: '이 설문은 익명입니다. 잘했는지 못했는지를 묻는 자리가 아니라, 찬양으로 섬기며 지나온 시간을 함께 돌아보는 자리입니다. 떠오르는 대로 편하게 적어주세요.'
   }
 };
 
@@ -56,9 +56,9 @@ SURVEY.student = [
     title:'수련회를 시작할 때를 돌아보면, 당신의 마음은 얼마나 준비되고, 기대하고 있었나요?',
     scale:{ min:1, max:5, minLabel:'전혀 기대/준비되지 않음', maxLabel:'매우 기대되고 준비됨' } },
 
-  { id:'q4', type:'checkbox', section:1, required:true, max:3, other:true,
+  { id:'q4', type:'rank', section:1, required:true, pick:3, other:true,
     title:'수련회를 기대하고 참여하도록 마음을 움직인 요소는 무엇인가요?',
-    hint:'가장 영향이 컸던 항목 최대 3개 선택',
+    hint:'영향이 컸던 순서대로 최대 3개까지 눌러주세요 (1·2·3)',
     options:[
       '수련회 전 예배 후 기도회 (4번)',
       '릴레이 기도문 참여',
@@ -75,9 +75,12 @@ SURVEY.student = [
     hint:'1점: 아쉬웠다 / 3점: 보통이다 / 5점: 매우 유익하고 즐거웠다',
     rows:PROGRAMS, cols:['1','2','3','4','5'] },
 
-  { id:'q6', type:'rank', section:2, required:true, pick:3,
-    title:"수련회 활동 중 나에게 가장 기억에 남고 즐거웠던 프로그램 '3가지'를 순서대로 선택해 주세요. (1-2-3)",
-    options:PROGRAMS },
+  // 2026-08-08: 순위형(Top3) → 항목별 5점 척도로 교체.
+  // q5(유익·즐거움)와 축이 다르다. 이쪽은 '관계 형성'에 도움이 되었는지를 본다.
+  { id:'q6', type:'matrix', section:2, required:true,
+    title:'각 활동 및 교제 프로그램은 선후배·친구들과 자연스럽게 교제하고 가까워지는데 얼마나 도움이 되었나요?',
+    hint:'1점: 전혀 도움이 되지 않았다 ~ 5점: 매우 도움이 되었다',
+    rows:PROGRAMS, cols:['1','2','3','4','5'] },
 
   { id:'q7', type:'radio', section:2, required:true,
     title:"'종범이네(달란트) 문방구' 운영은 수련회 프로그램에 더 적극적으로 참여하는 데 동기부여가 되었나요?",
@@ -90,7 +93,13 @@ SURVEY.student = [
   { id:'q7_1', type:'textarea', section:2, required:false,
     title:'달란트 문방구의 물품, 달란트 획득 방식, 운영 시간 등 좋았던 점이나 개선되었으면 하는 점을 자유롭게 적어주세요.' },
 
+  // 2026-08-08: '프로그램 개선점' → '관계 형성에 도움된 순간'으로 교체.
+  // q6가 관계 형성을 점수로 묻고, 이 문항이 그 이유를 서술로 받는다.
   { id:'q8', type:'textarea', section:2, required:false,
+    title:'이번 수련회에서 친구나 선후배와 가까워지는 데 특히 도움이 되었던 순간이나 활동이 있었다면 적어주세요.' },
+
+  // 원래 q8이던 프로그램 개선점 문항. 위 문항과 축이 달라 별도 문항으로 되살렸다.
+  { id:'q8_1', type:'textarea', section:2, required:false,
     title:"수련회 활동 프로그램 중 아쉬워서 '다음에는 이렇게 바꿨으면 좋겠다' 하는 점이나, 꼭 다시 하고 싶은 프로그램이 있다면 적어주세요." },
 
   { id:'q9', type:'scale', section:3, required:true,
@@ -213,63 +222,51 @@ SURVEY.teacher = [
     hint:'수련회TF 회의에 전달할 핵심 피드백을 적어주세요.' }
 ];
 
+/* 찬양팀 설문 — 2026-08-08 전면 개편.
+ * 이전 버전은 연습 횟수·악보 공유·리허설 시간·음향·무대 조명을 묻는 운영 점검표였다.
+ * "잘했는지 못했는지"가 아니라 신앙적·예배적으로 어떤 시간이었는지를 돌아보는 쪽으로 바꿨다.
+ * 파트 선택은 뺐다(집계 의미가 적고, 인원이 적어 오히려 익명성을 해친다).
+ * 음향·환경 이슈는 p9 하나로 흡수했다 — 평가표가 되지 않으면서도 실무 문제는 자연히 적히게. */
 SURVEY.praise = [
-  { id:'p1', type:'radio', section:1, required:true, other:true,
-    title:'이번 수련회에서 맡으신 파트는 무엇인가요?',
-    options:['인도','보컬','건반','어쿠스틱 기타','일렉 기타','베이스','드럼','신디','음향'] },
+  { id:'p1', type:'scale', section:1, required:true,
+    title:'수련회를 준비하는 동안, 예배자로서 내 마음은 어떻게 준비되고 있었나요?',
+    scale:{ min:1, max:5, minLabel:'거의 돌아보지 못했다', maxLabel:'꾸준히 준비했다' } },
 
-  { id:'p2', type:'scale', section:2, required:true,
-    title:'사전 연습(횟수·시간)은 충분했나요?',
-    scale:{ min:1, max:5, minLabel:'많이 부족했다', maxLabel:'충분했다' } },
+  { id:'p2', type:'radio', section:1, required:true,
+    title:'준비 기간에 개인적으로 기도하거나 말씀을 붙든 시간이 있었나요?',
+    options:['거의 없었다','가끔 있었다','꾸준히 있었다'] },
 
-  { id:'p2_1', type:'textarea', section:2, required:false,
-    title:'연습 일정·장소에서 아쉬웠던 점을 적어주세요.' },
+  { id:'p3', type:'textarea', section:1, required:false,
+    title:'팀으로 함께 기도하고 마음을 나눈 시간은 나에게 어떤 의미였나요?' },
 
-  { id:'p3', type:'scale', section:2, required:true,
-    title:'콘티(선곡) 공유 시점은 적절했나요?',
-    scale:{ min:1, max:5, minLabel:'너무 늦었다', maxLabel:'충분히 여유 있었다' } },
+  { id:'p4', type:'scale', section:1, required:true,
+    title:"선곡과 콘티를 준비하며 '이 곡으로 무엇을 전하고 싶은지' 팀 안에서 충분히 나눴나요?",
+    scale:{ min:1, max:5, minLabel:'거의 나누지 못했다', maxLabel:'충분히 나눴다' } },
 
-  { id:'p4', type:'scale', section:2, required:true,
-    title:'악보·음원·가사 자료 공유는 원활했나요?',
-    scale:{ min:1, max:5, minLabel:'자료를 구하기 힘들었다', maxLabel:'필요한 자료가 바로바로 왔다' } },
+  { id:'p5', type:'scale', section:2, required:true,
+    title:"찬양을 인도하고 연주하는 동안, 나는 얼마나 '예배자'로 있었나요?",
+    scale:{ min:1, max:5, minLabel:'내 역할·연주에만 집중했다', maxLabel:'나도 함께 예배드렸다' } },
 
-  { id:'p5', type:'scale', section:3, required:true,
-    title:'선곡이 학생들이 따라 부르기에 적절했나요?',
-    scale:{ min:1, max:5, minLabel:'학생들에게 어렵거나 낯설었다', maxLabel:'학생들이 잘 따라 불렀다' } },
+  { id:'p6', type:'textarea', section:2, required:false,
+    title:'집회 중 하나님께서 일하신다고 느낀 순간이 있었나요? 있었다면 언제였는지 적어주세요.' },
 
-  { id:'p5_1', type:'textarea', section:3, required:false,
-    title:'반응이 특히 좋았던 곡 / 아쉬웠던 곡을 적어주세요.' },
+  { id:'p7', type:'textarea', section:2, required:false,
+    title:'학생들이 찬양으로 하나님께 나아가는 모습을 보며 느낀 것을 적어주세요.' },
 
-  { id:'p6', type:'scale', section:4, required:true,
-    title:'리허설·사운드체크 시간은 충분했나요?',
-    scale:{ min:1, max:5, minLabel:'많이 부족했다', maxLabel:'충분했다' } },
+  { id:'p8', type:'scale', section:2, required:true,
+    title:'말씀과 찬양의 흐름이 자연스럽게 이어졌다고 느꼈나요?',
+    scale:{ min:1, max:5, minLabel:'따로 노는 느낌이었다', maxLabel:'자연스럽게 이어졌다' } },
 
-  { id:'p7', type:'scale', section:4, required:true,
-    title:'음향 환경(모니터·밸런스·마이크)은 어땠나요?',
-    scale:{ min:1, max:5, minLabel:'연주/인도에 지장이 컸다', maxLabel:'전혀 문제 없었다' } },
+  { id:'p9', type:'textarea', section:2, required:false,
+    title:'집회 중 예배에 집중하기 어렵게 만든 것이 있었다면 적어주세요.',
+    hint:'음향·환경이든 진행이든, 마음에 걸렸던 것을 편하게 적어주세요.' },
 
-  { id:'p7_1', type:'textarea', section:4, required:false,
-    title:'음향에서 구체적으로 문제가 됐던 점과 개선안을 적어주세요.' },
+  { id:'p10', type:'textarea', section:3, required:false,
+    title:'찬양으로 섬기며 개인적으로 받은 은혜나 깨달음이 있다면 적어주세요.' },
 
-  { id:'p8', type:'scale', section:4, required:true,
-    title:'무대 세팅·동선·조명은 어땠나요?',
-    scale:{ min:1, max:5, minLabel:'불편했다', maxLabel:'매우 좋았다' } },
+  { id:'p11', type:'textarea', section:3, required:false,
+    title:'섬기는 중에 힘들었거나 마음이 무거웠던 순간이 있었나요?' },
 
-  { id:'p9', type:'scale', section:5, required:true,
-    title:'팀 기도회·나눔이 찬양으로 섬기는 데 도움이 되었나요?',
-    scale:{ min:1, max:5, minLabel:'거의 도움이 되지 않았다', maxLabel:'매우 큰 도움이 되었다' } },
-
-  { id:'p10', type:'scale', section:5, required:true,
-    title:'집회 중 학생들의 찬양 참여도는 어떻게 느끼셨나요?',
-    scale:{ min:1, max:5, minLabel:'많이 가라앉아 있었다', maxLabel:'매우 뜨겁게 참여했다' } },
-
-  { id:'p11', type:'radio', section:5, required:true,
-    title:'집회 찬양에 배분된 시간은 어땠나요?',
-    options:['부족했다','적당했다','너무 길었다'] },
-
-  { id:'p12_keep', type:'textarea', section:6, required:false,
-    title:'다음 수련회에서도 꼭 유지했으면 하는 것:' },
-
-  { id:'p12_try', type:'textarea', section:6, required:false,
-    title:'다음 수련회에서 꼭 바꿨으면 하는 것:' }
+  { id:'p12', type:'textarea', section:3, required:false,
+    title:'다음 수련회에서 찬양팀이 더 깊이 섬기기 위해, 영적으로·관계적으로 준비하면 좋겠다고 생각하는 것을 적어주세요.' }
 ];
