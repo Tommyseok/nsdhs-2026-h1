@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Runners 2026 · 수련회 평가</title>
+<style>
+  :root {
+    --bg:#0b0f17; --bg2:#111827; --card:#1e293b; --border:#334155;
+    --text:#e5e7eb; --muted:#94a3b8; --accent:#a78bfa; --accent2:#7c3aed;
+    --ok:#10b981; --warn:#f59e0b; --danger:#ef4444;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    margin:0; padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    background:linear-gradient(180deg,#0b0f17 0%,#0a0d14 100%); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","맑은 고딕","Malgun Gothic",sans-serif;
+    line-height:1.55; font-size:15px; min-height:100vh;
+  }
+  .wrap { max-width:640px; margin:0 auto; padding:20px 16px 120px; }
+  .brand { font-size:12px; font-weight:800; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; }
+  h1 { font-size:21px; margin:6px 0 4px; }
+  .intro { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; color:var(--muted); font-size:13.5px; margin:16px 0; white-space:pre-line; }
+  .btn { display:block; width:100%; border:none; border-radius:10px; padding:15px; font-size:15px; font-weight:800; font-family:inherit; cursor:pointer; margin-top:10px; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent2) 0%,var(--accent) 100%); color:#fff; }
+  .btn-ghost { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.15); color:#e2e8f0; }
+  .screen { display:none; }
+  .screen.on { display:block; }
+  .toast { position:fixed; left:50%; bottom:28px; transform:translateX(-50%); background:var(--card); border:1px solid var(--border); color:var(--text); padding:11px 18px; border-radius:999px; font-size:13px; font-weight:700; opacity:0; pointer-events:none; transition:opacity .2s; z-index:60; }
+  .toast.on { opacity:1; }
+
+  .q { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; margin:14px 0; }
+  .q-title { font-size:15px; font-weight:700; margin-bottom:4px; }
+  .q-hint  { font-size:12.5px; color:var(--muted); margin-bottom:10px; }
+  .q-req   { color:var(--danger); margin-left:4px; }
+  .opt { display:flex; align-items:flex-start; gap:9px; padding:10px 12px; border:1px solid var(--border); border-radius:9px; margin-top:7px; cursor:pointer; font-size:14px; }
+  .opt.sel { border-color:var(--accent); background:rgba(167,139,250,.10); }
+  .opt input { margin:3px 0 0; flex:0 0 auto; }
+  .scale { display:flex; gap:6px; margin-top:10px; }
+  .scale button { flex:1; padding:12px 0; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:15px; font-weight:800; font-family:inherit; cursor:pointer; }
+  .scale button.sel { background:var(--accent2); border-color:var(--accent2); color:#fff; }
+  .scale-lab { display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-top:6px; }
+  .mtx-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:10px; }
+  .mtx { width:100%; min-width:340px; border-collapse:collapse; font-size:12.5px; }
+  .mtx th { color:var(--muted); font-weight:700; padding:6px 2px; text-align:center; }
+  .mtx td { padding:7px 2px; text-align:center; border-top:1px solid var(--border); }
+  .mtx td.rowlab { text-align:left; font-size:13px; font-weight:600; }
+  .rank-btn { display:flex; align-items:center; gap:10px; padding:11px 12px; border:1px solid var(--border); border-radius:9px; margin-top:7px; cursor:pointer; font-size:14px; }
+  .rank-btn.sel { border-color:var(--accent); background:rgba(167,139,250,.10); }
+  .rank-no { flex:0 0 24px; height:24px; border-radius:50%; background:var(--accent2); color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  textarea, input[type=text] { width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; color:var(--text); padding:11px; font-family:inherit; font-size:16px; margin-top:8px; }
+  textarea { min-height:88px; resize:vertical; }
+  .err { border-color:var(--danger) !important; }
+  .q.err { border-color:var(--danger); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Runners 2026</div>
+  <h1>26년 여름수련회 평가</h1>
+
+  <section id="sc-none" class="screen">
+    <div class="intro">잘못된 링크입니다. 담당 선생님께 받은 링크로 다시 들어와 주세요.</div>
+  </section>
+
+  <section id="sc-landing" class="screen">
+    <div class="intro">선생님, 수련회 섬기시느라 수고 많으셨습니다.<br>아래에서 우리 반 학생들에게 설문을 보내고, 선생님 설문도 남겨주세요.</div>
+    <button class="btn btn-primary" id="btn-share">📤 우리 반 학생들에게 보내기</button>
+    <button class="btn btn-ghost" id="btn-teacher">✍️ 선생님 설문 시작하기</button>
+    <div class="intro" id="landing-count" style="text-align:center">응답 현황을 불러오는 중…</div>
+  </section>
+
+  <section id="sc-form" class="screen"></section>
+  <section id="sc-done" class="screen"></section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="survey-questions.js"></script>
+<script>
+/* 라우팅 · 렌더러 · 제출 — Task 4~8에서 채운다 */
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
+
+// showIf 조건이 참조하는 문항 id. 이 문항의 값이 바뀌면 화면을 다시 그린다.
+// 지금 분기를 만드는 문항은 교사 Q4 하나뿐이다. 분기가 늘면 여기에 추가한다.
+const BRANCH_IDS = ['q4'];
+
+// Task 2에서 생성한 tokens.csv 의 '전체교사' 행 토큰
+const TEACHER_TOKEN = 'h2rhz';
+
+const qs = new URLSearchParams(location.search);
+let MODE = 'none', TOKEN = '';
+if (qs.get('k'))      { MODE = 'landing'; TOKEN = qs.get('k'); }
+else if (qs.get('t')) { MODE = 'teacher'; TOKEN = qs.get('t'); }
+else if (qs.get('r')) { MODE = 'student'; TOKEN = qs.get('r'); }
+else if (qs.get('p')) { MODE = 'praise';  TOKEN = qs.get('p'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2200);
+}
+
+function doneFlag() {
+  try { return localStorage.getItem('survey_done_' + MODE + '_' + TOKEN); }
+  catch (e) { return null; }
+}
+
+function boot() {
+  if (MODE === 'none')    { showScreen('sc-none'); return; }
+  if (MODE === 'landing') { showScreen('sc-landing'); initLanding(); return; }
+  KIND = MODE;
+  if (doneFlag()) {
+    const host = document.getElementById('sc-done');
+    host.innerHTML = '';
+    host.appendChild(el('div', 'intro', '이미 응답을 제출하셨습니다. 감사합니다.'));
+    showScreen('sc-done');
+    return;
+  }
+  showScreen('sc-form');
+  renderForm(MODE);   // Task 5
+}
+
+let ANSWERS = {};
+let KIND = '';
+let DRAFT_KEY = '';
+
+function saveDraft() {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(ANSWERS)); } catch (e) {}
+}
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (raw) {
+      const v = JSON.parse(raw);
+      ANSWERS = (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
+    }
+  } catch (e) { ANSWERS = {}; }
+}
+
+function visibleQuestions(kind) {
+  return SURVEY[kind].filter(q => !q.showIf || q.showIf(ANSWERS));
+}
+
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function renderQuestion(q, idx) {
+  const box = el('div', 'q');
+  box.dataset.qid = q.id;
+
+  const t = el('div', 'q-title', (idx + 1) + '. ' + q.title);
+  if (q.required) t.appendChild(el('span', 'q-req', '*'));
+  box.appendChild(t);
+  if (q.hint) box.appendChild(el('div', 'q-hint', q.hint));
+
+  if (q.type === 'radio' || q.type === 'checkbox') {
+    const multi = q.type === 'checkbox';
+    q.options.forEach(opt => {
+      const lab = el('label', 'opt');
+      const inp = document.createElement('input');
+      inp.type = multi ? 'checkbox' : 'radio';
+      inp.name = q.id; inp.value = opt;
+      if (multi ? (ANSWERS[q.id] || []).includes(opt) : ANSWERS[q.id] === opt) {
+        inp.checked = true; lab.classList.add('sel');
+      }
+      inp.addEventListener('change', () => {
+        if (multi) {
+          const cur = Array.from(box.querySelectorAll('input[type=checkbox]:checked'));
+          if (q.max && cur.length > q.max) { inp.checked = false; toast('최대 ' + q.max + '개까지 선택할 수 있어요'); return; }
+        }
+        box.querySelectorAll('.opt').forEach(o => {
+          const i = o.querySelector('input');
+          if (i) o.classList.toggle('sel', i.checked);
+        });
+      });
+      lab.appendChild(inp);
+      lab.appendChild(el('span', null, opt));
+      box.appendChild(lab);
+    });
+    if (q.other) {
+      const oi = document.createElement('input');
+      oi.type = 'text'; oi.placeholder = '기타 (직접 입력)';
+      oi.dataset.other = '1';
+      oi.value = ANSWERS[q.id + '__other'] || '';
+      box.appendChild(oi);
+    }
+  }
+
+  else if (q.type === 'scale') {
+    const row = el('div', 'scale');
+    for (let v = q.scale.min; v <= q.scale.max; v++) {
+      const b = el('button', null, String(v));
+      b.type = 'button'; b.dataset.val = v;
+      if (String(ANSWERS[q.id]) === String(v)) b.classList.add('sel');
+      b.addEventListener('click', () => {
+        row.querySelectorAll('button').forEach(x => x.classList.remove('sel'));
+        b.classList.add('sel');
+      });
+      row.appendChild(b);
+    }
+    box.appendChild(row);
+    const labs = el('div', 'scale-lab');
+    labs.appendChild(el('span', null, q.scale.minLabel));
+    labs.appendChild(el('span', null, q.scale.maxLabel));
+    box.appendChild(labs);
+  }
+
+  else if (q.type === 'matrix') {
+    const wrap = el('div', 'mtx-wrap');
+    const tb = el('table', 'mtx');
+    const thead = el('thead'); const htr = el('tr');
+    htr.appendChild(el('th'));
+    q.cols.forEach(c => htr.appendChild(el('th', null, c)));
+    thead.appendChild(htr); tb.appendChild(thead);
+    const tbody = el('tbody');
+    q.rows.forEach((r, ri) => {
+      const tr = el('tr');
+      tr.appendChild(el('td', 'rowlab', r));
+      q.cols.forEach(c => {
+        const td = el('td');
+        const inp = document.createElement('input');
+        inp.type = 'radio'; inp.name = q.id + '__' + ri; inp.value = c;
+        if ((ANSWERS[q.id] || {})[r] === c) inp.checked = true;
+        td.appendChild(inp); tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    tb.appendChild(tbody); wrap.appendChild(tb); box.appendChild(wrap);
+  }
+
+  else if (q.type === 'rank') {
+    const picked = (ANSWERS[q.id] || []).slice();
+    const paint = () => {
+      box.querySelectorAll('.rank-btn').forEach(b => {
+        const i = picked.indexOf(b.dataset.opt);
+        b.classList.toggle('sel', i >= 0);
+        const no = b.querySelector('.rank-no');
+        no.style.visibility = i >= 0 ? 'visible' : 'hidden';
+        no.textContent = i >= 0 ? String(i + 1) : '';
+      });
+    };
+    q.options.forEach(opt => {
+      const b = el('div', 'rank-btn');
+      b.dataset.opt = opt;
+      const no = el('div', 'rank-no'); no.style.visibility = 'hidden';
+      b.appendChild(no);
+      b.appendChild(el('span', null, opt));
+      b.addEventListener('click', () => {
+        const i = picked.indexOf(opt);
+        if (i >= 0) picked.splice(i, 1);
+        else if (picked.length >= (q.pick || 3)) { toast((q.pick || 3) + '개까지 고를 수 있어요'); return; }
+        else picked.push(opt);
+        box.dataset.rank = JSON.stringify(picked);
+        paint();
+      });
+      box.appendChild(b);
+    });
+    box.dataset.rank = JSON.stringify(picked);
+    paint();
+  }
+
+  else if (q.type === 'text' || q.type === 'textarea') {
+    const inp = document.createElement(q.type === 'text' ? 'input' : 'textarea');
+    if (q.type === 'text') inp.type = 'text';
+    inp.value = ANSWERS[q.id] || '';
+    box.appendChild(inp);
+  }
+
+  return box;
+}
+
+function collect() {
+  document.querySelectorAll('#sc-form .q').forEach(box => {
+    const qid = box.dataset.qid;
+    const q = SURVEY[KIND].find(x => x.id === qid);
+    if (!q) return;
+
+    if (q.type === 'radio') {
+      const c = box.querySelector('input[type=radio]:checked');
+      ANSWERS[qid] = c ? c.value : '';
+    } else if (q.type === 'checkbox') {
+      ANSWERS[qid] = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map(i => i.value);
+    } else if (q.type === 'scale') {
+      const b = box.querySelector('.scale button.sel');
+      ANSWERS[qid] = b ? Number(b.dataset.val) : null;
+    } else if (q.type === 'matrix') {
+      const o = {};
+      q.rows.forEach((r, ri) => {
+        const c = box.querySelector('input[name="' + qid + '__' + ri + '"]:checked');
+        if (c) o[r] = c.value;
+      });
+      ANSWERS[qid] = o;
+    } else if (q.type === 'rank') {
+      ANSWERS[qid] = JSON.parse(box.dataset.rank || '[]');
+    } else {
+      const inp = box.querySelector('textarea, input[type=text]:not([data-other])');
+      ANSWERS[qid] = inp ? inp.value.trim() : '';
+    }
+
+    const oth = box.querySelector('input[data-other]');
+    if (oth) ANSWERS[qid + '__other'] = oth.value.trim();
+  });
+  return ANSWERS;
+}
+
+function renderForm(kind) {
+  KIND = kind;
+  DRAFT_KEY = 'survey_draft_' + kind + '_' + TOKEN;
+  loadDraft();
+
+  const meta = SURVEY.meta[kind];
+  const host = document.getElementById('sc-form');
+  host.innerHTML = '';
+  host.appendChild(el('div', 'intro', meta.intro));
+
+  const list = el('div');
+  list.id = 'q-list';
+  host.appendChild(list);
+  paintQuestions();
+
+  list.addEventListener('change', e => {
+    collect(); saveDraft();
+    const box = e.target.closest('.q');
+    if (box && BRANCH_IDS.includes(box.dataset.qid)) paintQuestions();
+  });
+  list.addEventListener('click', e => {
+    if (e.target.closest('.scale button') || e.target.closest('.rank-btn')) { collect(); saveDraft(); }
+  });
+  list.addEventListener('input', e => {
+    if (e.target.matches('textarea, input[type=text]')) { collect(); saveDraft(); }
+  });
+
+  const bar = el('div');
+  bar.id = 'submit-bar';
+  bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(11,15,23,.94);border-top:1px solid var(--border);';
+  const inner = el('div');
+  inner.style.cssText = 'max-width:640px;margin:0 auto;';
+  const sub = el('button', 'btn btn-primary', '제출하기');
+  sub.id = 'btn-submit'; sub.style.marginTop = '0';
+  inner.appendChild(sub); bar.appendChild(inner);
+  document.body.appendChild(bar);
+  sub.addEventListener('click', submit);
+}
+
+function isEmpty(q, v) {
+  if (v == null) return true;
+  if (q.type === 'checkbox' || q.type === 'rank') return !v.length;
+  if (q.type === 'matrix') return Object.keys(v || {}).length < q.rows.length;
+  if (q.type === 'scale') return v === null || v === '';
+  return String(v).trim() === '';
+}
+
+function validate() {
+  collect();
+  let firstBadId = null;
+  document.querySelectorAll('#sc-form .q').forEach(b => b.classList.remove('err'));
+  visibleQuestions(KIND).forEach(q => {
+    if (!q.required) return;
+    const hasOther = q.other && String(ANSWERS[q.id + '__other'] || '').trim() !== '';
+    if (isEmpty(q, ANSWERS[q.id]) && !hasOther) {
+      if (!firstBadId) firstBadId = q.id;
+      const box = document.querySelector('#sc-form .q[data-qid="' + q.id + '"]');
+      if (box) box.classList.add('err');
+    }
+  });
+  return { ok: !firstBadId, firstBadId };
+}
+
+const DONE_KEY = () => 'survey_done_' + KIND + '_' + TOKEN;
+
+function clientKey() {
+  const storeKey = 'survey_client_key_' + KIND;
+  let k = null;
+  try { k = localStorage.getItem(storeKey); } catch (e) {}
+  if (!k) {
+    k = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    try { localStorage.setItem(storeKey, k); } catch (e) {}
+  }
+  return k;
+}
+
+async function post(path, body) {
+  const res = await fetch(REST + path, {
+    method: 'POST',
+    headers: Object.assign({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, H),
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    let t = ''; try { t = await res.text(); } catch (e) {}
+    throw new Error('저장 실패 (' + res.status + ') ' + t);
+  }
+}
+
+// 제출 payload는 현재 화면에 보이는 문항만 담는다.
+// 역할(q4)을 바꾸면 이전 분기 답변이 ANSWERS에 남는데,
+// 그대로 보내면 역할과 맞지 않는 응답이 DB에 섞인다.
+// ANSWERS 자체는 유지한다 — 되돌렸을 때 복원돼야 하고 초안에도 남아야 한다.
+function visibleAnswers() {
+  const ids = new Set(visibleQuestions(KIND).map(q => q.id));
+  const out = {};
+  Object.keys(ANSWERS).forEach(k => {
+    const base = k.endsWith('__other') ? k.slice(0, -'__other'.length) : k;
+    if (ids.has(base)) out[k] = ANSWERS[k];
+  });
+  return out;
+}
+
+async function submit() {
+  const v = validate();
+  if (!v.ok) {
+    toast('아직 답하지 않은 필수 문항이 있어요');
+    const box = document.querySelector('#sc-form .q[data-qid="' + v.firstBadId + '"]');
+    if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true; btn.textContent = '제출 중…';
+  try {
+    await post('/survey_responses', { kind: KIND, token: TOKEN, answers: visibleAnswers(), client_key: clientKey() });
+    await post('/survey_progress',  { kind: KIND, token: TOKEN }).catch(() => {});
+    try { localStorage.setItem(DONE_KEY(), '1'); } catch (e) {}
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    showDone();
+  } catch (e) {
+    btn.disabled = false; btn.textContent = '제출하기';
+    toast(e.message || '제출에 실패했어요. 잠시 후 다시 시도해 주세요');
+  }
+}
+
+function showDone() {
+  const bar = document.getElementById('submit-bar');
+  if (bar) bar.remove();
+  const host = document.getElementById('sc-done');
+  host.innerHTML = '';
+  host.appendChild(el('div', 'intro', '응답해 주셔서 감사합니다.\n소중한 의견은 다음 수련회를 준비하는 데 그대로 쓰입니다.'));
+  showScreen('sc-done');
+  window.scrollTo(0, 0);
+}
+
+function paintQuestions() {
+  const list = document.getElementById('q-list');
+  const scroll = window.scrollY;
+  list.innerHTML = '';
+  let lastSection = null;
+  visibleQuestions(KIND).forEach((q, i) => {
+    if (q.section !== lastSection) {
+      lastSection = q.section;
+      const h = el('div', 'brand', 'SECTION ' + q.section + ' · ' + SURVEY.meta[KIND].sections[q.section - 1]);
+      h.style.marginTop = '26px';
+      list.appendChild(h);
+    }
+    list.appendChild(renderQuestion(q, i));
+  });
+  window.scrollTo(0, scroll);
+}
+
+function studentUrl() {
+  return location.origin + location.pathname + '?r=' + encodeURIComponent(TOKEN);
+}
+
+const SHARE_TEXT = '여름수련회 평가 설문이에요. 3~5분이면 끝나요! 솔직하게 남겨주면 다음 수련회가 더 좋아집니다 🙌';
+
+async function doShare() {
+  const url = studentUrl();
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '26년 여름수련회 평가', text: SHARE_TEXT, url });
+      return;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;   // 사용자가 공유창을 닫음
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(SHARE_TEXT + '\n' + url);
+    toast('링크를 복사했어요. 카톡에 붙여넣기 해주세요');
+  } catch (e) {
+    prompt('아래 링크를 복사해서 학생들에게 보내주세요', url);
+  }
+}
+
+async function loadCount() {
+  const box = document.getElementById('landing-count');
+  try {
+    const res = await fetch(
+      REST + '/survey_progress?kind=eq.student&token=eq.' + encodeURIComponent(TOKEN) + '&select=id',
+      { headers: Object.assign({ 'Prefer': 'count=exact', 'Range': '0-0' }, H) }
+    );
+    const cr = res.headers.get('content-range') || '';
+    const n = Number((cr.split('/')[1] || '0'));
+    box.textContent = '우리 반 학생 응답: ' + (isNaN(n) ? 0 : n) + '명';
+  } catch (e) {
+    box.textContent = '응답 현황을 불러오지 못했어요';
+  }
+}
+
+function initLanding() {
+  document.getElementById('btn-share').addEventListener('click', doShare);
+  loadCount();
+}
+
+document.getElementById('btn-teacher').addEventListener('click', () => {
+  location.href = 'survey.html?t=' + encodeURIComponent(TEACHER_TOKEN);
+});
+
+try {
+  boot();
+} catch (e) {
+  const host = document.getElementById('sc-none');
+  host.innerHTML = '';
+  host.appendChild(el('div', 'intro', '화면을 여는 중 문제가 생겼습니다. 브라우저 설정에서 쿠키·데이터 저장이 차단되어 있다면 허용한 뒤 다시 열어주세요. 계속 안 되면 담당 선생님께 알려주세요.'));
+  showScreen('sc-none');
+}
+</script>
+</body>
+</html>
