@@ -8,11 +8,15 @@ SURVEY.meta = {
   student: {
     title: '학생 설문',
     sections: [
-      '기본 질문 및 수련회 준비 과정',
+      // 미참석 학생에게도 보이는 섹션이라 '준비 과정' 같은 말을 넣지 않는다
+      '기본 질문',
       '활동 & 교제 프로그램',
       '신앙 프로그램(예배/집회/성경공부)',
       '시간 배분 & 환경',
-      '마무리 피드백'
+      '마무리 피드백',
+      '수련회에 함께하지 못한 이야기',
+      '다음에는 함께하기 위해',
+      '지금 마음과 필요한 것'
     ],
     intro: '이 설문은 이름을 받지 않습니다. 반별 통계로만 집계하며, 개별 응답은 담임 선생님께 공개되지 않습니다.'
   },
@@ -36,12 +40,23 @@ SURVEY.meta = {
 
 const PROGRAMS = ['물놀이', '원투원', '멘토-멘티', '레크레이션', '축복의 시간', '경주자의 밤', '종범이네(달란트) 문방구'];
 
+/* 학생 설문은 '수련회 참석 여부'로 갈린다.
+   survey.html 의 BRANCH_IDS 에 'attend' 가 들어 있어야 선택 즉시 화면이 다시 그려진다.
+   아래 문자열은 attend 의 options 와 글자 그대로 같아야 한다. */
+const S_WENT   = a => a.attend === '참석했어요';
+const S_ABSENT = a => a.attend === '참석하지 못했어요';
+
 SURVEY.student = [
   { id:'q1', type:'radio', section:1, required:true,
-    title:'당신은 몇 학년입니까?',
+    title:'몇 학년인가요?',
     options:['1학년','2학년','3학년'] },
 
-  { id:'q2', type:'radio', section:1, required:true,
+  // 분기 트리거. id 를 바꾸면 survey.html 의 BRANCH_IDS 도 함께 바꿔야 한다.
+  { id:'attend', type:'radio', section:1, required:true,
+    title:'이번 여름수련회에 참석했나요?',
+    options:['참석했어요','참석하지 못했어요'] },
+
+  { id:'q2', type:'radio', section:1, showIf:S_WENT, required:true,
     title:"이번 수련회는 이전 수련회와 다르게 '금·토·일'로 진행되었습니다. 이전의 일정과 비교했을 때 어땠나요?",
     options:[
       '아주 좋았다 (주일에 수련회 장소에서 바로 모여서 예배드리고 마무리해서 좋음)',
@@ -49,15 +64,15 @@ SURVEY.student = [
       '조금 아쉬웠다 (다음에는 목·금·토 일정이 더 좋겠다)'
     ] },
 
-  { id:'q2_1', type:'textarea', section:1, required:false,
+  { id:'q2_1', type:'textarea', section:1, showIf:S_WENT, required:false,
     title:'그렇게 생각한 이유(장점이나 불편했던 점)를 간단히 적어주세요.',
     hint:'예: 피로도, 학업/학원 일정, 주일 예배 집중도 등' },
 
-  { id:'q3', type:'scale', section:1, required:true,
-    title:'수련회를 시작할 때를 돌아보면, 당신의 마음은 얼마나 준비되고, 기대하고 있었나요?',
+  { id:'q3', type:'scale', section:1, showIf:S_WENT, required:true,
+    title:'수련회를 시작할 때, 마음이 얼마나 준비되고 기대되었나요?',
     scale:{ min:1, max:5, minLabel:'전혀 기대/준비되지 않음', maxLabel:'매우 기대되고 준비됨' } },
 
-  { id:'q4', type:'rank', section:1, required:true, pick:3, other:true,
+  { id:'q4', type:'rank', section:1, showIf:S_WENT, required:true, pick:3, other:true,
     title:'수련회를 기대하고 참여하도록 마음을 움직인 요소는 무엇인가요? (가장 영향이 컸던 항목 최대 3개 선택, 순서로 표시해주세요)',
     hint:'누른 순서대로 1·2·3 번호가 붙습니다. 다시 누르면 취소됩니다.',
     options:[
@@ -77,7 +92,7 @@ SURVEY.student = [
   // 2026-08-08: 순위형 → 교제 매트릭스 → 다시 순위형으로 되돌림(사용자 요청).
   // 프로그램별 '교제·가까워짐' 점수 문항은 이 교체로 사라졌다.
   // 관계 형성은 q8(가까워지는 데 도움된 순간) 주관식으로만 남는다.
-  { id:'q6', type:'rank', section:2, required:true, pick:3,
+  { id:'q6', type:'rank', section:2, showIf:S_WENT, required:true, pick:3,
     title:'수련회 활동 중 나에게 가장 기억에 남았던 프로그램을 최대 3개 선택해 주세요. (1, 2, 3순위를 표시해주세요.)',
     hint:'누른 순서대로 1·2·3 번호가 붙습니다. 다시 누르면 취소됩니다.',
     options:PROGRAMS },
@@ -85,38 +100,38 @@ SURVEY.student = [
   // 원문 누락 — 평가 항목(행)이 PDF에 없어 프로그램 목록으로 채움 (설계문서 8.1)
   // 2026-08-08: '유익·즐거움' → '교제·가까워짐'으로 축 변경(사용자 요청).
   // q6(기억에 남는 Top3)와 역할이 갈려 프로그램 매트릭스 중복이 해소됐다.
-  { id:'q5', type:'matrix', section:2, required:true,
-    title:'각 활동 및 교제 프로그램은 선후배·친구들과 자연스럽게 교제하고 가까워지는데 얼마나 도움이 되었나요? (각 항목에 점수를 적어주세요)',
+  { id:'q5', type:'matrix', section:2, showIf:S_WENT, required:true,
+    title:'각 프로그램이 선후배·친구들과 가까워지는 데 얼마나 도움이 되었나요?',
     hint:'1점: 전혀 도움이 되지 않았다 / 3점: 보통이다 / 5점: 매우 도움이 되었다',
     rows:PROGRAMS, cols:['1','2','3','4','5'] },
 
-  { id:'q7', type:'radio', section:2, required:true,
-    title:"'종범이네(달란트) 문방구' 운영은 수련회 프로그램에 더 적극적으로 참여하는 데 동기부여가 되었나요?",
+  { id:'q7', type:'radio', section:2, showIf:S_WENT, required:true,
+    title:"'종범이네(달란트) 문방구'가 프로그램에 더 열심히 참여하게 만들었나요?",
     options:[
-      '매우 재미있었고 참여하는 데 큰 동기부여가 되었다.',
-      '보통이었다.',
-      '상품/달란트 기준이 아쉽거나 이용하기 불편했다.'
+      '재미있었고 더 열심히 참여하게 되었다',
+      '보통이었다',
+      '상품이나 달란트 기준이 아쉽고 이용하기 불편했다'
     ] },
 
-  { id:'q7_1', type:'textarea', section:2, required:false,
+  { id:'q7_1', type:'textarea', section:2, showIf:S_WENT, required:false,
     title:'달란트 문방구의 물품, 달란트 획득 방식, 운영 시간 등 좋았던 점이나 개선되었으면 하는 점을 자유롭게 적어주세요.' },
 
   // 2026-08-08: '프로그램 개선점' → '관계 형성에 도움된 순간'으로 교체.
   // q6가 관계 형성을 점수로 묻고, 이 문항이 그 이유를 서술로 받는다.
-  { id:'q8', type:'textarea', section:2, required:false,
+  { id:'q8', type:'textarea', section:2, showIf:S_WENT, required:false,
     title:'이번 수련회에서 친구나 선후배와 가까워지는 데 특히 도움이 되었던 순간이나 활동이 있었다면 적어주세요.' },
 
   // 원래 q8이던 프로그램 개선점 문항. 위 문항과 축이 달라 별도 문항으로 되살렸다.
-  { id:'q8_1', type:'textarea', section:2, required:false,
-    title:"수련회 활동 프로그램 중 아쉬워서 '다음에는 이렇게 바꿨으면 좋겠다' 하는 점이나, 꼭 다시 하고 싶은 프로그램이 있다면 적어주세요." },
+  { id:'q8_1', type:'textarea', section:2, showIf:S_WENT, required:false,
+    title:"아쉬워서 다음에는 바꿨으면 하는 점이나, 꼭 다시 하고 싶은 프로그램이 있다면 적어주세요." },
 
   /* ── SECTION 3~5 전면 개편 (2026-08-08 사용자 요청) ──
      신앙 프로그램을 하나의 매트릭스로 묶고, '왜 집중이 어려웠는지'를
      복수선택으로 받아 원인을 집계 가능한 형태로 바꿨다.
      신앙 보완점 주관식(구 q12)은 복수선택 문항들이 대체하여 제거. */
 
-  { id:'q9', type:'matrix', section:3, required:true,
-    title:'다음 프로그램이 각각 신앙적으로 의미 있고 집중할 수 있도록 운영되었다고 느꼈나요?',
+  { id:'q9', type:'matrix', section:3, showIf:S_WENT, required:true,
+    title:'다음 프로그램이 신앙적으로 의미 있었고, 집중할 수 있게 진행되었다고 느꼈나요?',
     hint:'1점 (전혀 그렇지 않았다) ~ 5점 (매우 그렇다)',
     rows:[
       '저녁집회 (찬양, 말씀, 기도)',
@@ -125,8 +140,8 @@ SURVEY.student = [
     ],
     cols:['1','2','3','4','5'] },
 
-  { id:'q9_1', type:'checkbox', section:3, required:false, other:true,
-    title:'[저녁집회] 저녁집회에서 집중하기 어려웠던 가장 큰 이유가 있었다면 무엇인가요?',
+  { id:'q9_1', type:'checkbox', section:3, showIf:S_WENT, required:false, other:true,
+    title:'[저녁집회] 저녁집회에 집중하기 어려웠다면, 그 이유는 무엇이었나요?',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
       '피곤함',
@@ -139,12 +154,12 @@ SURVEY.student = [
       '특별히 어려운 점이 없었음'
     ] },
 
-  { id:'q10', type:'scale', section:3, required:true,
+  { id:'q10', type:'scale', section:3, showIf:S_WENT, required:true,
     title:"[GBS] '기도'를 주제로 한 조별 성경공부(GBS) 내용과 나눔 시간은 기도에 대해 이해하는 데 도움이 되었나요?",
     scale:{ min:1, max:5, minLabel:'전혀 그렇지 않았다', maxLabel:'매우 그렇다' } },
 
-  { id:'q10_1', type:'checkbox', section:3, required:false, other:true,
-    title:'[GBS] GBS에서 개선되었으면 하는 부분을 선택해주세요.',
+  { id:'q10_1', type:'checkbox', section:3, showIf:S_WENT, required:false, other:true,
+    title:'[GBS] 성경공부 시간에서 나아졌으면 하는 점을 골라주세요.',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
       '내용이 너무 어려웠다',
@@ -157,17 +172,17 @@ SURVEY.student = [
       '특별히 개선할 점이 없었다'
     ] },
 
-  { id:'q11', type:'scale', section:3, required:true,
+  { id:'q11', type:'scale', section:3, showIf:S_WENT, required:true,
     title:'[리플렉션] 리플렉션은 하루를 돌아보고 하나님과 나의 상태를 생각하는 데 도움이 되었나요?',
     scale:{ min:1, max:5, minLabel:'전혀 그렇지 않았다', maxLabel:'매우 도움이 되었다' } },
 
-  { id:'q13', type:'radio', section:4, required:true,
-    title:'수련회 전체 타임테이블(일정 진행 속도 및 피로도)은 어땠나요?',
+  { id:'q13', type:'radio', section:4, showIf:S_WENT, required:true,
+    title:'수련회 전체 일정은 어떻게 느껴졌나요?',
     options:[
-      '쉬는 시간이 너무 길거나 지루했다',
+      '여유로웠지만 조금 지루했다',
       '대체로 적당했다',
-      '약간 타이트했다',
-      '매우 타이트하고 피곤했다'
+      '조금 빡빡했다',
+      '많이 빡빡하고 피곤했다'
     ] },
 
   /* 주의: 이 척도는 점수가 아니라 '부족 ↔ 과다' 방향이 다른 5범주다.
@@ -175,8 +190,8 @@ SURVEY.student = [
      정반대 결론이 난다. 반드시 분포로만 볼 것. (설계문서 8.2)
      cols 를 숫자로 쓰지 않는 이유도 이것이다 — 대시보드가 숫자 열일 때만
      평균을 내고, 문자 열이면 자동으로 분포로 그린다. */
-  { id:'q14', type:'matrix', section:4, required:true,
-    title:"아래 각 수련회 요소별 '시간 배분'은 적절했는지 평가해 주세요.",
+  { id:'q14', type:'matrix', section:4, showIf:S_WENT, required:true,
+    title:"아래 각 시간이 알맞았는지 골라주세요.",
     rows:[
       '프로그램 사이 휴식시간',
       '집회시간 (찬양+말씀)',
@@ -188,8 +203,8 @@ SURVEY.student = [
     ],
     cols:['너무 부족했다','조금 부족했다','적당했다','조금 길었다','너무 길었다'] },
 
-  { id:'q15', type:'checkbox', section:4, required:false, other:true,
-    title:"집회나 프로그램 참여 시 집중을 방해했던 '환경적 요소'가 있었다면 골라주세요.",
+  { id:'q15', type:'checkbox', section:4, showIf:S_WENT, required:false, other:true,
+    title:"집회나 프로그램에 집중하기 어렵게 만든 것이 있었다면 골라주세요.",
     hint:'해당되는 것을 모두 골라주세요',
     options:[
       '실내 온도(냉방/에어컨)',
@@ -204,16 +219,103 @@ SURVEY.student = [
       '특별한 문제 없음'
     ] },
 
-  { id:'q16_keep', type:'textarea', section:5, required:false,
+  { id:'q16_keep', type:'textarea', section:5, showIf:S_WENT, required:false,
     title:'이것만큼은 꼭 유지해 주세요',
-    hint:'프로그램뿐 아니라 일정, 분위기, 준비과정, 활동 등 무엇이든 좋습니다' },
+    hint:'프로그램뿐 아니라 일정, 분위기, 활동 무엇이든 좋아요' },
 
-  { id:'q16_miss', type:'textarea', section:5, required:false,
+  { id:'q16_miss', type:'textarea', section:5, showIf:S_WENT, required:false,
     title:'이번 수련회에서는 이런 점이 아쉽기도 했고 불편했어요',
-    hint:'사람에 대한 것보다는 프로그램, 일정, 정보, 환경, 운영 방식 등의 관점에서 적어주세요' },
+    hint:'사람보다는 프로그램, 일정, 안내, 환경 쪽으로 적어주면 좋아요' },
 
-  { id:'q16_try', type:'textarea', section:5, required:false,
-    title:'다음 수련회는 이렇게 해주세요, 이렇게 바꿔주세요' }
+  { id:'q16_try', type:'textarea', section:5, showIf:S_WENT, required:false,
+    title:'다음 수련회는 이렇게 해주세요, 이렇게 바꿔주세요' },
+
+  /* ── 미참석 학생 전용 (SECTION 6~8) ──
+     못 온 이유를 캐묻는 자리가 아니라, 왜 못 왔는지 이해하고
+     다음에 함께 갈 방법을 찾고, 남아 있는 마음을 살피기 위한 문항들이다.
+     대부분 선택 응답으로 두어 부담을 줄였다. */
+
+  { id:'na1', type:'radio', section:6, required:true, showIf:S_ABSENT,
+    title:'이번 수련회에 가고 싶은 마음은 어땠나요?',
+    options:[
+      '정말 가고 싶었는데 사정이 있어서 못 갔어요',
+      '가고 싶은 마음이 조금 있었어요',
+      '별로 가고 싶지 않았어요',
+      '잘 모르겠어요'
+    ] },
+
+  { id:'na2', type:'checkbox', section:6, required:true, other:true, showIf:S_ABSENT,
+    title:'수련회에 가지 못한 이유는 무엇이었나요?',
+    hint:'해당되는 것을 모두 골라주세요',
+    options:[
+      '학원·학교 일정 (시험, 보충수업 등)',
+      '가족 일정 (여행, 행사 등)',
+      '건강 문제',
+      '비용이 부담돼서',
+      '친한 친구가 안 가서',
+      '낯설고 어색할 것 같아서',
+      '단체 생활이 부담스러워서',
+      '일정이 너무 길어서',
+      '신앙적으로 마음이 내키지 않아서',
+      '수련회가 어떤 건지 잘 몰라서',
+      '특별한 이유는 없었어요'
+    ] },
+
+  { id:'na3', type:'textarea', section:6, required:false, showIf:S_ABSENT,
+    title:'더 이야기하고 싶은 것이 있다면 편하게 적어주세요.' },
+
+  { id:'na4', type:'checkbox', section:7, required:false, other:true, showIf:S_ABSENT,
+    title:'어떤 점이 달라지면 다음에는 함께 갈 수 있을까요?',
+    hint:'해당되는 것을 모두 골라주세요',
+    options:[
+      '날짜를 훨씬 미리 알려주면 (학원·가족 일정을 조율할 수 있게)',
+      '기간이 짧아지면',
+      '비용이 줄어들면',
+      '친한 친구와 같은 반이 되면',
+      '프로그램을 미리 알 수 있으면',
+      '담임 선생님이 미리 연락해 주시면',
+      '가기 전에 미리 친해질 기회가 있으면',
+      '일부만 참여하거나 중간에 합류할 수 있으면',
+      '잘 모르겠어요'
+    ] },
+
+  { id:'na5', type:'scale', section:7, required:true, showIf:S_ABSENT,
+    title:'다음 수련회에는 참여하고 싶은 마음이 있나요?',
+    scale:{ min:1, max:5, minLabel:'전혀 없어요', maxLabel:'꼭 가고 싶어요' } },
+
+  { id:'na6', type:'textarea', section:7, required:false, showIf:S_ABSENT,
+    title:'다음 수련회가 어떤 모습이면 가고 싶어질까요?' },
+
+  { id:'na7', type:'scale', section:8, required:false, showIf:S_ABSENT,
+    title:'수련회가 끝난 뒤, 다녀온 친구들과 나 사이에 거리감을 느낀 적이 있나요?',
+    scale:{ min:1, max:5, minLabel:'전혀 없었어요', maxLabel:'많이 느꼈어요' } },
+
+  { id:'na8', type:'checkbox', section:8, required:false, other:true, showIf:S_ABSENT,
+    title:'요즘 교회에 나올 때 마음은 어떤가요?',
+    hint:'해당되는 것을 모두 골라주세요',
+    options:[
+      '편하고 좋아요',
+      '그럭저럭 괜찮아요',
+      '조금 어색해요',
+      '친구들과 거리감이 느껴져요',
+      '나만 빠진 것 같아 아쉬워요',
+      '잘 모르겠어요'
+    ] },
+
+  { id:'na9', type:'checkbox', section:8, required:false, other:true, showIf:S_ABSENT,
+    title:'수련회에 못 간 친구들을 위해 교회에서 무엇을 해주면 좋을까요?',
+    hint:'해당되는 것을 모두 골라주세요',
+    options:[
+      '수련회에서 나눈 말씀이나 내용을 따로 나눠주는 시간',
+      '못 간 친구들끼리 따로 모이는 시간',
+      '담임 선생님과 따로 만나 이야기하는 시간',
+      '수련회 사진·영상 공유',
+      '다음 수련회 전에 미리 친해지는 모임',
+      '특별히 필요 없어요'
+    ] },
+
+  { id:'na10', type:'textarea', section:8, required:false, showIf:S_ABSENT,
+    title:'담임 선생님이나 교회에 하고 싶은 말이 있다면 자유롭게 적어주세요.' }
 ];
 
 /* 역할 분기. survey.html 의 BRANCH_IDS = ['q4'] 와 짝을 이룬다.
@@ -241,7 +343,7 @@ SURVEY.teacher = [
       '교사/학부모 기도회 (반모임 후 전체모임에서, 온라인 줌 기도회)',
       '전체 기도회 (예배 후 전체 기도회)',
       '릴레이 기도',
-      '교사 전체 모임 (3주동안 했던 교사모임)',
+      '교사 전체 모임 (3주 동안 진행한 교사 모임)',
       '프로그램별 준비회의 (준비TF 모임, 담당자 모임)',
       '사전 공지 및 일정 공유',
       '교사용 자료/가이드',
@@ -250,8 +352,8 @@ SURVEY.teacher = [
     cols:['1','2','3','4','5'] },
 
   { id:'q3', type:'textarea', section:1, required:false,
-    title:'수련회 준비 과정에서 정보가 늦게 전달되거나 누락되어 현장에서 어려움이 있었다면 적어주세요.',
-    hint:'무엇이 문제였는지 → 어떤 영향이 있었는지 → 어떻게 개선하면 좋을지 순으로 적어주시면 좋습니다' },
+    title:'준비 과정에서 정보가 늦게 오거나 빠져서 현장에서 어려웠던 일이 있었다면 적어주세요.',
+    hint:'무엇이 문제였는지, 그래서 어떤 일이 있었는지, 어떻게 하면 좋을지 순으로 적어주시면 좋습니다' },
 
   { id:'q2_1', type:'matrix', section:1, required:true,
     title:'수련회를 준비하는 과정에서 다음 항목은 얼마나 명확했나요?',
@@ -270,7 +372,7 @@ SURVEY.teacher = [
 
   /* ── SECTION 2 · 담임 전용 ── */
   { id:'q5', type:'scale', section:2, required:true, showIf:T_HOMEROOM,
-    title:"[일정 체감] '금·토·일' 일정 전환이 학생들의 참여와 수련회 몰입, 주일예배 연계에 어떤 영향을 주었다고 생각하나요?",
+    title:"[일정] '금·토·일'로 바뀐 일정이 학생들의 참여와 몰입, 주일예배 연결에 어떤 영향을 주었다고 보시나요?",
     scale:{ min:1, max:5, minLabel:'학생 인솔 및 주일 연계가 매우 힘들었다', maxLabel:'학생 참여 및 주일 연계에 매우 효과적이었다' } },
 
   { id:'q5_1', type:'textarea', section:2, required:false, showIf:T_HOMEROOM,
@@ -282,13 +384,13 @@ SURVEY.teacher = [
     options:PROGRAMS },
 
   { id:'q7', type:'matrix', section:2, required:true, showIf:T_HOMEROOM,
-    title:'[신앙 프로그램] 학생들이 신앙 프로그램에 참여할 때 관찰된 집중도와 몰입도는 어땠나요?',
+    title:'[신앙 프로그램] 학생들이 신앙 프로그램에 참여할 때 집중도는 어땠나요?',
     hint:'1점 (매우 낮았다) ~ 5점 (매우 높았다)',
     rows:['저녁집회','GBS','리플렉션'],
     cols:['1','2','3','4','5'] },
 
   { id:'q7_1', type:'checkbox', section:2, required:false, other:true, showIf:T_HOMEROOM,
-    title:'학생들의 집중이나 참여를 방해했던 원인이 있었다면 선택해주세요.',
+    title:'학생들이 집중하거나 참여하기 어려웠던 이유가 있었다면 골라주세요.',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
       '피로도','시간대','프로그램 시간이 너무 길었음','프로그램 간 간격 부족',
@@ -297,24 +399,24 @@ SURVEY.teacher = [
     ] },
 
   { id:'q8', type:'scale', section:2, required:true, showIf:T_HOMEROOM,
-    title:'[GBS/리플렉션 가이드] 사전에 공유된 교사용 가이드북, 질문지, 사전 모임 안내는 담임으로서 공과 및 나눔을 인도하기에 충분했나요?',
+    title:'[성경공부 자료] 미리 받으신 교사용 자료와 질문지, 사전 안내는 공과와 나눔을 이끌기에 충분했나요?',
     scale:{ min:1, max:5, minLabel:'매우 부족', maxLabel:'매우 충분' } },
 
   { id:'q8_1', type:'textarea', section:2, required:false, showIf:T_HOMEROOM,
-    title:'GBS/리플렉션 자료나 진행 방식에서 다음 수련회 때 개선되었으면 하는 점을 적어주세요.' },
+    title:'성경공부·리플렉션 자료나 진행 방식에서 나아졌으면 하는 점을 적어주세요.' },
 
   /* ── SECTION 3 · 헬퍼/담당자 전용 ── */
   { id:'q9', type:'checkbox', section:3, required:false, other:true, showIf:T_HELPER,
-    title:'[사전 준비] 담당 프로그램을 준비하는 과정에서 가장 어려웠던 부분은 무엇이었나요?',
+    title:'[사전 준비] 맡으신 프로그램을 준비하며 어려웠던 점은 무엇이었나요?',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
-      '준비 기간 부족','기획안 확정 지연','예산 / 물품 지원 및 구매 프로세스 아쉬움',
-      '스태프 간 역할 분담(R&R) 및 소통 미흡','다른 프로그램과의 일정 조율',
+      '준비 기간 부족','기획안 확정 지연','예산·물품 지원이나 구매 절차의 아쉬움',
+      '교사 사이의 역할 분담과 소통 부족','다른 프로그램과의 일정 조율',
       '수련회 정보 부족','인력 부족','특별한 어려움 없음'
     ] },
 
   { id:'q11', type:'checkbox', section:3, required:false, other:true, showIf:T_HELPER,
-    title:'[섬김의 영역] 현장에서 역할 수행에 어려움이 있었다면 가장 가까운 원인을 선택해주세요.',
+    title:'[현장 섬김] 현장에서 맡은 일을 하며 어려움이 있었다면, 그 이유를 골라주세요.',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
       '역할 자체가 불명확했다','역할은 알았지만 인력이 부족했다','역할은 알았지만 시간이 부족했다',
@@ -337,21 +439,21 @@ SURVEY.teacher = [
     ] },
 
   { id:'q12_1', type:'textarea', section:3, required:false, showIf:T_HELPER,
-    title:'인력 부족 또는 배치 문제를 해결하기 위한 대안을 적어주세요.' },
+    title:'인력이 부족하거나 배치가 아쉬웠다면, 어떻게 하면 좋을지 적어주세요.' },
 
   /* ── SECTION 4 · 공통 ── */
   { id:'q13', type:'checkbox', section:4, required:true, max:3, other:true,
-    title:'[타임테이블 & 딜레이] 프로그램 진행 중 딜레이나 과부하가 발생했을 때, 현장에서 느낀 가장 주된 원인은 무엇이었습니까?',
+    title:'[일정 지연] 프로그램이 밀리거나 한꺼번에 몰렸을 때, 현장에서 느낀 주된 원인은 무엇이었나요?',
     hint:'최대 3개까지 선택할 수 있습니다',
     options:[
-      '프로그램 자체의 과도한 분량','프로그램 간 이동 및 준비 시간(버퍼 타임) 부족',
-      '식사/샤워 등 생활 시간 부족','타임키퍼와 진행자 간의 시간 신호/소통 체계 미흡',
-      '안내 방송 및 학생 통제 시스템 부족','담당자간의 일정 공유 부족',
+      '프로그램 자체의 과도한 분량','프로그램 사이 이동·준비 시간 부족',
+      '식사/샤워 등 생활 시간 부족','시간을 챙기는 사람과 진행자 사이의 신호·소통 부족',
+      '안내 방송이나 학생을 모으는 방식의 부족','담당자 사이의 일정 공유 부족',
       '예상하지 못한 현장의 변수','특별한 문제 없음'
     ] },
 
   { id:'q14', type:'checkbox', section:4, required:false, other:true,
-    title:'다음 시간 요소 중 다음 수련회에서 조정이 필요하다고 생각하는 항목을 선택해주세요.',
+    title:'다음 수련회에서 시간을 조정하면 좋겠다고 생각하는 것을 골라주세요.',
     hint:'해당되는 것을 모두 골라주세요',
     options:[
       '프로그램 시간','프로그램 사이 이동시간','출발 전 모임 시간 (오전 8시 30분)',
@@ -361,25 +463,25 @@ SURVEY.teacher = [
 
   /* ── SECTION 5 · 마무리 (KPT + 근본원인) ── */
   { id:'q15_keep', type:'textarea', section:5, required:false,
-    title:'(KEEP) 다음 수련회에서도 반드시 유지해야 한다고 생각하는 시스템 또는 프로그램은 무엇인가요?',
-    hint:'가능하면 "왜 유지해야 하는지"도 적어주세요' },
+    title:'다음 수련회에서도 반드시 이어갔으면 하는 것은 무엇인가요?',
+    hint:'제도, 프로그램, 준비 방식 무엇이든 좋습니다. 왜 그런지도 함께 적어주시면 좋습니다' },
 
   { id:'q15_problem', type:'textarea', section:5, required:false,
-    title:'(PROBLEM) 이번 수련회에서 가장 중요하게 개선해야 한다고 생각하는 시스템상의 문제는 무엇인가요?',
-    hint:'사람에 대한 것보다는 일정, 정보, 역할, 프로그램, 인력, 환경 등의 관점에서 적어주세요' },
+    title:'이번 수련회에서 가장 먼저 고쳐야 한다고 생각하는 문제는 무엇인가요?',
+    hint:'사람보다는 일정, 정보 전달, 역할, 프로그램, 인력, 환경 쪽으로 적어주시면 좋습니다' },
 
   { id:'q15_root', type:'textarea', section:5, required:false,
-    title:'(ROOT CAUSE) 위 문제의 가장 근본적인 원인은 무엇이라고 생각하나요?',
-    hint:'예: 사전 계획 부족, 정보 공유 구조, 역할/책임 불명확, 일정 설계, 인력 배치, 매뉴얼 부족, 현장 의사결정 구조, 프로그램 설계' },
+    title:'그 문제가 생긴 근본 원인은 무엇이라고 보시나요?',
+    hint:'예: 준비 기간 부족, 정보가 공유되는 방식, 역할과 책임이 불분명함, 일정 짜임새, 인력 배치, 안내 문서 부족, 현장에서 결정하는 방식' },
 
   { id:'q15_try', type:'textarea', section:5, required:false,
-    title:'(TRY) 다음 수련회에서 실제로 시도해볼 수 있는 대안을 제안해주세요.' },
+    title:'다음 수련회에서 실제로 해볼 만한 방법을 제안해주세요.' },
 
   { id:'q15_next', type:'textarea', section:5, required:false,
-    title:'(NEXT ACTION) 다음 수련회 준비팀이 반드시 결정해야 할 한 가지가 있다면 무엇인가요?' },
+    title:'다음 수련회 준비팀이 가장 먼저 결정해야 할 한 가지는 무엇일까요?' },
 
   { id:'q15_free', type:'textarea', section:5, required:false,
-    title:'마지막으로 수련회TF에 전달하고 싶은 의견이 있다면 자유롭게 적어주세요.' }
+    title:'그 밖에 수련회 준비팀에 전하고 싶은 말이 있다면 자유롭게 적어주세요.' }
 ];
 
 SURVEY.praise = [

@@ -94,7 +94,7 @@ const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON };
 
 // showIf 조건이 참조하는 문항 id. 이 문항의 값이 바뀌면 화면을 다시 그린다.
 // 지금 분기를 만드는 문항은 교사 Q4 하나뿐이다. 분기가 늘면 여기에 추가한다.
-const BRANCH_IDS = ['q4'];
+const BRANCH_IDS = ['q4', 'attend'];
 
 // Task 2에서 생성한 tokens.csv 의 '전체교사' 행 토큰
 const TEACHER_TOKEN = 'h2rhz';
@@ -468,11 +468,14 @@ function paintQuestions() {
   const list = document.getElementById('q-list');
   const scroll = window.scrollY;
   list.innerHTML = '';
-  let lastSection = null;
+  // 섹션 번호는 '보이는 섹션' 기준으로 다시 매긴다.
+  // 분기로 중간 섹션이 통째로 빠지면(예: 미참석 학생) 1 → 6 처럼 보여서 이상하다.
+  let lastSection = null, secNo = 0;
   visibleQuestions(KIND).forEach((q, i) => {
     if (q.section !== lastSection) {
       lastSection = q.section;
-      const h = el('div', 'brand', 'SECTION ' + q.section + ' · ' + SURVEY.meta[KIND].sections[q.section - 1]);
+      secNo++;
+      const h = el('div', 'brand', 'SECTION ' + secNo + ' · ' + SURVEY.meta[KIND].sections[q.section - 1]);
       h.style.marginTop = '26px';
       list.appendChild(h);
     }
