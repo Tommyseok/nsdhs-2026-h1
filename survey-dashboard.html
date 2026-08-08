@@ -197,7 +197,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="survey-questions.js?v=202608082009"></script>
+<script src="survey-questions.js?v=202608082013"></script>
 <script>
 /* ============================================================
  * 수련회 평가 운영 대시보드
@@ -475,6 +475,14 @@ function analyzeKind(host, kindLabel, questions, rows) {
     } else {
       return;
     }
+
+    // 이 문항의 '기타' 직접입력을 바로 아래에 붙인다
+    var ots = otherTexts(q, rows);
+    if (ots.length) {
+      box.appendChild(el('div', 'q-meta', '기타 직접입력 ' + ots.length + '건'));
+      ots.forEach(function (t) { box.appendChild(el('div', 'txt', t)); });
+    }
+
     host.appendChild(box);
   });
 }
@@ -501,9 +509,17 @@ function keywords(texts, topN) {
     .map(function (w) { return { w: w, n: freq[w] }; });
 }
 
+/* '기타 직접입력' 값만 뽑는다. 해당 문항 바로 아래에 붙여 보여주기 위한 것. */
+function otherTexts(q, rows) {
+  if (!q.other) return [];
+  return rows.map(function (r) { return r.answers[q.id + '__other']; })
+             .filter(function (v) { return v && String(v).trim() !== ''; })
+             .map(function (v) { return String(v).trim(); });
+}
+
 /* 주관식으로 볼 대상을 모은다.
-   textarea/text 문항뿐 아니라 '기타 직접입력'(q.id + '__other')도 주관식이다.
-   이걸 빠뜨리면 응답자가 선택지에 없어서 직접 써넣은 말이 통째로 사라진다. */
+   '기타 직접입력'은 여기서 다루지 않는다 — 해당 문항 바로 아래에 붙여야
+   어느 문항의 기타인지 한눈에 보이기 때문이다(otherTexts 참고). */
 function freeTextGroups(questions, rows) {
   var groups = [];
   questions.forEach(function (q) {
@@ -512,12 +528,6 @@ function freeTextGroups(questions, rows) {
                   .filter(function (v) { return v && String(v).trim() !== ''; })
                   .map(function (v) { return String(v).trim(); });
       if (t.length) groups.push({ title: q.title, texts: t });
-    }
-    if (q.other) {
-      var o = rows.map(function (r) { return r.answers[q.id + '__other']; })
-                  .filter(function (v) { return v && String(v).trim() !== ''; })
-                  .map(function (v) { return String(v).trim(); });
-      if (o.length) groups.push({ title: q.title + '  — 기타 직접입력', texts: o });
     }
   });
   return groups;
@@ -726,7 +736,13 @@ function reportSection(kindKey, label, rows) {
     if (a.note) h.push('<div class="qn">' + esc(a.note) + '</div>');
     h.push('<table>');
     a.lines.forEach(function (l) { h.push('<tr><th>' + esc(l[0]) + '</th><td>' + esc(l[1]) + '</td></tr>'); });
-    h.push('</table></div>');
+    h.push('</table>');
+    var ots = otherTexts(q, rows);
+    if (ots.length) {
+      h.push('<div class="qn">기타 직접입력 ' + ots.length + '건</div>');
+      ots.forEach(function (t) { h.push('<div class="tx">' + esc(t) + '</div>'); });
+    }
+    h.push('</div>');
   });
 
   var groups = freeTextGroups(SURVEY[kindKey], rows);
