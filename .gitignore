@@ -1,0 +1,37 @@
+# === 자격증명 유출 방지 (public repo: Tommyseok/nsdhs-2026-h1) ===
+# 이 repo는 public 입니다. 아래 패턴은 실수로 커밋되는 것을 막기 위한 방어선입니다.
+
+# API Key 형태 파일명
+sk-ant-*
+sk-*
+AIza*
+ghp_*
+gho_*
+github_pat_*
+
+# 환경변수 / 시크릿 파일
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+secrets.*
+*secret*.json
+*credential*.json
+
+# 로컬 도구 상태 (자격증명·프롬프트 로그가 섞일 수 있음)
+.omc/
+.superpowers/
+.bkit/
+.claude/
+.playwright-mcp/
+
+# 기타
+_parents.txt
+node_modules/
+.DS_Store
+Thumbs.db
