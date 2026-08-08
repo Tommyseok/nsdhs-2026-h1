@@ -33,8 +33,8 @@ SURVEY.meta = {
   },
   praise: {
     title: '찬양팀 설문',
-    sections: ['준비하는 동안', '집회를 진행하며', '돌아보며'],
-    intro: '이 설문은 익명입니다. 잘했는지 못했는지를 묻는 자리가 아니라, 찬양으로 섬기며 지나온 시간을 함께 돌아보는 자리입니다. 떠오르는 대로 편하게 적어주세요.'
+    sections: ['팀 안에서 함께한 시간', '다른 팀과의 협업', '필요한 것과 도움'],
+    intro: '이 설문은 익명입니다. 개인의 신앙이나 실력을 묻지 않습니다. 함께 준비하고 섬기는 과정이 어땠는지, 다음에 무엇이 더 필요한지 알기 위한 설문입니다.'
   }
 };
 
@@ -484,46 +484,93 @@ SURVEY.teacher = [
     title:'그 밖에 수련회 준비팀에 전하고 싶은 말이 있다면 자유롭게 적어주세요.' }
 ];
 
+/* 찬양팀 설문 — 2026-08-08 재개편.
+   1차 개편에서 '예배자로서 내 마음이 준비되었나', '개인적으로 기도한 시간이 있었나' 처럼
+   개인의 영성을 점수로 묻는 문항을 뒀는데, 익명 설문으로 개인 신앙을 평가하는 셈이라 걷어냈다.
+   대신 팀 안에서의 협업, 다른 팀과의 손발, 그리고 무엇이 더 필요한지를 묻는다. */
 SURVEY.praise = [
-  { id:'p1', type:'scale', section:1, required:true,
-    title:'수련회를 준비하는 동안, 예배자로서 내 마음은 어떻게 준비되고 있었나요?',
-    scale:{ min:1, max:5, minLabel:'거의 돌아보지 못했다', maxLabel:'꾸준히 준비했다' } },
+  { id:'p1', type:'radio', section:1, required:true,
+    title:'수련회에서 찬양팀으로 섬긴 것은 이번이 몇 번째인가요?',
+    hint:'처음 섬기는 분들이 겪는 어려움을 따로 보기 위한 문항입니다',
+    options:['이번이 처음입니다','두세 번째입니다','여러 번 섬겼습니다'] },
 
-  { id:'p2', type:'radio', section:1, required:true,
-    title:'준비 기간에 개인적으로 기도하거나 말씀을 붙든 시간이 있었나요?',
-    options:['거의 없었다','가끔 있었다','꾸준히 있었다'] },
+  { id:'p2', type:'scale', section:1, required:true,
+    title:'찬양팀 안에서 서로 소통이 잘 되었나요?',
+    scale:{ min:1, max:5, minLabel:'거의 안 되었다', maxLabel:'매우 잘 되었다' } },
 
-  { id:'p3', type:'textarea', section:1, required:false,
-    title:'팀으로 함께 기도하고 마음을 나눈 시간은 나에게 어떤 의미였나요?' },
+  { id:'p3', type:'scale', section:1, required:true,
+    title:'팀 안에서 내가 무엇을 맡았는지 분명했나요?',
+    scale:{ min:1, max:5, minLabel:'전혀 분명하지 않았다', maxLabel:'매우 분명했다' } },
 
-  { id:'p4', type:'scale', section:1, required:true,
-    title:"선곡과 콘티를 준비하며 '이 곡으로 무엇을 전하고 싶은지' 팀 안에서 충분히 나눴나요?",
-    scale:{ min:1, max:5, minLabel:'거의 나누지 못했다', maxLabel:'충분히 나눴다' } },
+  { id:'p4', type:'checkbox', section:1, required:false, other:true,
+    title:'팀 안에서 어려웠던 점이 있었다면 골라주세요.',
+    hint:'해당되는 것을 모두 골라주세요',
+    options:[
+      '연습 시간을 맞추기 어려웠다',
+      '의견을 모으기 어려웠다',
+      '역할이 겹치거나 비어 있었다',
+      '처음 함께하는 사람이 적응하기 어려웠다',
+      '연락이나 공지가 잘 닿지 않았다',
+      '누구에게 물어봐야 할지 몰랐다',
+      '특별히 어려운 점은 없었다'
+    ] },
 
-  { id:'p5', type:'scale', section:2, required:true,
-    title:"찬양을 인도하고 연주하는 동안, 나는 얼마나 '예배자'로 있었나요?",
-    scale:{ min:1, max:5, minLabel:'내 역할·연주에만 집중했다', maxLabel:'나도 함께 예배드렸다' } },
+  { id:'p5', type:'textarea', section:1, required:false,
+    title:'팀으로 함께 준비하면서 좋았던 점이 있다면 적어주세요.' },
 
-  { id:'p6', type:'textarea', section:2, required:false,
-    title:'집회 중 하나님께서 일하신다고 느낀 순간이 있었나요? 있었다면 언제였는지 적어주세요.' },
+  { id:'p6', type:'scale', section:2, required:true,
+    title:'진행팀·음향·선생님들과의 협업은 원활했나요?',
+    scale:{ min:1, max:5, minLabel:'거의 맞지 않았다', maxLabel:'매우 잘 맞았다' } },
 
-  { id:'p7', type:'textarea', section:2, required:false,
-    title:'학생들이 찬양으로 하나님께 나아가는 모습을 보며 느낀 것을 적어주세요.' },
+  { id:'p7', type:'checkbox', section:2, required:false, other:true,
+    title:'다른 팀과 손발을 맞추면서 아쉬웠던 점이 있었다면 골라주세요.',
+    hint:'해당되는 것을 모두 골라주세요',
+    options:[
+      '선곡이나 순서가 늦게 정해졌다',
+      '순서가 바뀐 것을 늦게 알았다',
+      '리허설 시간을 충분히 못 받았다',
+      '음향 담당과 미리 맞춰볼 시간이 없었다',
+      '누가 결정하는지 불분명했다',
+      '집회 전후로 준비할 시간이 부족했다',
+      '필요한 장비가 제때 준비되지 않았다',
+      '특별히 아쉬운 점은 없었다'
+    ] },
 
-  { id:'p8', type:'scale', section:2, required:true,
-    title:'말씀과 찬양의 흐름이 자연스럽게 이어졌다고 느꼈나요?',
-    scale:{ min:1, max:5, minLabel:'따로 노는 느낌이었다', maxLabel:'자연스럽게 이어졌다' } },
+  { id:'p8', type:'textarea', section:2, required:false,
+    title:'다른 팀과 손발이 잘 맞았던 순간이나, 반대로 어긋났던 순간이 있었다면 적어주세요.' },
 
-  { id:'p9', type:'textarea', section:2, required:false,
-    title:'집회 중 예배에 집중하기 어렵게 만든 것이 있었다면 적어주세요.',
-    hint:'음향·환경이든 진행이든, 마음에 걸렸던 것을 편하게 적어주세요.' },
+  { id:'p9', type:'checkbox', section:3, required:false, max:3, other:true,
+    title:'다음 수련회에서 찬양팀에 가장 필요한 것은 무엇일까요?',
+    hint:'가장 필요한 것 최대 3개를 골라주세요',
+    options:[
+      '연습 공간과 시간 확보',
+      '선곡·순서를 더 일찍 확정',
+      '악보·음원을 더 일찍 공유',
+      '음향 담당과의 사전 협의',
+      '장비 점검과 보완',
+      '인원 보강',
+      '처음 섬기는 사람을 위한 안내',
+      '팀이 함께 모일 시간',
+      '예산 지원'
+    ] },
 
-  { id:'p10', type:'textarea', section:3, required:false,
-    title:'찬양으로 섬기며 개인적으로 받은 은혜나 깨달음이 있다면 적어주세요.' },
+  { id:'p10', type:'checkbox', section:3, required:false, other:true,
+    title:'어떤 도움이 있으면 더 잘 섬길 수 있을까요?',
+    hint:'해당되는 것을 모두 골라주세요',
+    options:[
+      '찬양팀을 챙겨주는 담당 선생님',
+      '리허설 시간을 일정에 미리 넣어주기',
+      '이동이나 식사 시간 배려',
+      '장비를 미리 점검해 주기',
+      '집회 순서를 미리 알려주기',
+      '연습 공간 예약을 도와주기',
+      '특별히 필요한 도움은 없다'
+    ] },
 
-  { id:'p11', type:'textarea', section:3, required:false,
-    title:'섬기는 중에 힘들었거나 마음이 무거웠던 순간이 있었나요?' },
+  { id:'p11', type:'scale', section:3, required:true,
+    title:'다음 수련회에도 찬양팀으로 섬기고 싶은 마음이 있나요?',
+    scale:{ min:1, max:5, minLabel:'거의 없다', maxLabel:'꼭 함께하고 싶다' } },
 
   { id:'p12', type:'textarea', section:3, required:false,
-    title:'다음 수련회에서 찬양팀이 더 깊이 섬기기 위해, 영적으로·관계적으로 준비하면 좋겠다고 생각하는 것을 적어주세요.' }
+    title:'수련회 준비팀에 전하고 싶은 말이 있다면 자유롭게 적어주세요.' }
 ];
