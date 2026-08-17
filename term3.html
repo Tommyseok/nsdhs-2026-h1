@@ -140,6 +140,7 @@
   .p-chip { font-size: 12px; border-radius: 999px; padding: 3px 10px; font-weight: 600; }
   .p-chip.ok { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
   .p-chip.no { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+  .p-chip.rest { background: #f1f5f9; border: 1px solid #cbd5e1; color: #64748b; }
   .p-rate { font-size: 13px; font-weight: 800; color: var(--ink); margin-top: 12px; }
   .p-rate .pct { color: #6d28d9; }
 
@@ -341,8 +342,10 @@ const TEACHERS = [
   '안종범','석준원','김광현','송진우','오덕현','이유성',
   '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
   '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
-  '박진호','김현진','안강훈','송가원'
+  '박진호','송가원'
 ];
+// 🌿 안식 중 (투표·설문 대상 제외)
+const REST_TEACHERS = ['김현진','안강훈','김시내','정귀희','문석주'];
 const PRIVATE_KEY = 'runners2026@jesus';
 
 /* ===== 이번 텀(2학기) 출석률 (11주 · 입력 주 기준, null=미입력) ===== */
@@ -466,6 +469,7 @@ const SERVE_OPTS = [
   { k: 'serve_lead',  t: '🙌 계속 섬깁니다 — 반 인도 역할 가능', d: 'GBS 인도·반 운영 역할까지 감당할 수 있어요' },
   { k: 'serve_care',  t: '🤝 계속 섬깁니다 — 케어·서포트 역할 선호', d: '원투원·심방·지원 역할이 더 잘 맞아요' },
   { k: 'serve_any',   t: '💪 계속 섬깁니다 — 어떤 역할이든 좋아요', d: '팀·반 배치에 맡길게요' },
+  { k: 'serve_staff', t: '🧰 스텝으로만 섬깁니다', d: '소그룹(반)을 담당하지 않고 행사·지원 등 스텝 사역으로 섬겨요' },
   { k: 'rest',        t: '🌿 이번 텀은 안식이 필요합니다', d: '한 텀 쉬어가며 회복하고 싶어요' },
   { k: 'talk',        t: '☎️ 부장님/국장단과 상의하고 싶어요', d: '결정 전에 이야기 나누고 싶어요' },
 ];
@@ -579,7 +583,9 @@ function renderVotes() {
       <div class="p-title">✅ 투표하신 선생님 (${voted.size}명)</div>
       <div class="p-chips">${[...voted].sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<span class="p-chip ok">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">아직 없습니다</span>'}</div>
       <div class="p-title">⏳ 아직 투표 전이신 선생님 (${notVoted.length}명)</div>
-      <div class="p-chips">${notVoted.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 투표 완료 🎉</span>'}</div>`;
+      <div class="p-chips">${notVoted.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 투표 완료 🎉</span>'}</div>
+      <div class="p-title">🌿 안식 중인 선생님 (투표 대상 아님)</div>
+      <div class="p-chips">${REST_TEACHERS.map(t => `<span class="p-chip rest">${esc(t)}</span>`).join('')}</div>`;
   }
 }
 
@@ -608,7 +614,9 @@ function renderServe() {
     <div class="p-title">✅ 제출하신 선생님 (${submitted.size}명)</div>
     <div class="p-chips">${[...submitted].sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<span class="p-chip ok">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">아직 없습니다</span>'}</div>
     <div class="p-title">⏳ 아직 제출 전이신 선생님 (${notYet.length}명)</div>
-    <div class="p-chips">${notYet.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 제출 완료 🎉</span>'}</div>`;
+    <div class="p-chips">${notYet.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 제출 완료 🎉</span>'}</div>
+    <div class="p-title">🌿 안식 중인 선생님 (${REST_TEACHERS.length}명 · 제출 대상 아님)</div>
+    <div class="p-chips">${REST_TEACHERS.map(t => `<span class="p-chip rest">${esc(t)}</span>`).join('')}</div>`;
 }
 
 async function saveServe() {

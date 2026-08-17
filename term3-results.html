@@ -118,8 +118,9 @@ const TEACHERS = [
   '안종범','석준원','김광현','송진우','오덕현','이유성',
   '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
   '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
-  '박진호','김현진','안강훈','송가원'
+  '박진호','송가원'
 ];
+const REST_TEACHERS = ['김현진','안강훈','김시내','정귀희','문석주'];
 const ADMINS = ['안종범','석준원','김광현','송진우','오덕현','이유성'];
 const PRIVATE_KEY = 'runners2026@jesus';
 const OPT_NAMES = { 1: '1안 · 10반 학년별 소그룹 + 찬양팀 특별반', 2: '2안 · 14반 세분화', 3: '3안 · 12반 새 조합' };
@@ -127,6 +128,7 @@ const SERVE_LABELS = {
   serve_lead: ['🙌 계속 섬김 — 반 인도 가능', 'st-serve'],
   serve_care: ['🤝 계속 섬김 — 케어 역할 선호', 'st-serve'],
   serve_any:  ['💪 계속 섬김 — 역할 무관', 'st-serve'],
+  serve_staff: ['🧰 스텝으로만 섬김 (소그룹 미담당)', 'st-talk'],
   rest:       ['🌿 안식 필요', 'st-rest'],
   talk:       ['☎️ 부장님/국장단과 상의 희망', 'st-talk'],
 };
@@ -199,7 +201,8 @@ async function refresh() {
     }).join('');
     sa.innerHTML = `<table><thead><tr><th>선생님</th><th>응답</th><th>메모</th><th>일자</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="color:var(--muted)">아직 응답이 없습니다</td></tr>'}</tbody></table>
       <div class="admin-note">👑 관리자 보기 — 미응답 ${missing.length}명:</div>
-      <div class="chips">${missing.map(t => `<span class="chip miss">${esc(t)}</span>`).join('') || '<span class="chip">전원 응답 완료 🎉</span>'}</div>`;
+      <div class="chips">${missing.map(t => `<span class="chip miss">${esc(t)}</span>`).join('') || '<span class="chip">전원 응답 완료 🎉</span>'}</div>
+      <div class="admin-note">🌿 안식 중 (대상 제외): ${REST_TEACHERS.join(' · ')}</div>`;
   } else {
     sa.innerHTML = '<div class="admin-note">응답 상세는 교역자·총무만 열람할 수 있습니다.</div>';
   }
