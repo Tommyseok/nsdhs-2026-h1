@@ -214,12 +214,151 @@ ul.b li{margin:.3em 0}
 .mxleg{display:flex;gap:15px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin:8px 0 2px}
 .mxleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;border:1px solid var(--hair)}
 
+/* ── 모바일 ──
+   대부분 휴대폰으로 읽으신다. 폭이 좁다고 글자를 줄이면 읽히지 않으므로
+   본문을 오히려 키우고, 대신 장(章)을 접어 두어 한 번에 보이는 양을 줄인다.
+   .mob 클래스는 문서 하단 스크립트가 화면 폭을 보고 붙인다. */
 @media (max-width:600px){
-  .wrap{padding:22px 14px 72px}
-  h1{font-size:24px}
+  body{font-size:16.5px;line-height:1.8}
+  .wrap{padding:20px 15px 88px}
+
+  h1{font-size:25px}
+  h2{font-size:20.5px}
+  h3{font-size:17.5px;margin-top:24px}
+  h4{font-size:15px}
+  .sub,.lede{font-size:15.5px}
+  .chip{font-size:13px;padding:4px 10px}
+  .pdfbar .why{font-size:13.5px}
+
+  .open{padding:18px 16px}
+  .open p{font-size:16.5px;line-height:1.9}
+  .open p:first-child{font-size:17px}
+  .open p.sign{font-size:15.5px}
+  .peek p{font-size:16px;line-height:1.8}
+
+  .toc{padding:14px 15px 16px}
+  .toc li,.toc .pre{font-size:15.5px;margin:7px 0}
+  .gi{padding:14px 15px}
+  .gi .gt{font-size:15.5px} .gi .gd{font-size:14.5px} .gi .eg{font-size:14px}
+
+  .card{padding:16px 15px 14px}
+  .tile{padding:15px 16px}
+  .tile .hl{font-size:17px} .tile .hl b{font-size:21px}
+  .tile .n{font-size:13.5px}
+  .verdict{font-size:15.5px;line-height:1.8;padding:13px 14px}
+  .notice{font-size:15px}
+  small.src{font-size:13px;line-height:1.65}
+  ul.b li{font-size:16.5px}
+  summary{font-size:15.5px;padding:15px 16px}
+
+  /* 주관식 원문 — 이 리포트에서 가장 오래 읽는 곳이라 가장 크게 */
+  ul.q li{font-size:16px;line-height:1.75;padding:9px 0 9px 14px}
+  ul.q li b{font-size:13px}
+
+  /* 차트 — 항목 이름을 막대 위에 올린다 */
   .row{grid-template-columns:1fr;gap:3px}
-  .row .lab{text-align:left}
+  .row .lab{text-align:left;font-size:14.5px;color:var(--ink);line-height:1.45}
+  .track em{font-size:13.5px}
+  .dstack span{font-size:12px}
+
+  /* 표 — 칸이 뭉개지지 않게 최소 폭을 주고, 넘치면 옆으로 밀어 본다.
+     첫 칸(항목 이름)은 붙박이로 두어 밀어도 무엇에 대한 숫자인지 보이게 한다. */
+  table{font-size:14px}
+  th{font-size:12.5px}
+  th,td{padding:9px 10px}
+  .tw table[data-cols="4"]{min-width:470px}
+  .tw table[data-cols="5"]{min-width:590px}
+  .tw table[data-cols="6"]{min-width:710px}
+  .tw table[data-cols="5"] th:first-child,.tw table[data-cols="5"] td:first-child,
+  .tw table[data-cols="6"] th:first-child,.tw table[data-cols="6"] td:first-child{
+    position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:1px 0 0 var(--grid)}
+  .tw table tr.hi td:first-child{background:color-mix(in srgb,var(--s2) 8%,var(--surface))}
+  .tw table tr.grp td:first-child{background:var(--plane)}
+  .swipe{display:block}
 }
+
+/* 장 접기 — .mob 일 때만 동작한다 */
+.secbody{display:block}
+.swipe{display:none;font-size:12.5px;color:var(--muted);margin:12px 0 -2px}
+
+.mob section{margin-top:0;border-bottom:1px solid var(--grid)}
+.mob section > h2{
+  cursor:pointer;display:flex;align-items:flex-start;gap:10px;
+  margin:0;padding:17px 0;border-bottom:none;line-height:1.4}
+.mob section > h2::after{
+  content:"";margin-left:auto;flex:0 0 auto;width:9px;height:9px;margin-top:7px;
+  border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  transform:rotate(45deg);transition:transform .18s}
+.mob section.closed > h2::after{transform:rotate(-45deg)}
+.mob section.closed > .secbody{display:none}
+.mob section:not(.closed) > h2{border-bottom:1px solid var(--grid);padding-bottom:10px}
+.mob section:not(.closed) > .secbody{padding-bottom:26px}
+.mob section > h2:focus-visible{outline:2px solid var(--s1);outline-offset:3px}
+
+/* 목차 버튼 */
+.fab{display:none}
+.mob .fab{
+  display:flex;align-items:center;justify-content:center;
+  position:fixed;right:15px;bottom:15px;z-index:40;
+  width:56px;height:56px;border-radius:50%;border:none;
+  background:var(--ink);color:var(--plane);font-size:13px;font-weight:700;
+  letter-spacing:.02em;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.26)}
+.sheet{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.4)}
+.sheet.on{display:block}
+.sheet .panel{position:absolute;left:0;right:0;bottom:0;max-height:80vh;overflow:auto;
+  background:var(--surface);border-radius:15px 15px 0 0;padding:0 0 18px}
+.sheet .ph{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  font-weight:650;padding:16px 18px 10px}
+.sheet a{display:flex;gap:10px;padding:14px 18px;font-size:16px;color:var(--ink);
+  text-decoration:none;border-top:1px solid var(--grid);line-height:1.4}
+.sheet a .sn{color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 auto;min-width:20px}
+.sheet .close{display:block;width:calc(100% - 36px);margin:14px 18px 0;padding:14px;
+  text-align:center;border-radius:10px;border:1px solid var(--hair);
+  background:var(--plane);color:var(--ink);font-size:15.5px;font-weight:600;cursor:pointer}
+
+/* ── 스와이프 카드 ──
+   항목이 짧고 개수가 정해진 곳(01장 한눈에 보기 · 09장 해 볼 만한 것)에만 쓴다.
+   주관식 원문이나 부록처럼 한 항목이 화면보다 긴 곳에는 쓰지 않는다.
+   좌우로 넘기는 방식이라 세로 스크롤과 부딪히지 않는다. */
+.deck{display:none}
+.mob .deck,
+.mob #summary .tiles{
+  display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:85%;gap:11px;
+  align-items:start;   /* 짧은 항목이 빈 상자처럼 보이지 않게 내용만큼만 */
+  overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  margin:14px -15px 0;padding:3px 15px 14px;
+  scrollbar-width:none}
+.mob .deck::-webkit-scrollbar,
+.mob #summary .tiles::-webkit-scrollbar{display:none}
+.mob .deck > *,
+.mob #summary .tile{scroll-snap-align:start}
+.mob .tw.hasdeck{display:none}
+
+.dcard{background:var(--surface);border:1px solid var(--hair);border-radius:11px;
+  padding:15px 16px;display:flex;flex-direction:column;gap:9px}
+.dcard.hi{background:color-mix(in srgb,var(--s2) 8%,var(--surface))}
+.dcard .dtop{display:flex;align-items:baseline;gap:9px;font-size:12.5px;color:var(--muted)}
+.dcard .dnum{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.dcard .dsrc{margin-left:auto;text-align:right;line-height:1.4}
+.dcard .dttl{font-size:16.5px;font-weight:650;line-height:1.45;letter-spacing:-.01em}
+.dcard .dtxt{font-size:15px;line-height:1.72;color:var(--ink2)}
+
+/* 몇 번째 카드인지 */
+.dnav{display:none}
+.mob .dnav{display:flex;align-items:center;gap:9px;margin-top:-6px;
+  font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.mob .dnav .dots{display:flex;gap:5px}
+.mob .dnav i{width:6px;height:6px;border-radius:50%;background:var(--grid);transition:background .15s}
+.mob .dnav i.on{background:var(--ink2)}
+
+/* 이어 보기 */
+.resume{display:none}
+.mob .resume{display:block;width:100%;text-align:left;margin:16px 0 0;padding:13px 15px;
+  border-radius:9px;background:var(--surface);border:1px solid var(--hair);
+  border-left:3px solid var(--s1);color:var(--ink2);font-size:15px;
+  font-family:inherit;line-height:1.55;cursor:pointer}
+.mob .resume b{color:var(--s1)}
 /* ── A4 인쇄 / PDF ── */
 @page{ size:A4 portrait; margin:15mm 13mm; }
 @media print{
@@ -227,8 +366,13 @@ ul.b li{margin:.3em 0}
   body{font-size:9.6pt; line-height:1.55}
   .wrap{max-width:none;padding:0}
   a{color:inherit;text-decoration:none}
-  .pdfbar{display:none !important}
+  .pdfbar,.fab,.sheet,.resume,.swipe,.deck,.dnav{display:none !important}
+  .tw.hasdeck{display:block !important}
   .toc a{border-bottom:none}
+
+  /* 모바일용 접기 장치가 켜져 있어도 인쇄본은 전부 펼친다 */
+  .secbody{display:block !important}
+  section > h2::after{display:none !important}
 
   /* 첫 장은 표지처럼 — 제목을 세로 가운데에 둔다 */
   header{display:flex;flex-direction:column;justify-content:center;min-height:238mm}
@@ -2720,5 +2864,226 @@ GBS준비
 </div>
 
 </div>
+
+<script>
+/* 휴대폰에서 읽기 편하도록 돕는 것들.
+   화면이 좁을 때만 켜지고, 인쇄·PDF에는 관여하지 않는다.
+   자바스크립트가 꺼져 있어도 문서 전체는 지금처럼 그대로 읽힌다. */
+(function(){
+  "use strict";
+  var MOB = window.matchMedia("(max-width:600px)");
+  var KEY = "nsdhs-retreat-2026";
+  var secs = Array.prototype.slice.call(document.querySelectorAll("section[id]"));
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function head(s){ return s.querySelector(":scope > h2"); }
+
+  /* 1. 각 장의 본문을 감싼다 — 제목만 남기고 접을 수 있게 */
+  secs.forEach(function(s){
+    var h2 = head(s);
+    if(!h2 || s.querySelector(":scope > .secbody")) return;
+    var body = document.createElement("div");
+    body.className = "secbody";
+    while(h2.nextSibling) body.appendChild(h2.nextSibling);
+    s.appendChild(body);
+    h2.setAttribute("role","button");
+    h2.setAttribute("tabindex","0");
+  });
+
+  function setOpen(s, on){
+    s.classList.toggle("closed", !on);
+    var h2 = head(s);
+    if(h2) h2.setAttribute("aria-expanded", on ? "true" : "false");
+  }
+  function openIds(){
+    return secs.filter(function(s){ return !s.classList.contains("closed"); })
+               .map(function(s){ return s.id; });
+  }
+
+  /* 2. 제목을 눌러 여닫는다 */
+  secs.forEach(function(s){
+    var h2 = head(s); if(!h2) return;
+    function toggle(){
+      if(!MOB.matches) return;
+      var opening = s.classList.contains("closed");
+      setOpen(s, opening);
+      var st = load(); st.open = openIds(); save(st);
+      if(opening) swipeHints();   /* 접혀 있던 표는 이제야 폭을 잴 수 있다 */
+      /* 접을 때 제목이 화면 위로 사라지지 않도록 되돌린다 */
+      if(!opening && h2.getBoundingClientRect().top < 0) h2.scrollIntoView({block:"start"});
+    }
+    h2.addEventListener("click", toggle);
+    h2.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
+    });
+  });
+
+  /* 3. 목차에서 고른 장은 펼쳐서 보여 준다 */
+  function goTo(id){
+    var s = document.getElementById(id);
+    if(!s) return;
+    if(MOB.matches && s.tagName === "SECTION"){
+      setOpen(s, true);
+      var st = load(); st.open = openIds(); save(st);
+      swipeHints();
+    }
+    s.scrollIntoView({block:"start"});
+  }
+  document.querySelectorAll('.toc a[href^="#"]').forEach(function(a){
+    a.addEventListener("click", function(e){
+      if(!MOB.matches) return;
+      e.preventDefault(); goTo(a.getAttribute("href").slice(1));
+    });
+  });
+
+  /* 4. 떠 있는 목차 버튼 */
+  var fab = document.createElement("button");
+  fab.className = "fab"; fab.type = "button";
+  fab.textContent = "목차";
+  fab.setAttribute("aria-label","목차 열기");
+
+  var sheet = document.createElement("div");
+  sheet.className = "sheet";
+  var rows = secs.map(function(s){
+    var h2 = head(s); if(!h2) return "";
+    var n = h2.querySelector(".n");
+    var num = n ? n.textContent.trim() : "";
+    var t = h2.textContent.replace(num, "").trim().replace(/\s+/g," ");
+    return '<a href="#' + s.id + '"><span class="sn">' + num + '</span><span>' + t + '</span></a>';
+  }).join("");
+  sheet.innerHTML = '<div class="panel"><div class="ph">목차</div>' + rows +
+                    '<button class="close" type="button">닫기</button></div>';
+
+  function closeSheet(){ sheet.classList.remove("on"); }
+  fab.addEventListener("click", function(){ sheet.classList.add("on"); });
+  sheet.addEventListener("click", function(e){
+    var a = e.target.closest("a");
+    if(a){ e.preventDefault(); closeSheet(); goTo(a.getAttribute("href").slice(1)); return; }
+    if(e.target === sheet || e.target.classList.contains("close")) closeSheet();
+  });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeSheet(); });
+  document.body.appendChild(fab);
+  document.body.appendChild(sheet);
+
+  /* 5. 표 — 열 수를 알려 주어 칸이 뭉개지지 않게 하고, 넘치면 안내를 붙인다 */
+  document.querySelectorAll(".tw > table").forEach(function(t){
+    var r = t.querySelector("thead tr") || t.querySelector("tbody tr");
+    var n = r ? r.children.length : 0;
+    t.setAttribute("data-cols", n >= 6 ? "6" : String(n));
+  });
+  function swipeHints(){
+    document.querySelectorAll(".tw").forEach(function(w){
+      var over = MOB.matches && (w.scrollWidth - w.clientWidth > 8);
+      var prev = w.previousElementSibling;
+      var has = prev && prev.classList.contains("swipe");
+      if(over && !has){
+        var h = document.createElement("div");
+        h.className = "swipe";
+        h.textContent = "표를 옆으로 밀어서 보실 수 있습니다";
+        w.parentNode.insertBefore(h, w);
+      } else if(!over && has){ prev.remove(); }
+    });
+  }
+
+  /* 5-2. 스와이프 카드 — 09장의 실행 목록을 표 대신 카드 한 장씩으로 */
+  document.querySelectorAll("#actions .tw > table").forEach(function(t){
+    var ths = t.querySelectorAll("thead th");
+    if(ths.length !== 4 || ths[0].textContent.trim() !== "#") return;
+    var wrap = t.parentNode;
+    if(wrap.classList.contains("hasdeck")) return;
+
+    var deck = document.createElement("div");
+    deck.className = "deck";
+    Array.prototype.forEach.call(t.querySelectorAll("tbody tr"), function(tr){
+      var c = tr.children;
+      if(c.length !== 4) return;
+      var card = document.createElement("div");
+      card.className = "dcard" + (tr.classList.contains("hi") ? " hi" : "");
+      card.innerHTML =
+        '<div class="dtop"><span class="dnum">' + c[0].textContent.trim() + '</span>' +
+        '<span class="dsrc">근거 ' + c[3].innerHTML + '</span></div>' +
+        '<div class="dttl">' + c[1].innerHTML + '</div>' +
+        '<div class="dtxt">' + c[2].innerHTML + '</div>';
+      deck.appendChild(card);
+    });
+    if(!deck.children.length) return;
+    wrap.classList.add("hasdeck");
+    wrap.parentNode.insertBefore(deck, wrap);
+  });
+
+  /* 카드가 몇 장 중 몇 번째인지 알려 준다 */
+  function initDeck(deck, noun){
+    if(deck.dataset.nav) return;
+    deck.dataset.nav = "1";
+    var n = deck.children.length;
+    if(n < 2) return;
+    var nav = document.createElement("div");
+    nav.className = "dnav";
+    nav.innerHTML = '<span class="dc">1 / ' + n + '</span><span class="dots">' +
+      new Array(n).fill('<i></i>').join("") + '</span>' +
+      '<span style="margin-left:auto">옆으로 넘겨 보세요</span>';
+    deck.parentNode.insertBefore(nav, deck.nextSibling);
+    var dots = nav.querySelectorAll("i"), label = nav.querySelector(".dc");
+    dots[0].className = "on";
+    var t;
+    deck.addEventListener("scroll", function(){
+      clearTimeout(t);
+      t = setTimeout(function(){
+        var step = deck.scrollWidth / n;
+        var i = Math.min(n - 1, Math.max(0, Math.round(deck.scrollLeft / step)));
+        label.textContent = (i + 1) + " / " + n;
+        dots.forEach(function(d, k){ d.className = k === i ? "on" : ""; });
+      }, 60);
+    }, {passive:true});
+  }
+  document.querySelectorAll(".deck").forEach(function(d){ initDeck(d); });
+  var sumTiles = document.querySelector("#summary .tiles");
+  if(sumTiles) initDeck(sumTiles);
+
+  /* 6. 읽던 위치 기억 */
+  var timer;
+  window.addEventListener("scroll", function(){
+    if(!MOB.matches) return;
+    clearTimeout(timer);
+    timer = setTimeout(function(){
+      var st = load(); st.y = Math.round(window.scrollY); save(st);
+    }, 400);
+  }, {passive:true});
+
+  /* 7. 화면 폭에 맞춰 켜고 끈다 */
+  function apply(){
+    var on = MOB.matches;
+    document.documentElement.classList.toggle("mob", on);
+    if(on){
+      var opened = load().open || ["opening"];
+      secs.forEach(function(s){ setOpen(s, opened.indexOf(s.id) >= 0); });
+    } else {
+      secs.forEach(function(s){ s.classList.remove("closed"); });
+      closeSheet();
+    }
+    swipeHints();
+  }
+  apply();
+  if(MOB.addEventListener) MOB.addEventListener("change", apply);
+  window.addEventListener("resize", function(){ clearTimeout(timer); timer = setTimeout(swipeHints, 200); });
+
+  /* 8. 처음 들어왔을 때, 지난번 자리로 갈지 물어본다 */
+  if(MOB.matches){
+    var y = load().y;
+    if(y && y > 700){
+      var b = document.createElement("button");
+      b.className = "resume"; b.type = "button";
+      b.innerHTML = "지난번에 <b>보시던 곳</b>부터 이어 보기";
+      b.addEventListener("click", function(){
+        window.scrollTo({top:y, behavior:"smooth"});
+        b.remove();
+      });
+      var hd = document.querySelector("header");
+      if(hd && hd.parentNode) hd.parentNode.insertBefore(b, hd.nextSibling);
+    }
+  }
+})();
+</script>
 </body>
 </html>
