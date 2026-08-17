@@ -134,8 +134,11 @@
   .cmt { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; }
   .cmt .ch { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); margin-bottom: 3px; }
   .cmt .ch .nm { font-weight: 800; color: #6d28d9; }
-  .cmt .edit { margin-left: auto; background: none; border: none; color: #6d28d9; font-size: 11px; cursor: pointer; font-family: inherit; font-weight: 700; }
+  .cmt .edit { background: none; border: none; color: #6d28d9; font-size: 11px; cursor: pointer; font-family: inherit; font-weight: 700; }
   .cmt .del { background: none; border: none; color: #dc2626; font-size: 11px; cursor: pointer; font-family: inherit; }
+  .cmt .reply-btn { background: none; border: none; color: #0284c7; font-size: 11px; cursor: pointer; font-family: inherit; font-weight: 700; }
+  .cmt-replies { margin-top: 8px; padding-left: 14px; border-left: 2px solid #ddd6fe; display: flex; flex-direction: column; gap: 6px; }
+  .cmt.reply { background: #fff; border-color: #ede9fe; }
   .cmt .tx { font-size: 13.5px; white-space: pre-wrap; word-break: break-word; color: var(--body); }
   .legend { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
   .footnote { margin: 28px 0 10px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #cbd5e1; }
@@ -648,22 +651,74 @@ async function saveServe() {
   } catch (e) { console.error(e); showToast('⚠️ 저장 실패 — 다시 시도해 주세요'); }
 }
 
-let EDITING_CMT = null; // 수정 중인 의견 id (자동 갱신으로부터 입력 보호)
+let EDITING_CMT = null;  // 수정 중인 의견 id
+let REPLYING_CMT = null; // 답글 작성 중인 대상 id (자동 갱신으로부터 입력 보호)
+
+function cmtCardHtml(c, isReply) {
+  const btns = `
+    <button class="reply-btn" onclick="startReply('${esc(c.id)}', ${c.option})">답글</button>
+    ${c.teacher === MY ? `<button class="edit" onclick="startEditCmt('${esc(c.id)}')">수정</button><button class="del" onclick="delComment('${esc(c.id)}')">삭제</button>` : ''}`;
+  const replyBtns = c.teacher === MY ? `<button class="edit" onclick="startEditCmt('${esc(c.id)}')">수정</button><button class="del" onclick="delComment('${esc(c.id)}')">삭제</button>` : '';
+  return `
+    <div class="cmt ${isReply ? 'reply' : ''}">
+      <div class="ch"><span class="nm">${esc(c.teacher)}</span><span>${esc((c.created_at || '').substring(5, 16).replace('T', ' '))}</span>
+        <span style="margin-left:auto;display:flex;gap:6px">${isReply ? replyBtns : btns}</span></div>
+      <div class="tx" id="cmt-tx-${esc(c.id)}">${esc(c.text)}</div>
+      ${isReply ? '' : `<div id="cmt-replybox-${esc(c.id)}"></div><div class="cmt-replies" id="cmt-replies-${esc(c.id)}"></div>`}
+    </div>`;
+}
 
 function renderComments() {
-  if (EDITING_CMT) return; // 수정 중에는 재렌더 안 함
+  if (EDITING_CMT || REPLYING_CMT) return; // 작성·수정 중에는 재렌더 안 함
   [1,2,3].forEach(k => {
     const list = COMMENTS.filter(c => c.option === k);
     const el = document.getElementById('cmt-list-' + k);
     if (!el) return;
-    el.innerHTML = list.length ? list.map(c => `
-      <div class="cmt">
-        <div class="ch"><span class="nm">${esc(c.teacher)}</span><span>${esc((c.created_at || '').substring(5, 16).replace('T', ' '))}</span>
-          ${c.teacher === MY ? `<button class="edit" onclick="startEditCmt('${esc(c.id)}')">수정</button><button class="del" onclick="delComment('${esc(c.id)}')">삭제</button>` : ''}</div>
-        <div class="tx" id="cmt-tx-${esc(c.id)}">${esc(c.text)}</div>
-      </div>
-    `).join('') : '<div style="font-size:12px;color:var(--muted)">아직 의견이 없습니다 — 첫 의견을 남겨주세요!</div>';
+    const ids = new Set(list.map(c => c.id));
+    const tops = list.filter(c => !c.parent_id || !ids.has(c.parent_id)); // 원 글 삭제된 답글은 일반 노출
+    el.innerHTML = tops.length ? tops.map(c => cmtCardHtml(c, false)).join('')
+      : '<div style="font-size:12px;color:var(--muted)">아직 의견이 없습니다 — 첫 의견을 남겨주세요!</div>';
+    // 답글 렌더 (오래된 순)
+    tops.forEach(p => {
+      const box = document.getElementById('cmt-replies-' + p.id);
+      if (!box) return;
+      const reps = list.filter(c => c.parent_id === p.id).sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
+      box.innerHTML = reps.map(c => cmtCardHtml(c, true)).join('');
+      if (!reps.length) box.style.display = 'none';
+    });
   });
+}
+
+function startReply(id, option) {
+  const box = document.getElementById('cmt-replybox-' + id);
+  if (!box) return;
+  REPLYING_CMT = id;
+  box.innerHTML = `
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <textarea id="reply-input-${esc(id)}" maxlength="500" placeholder="답글을 입력해 주세요" style="flex:1;background:#fff;color:var(--ink);border:1.5px solid #7c3aed;border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:44px"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button onclick="saveReply('${esc(id)}', ${option})" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit">답글 등록</button>
+      <button onclick="cancelReply()" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">취소</button>
+    </div>`;
+  document.getElementById('reply-input-' + id).focus();
+}
+
+function cancelReply() {
+  REPLYING_CMT = null;
+  renderComments();
+}
+
+async function saveReply(parentId, option) {
+  const ta = document.getElementById('reply-input-' + parentId);
+  const text = (ta.value || '').trim();
+  if (!text) { showToast('답글 내용을 입력해 주세요'); return; }
+  try {
+    await VoteDB.addComment({ id: 'C' + Date.now(), teacher: MY, option, text, parent_id: parentId });
+    REPLYING_CMT = null;
+    showToast('💬 답글이 등록되었습니다');
+    await refresh();
+  } catch (e) { console.error(e); REPLYING_CMT = null; showToast('⚠️ 등록 실패 — 다시 시도해 주세요'); }
 }
 
 function startEditCmt(id) {
