@@ -1,0 +1,2699 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>2026 여름수련회 평가</title>
+<style>
+:root{
+  color-scheme: light;
+  --plane:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --hair:rgba(11,11,11,.10);
+  --s1:#2a78d6;  /* 학생 */
+  --s2:#eb6834;  /* 교사 */
+  --s3:#1baf7a;
+  --d-2:#184f95; --d-1:#5598e7; --d0:#e1e0d9; --dp1:#ef8a89; --dp2:#b52c2b;
+  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b;
+  --track:#efeee9;
+  --radius:4px;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --plane:#0d0d0d; --surface:#1a1a19;
+    --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --hair:rgba(255,255,255,.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --d-2:#2a78d6; --d-1:#86b6ef; --d0:#383835; --dp1:#e66767; --dp2:#b52c2b;
+    --track:#242423;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --plane:#0d0d0d; --surface:#1a1a19;
+  --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --hair:rgba(255,255,255,.10);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --d-2:#2a78d6; --d-1:#86b6ef; --d0:#383835; --dp1:#e66767; --dp2:#b52c2b;
+  --track:#242423;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--plane); color:var(--ink);
+  font:15px/1.65 system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
+}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 96px}
+
+/* ── header ── */
+header{margin-bottom:28px}
+.kicker{font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;font-weight:600}
+h1{font-size:30px;line-height:1.25;margin:.35em 0 .3em;letter-spacing:-.02em}
+.sub{color:var(--ink2);font-size:14px;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-size:12px;padding:3px 9px;border:1px solid var(--hair);border-radius:999px;background:var(--surface);color:var(--ink2);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+
+.notice{
+  margin:20px 0 0;padding:12px 14px;border-radius:8px;
+  border:1px solid var(--hair);border-left:3px solid var(--crit);
+  background:var(--surface);font-size:13.5px;color:var(--ink2)
+}
+.notice b{color:var(--ink)}
+
+/* ── toc ── */
+.toc{margin-top:20px;background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:14px 18px 16px}
+.toc .tl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650;margin-bottom:8px}
+.toc ol{margin:0;padding-left:20px;counter-reset:t}
+.toc li{margin:3px 0;font-size:13.5px}
+.toc li.apx{margin-top:8px;padding-top:8px;border-top:1px solid var(--grid);list-style:none;margin-left:-20px;padding-left:0}
+.toc .pre{padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--grid);font-size:13.5px}
+
+/* ── 여는 글 ── */
+.open{margin:18px 0 26px;padding:20px 24px;border-radius:10px;
+  background:var(--surface);border:1px solid var(--hair);border-left:3px solid var(--s3)}
+.open p{margin:0 0 .8em;font-size:15px;line-height:1.85;color:var(--ink2)}
+.open p:last-child{margin-bottom:0}
+.open p:first-child{color:var(--ink);font-size:15.5px}
+.open b{color:var(--ink)}
+/* 여는 글 안의 원문 미리보기 */
+.peek{margin:4px 0 14px;padding-left:16px;border-left:2px solid var(--s3)}
+.peek p{margin:6px 0;font-size:14.5px;line-height:1.7;color:var(--ink);font-style:italic}
+/* 여는 글 서명 */
+.open p.sign{margin-top:22px;text-align:right;font-size:14.5px;color:var(--ink);font-weight:600;letter-spacing:.01em}
+
+/* ── 읽는 법 ── */
+.guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:10px;margin:16px 0 4px}
+.gi{background:var(--surface);border:1px solid var(--hair);border-radius:9px;padding:13px 15px}
+.gi .gt{font-size:13.5px;font-weight:650;margin-bottom:5px}
+.gi .gd{font-size:13px;color:var(--ink2);line-height:1.6}
+.gi .eg{margin-top:7px;padding-top:7px;border-top:1px dashed var(--grid);font-size:12.5px;color:var(--muted)}
+.gi .eg b{color:var(--ink2);font-weight:600}
+.toc a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--grid);font-weight:600}
+.toc a:hover{border-bottom-color:var(--s1);color:var(--s1)}
+.toc span{color:var(--muted);font-size:12px;margin-left:6px}
+
+/* ── sections ── */
+section{margin-top:44px;scroll-margin-top:16px}
+h2{font-size:20px;letter-spacing:-.01em;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--grid)}
+h2 .n{color:var(--muted);font-weight:600;margin-right:8px;font-variant-numeric:tabular-nums}
+h3{font-size:16px;margin:26px 0 6px;letter-spacing:-.01em}
+h4{font-size:13.5px;margin:18px 0 6px;color:var(--ink2);font-weight:600}
+p{margin:.55em 0}
+.lede{color:var(--ink2);font-size:14px;margin-top:10px}
+small.src{display:block;color:var(--muted);font-size:11.5px;margin-top:6px;font-variant-numeric:tabular-nums}
+
+/* ── stat tiles ── */
+/* min()으로 감싸면 화면이 최소폭보다 좁아져도 넘치지 않는다 */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(272px,100%),1fr));gap:11px;margin:18px 0 4px}
+.tile{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:16px 17px;
+  display:flex;flex-direction:column;justify-content:space-between}
+.tile .hl{font-size:16px;line-height:1.55;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.tile .hl b{font-weight:700;font-size:19.5px;color:var(--s1);letter-spacing:-.02em;white-space:nowrap}
+.tile.neg .hl b{color:var(--crit)}
+.tile.pos .hl b{color:var(--good)}
+.tile .n{font-size:12.5px;color:var(--muted);margin-top:11px;padding-top:9px;
+  border-top:1px solid var(--grid);line-height:1.5;font-variant-numeric:tabular-nums}
+/* 구버전 타일 잔여 스타일 */
+.tile .v{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--ink2);margin-top:5px;line-height:1.45}
+
+/* ── finding card ── */
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:18px 18px 16px;margin:16px 0}
+.card > h3{margin-top:0}
+.tag{display:inline-block;font-size:11px;font-weight:650;letter-spacing:.04em;padding:2px 8px;border-radius:5px;vertical-align:2px;margin-right:8px}
+.tag.match{background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good)}
+.tag.gap{background:color-mix(in srgb,var(--crit) 15%,transparent);color:var(--crit)}
+.tag.watch{background:color-mix(in srgb,var(--s2) 16%,transparent);color:var(--s2)}
+.verdict{margin-top:12px;padding:11px 13px;border-radius:7px;background:var(--plane);border:1px solid var(--hair);font-size:13.5px}
+.verdict b{color:var(--ink)}
+
+/* ── 학생·선생님 아이콘 ──
+   색만으로 구분하면 색각 차이가 있는 분께는 잘 안 보인다. 모양을 하나 더 얹어 둔다.
+   mask 로 그려서 색은 CSS 변수를 따라가고 다크모드에서도 알아서 바뀐다. */
+:root{
+  --ic-stu:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 23 8l-11 5.5L1 8z'/%3E%3Cpath d='M6 11.8v3.4c0 1.6 2.7 2.9 6 2.9s6-1.3 6-2.9v-3.4l-6 3z'/%3E%3C/svg%3E");
+  --ic-tea:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill-rule='evenodd'%3E%3Cpath d='M2 3h20v14H2V3zm2 2v10h16V5H4z'/%3E%3Cpath d='M6.5 7.4h9v1.7h-9zM6.5 10.8h6v1.7h-6z'/%3E%3Cpath d='M11 17h2v4h-2z'/%3E%3C/svg%3E");
+}
+.ic{display:inline-block;width:15px;height:15px;vertical-align:-3px;flex:0 0 auto}
+.ic.stu{background-color:var(--s1);-webkit-mask:var(--ic-stu) center/contain no-repeat;mask:var(--ic-stu) center/contain no-repeat}
+.ic.tea{background-color:var(--s2);-webkit-mask:var(--ic-tea) center/contain no-repeat;mask:var(--ic-tea) center/contain no-repeat}
+h4 .ic,h3 .ic{margin-right:6px}
+
+/* ── charts ── */
+.chart{margin:14px 0 2px}
+/* duo = 학생·선생님을 위아래로 나란히 놓은 차트. 첫 줄이 학생, 둘째 줄이 선생님. */
+.chart.duo .bars .track::before{content:"";width:15px;height:15px;flex:0 0 auto;margin-right:1px}
+.chart.duo .bars .track:nth-child(1)::before{background-color:var(--s1);
+  -webkit-mask:var(--ic-stu) center/contain no-repeat;mask:var(--ic-stu) center/contain no-repeat}
+.chart.duo .bars .track:nth-child(2)::before{background-color:var(--s2);
+  -webkit-mask:var(--ic-tea) center/contain no-repeat;mask:var(--ic-tea) center/contain no-repeat}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin:2px 0 12px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.row{display:grid;grid-template-columns:minmax(88px,168px) 1fr;gap:12px;align-items:center;margin-bottom:7px}
+.row .lab{font-size:12.5px;color:var(--ink2);line-height:1.35;text-align:right}
+.bars{display:flex;flex-direction:column;gap:3px}
+/* flex-wrap: 100% 길이 막대에서 값 라벨이 페이지 밖으로 밀려나지 않게 아래 줄로 내린다.
+   막대 폭을 줄여 맞추면 비율이 왜곡되므로 라벨을 내리는 쪽을 택했다. */
+.track{position:relative;display:flex;align-items:center;gap:7px;min-height:16px;flex-wrap:wrap}
+.fill{height:14px;border-radius:0 var(--radius) var(--radius) 0;flex:0 0 auto;min-width:2px;background:var(--track)}
+.fill.s1{background:var(--s1)} .fill.s2{background:var(--s2)} .fill.s3{background:var(--s3)}
+.fill.zero{min-width:0;width:0}
+/* em은 줄바꿈을 허용한다 — 비교 주석이 붙는 행에서 오른쪽이 잘리지 않게. 숫자만 nowrap. */
+.track em{font-style:normal;font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums;
+  line-height:1.4;min-width:0;flex:0 1 auto}
+.track em b{color:var(--ink);font-weight:600;white-space:nowrap}
+.track em span{white-space:normal}
+
+/* diverging stack */
+.dstack{display:flex;gap:2px;height:22px;border-radius:var(--radius);overflow:hidden}
+.dstack span{display:flex;align-items:center;justify-content:center;font-size:11px;font-variant-numeric:tabular-nums;color:#fff;min-width:0}
+.dstack .m2{background:var(--d-2)} .dstack .m1{background:var(--d-1);color:#0b0b0b}
+.dstack .z{background:var(--d0);color:var(--ink2)}
+.dstack .p1{background:var(--dp1);color:#0b0b0b} .dstack .p2{background:var(--dp2)}
+.dlegend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin:4px 0 12px}
+
+/* ── tables ── */
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0 4px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+th{font-size:11.5px;letter-spacing:.03em;color:var(--muted);text-transform:uppercase;font-weight:650;white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hi{background:color-mix(in srgb,var(--s2) 8%,transparent)}
+.pos{color:var(--good);font-weight:600} .neg{color:var(--crit);font-weight:600}
+
+/* ── quotes ── */
+details{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:0;margin:12px 0}
+summary{cursor:pointer;padding:13px 16px;font-size:14px;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";color:var(--muted)}
+details[open] summary::before{content:"▾ "}
+details[open] summary{border-bottom:1px solid var(--grid)}
+.dbody{padding:6px 16px 16px}
+ul.q{list-style:none;margin:6px 0 16px;padding:0}
+ul.q li{padding:7px 0 7px 13px;border-left:2px solid var(--grid);margin-bottom:5px;font-size:13.5px;color:var(--ink2);white-space:pre-wrap}
+ul.q li b{color:var(--muted);font-weight:600;font-size:11.5px;font-variant-numeric:tabular-nums;margin-right:6px}
+
+ul.b{margin:.5em 0;padding-left:1.15em}
+ul.b li{margin:.3em 0}
+
+.foot{margin-top:56px;padding-top:16px;border-top:1px solid var(--grid);font-size:12.5px;color:var(--muted)}
+
+/* ── 부록 전 문항 대조표 전용 ── */
+.mx table{font-size:12px}
+.mx th,.mx td{padding:4px 7px}
+.mx col.call{width:86px} .mx col.cg{width:70px}
+.mx td.q{color:var(--ink2)}
+.mx td.all{font-weight:600;color:var(--ink);border-right:1px solid var(--grid);text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx td.g{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx td.mmax{background:color-mix(in srgb,var(--s2) 13%,transparent);font-weight:650;color:var(--ink)}
+.mx td.mmin{background:color-mix(in srgb,var(--s1) 11%,transparent)}
+.mx td.z{color:var(--muted)}
+.mx tr.grp td{background:var(--plane);font-weight:650;font-size:11px;color:var(--muted);
+  letter-spacing:.05em;border-bottom:1px solid var(--axis)}
+.mx .pat{font-size:11.5px;color:var(--ink2)}
+.mx thead th{border-bottom:1px solid var(--axis)}
+.mx thead th.hall{color:var(--ink)}
+.mxleg{display:flex;gap:15px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin:8px 0 2px}
+.mxleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;border:1px solid var(--hair)}
+
+@media (max-width:600px){
+  .wrap{padding:22px 14px 72px}
+  h1{font-size:24px}
+  .row{grid-template-columns:1fr;gap:3px}
+  .row .lab{text-align:left}
+}
+@media print{
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  details{border:none} details > summary{display:none}
+  .dbody{padding:0}
+  details:not([open]) .dbody{display:block}
+  section{break-inside:avoid-page}
+  .card{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">내수동교회 고등부 · 설문 분석 리포트</div>
+  <h1>2026 여름수련회 평가<br>학생 · 교사 교차 분석</h1>
+  <p class="sub">아이들과 선생님들이 같은 사흘을 어떻게 기억하고 계신지, 그 안에서 다음 수련회의 실마리를 찾아본 기록입니다.</p>
+  <div class="meta">
+    <span class="chip">수집 <b>2026-08-08 → 08-16</b></span>
+    <span class="chip">학생 응답 <b>42명</b> (참석 40 · 미참석 2)</span>
+    <span class="chip">교사 응답 <b>12명</b> (담임계열 10 · 헬퍼계열 7)</span>
+    <span class="chip" style="color:var(--muted)">전체 참석 인원과는 다릅니다</span>
+    <span class="chip">응답 방식 <b>완전 익명</b></span>
+    <span class="chip">데이터 정확도 <b>정확</b> — DB 전수 집계</span>
+    <span class="chip">분석일 <b>2026-08-17</b></span>
+  </div>
+</header>
+
+
+<!-- ═══════════════ 0. 읽는 법 ═══════════════ -->
+<section id="opening">
+  <h2>선생님들께,<br>그리고 이 리포트를 보시는 분들께 드리는 글</h2>
+
+  <div class="open">
+    <p>먼저, 지난여름 아이들과 함께 사흘을 지내 주신 것에 감사드립니다.</p>
+    <p>이 리포트는 그 사흘을 아이들과 선생님들이 각자 어떻게 보내셨는지 여쭌 것을 모은 것입니다.</p>
+    <p>아이들이 어느 순간에 마음이 열렸는지, 무엇이 오래 남았는지, 어디가 아쉬웠는지 —
+      평소에는 잘 들리지 않던 이야기들이 담겨 있습니다.
+      선생님들께서 남겨 주신 이야기도 고치지 않고 그대로 실었습니다.</p>
+    <p>사흘 동안 무사히 다녀왔고, 교사분들이 자리를 지켜 주셨습니다.
+      돌아보면 우리가 준비한 것보다 <b>지켜 주신 은혜가 컸다</b>는 생각이 듭니다.
+      아래 숫자들도 그 시간 위에 얹힌 것입니다.</p>
+    <p>숫자가 아이들의 마음을 다 담아내지는 못합니다.
+      다만 흩어져 있던 목소리를 한자리에 모아 두면
+      다음 수련회를 함께 그려 볼 때 도움이 되겠다 싶어 정리했습니다.</p>
+    <p>한 가지 더 바라는 것이 있습니다.
+      <b>새로 오시는 목회자와 올해 처음 함께하시는 선생님들께도 이 자료가 도움이 되면 좋겠습니다.</b>
+      우리 아이들이 지금 어디에 마음을 두고 있는지, 무엇을 좋아하고 무엇을 어려워하는지 —
+      한 해를 같이 지내며 알게 되는 것들을 여기서 미리 만나실 수 있도록,
+      숫자만 남기지 않고 아이들과 선생님들의 말을 그대로 실었습니다.
+      처음 오신 분께도 고등부가 어떤 공동체인지 조금이나마 전해지면 좋겠습니다.</p>
+
+    <p>선생님 한 분이 남기신 글입니다.</p>
+    <div class="peek">
+      <p>"어려운 상황 속에서 헌신적이고 신실하게 섬겨주신 준비팀 너무너무 감사드립니다.
+        모든 것 아시는 주님께서 갚아주시고 은혜주시기를 원합니다."</p>
+    </div>
+    <p>정말 그런 것 같습니다.
+      내용이 적지 않지만, 설문을 읽다 보면 선생님들이 노력하셨던 시간들과
+      수련회에서의 감사한 시간들이 떠오르길 바라는 마음으로 자료들을 정리했습니다.</p>
+
+    <p>이렇게 모인 답의 숫자가 잘못 읽히지 않도록 적지 않은 시간과 노력을 들여서 구성하였습니다.
+      평균을 내면 뜻이 뒤집히는 문항은 평균 대신 분포로 구성하고,
+      묻는 방식이 달라 나란히 놓기 어려운 항목은 비교하지 않았습니다.
+      아이들이 정말 솔직하게 답했는지도 결과를 읽기 전에 확인하는 장치를 두었습니다.
+      통계에 익숙하지 않으셔도 오해 없이 읽으실 수 있도록 용어마다 설명을 붙였습니다.
+      부족한 부분이 있겠지만, 선생님들의 노력을 담아내기 위해서 그 정도의 장치와 노력이 필요하다고 생각했습니다.</p>
+
+    <p>설문의 분석 내용을 읽으시면서, 다시 수련회를 준비하던 시간 동안의 노력과 감사함,
+      그리고 현장에서 느꼈던 은혜의 시간들을 다시 돌아보는 계기가 되시길 바라며.</p>
+
+    <p class="sign">수련회 TF / 국장단 드림</p>
+  </div>
+</section>
+
+
+  <nav class="toc">
+    <div class="tl">목차</div>
+    <div class="pre">
+      <a href="#opening">선생님들께, 그리고 이 리포트를 보시는 분들께 드리는 글</a> <span>수련회 TF · 국장단</span><br>
+      <a href="#howto">이 리포트 읽는 법</a> <span>숫자 보는 법 여섯 가지</span>
+    </div>
+    <ol>
+      <li><a href="#summary">한눈에 보기</a> <span>큰 숫자 여섯 개 · 네 문장 요약 · 먼저 이야기해 볼 여섯 가지</span></li>
+      <li><a href="#sample">누가 답했나</a> <span>학년·역할·경력, 그리고 읽으실 때 염두에 둘 것</span></li>
+      <li><a href="#trust">아이들이 솔직하게 답했을까</a> <span>결과를 읽기 전에 먼저 확인해 본 다섯 가지</span></li>
+      <li><a href="#cross">학생과 선생님, 어떻게 다르게 봤나</a> <span>여덟 가지 — 기도 시간 · 신앙 프로그램 · 난이도 · 원투원 · 참여 이유 · 찬양팀 · 일손 · 일정</span></li>
+      <li><a href="#student">학생 응답 자세히</a> <span>시간이 어땠는지 · 신앙 프로그램 · GBS · 문방구와 환경</span></li>
+      <li><a href="#teacher">선생님 응답 자세히</a> <span>준비 과정 · 담임/헬퍼 문항 · 직접 쓰신 이야기 · <b>섬긴 연차와 역할별 차이</b></span></li>
+      <li><a href="#absent">수련회에 오지 못한 학생</a> <span>두 명의 이야기</span></li>
+      <li><a href="#grade">학년별로 조금씩 다릅니다</a> <span>1학년 친해지는 것 / 2학년 쉴 틈 / 3학년 기도 · 비교표</span></li>
+      <li><a href="#actions">다음에 해 볼 만한 것들</a> <span>먼저 이야기할 것 5 · 준비하며 생각할 것 10 · 바로 가능한 것 7 · 한 번 더 볼 것 6</span></li>
+      <li><a href="#verbatim">직접 쓰신 글 전체</a> <span>학생 8묶음 · 선생님 9묶음 — 원문 그대로</span></li>
+      <li><a href="#method">어떻게 집계했나</a> <span>자료 출처 · 정확도 · 계산 방식 · 이 리포트로 알 수 없는 것</span></li>
+      <li class="apx" style="border-top:none;padding-top:0;margin-top:4px"><a href="#closing">맺으며</a> <span>사흘을 돌아보며</span></li>
+      <li class="apx"><a href="#appendix">부록 A · 모든 문항 숫자 모음</a> <span>학생 전 문항을 전체·학년별로 / 선생님 전 문항 — 원자료 표</span></li>
+    </ol>
+  </nav>
+
+<!-- ═══════ 읽는 법 ═══════ -->
+<section id="howto">
+  <h2>이 리포트 읽는 법</h2>
+
+  <p class="lede">숫자와 그래프가 많이 보이지만, 아래 여섯 가지만 알고 계시면 끝까지 편하게 읽으실 수 있습니다.</p>
+
+  <div class="guide">
+    <div class="gi">
+      <div class="gt">n = 몇 명이 답했는가</div>
+      <div class="gd">표 옆에 붙은 <code>n=16</code> 같은 표시는 <b>그 문항에 답한 사람 수</b>입니다.
+        문항마다 답한 사람 수가 다를 수 있어서 매번 적어 두었습니다.</div>
+      <div class="eg">예 <b>n=40</b> → 마흔 명이 답했다는 뜻</div>
+    </div>
+
+    <div class="gi">
+      <div class="gt">% = 백 명 중 몇 명꼴</div>
+      <div class="gd">비율은 그 학년 인원을 기준으로 계산했습니다.
+        여러 개를 고를 수 있는 문항은 한 사람이 두세 개를 골랐을 수 있어서
+        <b>다 더하면 100%가 넘습니다.</b> 잘못된 게 아닙니다.</div>
+      <div class="eg">예 <b>40명 중 18명 = 45%</b></div>
+    </div>
+
+    <div class="gi">
+      <div class="gt">5점 평균 — 3점이 한가운데</div>
+      <div class="gd">"1점 전혀 아니다 ~ 5점 매우 그렇다"로 물은 문항입니다.
+        <b>3점이 보통, 4점이면 괜찮았다, 4.3점쯤이면 상당히 좋았다</b> 정도로 보시면 됩니다.</div>
+      <div class="eg">예 <b>4.28</b> → 대체로 좋게 느꼈다</div>
+    </div>
+
+    <div class="gi">
+      <div class="gt">3-2-1 점수 — 순위를 반영한 점수</div>
+      <div class="gd">"가장 좋았던 것 세 개를 순서대로" 고르게 한 문항입니다.
+        1순위로 고르면 3점, 2순위 2점, 3순위 1점을 주고 다 더했습니다.
+        <b>많이 고르기도 하고 앞순위로도 고른 항목</b>이 높게 나옵니다.</div>
+      <div class="eg">예 <b>55점</b> vs <b>14점</b> → 앞의 것이 훨씬 인상 깊었다</div>
+    </div>
+
+    <div class="gi">
+      <div class="gt">"부족 / 적당 / 길었다"는 평균을 내지 않았습니다</div>
+      <div class="gd">시간에 대해 물은 문항이 그렇습니다.
+        절반이 "너무 부족", 절반이 "너무 길었다"고 답했을 때 평균을 내면 "적당"이 되어 버립니다.
+        <b>실제와 정반대가 되기 때문에</b> 평균 대신 <b>몇 명이 어느 쪽을 골랐는지</b>를 그대로 보여드립니다.</div>
+      <div class="eg">그래서 이 문항만 <b>띠 모양 그래프</b>로 나옵니다</div>
+    </div>
+
+    <div class="gi">
+      <div class="gt">사람 수가 적으면 조심해서 봅니다</div>
+      <div class="gd">학년별로 나누면 한 학년이 열 명 남짓입니다.
+        이럴 때는 한 사람만 달라져도 비율이 7~10%p씩 움직입니다.
+        그래서 작은 차이보다 <b>어느 쪽이 높은지, 여러 문항에서 같은 흐름이 반복되는지</b>를 봐 주시면 좋겠습니다.</div>
+      <div class="eg">10명 중 <b>1명 = 10%p</b></div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <b>표현에 대해 한 가지만 미리 말씀드립니다.</b>
+    숫자가 여러 문항에서 같은 방향으로 뚜렷하게 나온 것만 <b>"~입니다"</b>로 적었습니다.
+    그렇지 않고 <b>해석의 여지가 있는 대목은 "~로 보입니다", "~일 수 있습니다", "~생각해 볼 만합니다"</b>처럼 조심스럽게 적었습니다.
+    문장 끝을 보시면 그 내용이 확인된 사실인지, 저희가 미루어 본 것인지 구분하실 수 있습니다.
+    <br><br>
+    설문은 마음을 재는 도구로는 아무래도 거칠 수밖에 없습니다.
+    여기 있는 숫자는 아이들과 선생님들을 이해하는 <em>실마리</em> 정도로 봐 주시면 좋겠습니다.
+    현장에서 직접 보고 느끼신 것이 여기 숫자와 다르게 읽히는 대목이 있다면,
+    그 감각도 같이 놓고 이야기해 주시면 훨씬 정확해질 것 같습니다.
+  </div>
+
+</section>
+
+
+<!-- ═══════════════ 1. 핵심 요약 ═══════════════ -->
+<section id="summary">
+  <h2><span class="n">01</span>한눈에 보기</h2>
+
+  <div class="tiles">
+    <div class="tile pos">
+      <div class="hl">아이들을 수련회로 이끈 가장 큰 힘은<br><b>지난 수련회의 좋은 기억</b>이었습니다</div>
+      <div class="n">오게 된 이유 1위 · 40명 중 29명이 선택<br>2위는 "개인적인 결단과 영적 필요" 21명</div>
+    </div>
+    <div class="tile neg">
+      <div class="hl">원투원처럼 깊게 이야기 나눌 시간이<br><b>부족했다 57.5%</b></div>
+      <div class="n">40명 중 23명 · 길었다는 학생은 한 명도 없었습니다</div>
+    </div>
+    <div class="tile neg">
+      <div class="hl">집회 후 기도할 시간이<br><b>부족했다 47.5%</b></div>
+      <div class="n">40명 중 19명 · 선생님들도 같은 이야기를 하셨습니다</div>
+    </div>
+    <div class="tile">
+      <div class="hl">저녁집회는 아이들이<br>생각보다 <b>깊게 느꼈습니다</b></div>
+      <div class="n">학생이 매긴 점수 4.28 · 선생님이 보신 점수 3.80 (5점 만점)</div>
+    </div>
+    <div class="tile neg">
+      <div class="hl">일손이 가장 모자랐던 곳은<br><b>주방·식사</b>였습니다</div>
+      <div class="n">헬퍼로 섬기신 일곱 분 중 다섯 분이 이곳을 꼽으셨습니다</div>
+    </div>
+    <div class="tile pos">
+      <div class="hl">찬양팀에 고등부가 더 함께하면 좋겠다<br><b>선생님 12명 중 9명</b></div>
+      <div class="n">학생도 절반이 같은 답 (40명 중 20명)</div>
+    </div>
+  </div>
+  <small class="src">여섯 가지 모두 아래에서 하나씩 풀어 설명합니다. 지금은 "이런 이야기가 나왔구나" 정도로 보시면 됩니다.</small>
+
+  <h3>네 문장으로 줄이면</h3>
+  <ul class="b">
+    <li><b>수련회는 잘 마쳤습니다.</b> 금·토·일로 바꾼 것을 학생 85%(34/40명)와 담임 선생님 열 분 모두가 좋게 보셨고,
+      전체 일정도 "대체로 적당했다"가 77.5%, 환경에 대해서도 60%가 "특별한 문제 없었다"고 답했습니다.
+      아이들이 남긴 이야기도 대부분 <em>시간을 어디에 더 쓰면 좋겠다</em>는 쪽이었습니다.
+      <b>큰 틀은 지켜졌고, 남은 이야기는 그 안을 채우는 일입니다.</b></li>
+
+    <li><b>학생과 선생님이 똑같이 짚은 대목이 하나 있습니다 — 기도할 시간이 짧았다는 것.</b>
+      학생은 객관식(47.5%가 부족하다고 답함)에서도, 직접 쓴 글에서도 이 이야기를 가장 많이 했고,
+      선생님들도 "가장 먼저 고쳐야 할 것"을 묻는 문항에서 같은 말씀을 하셨습니다.
+      <b>양쪽이 "고쳐야 할 것"으로 같이 꼽은 항목은 이것 하나였습니다.</b></li>
+
+    <li><b>가장 크게 갈린 것은 어떤 프로그램이 좋았는가에 대한 평가입니다.</b>
+      학생이 가장 많이 꼽은 원투원을 선생님들은 40%만 효과적이라고 보셨고,
+      반대로 선생님들이 가장 큰 걸림돌로 보신 "내용이 어렵다"를 학생은 10%만 골랐습니다
+      <span style="color:var(--muted)">(두 문항의 보기가 완전히 같지는 않아 참고로만 비교했습니다 — Chapter 4 ③번)</span>.
+      <br>
+      선생님들은 <b>프로그램이 잘 굴러갔는지</b>를 중심으로 보셨고,
+      아이들은 <b>누구와 친해졌는지, 얼마나 힘들었는지</b>를 중심으로 답한 것으로 보입니다.
+      같은 사흘을 서로 다른 것에 눈을 두고 지낸 셈입니다.</li>
+
+    <li><b>학년으로 나눠 보면 원하는 것이 조금씩 다릅니다</b>(Chapter 8) —
+      <b>1학년은 친해지는 시간</b>, <b>2학년은 쉴 여유</b>, <b>3학년은 기도할 시간</b>을 더 원했습니다.</li>
+  </ul>
+
+  <h3>학생과 선생님의 응답 비교</h3>
+  <p class="lede">순서는 <b>학생과 선생님의 의견이 얼마나 겹치는지</b>를 기준으로 매겼습니다.
+    "양쪽 일치"는 학생과 선생님이 같은 이야기를 한 것이라 그만큼 무게가 실리고,
+    "한쪽에서만"은 한 번 더 살펴보면 좋을 것입니다.</p>
+  <p class="lede">아래에 '해 볼 만한 것'으로 기록된 여섯 가지는 <b>결정 사항이 아니라 숫자가 가리키는 방향</b>입니다.
+    실제로 무엇을 할지는 함께 이야기해 정하시면 좋겠습니다.</p>
+  <div class="tw"><table>
+    <thead><tr><th></th><th>해 볼 만한 것</th><th>왜 그렇게 보이는지</th><th class="num">누가 말했나</th></tr></thead>
+    <tbody>
+      <tr class="hi"><td class="num">1</td><td><b>저녁집회에서 기도할 시간을 좀 더 확보하기</b> — 찬양 시간을 조금 줄이는 방법으로</td><td>학생 47.5%가 부족하다고 답함 · 학생이 쓴 글에서 가장 많이 나온 이야기 · 선생님도 개선 1순위로 꼽음</td><td class="num pos">양쪽 일치</td></tr>
+      <tr class="hi"><td class="num">2</td><td><b>원투원처럼 깊게 이야기 나누는 시간 늘리기</b></td><td>학생 57.5%가 부족하다고 답했고 <b>길었다는 학생은 한 명도 없었음</b> · 기억에 남는 프로그램 1위</td><td class="num neg">학생 쪽에서 강함</td></tr>
+      <tr><td class="num">3</td><td><b>프로그램 수를 조금 줄이고 이동·쉬는 시간 넣기</b></td><td>선생님이 꼽은 일정 지연 원인 공동 1위 · 학생도 45%가 쉬는 시간이 부족했다고 답함</td><td class="num pos">양쪽 일치</td></tr>
+      <tr><td class="num">4</td><td><b>주방·식사를 세 분이 한 팀으로</b></td><td>헬퍼 일곱 분 중 다섯 분이 이 자리를 지목 · "한 사람에게 몰렸다"는 글이 여러 번 나옴</td><td class="num">선생님 쪽에서만</td></tr>
+      <tr><td class="num">5</td><td><b>설교 눈높이 맞추기, 설교와 GBS 내용 이어주기</b></td><td>선생님 70%가 난이도를 걸림돌로 꼽음 · 학생 글에도 "설교가 어려웠다"가 나옴</td><td class="num">일부 겹침</td></tr>
+      <tr><td class="num">6</td><td><b>찬양팀과 고등부가 함께 서는 방법 찾아보기</b></td><td>선생님 75%, 학생 50%가 고등부의 참여를 늘리는 쪽을 골랐음</td><td class="num pos">양쪽 일치</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+
+<!-- ═══════════════ 2. 표본 ═══════════════ -->
+<section id="sample">
+  <h2><span class="n">02</span>누가 답했나</h2>
+  <p class="lede">숫자를 보기 전에 <b>누가 몇 명이나 답했는지</b>부터 보시면 뒤에 나오는 비율이 훨씬 잘 읽힙니다.
+    특히 선생님 설문은 답하신 분이 열두 분이라, 한 분의 답이 비율을 꽤 많이 움직입니다.</p>
+
+  <div class="chart">
+    <h4>학생 42명 — 학년</h4>
+    <div class="row"><div class="lab">1학년</div><div class="bars"><div class="track"><span class="fill s1" style="width:40.5%"></span><em><b>17명</b> · 40.5%</em></div></div></div>
+    <div class="row"><div class="lab">3학년</div><div class="bars"><div class="track"><span class="fill s1" style="width:35.7%"></span><em><b>15명</b> · 35.7%</em></div></div></div>
+    <div class="row"><div class="lab">2학년</div><div class="bars"><div class="track"><span class="fill s1" style="width:23.8%"></span><em><b>10명</b> · 23.8%</em></div></div></div>
+  </div>
+
+  <div class="chart">
+    <h4>교사 12명 — 역할</h4>
+    <div class="row"><div class="lab">담임</div><div class="bars"><div class="track"><span class="fill s2" style="width:41.7%"></span><em><b>5명</b></em></div></div></div>
+    <div class="row"><div class="lab">담임 + 헬퍼</div><div class="bars"><div class="track"><span class="fill s2" style="width:41.7%"></span><em><b>5명</b></em></div></div></div>
+    <div class="row"><div class="lab">헬퍼 / 프로그램</div><div class="bars"><div class="track"><span class="fill s2" style="width:16.7%"></span><em><b>2명</b></em></div></div></div>
+    <small class="src">분기 문항 분모 — 담임 전용 문항 n=10 (담임 5 + 겸임 5), 헬퍼 전용 문항 n=7 (헬퍼 2 + 겸임 5), 공통 문항 n=12</small>
+  </div>
+
+  <div class="chart">
+    <h4>교사 12명 — 고등부 섬긴 기간</h4>
+    <div class="row"><div class="lab">1~2년</div><div class="bars"><div class="track"><span class="fill s2" style="width:33.3%"></span><em><b>4명</b></em></div></div></div>
+    <div class="row"><div class="lab">5년 이상</div><div class="bars"><div class="track"><span class="fill s2" style="width:33.3%"></span><em><b>4명</b></em></div></div></div>
+    <div class="row"><div class="lab">3~5년</div><div class="bars"><div class="track"><span class="fill s2" style="width:16.7%"></span><em><b>2명</b></em></div></div></div>
+    <div class="row"><div class="lab">올해가 처음</div><div class="bars"><div class="track"><span class="fill s2" style="width:16.7%"></span><em><b>2명</b></em></div></div></div>
+  </div>
+
+  <div class="verdict">
+    <b>읽으실 때 염두에 두시면 좋을 세 가지</b>
+    <ul class="b" style="margin-bottom:0">
+      <li><b>선생님 응답은 열두 분입니다.</b> 열두 분이면 한 분이 8.3%p, 담임 전용 문항(열 분)은 한 분이 10%p,
+        헬퍼 전용 문항(일곱 분)은 한 분이 14.3%p를 움직입니다.
+        그래서 선생님 쪽 비율은 <em>어느 쪽이 더 많았나</em> 정도로 보시고, 몇 %p 차이에는 무게를 두지 않으시는 편이 좋겠습니다.</li>
+      <li><b>수련회에 오지 못한 학생은 두 명이 답했습니다.</b> 두 명의 이야기를 전체 미참석 학생의 경향처럼 읽기는 어렵습니다.
+        Chapter 7에서도 비율 대신 <em>두 사람의 이야기</em>로만 정리했습니다.</li>
+      <li><b>설문은 원하는 사람만 답한 것입니다.</b> 수련회가 좋았던 학생이 답을 더 남겼을 수 있어,
+        실제 만족도는 여기 숫자보다 조금 낮을 가능성이 있습니다.
+        다만 <em>불만이 있었다는 사실 자체</em>는 그대로 유효합니다 — 아쉬웠다고 답한 학생이 실제로 있었다는 뜻이니까요.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════ 3. 신뢰성 ═══════════════ -->
+<section id="trust">
+  <h2><span class="n">03</span>아이들이 솔직하게 답했을까</h2>
+
+  <div class="open">
+    <p>우리 교회는 부모님이 오래 다니신 가정이 많고, 아이들도 그런 환경에서 자랐습니다.
+      이런 환경에서는 <b>"긍정적인 답변"이 높게 나타날 경향성</b>이 생길 수 있습니다.
+      특히 신앙에 관한 질문일수록 그렇습니다.</p>
+    <p>그래서 <b>결과를 읽기 전에 이를 검증해 보는 절차가 필요했고, 아래는 그 내용입니다.</b></p>
+  </div>
+
+  <div class="verdict">
+    <b>결론부터</b>
+    <ul class="b" style="margin-bottom:0">
+      <li><b>점수 자체는 조금 후하게 나왔을 수 있습니다.</b></li>
+      <li><b>다만 항목끼리 비교한 순서는 믿을 만합니다.</b></li>
+      <li>한 학생이 저녁집회·GBS·리플렉션 세 가지를 모두 높게 매겼더라도,
+        <b>어느 쪽을 더 높게 매겼는지는 알 수 있습니다.</b></li>
+    </ul>
+    <p style="margin:12px 0 0;padding:11px 13px;background:var(--plane);border:1px solid var(--hair);border-radius:7px;font-size:13.5px">
+      실제보다 2kg 무겁게 나오는 체중계를 생각해 보시면 됩니다.
+      <b>몇 kg인지는 틀리지만, 누가 더 무거운지는 맞습니다.</b></p>
+  </div>
+
+  <h3>확인한 다섯 가지</h3>
+  <p class="lede">근거가 궁금하신 분만 클릭해서 열어 보시면 됩니다. (바쁘신 분들은 제목만 읽으셔도 됩니다.)</p>
+
+  <details>
+    <summary>① 좋게만 답했다면 신앙 항목이 다 높아야 하는데, 0.5점 넘게 갈렸습니다</summary>
+    <div class="dbody">
+      <p>같은 "신앙 프로그램" 묶음 안에서 물은 세 가지입니다.</p>
+      <div class="chart">
+        <div class="row"><div class="lab">저녁집회</div><div class="bars"><div class="track"><span class="fill s1" style="width:85.6%"></span><em><b>4.28</b></em></div></div></div>
+        <div class="row"><div class="lab">GBS</div><div class="bars"><div class="track"><span class="fill s1" style="width:76.6%"></span><em><b>3.83</b></em></div></div></div>
+        <div class="row"><div class="lab">리플렉션</div><div class="bars"><div class="track"><span class="fill s1" style="width:75%"></span><em><b>3.75</b></em></div></div></div>
+        <small class="src">5점 만점 · 40명</small>
+      </div>
+      <p>"신앙적인 건 다 좋다고 하자"는 마음으로 답했다면 셋이 비슷하게 나왔을 텐데,
+        아이들은 신앙 프로그램 안에서도 나눠서 답했습니다.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>② 아쉬운 점을 실제로 많이 적었습니다</summary>
+    <div class="dbody">
+      <div class="tw"><table>
+        <thead><tr><th>이런 답을 한 학생이</th><th class="num">인원</th><th class="num">비율</th></tr></thead>
+        <tbody>
+          <tr><td>원투원처럼 깊게 이야기할 시간이 부족했다</td><td class="num">23명</td><td class="num">57.5%</td></tr>
+          <tr><td>집회 후 기도할 시간이 부족했다</td><td class="num">19명</td><td class="num">47.5%</td></tr>
+          <tr><td>피곤해서 집중이 어려웠다</td><td class="num">27명</td><td class="num">67.5%</td></tr>
+          <tr><td>수련회 시작할 때 마음이 준비되지 않았다 <span style="color:var(--muted)">(1~2점)</span></td><td class="num">3명</td><td class="num">7.5%</td></tr>
+        </tbody>
+      </table></div>
+      <p>직접 쓴 글에도 거르지 않은 말이 그대로 있었습니다 —
+        <em>"설교가 너무 어려워서 아쉬웠어요"</em>,
+        <em>"전체적으로 계속 활동 시간들이 밀리면서 급하게 진행되는 느낌이 들어서 아쉬웠고"</em>,
+        <em>"조 활동에서 뭔가 흐지부지 마무리 된 것 같은 느낌"</em>.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>③ 대충 답한 학생이 오히려 낮게 줬습니다 — 예상과 반대입니다</summary>
+    <div class="dbody">
+      <p>세 항목에 <b>똑같은 점수</b>를 준 학생은 깊이 생각하지 않고 답했을 가능성이 있습니다. 그 학생들을 따로 갈라 봤습니다.</p>
+      <div class="tw"><table>
+        <thead><tr><th>어떻게 답했나</th><th class="num">인원</th><th class="num">저녁집회 점수</th></tr></thead>
+        <tbody>
+          <tr><td>세 항목에 모두 같은 점수를 줌 <span style="color:var(--muted)">(대충 답했을 수 있음)</span></td><td class="num">13명</td><td class="num">4.08</td></tr>
+          <tr class="hi"><td>항목마다 다른 점수를 줌 <span style="color:var(--muted)">(구분해서 답함)</span></td><td class="num">27명</td><td class="num"><b>4.37</b></td></tr>
+        </tbody>
+      </table></div>
+      <p>좋게만 답하려는 마음이 원인이라면 대충 답한 쪽이 점수를 끌어올려야 하는데, 정반대였습니다.
+        <b>높은 점수가 성의 없는 답에서 나온 것은 아니라는 뜻입니다.</b></p>
+    </div>
+  </details>
+
+  <details>
+    <summary>④ 집회를 비판한 학생도 저녁집회에는 4.1~4.3을 줬습니다</summary>
+    <div class="dbody">
+      <div class="tw"><table>
+        <thead><tr><th>이렇게 답한 학생들의</th><th class="num">인원</th><th class="num">저녁집회 점수</th></tr></thead>
+        <tbody>
+          <tr><td>집회 시간이 너무 길었다</td><td class="num">7명</td><td class="num">4.29</td></tr>
+          <tr><td>찬양·말씀·기도의 구성이 아쉬웠다</td><td class="num">8명</td><td class="num">4.13</td></tr>
+          <tr><td>피곤해서 집중이 어려웠다</td><td class="num">27명</td><td class="num">4.22</td></tr>
+          <tr><td style="color:var(--muted)">참고 — 전체 평균</td><td class="num" style="color:var(--muted)">40명</td><td class="num" style="color:var(--muted)">4.28</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>"좋았지만 이건 아쉬웠다"를 한 사람 안에서 나눠 답할 수 있었다</b>는 뜻입니다.
+        무조건 좋게 답하는 상태였다면 이렇게 갈라지지 않습니다.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>⑤ 자기 평소 점수보다 낮게 준 학생도 일곱 명 있었습니다</summary>
+    <div class="dbody">
+      <p>사람마다 후하게 주는 사람, 짜게 주는 사람이 있습니다.
+        그래서 <b>각자가 다른 문항에 준 점수를 기준선</b>으로 삼고, 저녁집회를 그보다 높게 줬는지 낮게 줬는지 봤습니다.</p>
+      <div class="tw"><table>
+        <thead><tr><th>본인 평소 점수와 비교하면</th><th class="num">인원</th><th class="num">저녁집회</th><th class="num">본인 평소</th></tr></thead>
+        <tbody>
+          <tr><td>훨씬 높게 줌 (1점 이상)</td><td class="num">11명</td><td class="num">4.82</td><td class="num">3.70</td></tr>
+          <tr><td>조금 높게 줌</td><td class="num">17명</td><td class="num">4.35</td><td class="num">3.84</td></tr>
+          <tr><td>같게 줌</td><td class="num">5명</td><td class="num">4.00</td><td class="num">4.00</td></tr>
+          <tr class="hi"><td><b>오히려 낮게 줌</b></td><td class="num"><b>7명</b></td><td class="num">3.43</td><td class="num">4.48</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>모두가 같은 방향으로 답한 것이 아닙니다.</b></p>
+    </div>
+  </details>
+</section>
+
+
+<!-- ═══════════════ 4. 크로스체크 ═══════════════ -->
+<section id="cross">
+  <h2><span class="n">04</span>학생과 선생님, 같은 사흘을 어떻게 다르게 봤나</h2>
+  <p class="lede">학생 설문과 교사 설문은 따로 진행됐습니다.
+    그래서 <b>같은 이야기가 양쪽에서 나왔다면</b> 그만큼 무게가 실리고,
+    <b>서로 다르게 나왔다면</b> 그 자리에 우리가 미처 보지 못한 것이 있을 수 있습니다. 여덟 가지를 추려 보았습니다.</p>
+  <div class="verdict" style="margin-bottom:20px">
+    <b>표에 붙은 딱지가 뜻하는 것</b><br>
+    <span class="tag match">양쪽 일치</span> 학생과 선생님이 같은 이야기를 한 것 — 그만큼 무게가 실립니다<br>
+    <span class="tag gap">차이가 큼</span> 학생과 선생님의 답이 다르게 나온 것 — 어느 쪽이 맞다기보다 <em>서로 다른 것을 보고 있었다</em>고 읽는 편이 좋겠습니다<br>
+    <span class="tag watch">살펴볼 만함</span> 한쪽에서만 나왔거나, 해석의 여지가 있는 것
+  </div>
+
+  <!-- CC1 -->
+  <div class="card">
+    <h3><span class="tag match">양쪽 일치</span>① 기도할 시간 — 학생과 선생님이 똑같이 말한 대목</h3>
+    <p>학생은 객관식에서도, 직접 쓴 글에서도 기도 시간이 짧았다고 했습니다.
+      선생님들도 "가장 먼저 고쳐야 할 것"을 묻는 문항에 같은 이야기를 적으셨습니다.
+      <b>고쳐야 할 것으로 양쪽이 함께 꼽은 항목은 이것 하나였습니다.</b>
+      <span style="color:var(--muted)">(⑧번 일정처럼 양쪽 답이 겹친 항목이 더 있지만,
+      그건 "잘 맞았다"는 쪽의 일치입니다. 고칠 것으로 같이 짚은 것은 기도 시간뿐이었습니다.)</span></p>
+
+    <h4><i class="ic stu"></i>학생 — 집회 후 기도시간이 어땠나 (40명)</h4>
+    <p style="font-size:13px;color:var(--muted);margin-top:0">
+      아래 띠는 40명이 어느 쪽을 골랐는지를 길이로 나타낸 것입니다. 왼쪽으로 갈수록 "부족했다", 오른쪽으로 갈수록 "길었다"입니다.
+      숫자는 사람 수입니다.</p>
+    <div class="dstack">
+      <span class="m2" style="width:17.5%">7</span>
+      <span class="m1" style="width:30%">12</span>
+      <span class="z" style="width:42.5%">17</span>
+      <span class="p1" style="width:10%">4</span>
+    </div>
+    <div class="dlegend">
+      <span><i class="fill" style="background:var(--d-2);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>너무 부족 7</span>
+      <span><i class="fill" style="background:var(--d-1);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>조금 부족 12</span>
+      <span><i class="fill" style="background:var(--d0);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>적당 17</span>
+      <span><i class="fill" style="background:var(--dp1);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>조금 길었다 4</span>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink2)">
+      <b>부족했다 19명, 길었다 4명.</b> 한쪽으로 꽤 기울어 있습니다.</p>
+
+    <h4>학년별로 나눠 보면 — 2학년이 조금 다릅니다</h4>
+    <div class="chart">
+      <div class="row"><div class="lab">1학년 <span style="color:var(--muted)">n=16</span></div><div class="bars">
+        <div class="dstack"><span class="m2" style="width:18.75%">3</span><span class="m1" style="width:25%">4</span><span class="z" style="width:56.25%">9</span></div></div></div>
+      <div class="row"><div class="lab">2학년 <span style="color:var(--muted)">n=10</span></div><div class="bars">
+        <div class="dstack"><span class="m2" style="width:10%">1</span><span class="m1" style="width:30%">3</span><span class="z" style="width:30%">3</span><span class="p1" style="width:30%">3</span></div></div></div>
+      <div class="row"><div class="lab">3학년 <span style="color:var(--muted)">n=14</span></div><div class="bars">
+        <div class="dstack"><span class="m2" style="width:21.4%">3</span><span class="m1" style="width:35.7%">5</span><span class="z" style="width:35.7%">5</span><span class="p1" style="width:7.1%">1</span></div></div></div>
+      <small class="src">참석자만 집계 · 색 순서: 너무 부족 / 조금 부족 / 적당 / 조금 길었다</small>
+    </div>
+
+    <div class="tw"><table>
+      <thead><tr><th>학년</th><th class="num">부족했다</th><th class="num">길었다</th><th class="num">차이</th><th class="num">직접 쓴 글에서</th><th>한 줄로</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td><b>3학년</b> (14명)</td><td class="num neg">8명 · 57.1%</td><td class="num">1명 · 7.1%</td><td class="num neg">50.0%p</td><td class="num">9번</td><td>가장 여러 번, 가장 자세히 이야기함</td></tr>
+        <tr class="hi"><td><b>1학년</b> (16명)</td><td class="num neg">7명 · 43.8%</td><td class="num">0명 · 0%</td><td class="num neg">43.8%p</td><td class="num">9번</td><td>길었다는 학생이 <b>한 명도 없음</b></td></tr>
+        <tr><td><b>2학년</b> (10명)</td><td class="num">4명 · 40%</td><td class="num">3명 · 30%</td><td class="num">10.0%p</td><td class="num">3번</td><td>세 학년 중 유일하게 의견이 갈림</td></tr>
+      </tbody>
+    </table>
+    <small class="src">
+      <b>차이</b> — 부족했다는 비율에서 길었다는 비율을 뺀 값입니다. 클수록 한쪽으로 기울었다는 뜻입니다.<br>
+      <b>직접 쓴 글에서</b> — 아이들이 쓴 답변에 기도 시간 이야기가 몇 번 나왔는지 센 것입니다.
+      한 사람이 여러 문항에 적었으면 그만큼 세었고, 손으로 세어서 한두 건은 다를 수 있습니다.</small></div>
+
+    <p style="font-size:13.5px;color:var(--ink2)">
+      1학년과 3학년에서는 기도 시간을 늘리는 데 반대하는 의견이 거의 없었습니다. 1학년은 한 명도 없었고요.
+      2학년만 부족하다는 답(4명)과 길었다는 답(3명)이 비슷하게 나뉘었습니다.
+      다만 이것을 <b>2학년이 기도를 덜 원한다는 뜻으로 읽기는 어려울 것 같습니다.</b>
+      2학년은 다른 문항에서도 피곤함(90%)과 쉬는 시간 부족(70%)을 가장 많이 이야기한 학년이었습니다(Chapter 8).
+      <b>기도할 마음보다 기도할 기운이 남아 있지 않았던 쪽에 가깝지 않을까</b> 싶습니다.
+    </p>
+
+    <h4>학년별 대표 발언</h4>
+    <ul class="q">
+      <li><b>3학년</b>기도 시간도 늘려주시고 둘째날에 더 적극적으로 학생들 전체가 다같이 모여서 기도하거나 학년끼리 모여서 기도하거나 하는 시간이 있으면 더 좋을 것 같습니다.</li>
+      <li><b>3학년</b>(유지할 것) 기도시간 확보. / (아쉬운 점) 기도시간의 부족. / (다음에는) 기도 시간 확보해주세요 <span style="color:var(--muted)">— 한 학생이 세 문항에 모두 기도시간만 적었습니다</span></li>
+      <li><b>1학년</b>찬양시간을 조금 줄이고 말씀과 기도회를 늘려주세요!!</li>
+      <li><b>1학년</b>대체로 좋았지만 저녁집회에서 기도시간이 조금 짧았습니다. 원투원도 짧게 느껴졌고, 수영시간도 좀 더 늘어나면 좋겠습니다</li>
+      <li><b>2학년</b>기도회 시간이 너무 짧았어요 / 기도회 시간 늘려주세요</li>
+      <li><b>2학년</b>찬양 및 기도 시간에 드럼 소리가 컸어요 <span style="color:var(--muted)">— 2학년은 시간보다 음향·환경을 더 언급합니다</span></li>
+    </ul>
+
+    <h4><i class="ic tea"></i>선생님들이 남기신 글 (그대로 옮겼습니다)</h4>
+    <ul class="q">
+      <li>기도시간 늘리기</li>
+      <li>이번 수련회는 담당 목사님의 부재로 인해 기도시간이 짧고 깊이가 없다는 느낌이 들었다. 아이들을 위한 기도시간이 절대적으로 부족한 느낌이었다.(선생님이 아이들을 위해 기도해주는 시간 / 학년별로 중보해주는 시간 / 자율적으로 서로 기도해주는 시간)</li>
+      <li>축복의 시간에 인터뷰 말고 다같이 기도해주기, 개인 기도시간, 함께 기도하는 시간 늘리기, 저녁집회 기도회 인도해주실 분이 계셨으면 좋겠다.</li>
+      <li>기도시간이 조금 더 확보되는 것이 필요한 것 같습니다.</li>
+    </ul>
+
+    <div class="verdict">
+      <b>다만 "집회를 더 길게 하자"는 이야기는 아닌 것 같습니다.</b>
+      같은 학생들 중 7명(17.5%)은 "집회 시간이 너무 길었다"를 집중이 안 된 이유로 골랐거든요.
+      언뜻 앞뒤가 안 맞아 보이는데, 직접 쓴 글을 보면 조금 이해가 됩니다.
+      한 학생이 이렇게 적었습니다 — <em>"찬양시간을 조금 줄이고 말씀과 기도회를 늘려주세요!!"</em>
+      <br><br>
+      집회 전체가 길다기보다 <b>집회 안에서 찬양과 기도의 비중</b>에 대한 이야기로 보입니다.
+      집회 시간을 늘리기보다 <b>지금 길이 안에서 기도 쪽에 조금 더 시간을 두는 방법</b>을 먼저 생각해 볼 만합니다.
+    </div>
+  </div>
+
+  <!-- CC2 -->
+  <div class="card">
+    <h3><span class="tag gap">차이가 큼</span>② 신앙 프로그램 — 학생이 느낀 것과 선생님이 보신 것이 엇갈립니다</h3>
+    <p>같은 5점 척도로, 학생에게는 "신앙적으로 의미 있고 집중할 수 있었나"를,
+      선생님께는 "학생들의 집중도가 어땠나"를 여쭈었습니다.
+      세 프로그램 모두에서 두 답이 서로 반대쪽으로 갈렸습니다.</p>
+    <p style="font-size:13px;color:var(--muted)">
+      막대 길이는 5점 만점 대비 비율입니다. 파란 막대가 학생, 주황 막대가 선생님이고, 두 막대가 비슷하면 비슷하게 느끼셨다는 뜻입니다.</p>
+
+    <div class="legend">
+      <span><i class="ic stu"></i>학생이 스스로 느낀 정도 (40명)</span>
+      <span><i class="ic tea"></i>선생님이 보시기에 (담임 10명)</span>
+    </div>
+    <div class="chart duo">
+      <div class="row"><div class="lab">저녁집회</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:85.6%"></span><em><b>4.28</b></em></div>
+        <div class="track"><span class="fill s2" style="width:76%"></span><em><b>3.80</b></em></div>
+      </div></div>
+      <div class="row"><div class="lab">GBS</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:76.6%"></span><em><b>3.83</b></em></div>
+        <div class="track"><span class="fill s2" style="width:88%"></span><em><b>4.40</b></em></div>
+      </div></div>
+      <div class="row"><div class="lab">리플렉션</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:75%"></span><em><b>3.75</b></em></div>
+        <div class="track"><span class="fill s2" style="width:86%"></span><em><b>4.30</b></em></div>
+      </div></div>
+      <small class="src">막대 길이 = 5점 만점 대비 비율 · 동일 척도 · 학생 q9 / 교사 q7</small>
+    </div>
+
+    <div class="tw"><table>
+      <thead><tr><th>프로그램</th><th class="num">학생</th><th class="num">선생님</th><th class="num">차이</th><th>어떻게 볼 수 있을까</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>저녁집회</td><td class="num">4.28</td><td class="num">3.80</td><td class="num pos">학생이 0.48 높음</td><td>학생은 생각보다 깊이 느끼고 있었던 것으로 보입니다</td></tr>
+        <tr class="hi"><td>GBS</td><td class="num">3.83</td><td class="num">4.40</td><td class="num neg">선생님이 0.57 높음</td><td>겉으로 보이는 모습만큼은 아니었을 수 있습니다</td></tr>
+        <tr class="hi"><td>리플렉션</td><td class="num">3.75</td><td class="num">4.30</td><td class="num neg">선생님이 0.55 높음</td><td>GBS와 같은 방향입니다</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="verdict">
+      <b>왜 이렇게 갈렸을까 — 한 가지 설명을 붙여 봅니다.</b>
+      GBS와 리플렉션은 아이들이 <em>앉아서 조용히</em> 하는 시간입니다.
+      옆에서 보면 잘 집중하는 것처럼 보이기 쉽습니다.
+      반대로 저녁집회는 어수선해 보여도 아이들 마음속에서는 가장 크게 남았을 수 있고요.
+      <b>어느 쪽이 틀렸다기보다, 밖에서 보이는 모습과 안에서 느끼는 것이 같지 않은 것입니다.</b>
+      <br><br>
+      실무적으로는 이런 정도로 생각해 볼 만합니다 — 현장에서 보이는 모습만으로 프로그램의 경중을 정하면
+      저녁집회를 줄이고 GBS를 늘리는 쪽으로 갈 수 있는데, 학생 응답은 그 반대를 가리킵니다.
+      리플렉션을 "조금 길었다"고 한 학생(7명)이 "부족했다"고 한 학생(2명)보다 많다는 점도 같은 방향입니다.
+    </div>
+  </div>
+
+  <!-- CC3 -->
+  <div class="card">
+    <h3><span class="tag gap">차이가 큼</span>③ 집중이 안 된 이유 — 선생님은 "어려워서", 학생은 "피곤해서"</h3>
+    <p>집중이 안 된 이유를 여쭈었을 때 양쪽이 꼽은 1순위가 서로 달랐습니다.</p>
+
+    <div class="legend">
+      <span><i class="ic stu"></i>학생 — 저녁집회에 집중이 어려웠던 이유 (40명)</span>
+      <span><i class="ic tea"></i>선생님 — 학생들이 집중하기 어려워 보였던 이유 (10명)</span>
+    </div>
+    <div class="chart duo">
+      <div class="row"><div class="lab">피로 / 피곤함</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:67.5%"></span><em><b>67.5%</b> · 27명</em></div>
+        <div class="track"><span class="fill s2" style="width:40%"></span><em><b>40%</b> · 4명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">내용의 난이도</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:10%"></span><em><b>10%</b> · 4명 <span style="color:var(--muted)">(GBS 문항)</span></em></div>
+        <div class="track"><span class="fill s2" style="width:70%"></span><em><b>70%</b> · 7명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">시간·간격 문제</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:17.5%"></span><em><b>17.5%</b> · 7명 <span style="color:var(--muted)">(집회가 길다)</span></em></div>
+        <div class="track"><span class="fill s2" style="width:30%"></span><em><b>30%</b> · 3명 <span style="color:var(--muted)">(간격 부족)</span></em></div>
+      </div></div>
+      <div class="row"><div class="lab">특별한 문제 없음</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:27.5%"></span><em><b>27.5%</b> · 11명</em></div>
+        <div class="track"><span class="fill s2" style="width:20%"></span><em><b>20%</b> · 2명</em></div>
+      </div></div>
+      <small class="src">한 가지 짚어 둘 것이 있습니다 — 학생 문항과 선생님 문항의 보기가 완전히 같지는 않았습니다.
+        학생의 저녁집회 문항에는 "내용의 난이도"라는 보기 자체가 없었고, 위 학생 수치는 GBS 문항에서 가져온 것입니다.
+        그래서 <em>나란히 놓고 참고하는 정도</em>로 봐 주시면 좋겠습니다.</small>
+    </div>
+
+    <div class="verdict">
+      <b>선생님들이 보신 것이 빗나간 것은 아닌 듯합니다. 다만 대상이 조금 다를 수 있습니다.</b>
+      학생들이 직접 쓴 글에도 어렵다는 이야기가 나옵니다. 그런데 그 대상이 GBS라기보다 <b>설교</b> 쪽입니다.
+      <em>"설교가 너무 어려워서 아쉬웠어요"</em>, <em>"설교가 어렵긴 했으나 마음에 와닿는 내용이었다"</em>.
+      선생님 글에서도 비슷한 이야기가 있습니다 — <em>"설교 말씀이 어려웠음"</em>,
+      <em>"성경공부가 다소 어려웠음. 설교와 연결되는 부분이 부족했음"</em>.
+      <br><br>
+      이렇게 놓고 보면 살펴볼 만한 것이 두 가지쯤 됩니다.
+      <b>하나는 설교의 눈높이</b>, <b>다른 하나는 설교와 GBS가 서로 이어지는지</b>입니다.
+      그리고 학생이 가장 많이 꼽은 <b>피곤함(67.5%)</b>은 내용의 어려움과는 별개의 이야기라,
+      일정을 조금 여유 있게 하는 쪽(아래 3번)으로 접근하는 편이 맞을 것 같습니다.
+    </div>
+  </div>
+
+  <!-- CC4 -->
+  <div class="card">
+    <h3><span class="tag gap">차이가 큼</span>④ 원투원 — 학생이 가장 많이 꼽은 것을 선생님은 40%가 꼽았습니다</h3>
+    <p>학생에게는 "기억에 남는 프로그램"을, 선생님께는 "아이들과 친해지는 데 효과적이었던 프로그램"을
+      각각 최대 세 개씩 고르게 했습니다. 나란히 보기 위해 <b>양쪽 다 "고른 사람 비율"</b>로 바꿔 두었습니다.</p>
+
+    <div class="legend">
+      <span><i class="ic stu"></i>학생 (40명 중 몇 %가 골랐나)</span>
+      <span><i class="ic tea"></i>선생님 (담임 10명 중 몇 %가 골랐나)</span>
+    </div>
+    <div class="chart duo">
+      <div class="row"><div class="lab">원투원</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:60%"></span><em><b>60%</b> · 24명</em></div>
+        <div class="track"><span class="fill s2" style="width:40%"></span><em><b>40%</b> · 4명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">레크레이션</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:50%"></span><em><b>50%</b> · 20명</em></div>
+        <div class="track"><span class="fill s2" style="width:80%"></span><em><b>80%</b> · 8명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">경주자의 밤</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:45%"></span><em><b>45%</b> · 18명</em></div>
+        <div class="track"><span class="fill s2" style="width:20%"></span><em><b>20%</b> · 2명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">물놀이</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:42.5%"></span><em><b>42.5%</b> · 17명</em></div>
+        <div class="track"><span class="fill s2" style="width:50%"></span><em><b>50%</b> · 5명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">멘토-멘티</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:32.5%"></span><em><b>32.5%</b> · 13명</em></div>
+        <div class="track"><span class="fill s2" style="width:40%"></span><em><b>40%</b> · 4명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">달란트 문방구</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:30%"></span><em><b>30%</b> · 12명</em></div>
+        <div class="track"><span class="fill s2" style="width:20%"></span><em><b>20%</b> · 2명</em></div>
+      </div></div>
+      <div class="row"><div class="lab">축복의 시간</div><div class="bars">
+        <div class="track"><span class="fill s1" style="width:20%"></span><em><b>20%</b> · 8명</em></div>
+        <div class="track"><span class="fill s2 zero"></span><em><b>0%</b> · 0명 <span style="color:var(--muted)">(교사 선택 없음)</span></em></div>
+      </div></div>
+    </div>
+
+    <h4>몇 순위로 골랐는지까지 반영하면 차이가 조금 더 벌어집니다</h4>
+    <p style="font-size:13px;color:var(--muted);margin-top:0">1순위로 고르면 3점, 2순위 2점, 3순위 1점을 주고 모두 더한 점수입니다.
+      여러 명이 고르기도 하고 앞순위로도 고른 것이 높게 나옵니다.</p>
+    <div class="tw"><table>
+      <thead><tr><th class="num">순위</th><th>프로그램</th><th class="num">가중점수</th><th class="num">선택 인원</th><th class="num">관계형성 평균</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td class="num">1</td><td><b>원투원</b></td><td class="num">55</td><td class="num">24</td><td class="num">3.98</td></tr>
+        <tr><td class="num">2</td><td>레크레이션</td><td class="num">45</td><td class="num">20</td><td class="num">3.98</td></tr>
+        <tr><td class="num">3</td><td>물놀이</td><td class="num">42</td><td class="num">17</td><td class="num">3.48</td></tr>
+        <tr><td class="num">4</td><td>경주자의 밤</td><td class="num">26</td><td class="num">18</td><td class="num">3.33</td></tr>
+        <tr><td class="num">5</td><td>멘토-멘티</td><td class="num">25</td><td class="num">13</td><td class="num">3.55</td></tr>
+        <tr><td class="num">6</td><td>달란트 문방구</td><td class="num">21</td><td class="num">12</td><td class="num">3.30</td></tr>
+        <tr><td class="num">7</td><td>축복의 시간</td><td class="num">14</td><td class="num">8</td><td class="num">3.25</td></tr>
+      </tbody>
+    </table>
+    <small class="src">가중점수 = 1순위 3점 + 2순위 2점 + 3순위 1점 · 관계형성 평균 = "선후배·친구와 가까워지는 데 도움이 되었나"를 5점으로 물은 것 (40명 전원 응답)<br>
+      <b>관계형성 평균은 프로그램마다 목적이 달랐다는 점을 함께 놓고 봐 주세요.</b>
+      친해지는 것을 목적으로 두지 않은 프로그램도 이 문항에 함께 물었기 때문에, 이 점수만으로 프로그램의 값어치를 견주기는 어렵습니다.</small></div>
+
+    <div class="verdict">
+      <b>세 가지가 눈에 들어옵니다.</b>
+      <ul class="b" style="margin-bottom:0">
+        <li><b>원투원에서 양쪽 차이가 가장 컸습니다</b>(학생 60% · 선생님 40%).
+          학생 쪽에서 원투원은 기억에 남는 프로그램 1위였고, 친해지는 데 도움이 된 정도도 공동 1위(3.98)였습니다.
+          "가까워진 순간"을 묻는 글에 답한 21명 가운데 <b>9명이 원투원을 적어</b> 가장 많이 나왔고,
+          "시간을 늘려달라"는 요청도 여기에 제일 많았습니다. 어느 문항에서든 원투원을 언급한 학생은 모두 14명입니다.
+          선생님들은 눈에 잘 보이는 <em>다 같이 하는 활동</em>(레크레이션 80%)을 많이 꼽으셨는데,
+          아이들 쪽에서는 <em>둘이 마주 앉아 나눈 대화</em>가 더 크게 남았던 것으로 보입니다.</li>
+        <li><b>경주자의 밤은 "여러 명이 골랐지만 앞순위는 아닌" 모습입니다.</b>
+          고른 사람은 18명으로 네 번째로 많은데, 순위를 반영한 점수는 26점으로 내려갑니다.
+          기억에는 남았지만 1순위로 꼽을 만큼은 아니었던 것 같습니다. 없애기보다 지금처럼 두어도 괜찮아 보입니다.
+          다만 한 학생이 이렇게 적었습니다 — <em>"타 학년이 미리 끝나서 저희 학년 공간을 사용하고자 해서, 경주자의 밤을 제대로 진행하지 못했어요."</em>
+          프로그램 자체보다 진행 쪽에서 아쉬웠던 경우일 수 있습니다.</li>
+        <li><b>축복의 시간은 "이렇게 해보면 어떨까"라는 구체적인 제안이 양쪽에서 나온 순서입니다.</b>
+          학생과 선생님이 같은 이야기를 하셨습니다 —
+          <em>"축복의 시간에 인터뷰보다 서로 중보기도 해주는 시간을 가졌으면 어땠을까"</em>(학생),
+          <em>"축복의 시간에 인터뷰 말고 다같이 기도해주기"</em>(선생님).
+          <br><br>
+          한 선생님의 글에는 그날의 상황이 좀 더 담겨 있습니다 —
+          <em>"축복의 시간때 인터뷰 형식인지 몰랐고(특별한 문제는 아님) 기도의 시간연장으로 같이 기도한다고 생각했는데,
+          흐름이 약간 끊기는 느낌이었습니다. 기도시간이 짧아서 아쉬워서 더 그렇게 느꼈던것 같아요."</em>
+          <b>어떤 형식으로 진행되는지 미리 알지 못한 채 맞으셨던 면</b>이 있어 보입니다.
+          <br><br>
+          학년별로 보면 <b>3학년에서 가장 높게 나왔습니다</b>(9점 · 1학년 2점 · 2학년 3점).
+          마지막 수련회를 보내는 학년에게 더 닿았던 자리인 듯합니다.
+          <br><br>
+          이걸 모으면 다음에 해 볼 만한 것이 꽤 구체적으로 그려집니다 —
+          <b>① 어떤 형식으로 진행되는지 미리 안내해 두기</b>,
+          <b>② 인터뷰와 함께 서로 기도해 주는 시간을 넣어보기</b>,
+          <b>③ 3학년이 중심에 서는 자리로 두기</b>.
+          기도 시간을 늘리자는 이야기(①번 과제)와도 자연스럽게 이어집니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CC5 -->
+  <div class="card">
+    <h3><span class="tag watch">살펴볼 만함</span>⑤ 수련회에 오게 된 이유 — 1위는 "지난 수련회의 좋은 기억"이었습니다</h3>
+    <p>"수련회를 기대하고 참여하도록 마음을 움직인 것"을 최대 세 개까지, 순서대로 고르게 한 문항입니다.
+      1순위 3점 · 2순위 2점 · 3순위 1점으로 계산했습니다.</p>
+    <p style="font-size:13px;color:var(--muted)">
+      먼저 말씀드리면, 이 문항이 물은 것은 <b>"오기로 마음먹은 계기"</b> 하나뿐입니다.
+      담임 선생님과의 관계가 아이에게 어떤 의미였는지는 이 설문으로 알 수 없습니다. 그 점을 감안하고 봐 주시면 좋겠습니다.</p>
+    <div class="chart">
+      <div class="row"><div class="lab">지난 수련회의 좋은 기억</div><div class="bars"><div class="track"><span class="fill s1" style="width:100%"></span><em><b>69점</b> · 29명</em></div></div></div>
+      <div class="row"><div class="lab">개인적 결단·영적 필요</div><div class="bars"><div class="track"><span class="fill s1" style="width:68.1%"></span><em><b>47점</b> · 21명</em></div></div></div>
+      <div class="row"><div class="lab">수련회 전 기도회</div><div class="bars"><div class="track"><span class="fill s1" style="width:36.2%"></span><em><b>25점</b> · 10명</em></div></div></div>
+      <div class="row"><div class="lab">친구·선후배 권유</div><div class="bars"><div class="track"><span class="fill s1" style="width:30.4%"></span><em><b>21점</b> · 10명</em></div></div></div>
+      <div class="row"><div class="lab">포스터·홍보</div><div class="bars"><div class="track"><span class="fill s1" style="width:27.5%"></span><em><b>19점</b> · 12명</em></div></div></div>
+      <div class="row"><div class="lab">릴레이 기도문</div><div class="bars"><div class="track"><span class="fill s1" style="width:20.3%"></span><em><b>14점</b> · 8명</em></div></div></div>
+      <div class="row"><div class="lab">담임 선생님의 관심과 연락</div><div class="bars"><div class="track"><span class="fill s2" style="width:11.6%"></span><em><b>8점</b> · 5명</em></div></div></div>
+      <small class="src">n=40 · 막대 길이 = 최고점(69점) 대비 비율 · 총 95회 선택</small>
+    </div>
+
+    <div class="verdict">
+      <b>숫자만 놓고 보면 이렇습니다.</b> 담임 선생님의 연락은 일곱 항목 가운데 가장 적게 꼽혔고(8점 · 5명),
+      1위인 "지난 수련회의 좋은 기억"(69점 · 29명)에 견주면 많이 낮습니다.
+      수련회에 오지 못한 학생 두 명도 "담임 선생님이 미리 연락해 주시면"을 고르지 않았습니다.
+      <br><br>
+      <b>다만 이걸 "연락이 소용없다"로 읽지는 않으셨으면 합니다.</b>
+      이 문항은 <em>오기로 마음먹게 한 계기</em> 하나만 물었습니다.
+      선생님의 연락이 아이에게 어떤 위로가 되었는지, 평소 관계에 어떤 몫을 했는지는 여기서 잰 것이 아닙니다.
+      그리고 아이들이 "선생님이 연락 주셔서요"라고 스스로 짚어내기가 쉽지 않았을 수도 있습니다.
+      <br><br>
+      대신 이렇게는 말할 수 있을 것 같습니다.
+      <b>가장 많이 꼽힌 이유가 "작년 수련회가 좋았어서"였다는 점</b>입니다.
+      내년에 아이들이 오게 만드는 가장 큰 힘은
+      <em>올해 다녀온 아이들이 좋았다고 기억하는 것</em>에서 나올 가능성이 큽니다.
+      그렇게 보면 앞의 1·2번(기도 시간·원투원)은 올해 만족도를 위한 것이기도 하고,
+      내년에 아이들을 부르는 준비이기도 한 셈입니다.
+      <br><br>
+      한 가지 더, <b>"수련회 전 기도회"가 25점(10명)으로 홍보물(19점)보다 위</b>에 있었습니다.
+      사전 기도회가 영적인 준비이면서 실제로 아이들을 움직이는 자리이기도 했던 것으로 보입니다.
+    </div>
+
+    <h4>홍보물은 점수와 인원을 같이 봐야 할 것 같습니다</h4>
+    <p style="font-size:13.5px;color:var(--ink2)">
+      위 점수만 보면 포스터·홍보가 낮아 보이는데, <b>몇 명이 골랐는지</b>를 따로 세어 보면 이야기가 조금 달라집니다.</p>
+    <div class="tw"><table>
+      <thead><tr><th>항목</th><th class="num">점수</th><th class="num">점수 순위</th><th class="num">고른 인원</th><th class="num">인원 순위</th><th class="num">1인당 점수</th></tr></thead>
+      <tbody>
+        <tr><td>지난 수련회의 좋은 기억</td><td class="num">69점</td><td class="num">1위</td><td class="num">29명</td><td class="num">1위</td><td class="num">2.38</td></tr>
+        <tr><td>개인적인 결단 및 영적 필요</td><td class="num">47점</td><td class="num">2위</td><td class="num">21명</td><td class="num">2위</td><td class="num">2.24</td></tr>
+        <tr class="hi"><td><b>포스터 · 홍보 영상 · 안내</b></td><td class="num">19점</td><td class="num">5위</td><td class="num"><b>12명</b></td><td class="num pos"><b>3위</b></td><td class="num neg">1.58</td></tr>
+        <tr><td>수련회 전 예배 후 기도회</td><td class="num">25점</td><td class="num">3위</td><td class="num">10명</td><td class="num">4위</td><td class="num">2.50</td></tr>
+        <tr><td>친구 · 선후배의 권유</td><td class="num">21점</td><td class="num">4위</td><td class="num">10명</td><td class="num">4위</td><td class="num">2.10</td></tr>
+        <tr><td>릴레이 기도문 참여</td><td class="num">14점</td><td class="num">6위</td><td class="num">8명</td><td class="num">6위</td><td class="num">1.75</td></tr>
+        <tr><td>담임 선생님의 관심과 연락</td><td class="num">8점</td><td class="num">7위</td><td class="num">5명</td><td class="num">7위</td><td class="num">1.60</td></tr>
+      </tbody>
+    </table>
+    <small class="src">1인당 점수 = 점수 ÷ 고른 인원. 3에 가까울수록 1순위로 고른 사람이 많고, 1에 가까울수록 3순위로 고른 사람이 많다는 뜻입니다.<br>
+      설문 보기는 "포스터 / 홍보 영상 / 안내"로 적혀 있었지만, 올해 실제로 만든 것은 <b>인스타그램과 홍보 영상 등</b>이었습니다.
+      아이들은 이 보기를 <em>홍보 전반</em>으로 읽고 골랐을 것으로 보입니다. 다음 설문에서는 실제로 쓴 통로에 맞춰 보기를 적으면 더 정확해지겠습니다.</small></div>
+
+    <div class="verdict">
+      <b>홍보물은 "결정적인 이유"는 아니었지만, 여러 아이들에게 알리는 중요한 채널이었던 것으로 보입니다.</b>
+      점수로는 다섯 번째인데 <b>고른 사람 수로는 12명, 세 번째</b>입니다.
+      1인당 점수가 1.58로 낮은 것은 대부분 2순위나 3순위로 골랐다는 뜻이니,
+      <em>이것 때문에 가기로 마음먹었다</em>기보다 <em>수련회를 알게 되고 기대하게 되는 데 한몫했다</em>는 쪽에 가까워 보입니다.
+      <br><br>
+      이번에는 인스타그램과 홍보 영상 등 여러 갈래로 준비하셨는데 그 폭이 답에 그대로 드러납니다.
+      <b>고른 사람 수로 보면 열두 명으로, 수련회 전 기도회(열 명)보다 많습니다.</b>
+      아이들에게 가장 넓게 닿은 통로였던 셈입니다.
+      <br><br>
+      두 가지가 닿은 방식은 서로 달랐습니다.
+      기도회는 고른 사람이 열 명이지만 대부분 앞순위로 꼽아 1인당 2.50점이고,
+      홍보물은 열두 명이 주로 뒷순위로 꼽아 1.58점입니다.
+      <b>한쪽은 깊게, 한쪽은 넓게 닿았습니다.</b>
+      수련회를 알고 마음에 두게 하는 일은 홍보가 맡았고, 그 마음을 결단으로 밀어 준 것은 기도회 쪽이었던 것으로 보입니다.
+      둘 다 있어야 하는 몫이고, 그 앞자리를 홍보가 맡아 주었습니다.
+      <br><br>
+      다만 <b>홍보의 방향</b>에 대해서는 한 가지 생각해 볼 만한 것이 있습니다.
+      아이들을 가장 크게 움직인 두 가지가 <em>지난 수련회의 좋은 기억</em>(69점 · 29명)과
+      <em>개인적인 결단과 영적 필요</em>(47점 · 21명)였습니다.
+      홍보물이 일정과 안내를 전하는 데서 더 나아가
+      <b>작년에 무엇이 좋았는지, 그곳에서 아이들의 삶이 어떻게 달라졌는지, 지금 내게 왜 필요한지</b>를
+      담는 쪽으로 잡아 보는 것도 고려해 볼 만합니다.
+      같은 노력으로 더 앞순위에 놓이는 이유가 될 수 있을 것 같습니다.
+    </div>
+  </div>
+
+  <!-- CC6 -->
+  <div class="card">
+    <h3><span class="tag watch">살펴볼 만함</span>⑥ 찬양팀 — 선생님이 느끼신 거리감이 아이들에게도 있었을까</h3>
+    <p>이 문항은 이번에 처음 넣었습니다. 어떻게 넣게 되었는지부터 말씀드리는 것이 맞을 것 같습니다.</p>
+    <p>수련회를 준비하고 마무리하는 과정에서
+      <b>찬양팀과 고등부 사이에 거리가 있는 것 같다는 이야기가 선생님들 사이에서 여러 차례 나왔습니다.</b>
+      그 아쉬움이 아이들 쪽에서도 같은 무게로 느껴지는지 궁금해서, 학생 설문에도 같은 주제를 함께 넣었습니다.</p>
+    <p>답을 모아 보니 <b>두 집단이 느낀 결이 서로 달랐습니다.</b> 하나씩 보겠습니다.</p>
+
+    <h4><i class="ic stu"></i>학생 — 찬양팀과 더 가까워지려면? (40명, 여러 개 선택 가능)</h4>
+    <div class="chart">
+      <div class="row"><div class="lab">고등부가 코러스·악기로 함께 무대에</div><div class="bars"><div class="track"><span class="fill s1" style="width:50%"></span><em><b>50%</b> · 20명</em></div></div></div>
+      <div class="row"><div class="lab">지금도 충분히 좋고 감사하다</div><div class="bars"><div class="track"><span class="fill s1" style="width:40%"></span><em><b>40%</b> · 16명</em></div></div></div>
+      <div class="row"><div class="lab">수련회 중 찬양팀 선배와 대화·기도</div><div class="bars"><div class="track"><span class="fill s1" style="width:20%"></span><em><b>20%</b> · 8명</em></div></div></div>
+      <div class="row"><div class="lab">수련회 전 고등부 예배 방문</div><div class="bars"><div class="track"><span class="fill s1" style="width:12.5%"></span><em><b>12.5%</b> · 5명</em></div></div></div>
+    </div>
+
+    <h4><i class="ic tea"></i>선생님 — 찬양팀이 어떤 모습이면 좋을까? (12명, 하나만 선택)</h4>
+    <div class="chart">
+      <div class="row"><div class="lab">고등부 자체 인원 중심으로 세워간다</div><div class="bars"><div class="track"><span class="fill s2" style="width:50%"></span><em><b>50%</b> · 6명</em></div></div></div>
+      <div class="row"><div class="lab">메인은 찬양팀, 코러스·보조로 함께 무대</div><div class="bars"><div class="track"><span class="fill s2" style="width:25%"></span><em><b>25%</b> · 3명</em></div></div></div>
+      <div class="row"><div class="lab">현 구조 유지 + 사전 교제 강화</div><div class="bars"><div class="track"><span class="fill s2" style="width:25%"></span><em><b>25%</b> · 3명</em></div></div></div>
+      <small class="src">앞의 두 선택지를 합치면 <b>9명 / 75%</b>가 고등부 인원의 무대 참여 확대를 지지</small>
+    </div>
+
+    <div class="verdict">
+      <b>같은 주제인데 학생과 선생님이 답한 결이 달랐습니다.</b>
+      <ul class="b">
+        <li><b>선생님들 쪽에서는 처음 이 문항을 넣게 된 그 아쉬움이 그대로 나왔습니다.</b>
+          가장 많이 고르신 것이 수련회 전에 미리 얼굴을 익히는 것(50%)과 현장에서의 소통(50%)이었고,
+          직접 쓰신 글에는 더 구체적으로 담겨 있습니다:
+          <em>"우리는 찬양팀만 섬기러 왔어의 느낌이 강해서 아쉬웠다"</em>,
+          <em>"수련회 기간 내내 함께 교제하지 못하고 분리되어 있는 것 같아 안타까웠습니다"</em>,
+          <em>"찬양팀과 고등부가 함께 수련회를 한다는 느낌을 받으면 좋겠다"</em>,
+          <em>"아이들 챙기느라 찬양팀에게 따뜻한 말 한마디 못한 건 미안하고 아쉽습니다"</em>.</li>
+
+        <li><b>반면 아이들 답변에서는 그만한 아쉬움이 드러나지 않았습니다.</b>
+          "지금도 충분히 좋고 감사하다"를 고른 학생이 40%였고,
+          은혜받은 순간을 묻는 문항에서도 네 가지 보기가 모두 37.5~65%로 고르게 높았습니다.
+          아이들에게 찬양팀은 <em>거리가 느껴지는 사람들</em>이라기보다
+          <em>예배를 잘 도와준 사람들</em>로 남았던 것 같습니다.</li>
+
+        <li><b>그렇다고 아이들이 지금 그대로를 원한 것도 아니었습니다.</b>
+          절반(50%, 20명)이 <em>"고등부 친구들이 코러스나 악기로 함께 무대에서 찬양하기"</em>를 골랐습니다.
+          "지금도 좋다"(40%)보다 많습니다.
+          한 학생은 직접 이렇게 적기도 했습니다 — <em>"고등부 찬양팀이 서는 시간도 있으면 좋을 것 같아요."</em>
+          <br>아이들 쪽 이야기는 <b>아쉬움이라기보다 같이 해보고 싶다는 쪽</b>에 가까워 보입니다.</li>
+
+        <li><b>출발점은 달랐는데 가리키는 방향은 비슷합니다.</b>
+          선생님은 <em>함께하지 못한 아쉬움</em>에서, 아이들은 <em>같이 서보고 싶은 마음</em>에서 출발했지만,
+          둘 다 지금보다 <b>더 붙어 있는 모습</b>을 이야기하고 있습니다.
+          한 선생님은 다음 준비팀이 먼저 정할 것으로 아예 <em>"고등부 자체 찬양팀"</em>이라고 적으셨습니다.</li>
+      </ul>
+      <b>이런 것부터 해 보면 어떨까 싶습니다.</b>
+      바쁜 대학부 생활 가운데 사흘을 내어 주신 분들입니다.
+      한 번에 구조를 바꾸기보다, 서로 가까워질 자리를 하나씩 늘려 가는 편이 나을 것 같습니다.
+      연주가 안정적이어서 좋았다는 학생도 37.5% 있었으니까요.
+      ① 수련회 전에 찬양팀이 고등부 예배에 한 번 오셔서 함께 예배드리기,
+      ② 집회 한 번만이라도 고등부 학생이 코러스로 함께 서기,
+      ③ 기도회 반주는 선생님이나 학생이 맡아보기(한 선생님이 제안하신 것입니다),
+      ④ 적어도 한 끼는 따로 먹지 않고 같이 먹기.
+    </div>
+  </div>
+
+  <!-- CC7 -->
+  <div class="card">
+    <h3><span class="tag watch">선생님 쪽에서만</span>⑦ 일손 — 역할은 분명했는데 사람이 모자랐던 것으로 보입니다</h3>
+    <p>한 가지 먼저 짚고 싶습니다. <b>"역할이 불분명해서 힘들었다"는 쪽은 아니었던 것 같습니다.</b>
+      역할이 얼마나 분명했는지 물은 여덟 항목이 모두 4.17점 이상으로 꽤 높게 나왔거든요.
+      준비 과정에 대해 여쭌 점수 중에서 <b>낮게 나온 것은 인력 배치 하나였습니다.</b></p>
+
+    <div class="chart">
+      <div class="row"><div class="lab">역할·일정이 얼마나 분명했나<br><span style="color:var(--muted);font-size:11px">여덟 항목 · 12명</span></div>
+        <div class="bars"><div class="track"><span class="fill s2" style="width:89.2%"></span><em><b>4.17 ~ 4.75</b> <span style="color:var(--muted)">여덟 항목 모두 4점 이상</span></em></div></div></div>
+      <div class="row"><div class="lab">인력 배치가 적절했나<br><span style="color:var(--muted);font-size:11px">헬퍼로 섬기신 7명</span></div>
+        <div class="bars"><div class="track"><span class="fill s2" style="width:68.6%"></span><em><b>3.43</b> <span style="color:var(--crit)">준비 관련 문항 중 유일하게 4점 아래</span></em></div></div></div>
+      <small class="src">인력 배치 점수를 한 분씩 보면 <b>5점 1명 · 4점 4명 · 2점 1명 · 1점 1명</b>입니다.
+        평균은 3.43이지만 답이 위아래로 갈렸습니다. 배치가 잘 된 자리와 그렇지 못한 자리가 함께 있었던 것으로 보입니다.</small>
+    </div>
+
+    <h4>어디가 분명했고, 어디가 어려웠나</h4>
+    <div class="tw"><table>
+      <thead><tr><th>준비 과정 명확성 (n=12)</th><th class="num">평균</th><th>인력·준비 어려움 (n=7, 헬퍼계열)</th><th class="num">지목</th></tr></thead>
+      <tbody>
+        <tr><td>전체 일정</td><td class="num">4.75</td><td class="hi"><b>주방 / 식사</b></td><td class="num hi"><b>5명 · 71%</b></td></tr>
+        <tr><td>전체 수련회의 목적</td><td class="num">4.67</td><td>교사 사이 역할 분담·소통 부족</td><td class="num">3명 · 43%</td></tr>
+        <tr><td>준비물 및 물품</td><td class="num">4.58</td><td>다른 프로그램과의 일정 조율</td><td class="num">3명 · 43%</td></tr>
+        <tr><td>프로그램별 담당자</td><td class="num">4.50</td><td>인력 부족</td><td class="num">3명 · 43%</td></tr>
+        <tr><td>나의 역할</td><td class="num">4.33</td><td>기획안 확정 지연</td><td class="num">2명 · 29%</td></tr>
+        <tr><td>긴급상황 대응방법</td><td class="num">4.33</td><td>특별한 어려움 없음</td><td class="num">2명 · 29%</td></tr>
+        <tr><td>보고 / 의사결정 체계</td><td class="num">4.25</td><td>준비 기간 부족</td><td class="num">1명 · 14%</td></tr>
+        <tr><td class="hi"><b>다른 교사의 역할</b> ← 최저</td><td class="num hi"><b>4.17</b></td><td>—</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+    <small class="src">왼쪽은 12명 전원이 답한 문항이고, 오른쪽은 헬퍼로 섬기신 7명만 답한 문항입니다. 분모가 다르니 나란히 비교하지는 마시고 각각 읽어 주세요.</small></div>
+
+    <p>직접 쓰신 글에는 좀 더 구체적인 이야기가 담겨 있습니다 — <b>일이 몇 분께 몰렸다</b>는 것입니다.</p>
+    <ul class="q">
+      <li>저는 식사, 간식 등을 맡았는데 혼자 하기 버거웠습니다. 도와주시는 분들이 계셨지만 그 분들도 다른 여러 섬김을 겸하고 있어서 도움을 계속 요청하기 어려웠습니다. 식사,간식관련 섬김은 3명 이상 정도 팀을 이뤄 같이 움직여야 할 것 같습니다.</li>
+      <li>밥차가 오긴 했지만, 주방일이 아예 없는 게 아닙니다. 잔 설거지, 간식준비 등이 있는데 너무 한 분만 하시게 된 것 같아서 다음에는 식당에 인력배치가 필요해 보입니다.</li>
+      <li>준비팀이 역할분담을 잘 하셨는데 그런 중에도 몇 지체들이 상당히 부담이 된다는 느낌이 들었습니다. 특정인이 과부하 걸리지 않고 효율적으로 분담하고 협력하여 준비하는 부분에서 올해보다 조금 더 잘 되면 좋겠습니다.</li>
+      <li>아직도 일이 소수에게 집중이 된다는 것은 생각해 볼 사항 이라고 봅니다.</li>
+      <li>교사들이 너무 많이 섬김 <span style="color:var(--muted)">(근본 원인 문항)</span></li>
+      <li>준비하는 과정에서 에너지가 많이 쓰입니다. 서로를 위한 기도와 연합이 먼저이지만, 일을 조금 더 효율적으로 하는 방법들에 대한 고민이 필요한것 같아요. (선생님들의 보호차원)</li>
+    </ul>
+
+    <div class="verdict">
+      <b>세 가지를 나란히 놓으면 이런 그림이 됩니다.</b>
+      역할의 분명함은 4.17~4.75로 높았고, 인력 배치만 3.43으로 낮았고, "일이 몇 분께 몰렸다"는 글이 반복해서 나왔습니다.
+      <b>할 일의 양이 사람 수에 비해 많았던 쪽</b>으로 보입니다.
+      <br><br>
+      한 가지 짚이는 것은 <b>열두 분 중 다섯 분이 담임과 헬퍼를 함께 맡으셨다</b>는 점입니다.
+      두 가지를 같이 하면 반 아이들을 챙길 시간과 프로그램을 진행할 시간이 겹칠 수밖에 없습니다.
+      한 선생님이 이렇게 적으셨습니다 — <em>"맡은 조 아이들 케어에 필요한 시간과 프로그램 진행/보조에 필요한 시간이 겹쳐서"</em>,
+      그리고 다른 분은 <em>"헬퍼와 교사를 분리하도록"</em>이라고 하셨습니다.
+      <br><br>
+      <b>이 부분이 아이들 쪽 답변에도 조금 비칩니다.</b>
+      <em>"전체적으로 계속 활동 시간들이 밀리면서 급하게 진행되는 느낌이 들어서 아쉬웠고"</em>(학생),
+      <em>"조 활동에서 뭔가 흐지부지 마무리 된 것 같은 느낌"</em>(학생),
+      <em>"식사시간 내려가는 과정 너무 어수선"</em>(선생님).
+      <br><br>
+      역할의 분명함 중 가장 낮았던 항목이 <b>"다른 교사의 역할"(4.17)</b>이었다는 점도 같은 이야기의 일부일 수 있습니다.
+      내가 할 일은 알았지만 <em>옆에서 무엇을 하고 계신지</em>는 상대적으로 덜 알았고, 그래서 빈자리가 생겨도 서로 채우기 어려웠을 수 있습니다.
+      한 선생님이 이렇게 쓰셨습니다 —
+      <em>"의사소통하는 것 자체를 힘들어 하는 것 (불편해도 피하지 않고 말하고, 일을 나누는 것. 그리고 누가 못하더라도 알아서 채우는 것)."</em>
+      <br><br>
+      <b>다만 이 대목의 글들이 하나같이 남을 탓하지 않는다는 점은 적어 두고 싶습니다.</b>
+      본인이 힘들었다는 이야기보다 <em>"너무 한 분만 하시게 된 것 같아서"</em>, <em>"몇 지체들이 상당히 부담이 된다는 느낌"</em>,
+      <em>"선생님들의 보호차원"</em>처럼 옆 사람을 걱정하는 말이 더 많았습니다.
+      일이 몰렸다는 것은 곧 <b>누군가 그 자리를 말없이 감당했다는 뜻</b>이기도 합니다.
+      다음에 나눌 것은 그 무게이지, 그 마음은 아닐 것입니다.
+    </div>
+  </div>
+
+  <!-- CC8 -->
+  <div class="card">
+    <h3><span class="tag match">양쪽 일치</span>⑧ 일정 — 금·토·일은 잘 맞았고, 하루하루는 조금 빡빡했습니다</h3>
+
+    <h4>금·토·일로 바꾼 것에 대해</h4>
+    <div class="chart">
+      <div class="row"><div class="lab">학생 — 아주 좋았다</div><div class="bars"><div class="track"><span class="fill s1" style="width:45%"></span><em><b>45%</b> · 18명</em></div></div></div>
+      <div class="row"><div class="lab">학생 — 상관없다 / 둘 다 괜찮다</div><div class="bars"><div class="track"><span class="fill s1" style="width:40%"></span><em><b>40%</b> · 16명</em></div></div></div>
+      <div class="row"><div class="lab">학생 — 조금 아쉬웠다</div><div class="bars"><div class="track"><span class="fill s1" style="width:15%"></span><em><b>15%</b> · 6명</em></div></div></div>
+      <div class="row"><div class="lab">담임 평가 (5점 척도)</div><div class="bars"><div class="track"><span class="fill s2" style="width:94%"></span><em><b>4.70</b> / 5.0 · 전원 4점 이상</em></div></div></div>
+      <small class="src">학생 n=40 · 담임계열 n=10 (5점 7명 / 4점 3명)</small>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink2)">이유도 양쪽이 비슷합니다 — <b>학원 부담이 줄었다</b>는 것입니다.
+      학생이 쓴 글 28건 중 학원이나 학업을 언급한 것이 12건으로 가장 많았고,
+      선생님도 <em>"금토일 변경으로 참석율이 올라갔음"</em>, <em>"금토일이라 확실히 학생들 부담 덜함"</em>이라고 적으셨습니다.
+      <b>지금 일정을 그대로 가도 괜찮아 보입니다.</b></p>
+
+    <h4>다만 하루 안의 빡빡함은 양쪽 다 이야기했습니다</h4>
+    <div class="tw"><table>
+      <thead><tr><th>교사 — 일정이 밀린 원인 (n=12)</th><th class="num">지목</th><th>학생 — 시간 부족 체감 (n=40)</th><th class="num">부족</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>프로그램 자체의 과도한 분량</td><td class="num">5명 · 42%</td><td>깊은 교제 (원투원·멘토멘티)</td><td class="num">23명 · 57.5%</td></tr>
+        <tr class="hi"><td>프로그램 사이 이동·준비 시간 부족</td><td class="num">5명 · 42%</td><td>집회 후 기도시간</td><td class="num">19명 · 47.5%</td></tr>
+        <tr><td>시간 담당자↔진행자 신호·소통 부족</td><td class="num">3명 · 25%</td><td>프로그램 사이 휴식시간</td><td class="num">18명 · 45%</td></tr>
+        <tr><td>예상하지 못한 현장 변수</td><td class="num">3명 · 25%</td><td>자유시간</td><td class="num">14명 · 35%</td></tr>
+        <tr><td>담당자 사이 일정 공유 부족</td><td class="num">2명 · 17%</td><td>집회시간 / GBS</td><td class="num">각 5명 · 12.5%</td></tr>
+        <tr><td>안내방송·학생 모으는 방식 부족</td><td class="num">2명 · 17%</td><td>리플렉션</td><td class="num">2명 · 5%</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="verdict">
+      <b>선생님이 "프로그램이 많았다"고 하신 것과 학생이 "쉴 시간·이야기할 시간·기도할 시간이 부족했다"고 한 것은
+      결국 같은 이야기의 양쪽 면으로 보입니다.</b>
+      선생님들이 조정하고 싶어 하신 것도 프로그램 시간(42%)이 1위였고, 그다음이 자유시간과 이동시간(각 33%)이었습니다.
+      <br><br>
+      가장 해 볼 만한 것은 <em>새 프로그램을 더하지 않는 것</em>, 그리고
+      <b>하나를 덜어내서 그 시간을 기도나 원투원에 붙여 보는 것</b> 정도가 아닐까 싶습니다.
+      한 선생님도 비슷하게 적으셨습니다 — <em>"여유있는 프로그램 구성, 꼭 필요한것만, 욕심을 버리고..."</em>
+      <br><br>
+      한 가지 더 있습니다. <b>마지막 날 동선</b>에 대한 이야기입니다 —
+      <em>"마지막날이 너무 분주했던것 같다. 교회 3부 예배에 대한 시간적 여유가 없었던걸로 보인다."</em>
+      금·토·일을 그대로 간다면 일요일 마무리 동선은 따로 한 번 짚어볼 필요가 있어 보입니다.
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════ 4. 학생 상세 ═══════════════ -->
+<section id="student">
+  <h2><span class="n">05</span>학생 응답 자세히</h2>
+
+  <h3>시간이 어땠는지 — 일곱 항목 전체</h3>
+  <p class="lede">
+    이 문항만 <b>평균을 내지 않고</b> 몇 명이 어느 쪽을 골랐는지 그대로 보여드립니다.
+    "너무 부족"과 "너무 길었다"는 정반대 이야기라, 둘을 평균 내면 "적당"이 되어 실제와 어긋나기 때문입니다.
+    <br>
+    <b>띠를 보는 법</b> — 왼쪽(파란색)으로 길수록 부족했다는 학생이 많고, 오른쪽(붉은색)으로 길수록 길었다는 학생이 많습니다.
+    가운데 회색은 적당했다는 학생입니다. 띠 안의 숫자는 사람 수입니다.
+  </p>
+  <div class="dlegend">
+    <span><i style="background:var(--d-2);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>너무 부족</span>
+    <span><i style="background:var(--d-1);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>조금 부족</span>
+    <span><i style="background:var(--d0);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>적당</span>
+    <span><i style="background:var(--dp1);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>조금 길었다</span>
+    <span><i style="background:var(--dp2);width:10px;height:10px;display:inline-block;border-radius:2px;margin-right:5px"></i>너무 길었다</span>
+  </div>
+
+  <div class="chart">
+    <div class="row"><div class="lab">깊은 교제 시간<br><span style="color:var(--muted);font-size:11px">원투원·멘토멘티 등</span></div><div class="bars">
+      <div class="dstack"><span class="m2" style="width:17.5%">7</span><span class="m1" style="width:40%">16</span><span class="z" style="width:42.5%">17</span></div></div></div>
+    <div class="row"><div class="lab">집회 후 기도시간</div><div class="bars">
+      <div class="dstack"><span class="m2" style="width:17.5%">7</span><span class="m1" style="width:30%">12</span><span class="z" style="width:42.5%">17</span><span class="p1" style="width:10%">4</span></div></div></div>
+    <div class="row"><div class="lab">프로그램 사이 휴식</div><div class="bars">
+      <div class="dstack"><span class="m2" style="width:12.5%">5</span><span class="m1" style="width:32.5%">13</span><span class="z" style="width:52.5%">21</span><span class="p2" style="width:2.5%">1</span></div></div></div>
+    <div class="row"><div class="lab">자유시간</div><div class="bars">
+      <div class="dstack"><span class="m2" style="width:2.5%">1</span><span class="m1" style="width:32.5%">13</span><span class="z" style="width:65%">26</span></div></div></div>
+    <div class="row"><div class="lab">집회시간<br><span style="color:var(--muted);font-size:11px">찬양+말씀</span></div><div class="bars">
+      <div class="dstack"><span class="m2" style="width:2.5%">1</span><span class="m1" style="width:10%">4</span><span class="z" style="width:72.5%">29</span><span class="p1" style="width:12.5%">5</span><span class="p2" style="width:2.5%">1</span></div></div></div>
+    <div class="row"><div class="lab">GBS</div><div class="bars">
+      <div class="dstack"><span class="m2" style="width:2.5%">1</span><span class="m1" style="width:10%">4</span><span class="z" style="width:72.5%">29</span><span class="p1" style="width:12.5%">5</span><span class="p2" style="width:2.5%">1</span></div></div></div>
+    <div class="row"><div class="lab">리플렉션</div><div class="bars">
+      <div class="dstack"><span class="m1" style="width:5%">2</span><span class="z" style="width:77.5%">31</span><span class="p1" style="width:17.5%">7</span></div></div></div>
+    <small class="src">n=40 · 숫자는 응답 인원 · 각 행 합계 40명</small>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>항목</th><th class="num">너무 부족</th><th class="num">조금 부족</th><th class="num">적당</th><th class="num">조금 길었다</th><th class="num">너무 길었다</th><th class="num">부족 계</th><th class="num">과다 계</th></tr></thead>
+    <tbody>
+      <tr class="hi"><td>깊은 교제 시간</td><td class="num">7</td><td class="num">16</td><td class="num">17</td><td class="num">0</td><td class="num">0</td><td class="num neg">23</td><td class="num">0</td></tr>
+      <tr class="hi"><td>집회 후 기도시간</td><td class="num">7</td><td class="num">12</td><td class="num">17</td><td class="num">4</td><td class="num">0</td><td class="num neg">19</td><td class="num">4</td></tr>
+      <tr><td>프로그램 사이 휴식</td><td class="num">5</td><td class="num">13</td><td class="num">21</td><td class="num">0</td><td class="num">1</td><td class="num neg">18</td><td class="num">1</td></tr>
+      <tr><td>자유시간</td><td class="num">1</td><td class="num">13</td><td class="num">26</td><td class="num">0</td><td class="num">0</td><td class="num">14</td><td class="num">0</td></tr>
+      <tr><td>집회시간 (찬양+말씀)</td><td class="num">1</td><td class="num">4</td><td class="num">29</td><td class="num">5</td><td class="num">1</td><td class="num">5</td><td class="num">6</td></tr>
+      <tr><td>GBS</td><td class="num">1</td><td class="num">4</td><td class="num">29</td><td class="num">5</td><td class="num">1</td><td class="num">5</td><td class="num">6</td></tr>
+      <tr><td>리플렉션</td><td class="num">0</td><td class="num">2</td><td class="num">31</td><td class="num">7</td><td class="num">0</td><td class="num">2</td><td class="num neg">7</td></tr>
+    </tbody>
+  </table>
+  <small class="src">눈여겨볼 만한 것 두 가지 — <b>깊은 교제만 "길었다"가 한 명도 없습니다.</b>
+    부족하다는 학생이 57.5%인데 길었다는 학생은 0명이라, 늘렸을 때 아쉬워할 사람이 거의 없어 보이는 유일한 시간입니다.
+    반대로 <b>리플렉션은 길었다는 학생(7명)이 부족했다는 학생(2명)보다 많은</b> 하나뿐인 항목입니다.</small></div>
+
+  <h3>신앙 프로그램 만족도 (별도 척도 문항)</h3>
+  <div class="chart">
+    <div class="row"><div class="lab">리플렉션 도움 정도</div><div class="bars"><div class="track"><span class="fill s1" style="width:80%"></span><em><b>4.00</b> / 5.0</em></div></div></div>
+    <div class="row"><div class="lab">GBS 기도 이해 도움</div><div class="bars"><div class="track"><span class="fill s1" style="width:79%"></span><em><b>3.95</b> / 5.0</em></div></div></div>
+    <div class="row"><div class="lab">시작 전 마음 준비·기대</div><div class="bars"><div class="track"><span class="fill s1" style="width:77%"></span><em><b>3.85</b> / 5.0</em></div></div></div>
+    <small class="src">n=40 · q11 / q10 / q3 · 시작 전 기대는 1~2점 응답도 3명 있었음(준비 안 된 채 온 학생 존재)</small>
+  </div>
+
+  <h3>GBS에서 나아졌으면 하는 점 (n=40, 복수선택)</h3>
+  <div class="chart">
+    <div class="row"><div class="lab">특별히 개선할 점 없음</div><div class="bars"><div class="track"><span class="fill s3" style="width:42.5%"></span><em><b>42.5%</b> · 17명</em></div></div></div>
+    <div class="row"><div class="lab">나눔이 충분하지 못했다</div><div class="bars"><div class="track"><span class="fill s1" style="width:20%"></span><em><b>20%</b> · 8명</em></div></div></div>
+    <div class="row"><div class="lab">조별 분위기가 어려웠다</div><div class="bars"><div class="track"><span class="fill s1" style="width:12.5%"></span><em><b>12.5%</b> · 5명</em></div></div></div>
+    <div class="row"><div class="lab">시간이 부족했다</div><div class="bars"><div class="track"><span class="fill s1" style="width:12.5%"></span><em><b>12.5%</b> · 5명</em></div></div></div>
+    <div class="row"><div class="lab">내용이 너무 어려웠다</div><div class="bars"><div class="track"><span class="fill s1" style="width:10%"></span><em><b>10%</b> · 4명</em></div></div></div>
+    <div class="row"><div class="lab">시간이 너무 길었다</div><div class="bars"><div class="track"><span class="fill s1" style="width:10%"></span><em><b>10%</b> · 4명</em></div></div></div>
+    <div class="row"><div class="lab">질문이 이해하기 어려웠다</div><div class="bars"><div class="track"><span class="fill s1" style="width:5%"></span><em><b>5%</b> · 2명</em></div></div></div>
+    <div class="row"><div class="lab">내용이 너무 많았다</div><div class="bars"><div class="track"><span class="fill s1" style="width:2.5%"></span><em><b>2.5%</b> · 1명</em></div></div></div>
+    <small class="src">GBS에서 가장 많이 나온 이야기는 어렵다는 것(10%)보다 <b>나눔이 잘 안 됐다(20%)와 조별 분위기(12.5%)</b> 쪽이었습니다.
+      자료보다 <em>그 시간을 어떻게 이끄느냐</em>에 가까운 이야기로 보입니다.
+      한 선생님 제안과도 이어집니다 — <em>"담임 선생님 이외에도 모든 선생님이 GBS 및 큐티 내용을 미리 숙지하고 계시면 훨씬 좋을 것 같습니다."</em></small>
+  </div>
+
+  <h3>기타 정량 (n=40)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>문항</th><th>결과</th><th>메모</th></tr></thead>
+    <tbody>
+      <tr><td>전체 일정 체감</td><td>대체로 적당 <b>31명(77.5%)</b> · 조금 빡빡 7 · 많이 빡빡 1 · 지루 1</td><td>총량 자체는 문제 아님</td></tr>
+      <tr><td>달란트 문방구</td><td>재미있고 더 참여 <b>27명(67.5%)</b> · 보통 12 · 아쉬움 1</td><td>프로그램 참여를 북돋우는 데 잘 작동한 것으로 보입니다</td></tr>
+      <tr><td>환경 방해 요인</td><td>특별한 문제 없음 <b>24명(60%)</b> · 실내온도 5 · 좌석 4 · 나머지 각 1</td><td>기타 원문: "추워요..", "벌레가 많았습니다"</td></tr>
+      <tr><td>찬양 은혜 순간 (복수)</td><td>가사 공감 26(65%) · 함께 찬양·기도 22(55%) · 뜨거운 인도 21(52.5%) · 연주 완성도 15(37.5%)</td><td>4개 항목 모두 고르게 높음</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="verdict">
+    <b>달란트 문방구는 하나만 손봐도 될 것 같습니다.</b>
+    재미있었다는 학생이 67.5%로 반응이 좋았고, 직접 쓴 글 21건 중 <b>6건이 같은 이야기</b>를 했습니다 —
+    <em>"인기많은 물품의 물량 부족"</em>, <em>"상품이 빨리 매진"</em>, <em>"말랑이 재고가 더 많았으면"</em>, <em>"조기 재고 소진 방지"</em>.
+    반대로 <em>"밤티 말씀 키링이 너무 많았다"</em>는 이야기도 있었고요.
+    예산을 늘리기보다 <b>인기 있는 물건의 비중을 조금 올리는 정도</b>로도 괜찮아 보입니다.
+  </div>
+</section>
+
+
+<!-- ═══════════════ 5. 교사 상세 ═══════════════ -->
+<section id="teacher">
+  <h2><span class="n">06</span>선생님 응답 자세히</h2>
+
+  <h3>사전 준비 과정 — 무엇이 실제로 도움이 되었나 <span style="color:var(--muted);font-weight:400;font-size:13px">12명 전원</span></h3>
+  <div class="chart">
+    <div class="row"><div class="lab">전체 기도회 (예배 후)</div><div class="bars"><div class="track"><span class="fill s2" style="width:100%"></span><em><b>5.00</b> · 만점</em></div></div></div>
+    <div class="row"><div class="lab">사전 공지 및 일정 공유</div><div class="bars"><div class="track"><span class="fill s2" style="width:93.4%"></span><em><b>4.67</b></em></div></div></div>
+    <div class="row"><div class="lab">교사 전체 모임 (3주)</div><div class="bars"><div class="track"><span class="fill s2" style="width:91.6%"></span><em><b>4.58</b></em></div></div></div>
+    <div class="row"><div class="lab">릴레이 기도</div><div class="bars"><div class="track"><span class="fill s2" style="width:91.6%"></span><em><b>4.58</b></em></div></div></div>
+    <div class="row"><div class="lab">프로그램별 준비회의</div><div class="bars"><div class="track"><span class="fill s2" style="width:90%"></span><em><b>4.50</b></em></div></div></div>
+    <div class="row"><div class="lab">교사·학부모 기도회</div><div class="bars"><div class="track"><span class="fill s2" style="width:89%"></span><em><b>4.45</b></em></div></div></div>
+    <div class="row"><div class="lab">교사용 자료 / 가이드</div><div class="bars"><div class="track"><span class="fill s2" style="width:88.4%"></span><em><b>4.42</b></em></div></div></div>
+    <div class="row"><div class="lab">전체 방향·목적 공유</div><div class="bars"><div class="track"><span class="fill s2" style="width:88.4%"></span><em><b>4.42</b></em></div></div></div>
+    <small class="src">5점 척도 · 전 항목 4.4 이상 — 준비 과정 자체는 <b>전반적으로 잘 작동했습니다</b>. <b>전체 기도회는 12명 전원이 5점</b>을 준 유일한 항목입니다.</small>
+  </div>
+
+  <div class="verdict">
+    이 표는 <b>"내년에도 이어가면 좋을 것"을 정하실 때 그대로 참고하시면 되는 목록</b>입니다.
+    직접 쓰신 글에서도 준비 기도회·릴레이 기도·GBS 사전 준비가 반복해서 나왔습니다 —
+    <em>"준비기도회 / GBS준비 / 릴레이 기도회"</em>, <em>"GBS, 준비 기도회"</em>,
+    <em>"수련회 전에, 그리고 수련회 중에 교사들끼리 GBS 등 미리 나누며 준비한 시간이 좋았습니다."</em>
+    <b>GBS는 "이어갈 것"으로 가장 많이(5번) 언급됐습니다.</b>
+    학생 쪽 점수(3.83)보다 선생님 만족도가 높았던 것과도 결이 같습니다.
+    <br><br>
+    표에서 눈에 남는 것은 <b>가장 높은 점수를 받은 것이 함께 기도한 시간이었다</b>는 점입니다.
+    준비 기간이 넉넉하지 않았는데도 현장이 굴러갔다면, 그 자리에서 미리 모여 기도한 시간이 몫을 했을 것입니다.
+  </div>
+
+  <h3>담임을 맡으신 분만 답한 문항 <span style="color:var(--muted);font-weight:400;font-size:13px">10명 (담임 5 + 겸임 5)</span></h3>
+  <div class="chart">
+    <div class="row"><div class="lab">금·토·일 일정 효과</div><div class="bars"><div class="track"><span class="fill s2" style="width:94%"></span><em><b>4.70</b> / 5.0</em></div></div></div>
+    <div class="row"><div class="lab">공과 자료·질문지 충분성</div><div class="bars"><div class="track"><span class="fill s2" style="width:84%"></span><em><b>4.20</b> / 5.0</em></div></div></div>
+  </div>
+  <p style="font-size:13.5px;color:var(--ink2)">공과 자료는 4.20으로 나쁘지 않지만, 주관식에서 <b>구체적인 보완 요청이 8건</b> 나왔습니다.
+    핵심은 세 갈래입니다 — <b>① 매뉴얼 부재</b>(<em>"GBS나 QT는 메뉴얼 있으면 좋겠습니다"</em>, <em>"리플렉션 가이드문이 있으면 좋았을 것"</em>, <em>"집회 후 소그룹 가이드"</em>),
+    <b>② 눈높이 조정</b>(<em>"학생 눈높이에 맞도록 조절될 필요가 있습니다"</em>),
+    <b>③ 담임 아닌 교사도 사전 숙지</b>(<em>"모든 선생님이 GBS 및 큐티 내용을 미리 숙지하고 계시면"</em>).</p>
+
+  <h3>헬퍼·프로그램 담당을 맡으신 분만 답한 문항 <span style="color:var(--muted);font-weight:400;font-size:13px">7명 (헬퍼 2 + 겸임 5)</span></h3>
+  <div class="chart">
+    <div class="row"><div class="lab">인력 배치 적절성</div><div class="bars"><div class="track"><span class="fill s2" style="width:68.6%"></span><em><b>3.43</b> / 5.0 <span style="color:var(--crit)">← 유일한 4점 미만</span></em></div></div></div>
+    <small class="src">한 분씩 보면 5점 1명 · 4점 4명 · 2점 1명 · 1점 1명입니다. 답이 위아래로 갈려서, 배치가 잘 된 자리와 그렇지 못한 자리가 함께 있었던 것으로 보입니다.</small>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>인력이 부족했던 영역 (최대 3개)</th><th class="num">지목</th><th>현장 섬김의 어려움</th><th class="num">지목</th></tr></thead>
+    <tbody>
+      <tr class="hi"><td><b>주방 / 식사</b></td><td class="num"><b>5명 · 71%</b></td><td>특별한 어려움 없었다</td><td class="num">3명 · 43%</td></tr>
+      <tr><td>특별히 부족했던 영역 없음</td><td class="num">2명 · 29%</td><td>역할은 알았지만 인력이 부족했다</td><td class="num">2명 · 29%</td></tr>
+      <tr><td>청소 / 학생 이동·통제 / 방송·음향 / 안전관리</td><td class="num">각 1명</td><td>역할 겹침 / 정보 부족 / 시간 부족</td><td class="num">각 1명</td></tr>
+    </tbody>
+  </table>
+  <small class="src">기타 원문: <em>"사전 정보 없이 투입"</em></small></div>
+
+  <h3>직접 쓰신 글에서 되풀이된 이야기</h3>
+  <div class="tw"><table>
+    <thead><tr><th>주제</th><th class="num">언급</th><th>대표 발언</th></tr></thead>
+    <tbody>
+      <tr class="hi"><td><b>일이 소수에게 몰림 · 과부하</b></td><td class="num">5건</td><td>"아직도 일이 소수에게 집중이 된다", "특정인이 과부하", "교사들이 너무 많이 섬김"</td></tr>
+      <tr class="hi"><td><b>기도시간 부족</b></td><td class="num">4건</td><td>"아이들을 위한 기도시간이 절대적으로 부족", "기도시간 늘리기"</td></tr>
+      <tr><td>GBS 유지 (긍정)</td><td class="num">5건</td><td>"GBS를 이번처럼 깊이 있게 하면 좋겠다", "GBS 깊은 나눔, 서로에 대한 기도"</td></tr>
+      <tr><td>준비·기도회 유지 (긍정)</td><td class="num">4건</td><td>"준비기도회 / 릴레이 기도회", "예배 후 기도회"</td></tr>
+      <tr><td>소통·정보 공유 방식</td><td class="num">4건</td><td>"주요 회의록을 공유해주면 좋겠음", "부분별 소통보다 다같이 소통하며 이해하는 시간"</td></tr>
+      <tr><td>프로그램 분량 축소</td><td class="num">3건</td><td>"여유있는 프로그램 구성, 꼭 필요한것만, 욕심을 버리고..."</td></tr>
+      <tr><td>강사·주제 조기 확정</td><td class="num">3건</td><td>"준비와 강사선임, 주제까지 전반적으로 늦어진것이 어려움", "강사와 주제!!! 섬김이 구성"</td></tr>
+      <tr><td>물놀이↔레크레이션 순서 변경</td><td class="num">2건</td><td>"레크레이션하고 아이들이 친해졌는데, 물놀이 때는 어색했다는 의견이 있었다"</td></tr>
+    </tbody>
+  </table>
+  <small class="src">언급 횟수는 6개 KPT 주관식 문항(유지/문제/근본원인/시도/우선결정/자유)을 합산해 수작업 분류한 결과입니다. <b>정확도: 추정</b> — 분류 기준에 따라 ±1건 차이가 날 수 있습니다.</small></div>
+
+  <div class="verdict">
+    <b>"다음 준비팀이 가장 먼저 결정할 한 가지"를 여쭈었더니 답이 한쪽으로 모였습니다 — 강사와 주제입니다.</b>
+    열두 분 중 네 분이 이를 적으셨습니다 —
+    <em>"강사와 주제!!! 섬김이 구성"</em>, <em>"목사님 컨택 집회 말씀"</em>, <em>"말씀(강사)"</em>,
+    <em>"고등부의 영적 흐름과 필요를 파악하는 것… 이것을 통해 주제와 강사를 기도하며 정하면서 마음을 모으는 것."</em>
+    <br><br>
+    올해는 <em>"준비와 강사선임, 주제까지 전반적으로 늦어진 것"</em>이 어려움으로 적혀 있었습니다.
+    앞에서 본 <b>설교가 어려웠다는 이야기(③)</b>도, <b>기도를 이끌어 주실 분이 없었다는 이야기(①)</b>도
+    여기서 이어지는 부분이 있어 보입니다.
+    <b>강사와 주제를 조금 일찍 정하는 것만으로도 여러 곳이 함께 풀릴 가능성이 있습니다.</b>
+  </div>
+
+  <h3>섬긴 연차와 역할에 따라 다르게 보신 것이 있을까</h3>
+  <p class="lede">학년별로 아이들이 달랐던 것처럼, 선생님들도 섬기신 기간이나 맡으신 역할에 따라
+    다르게 보신 부분이 있을지 나눠 봤습니다.</p>
+
+  <div class="notice" style="border-left-color:var(--warn)">
+    <b>여기는 특히 조심해서 봐 주셔야 합니다.</b>
+    선생님이 모두 열두 분이라, 연차로 나누면 한 칸에 <b>두 명에서 네 명</b>, 역할로 나누면 <b>두 명에서 다섯 명</b>이 됩니다.
+    한 분의 답이 25~50%를 움직이는 크기입니다.
+    <br><br>
+    그래서 아래는 <b>"이런 흐름이 보이는 것 같다"</b> 정도로만 적었고, 숫자 하나로 결론을 내리지 않았습니다.
+    또 연차와 역할을 겹쳐서 나누면 한 칸에 한 명만 남는 경우가 생겨,
+    <b>익명을 지키기 위해 연차와 역할을 따로따로만</b> 보여드립니다. 직접 쓰신 글도 이 구분에는 붙이지 않았습니다.
+  </div>
+
+  <h4>먼저, 열두 분이 어떻게 나뉘는지</h4>
+  <div class="tw"><table>
+    <thead><tr><th>섬긴 기간</th><th class="num">담임</th><th class="num">담임 + 헬퍼</th><th class="num">헬퍼</th><th class="num">합계</th></tr></thead>
+    <tbody>
+      <tr><td>올해가 처음</td><td class="num">1</td><td class="num">1</td><td class="num zero">—</td><td class="num"><b>2명</b></td></tr>
+      <tr><td>1~2년</td><td class="num">2</td><td class="num">2</td><td class="num zero">—</td><td class="num"><b>4명</b></td></tr>
+      <tr><td>3~5년</td><td class="num zero">—</td><td class="num">1</td><td class="num">1</td><td class="num"><b>2명</b></td></tr>
+      <tr><td>5년 이상</td><td class="num">2</td><td class="num">1</td><td class="num">1</td><td class="num"><b>4명</b></td></tr>
+      <tr class="hi"><td><b>합계</b></td><td class="num"><b>5명</b></td><td class="num"><b>5명</b></td><td class="num"><b>2명</b></td><td class="num"><b>12명</b></td></tr>
+    </tbody>
+  </table>
+  <small class="src">칸마다 한두 명뿐입니다. 이 표는 나눠 보는 기준을 보여드리려고 실었고, 아래 분석은 <b>연차만</b> 또는 <b>역할만</b>으로 묶어서 했습니다.</small></div>
+
+  <h4>섬긴 기간에 따라</h4>
+  <div class="tw"><table>
+    <thead><tr><th>섬긴 기간</th><th class="num">준비 과정이 도움이 된 정도</th><th class="num">역할·일정이 분명했던 정도</th><th class="num">공과 자료가 충분했던 정도</th></tr></thead>
+    <tbody>
+      <tr><td>올해가 처음 <span style="color:var(--muted)">(2명)</span></td><td class="num">4.38</td><td class="num">4.25</td><td class="num hi"><b>5.00</b></td></tr>
+      <tr><td>1~2년 <span style="color:var(--muted)">(4명)</span></td><td class="num">4.59</td><td class="num">4.59</td><td class="num neg">3.75</td></tr>
+      <tr><td>3~5년 <span style="color:var(--muted)">(2명)</span></td><td class="num neg">4.06</td><td class="num neg">4.00</td><td class="num">4.00</td></tr>
+      <tr><td>5년 이상 <span style="color:var(--muted)">(4명)</span></td><td class="num hi"><b>4.94</b></td><td class="num hi"><b>4.63</b></td><td class="num">4.33</td></tr>
+    </tbody>
+  </table>
+  <small class="src">모두 5점 만점 평균입니다. 공과 자료 문항은 담임을 맡으신 분만 답하셔서 분모가 조금 다릅니다(처음 2명 · 1~2년 4명 · 3~5년 1명 · 5년 이상 3명).</small></div>
+
+  <div class="verdict">
+    <b>두 가지가 눈에 들어옵니다. 다만 칸마다 두세 명이라 어디까지나 흐름으로만 봐 주세요.</b>
+    <ul class="b">
+      <li><b>오래 섬기신 분일수록 준비 과정을 후하게 보셨습니다.</b>
+        5년 이상 섬기신 네 분이 준비 도움도 4.94, 역할의 분명함 4.63으로 가장 높았습니다.
+        오래 해 오셔서 흐름이 익숙하신 것일 수도 있고, 준비팀 안쪽에 계셔서 왜 그렇게 정해졌는지 아셨기 때문일 수도 있겠습니다.
+        반대로 <b>3~5년 되신 두 분이 두 항목 모두 가장 낮았습니다</b>(4.06 · 4.00).
+        다만 두 분뿐이라 한 분만 달라져도 순서가 바뀝니다.</li>
+
+      <li><b>공과 자료는 흐름이 반대로 나타났습니다.</b>
+        올해가 처음이신 두 분은 <b>5.00</b>으로 만점을 주셨는데, 1~2년 되신 네 분은 <b>3.75</b>로 가장 낮았습니다.
+        처음에는 주어진 자료를 그대로 따라가게 되고, 한두 해 해 보시면 <em>이런 게 더 있었으면</em> 하는 부분이 보이기 시작하는 것일 수도 있겠습니다.
+        실제로 자료를 보완해 달라는 글(매뉴얼·가이드문 요청)이 여러 건 나왔던 것과도 이어지는 듯합니다.
+        <br>이건 두 명과 네 명의 답에서 미루어 본 것이라, 그럴 수도 있겠다는 정도입니다.</li>
+    </ul>
+  </div>
+
+  <h4>맡으신 역할에 따라</h4>
+  <div class="tw"><table>
+    <thead><tr><th>역할</th><th class="num">준비 과정이 도움이 된 정도</th><th class="num">역할·일정이 분명했던 정도</th><th>일정이 밀린 원인으로 가장 많이 꼽은 것</th></tr></thead>
+    <tbody>
+      <tr><td>담임 <span style="color:var(--muted)">(5명)</span></td><td class="num hi"><b>4.75</b></td><td class="num">4.55</td><td>이동시간 · 담당자 간 일정 공유 · 신호 소통 <span style="color:var(--muted)">(각 2명)</span></td></tr>
+      <tr><td>담임 + 헬퍼 <span style="color:var(--muted)">(5명)</span></td><td class="num">4.46</td><td class="num hi"><b>4.60</b></td><td class="hi"><b>프로그램 자체의 과도한 분량 (3명 · 60%)</b></td></tr>
+      <tr><td>헬퍼 <span style="color:var(--muted)">(2명)</span></td><td class="num">4.44</td><td class="num neg">3.81</td><td>각 항목 1명씩 흩어짐</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="verdict">
+    <b>역할 쪽에서는 조금 더 뚜렷한 흐름이 보입니다.</b>
+    <ul class="b">
+      <li><b>담임과 헬퍼를 함께 맡으신 다섯 분이 "프로그램 분량이 많았다"를 가장 많이 꼽으셨습니다</b>(3명 · 60%).
+        담임만 맡으신 분들 중에서는 한 분(20%)이었습니다.
+        다음에 시간을 조정한다면 무엇이겠느냐는 물음에서도 겸임하신 분들은 <b>프로그램 시간</b>(3명)을 가장 많이 고르셨습니다.
+        <b>프로그램을 직접 진행하면서 동시에 반 아이들을 챙기다 보니 분량이 더 크게 느껴지셨던 것</b>으로 보입니다.
+        7번에서 본 일손 이야기와도 같은 방향입니다.</li>
+
+      <li><b>헬퍼만 맡으신 두 분은 "역할과 일정이 얼마나 분명했나"를 3.81로 답하셨습니다.</b>
+        담임(4.55)이나 겸임(4.60)보다 낮습니다.
+        같은 문항의 기타 답변에 <em>"사전 정보 없이 투입"</em>이라는 글이 있었던 것과 이어지는 듯합니다.
+        프로그램을 맡되 반이 없으면 전체 흐름을 접할 기회가 적어질 수 있으니,
+        <b>담임이 아닌 분들께도 전체 일정과 진행 방식을 따로 한 번 공유</b>하는 것을 생각해 볼 만합니다.
+        <br>다만 두 분의 답이라 이 수치 자체에 무게를 두기는 어렵습니다.</li>
+
+      <li><b>찬양팀에 대해서도 보시는 자리가 달랐습니다.</b>
+        담임만 맡으신 분들은 <em>현장에서의 소통</em>(3명 · 60%)을 가장 많이 고르셨고,
+        겸임하신 분들은 <em>수련회 전에 미리 얼굴 익히기</em>와 <em>진행·흐름 공유</em>(각 3명 · 60%)를 고르셨습니다.
+        수련회 중에 아이들 옆에 계셨던 분들은 <em>그때그때 나누는 인사와 교감</em>을,
+        준비 단계에 함께 들어가셨던 분들은 <em>미리 맞춰 두는 일</em>을 떠올리신 것으로 보입니다.</li>
+    </ul>
+  </div>
+
+  <div class="verdict" style="border-left:3px solid var(--s3)">
+    <b>세 가지를 정리하면 이렇습니다.</b>
+    <ul class="b" style="margin-bottom:0">
+      <li>겸임하신 분들이 프로그램 분량을 가장 무겁게 느끼셨습니다 → <b>겸임을 줄이거나, 겸임하실 경우 담당 시간대를 겹치지 않게</b> 두는 것을 생각해 볼 만합니다.</li>
+      <li>헬퍼만 맡으신 분들이 전체 흐름을 덜 아셨던 것으로 보입니다 → <b>반이 없는 분들께도 전체 일정과 진행 방식을 따로 공유</b>하는 자리를 두면 좋겠습니다.</li>
+      <li>1~2년 되신 분들이 공과 자료에 가장 아쉬움을 두셨습니다 → 매뉴얼을 만들 때 <b>이분들의 의견을 먼저 들어보는 것</b>도 방법일 것 같습니다.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════ 6. 미참석 ═══════════════ -->
+<section id="absent">
+  <h2><span class="n">07</span>수련회에 오지 못한 학생</h2>
+  <div class="notice" style="border-left-color:var(--warn)">
+    <b>답해 준 학생이 두 명입니다.</b> 두 사람의 이야기를 미참석 학생 전체의 경향으로 읽기는 어렵습니다.
+    아래는 비율이 아니라 <b>두 사람이 각각 어떻게 답했는지</b>를 그대로 옮긴 것입니다.
+    미참석 학생들의 이야기를 더 듣고 싶다면, 다음에는 <em>설문에 답하지 않은 학생들</em>에게 따로 닿을 방법을 찾아보면 좋겠습니다.
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>구분</th><th>사례 A</th><th>사례 B</th></tr></thead>
+    <tbody>
+      <tr><td><b>학년</b></td><td>3학년</td><td>1학년</td></tr>
+      <tr><td><b>가고 싶었나</b></td><td class="pos">정말 가고 싶었는데 사정이 있어서 못 감</td><td class="neg">별로 가고 싶지 않았음</td></tr>
+      <tr><td><b>못 간 이유</b></td><td>학원·학교 일정 (시험, 보충수업)</td><td>단체 생활이 부담스러워서</td></tr>
+      <tr><td><b>다음에 가려면</b></td><td>일부만 참여하거나 중간에 합류할 수 있으면 / 잘 모르겠음</td><td>잘 모르겠음</td></tr>
+      <tr><td><b>다음 참여 의향</b></td><td class="num pos">5 / 5 (꼭 가고 싶다)</td><td class="num neg">2 / 5</td></tr>
+      <tr><td><b>다녀온 친구들과 거리감</b></td><td class="num">3 / 5 (중간)</td><td>무응답</td></tr>
+      <tr><td><b>요즘 교회 나올 때 마음</b></td><td>편하고 좋아요</td><td>무응답</td></tr>
+      <tr><td><b>교회가 해주면 좋을 것</b></td><td>수련회에서 나눈 말씀·내용을 따로 나눠주는 시간</td><td>무응답</td></tr>
+      <tr><td><b>자유 서술</b></td><td>없음</td><td>없음</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="verdict">
+    <b>두 학생의 사정이 서로 많이 달라서, 다르게 접근하는 것을 생각해 볼 만합니다.</b>
+    <ul class="b" style="margin-bottom:0">
+      <li><b>사례 A — 마음은 있었는데 시간이 안 됐던 경우로 보입니다.</b>
+        다음에 가고 싶은 마음은 5점 만점이었고, 막은 것은 학원과 보충수업이었습니다.
+        본인이 방법도 적어 두었습니다 — <b>일부만 참여하거나 중간에 합류할 수 있으면</b>.
+        참석한 학생 글에도 <em>"지난 수련회는 목금토 다 학원이 있어서 부분참석을 했는데"</em>라는 이야기가 있어,
+        부분 참여를 원하는 학생이 실제로 있는 것 같습니다.
+        같이 요청한 "수련회에서 나눈 말씀을 따로 나눠주는 시간"도 크게 품이 들지는 않을 듯합니다.
+        3학년이라는 점을 보면 학사 일정 부담은 앞으로도 비슷할 테니, 고3을 위한 참여 방법을 따로 생각해 볼 만합니다.</li>
+      <li><b>사례 B — 제도보다 관계가 먼저일 수 있는 경우로 보입니다.</b>
+        다음에 가고 싶은 마음이 2점이었고, "별로 가고 싶지 않았다"에 이유는 <b>단체 생활이 부담스러워서</b>였습니다.
+        무엇이 달라지면 갈 수 있겠느냐는 물음에는 "잘 모르겠어요"만 골랐고, 마음을 묻는 세 문항은 비워 두었습니다.
+        보기 중에 자기 마음에 맞는 게 없었을 수도 있겠다 싶습니다.
+        1학년이라는 점을 생각하면 수련회 이전에 <b>평소 소그룹에 자리를 잡는 것</b>이 먼저일지도 모르겠습니다.
+        이런 경우는 설문보다 담임 선생님이 직접 보시고 이야기 나누는 편이 나을 것 같습니다.</li>
+    </ul>
+    <b>한 가지 더</b> — 이번 설문에는 <em>답을 남긴</em> 미참석 학생만 담겼습니다.
+    참석 학생이 마흔 명 답했는데 미참석은 두 명뿐이라는 것은, 설문 자체가 그 아이들에게 잘 닿지 않았다는 뜻일 수 있습니다.
+    다음에는 미참석 학생에게 <b>담임 선생님이 직접 전해 주시는 방법</b>도 함께 생각해 보면 좋겠습니다.
+  </div>
+</section>
+
+
+<!-- ═══════════════ 7. 학년별 성향 ═══════════════ -->
+<section id="grade">
+  <h2><span class="n">08</span>학년별로 조금씩 다릅니다</h2>
+  <p class="lede">같은 수련회인데 세 학년이 조금씩 다르게 받아들인 것 같습니다.
+    그리고 그 차이가 한 문항에서만 나온 게 아니라 <b>여러 문항에서 비슷한 방향으로 반복</b>됩니다.</p>
+
+  <div class="notice" style="border-left-color:var(--warn)">
+    <b>학년당 열 명에서 열여섯 명입니다.</b> 한 사람이 1학년은 6.3%p, 2학년은 10%p, 3학년은 7.1%p를 움직입니다.
+    이 정도 인원으로는 통계적으로 "의미 있는 차이"인지 따지기 어렵습니다.
+    그래서 아래에는 <b>여러 문항에서 같은 방향이 반복해서 나온 것</b>만 골라 담았고,
+    한두 명 차이로 갈린 항목은 따로 해석하지 않았습니다.
+    숫자 하나보다 <em>흐름이 반복되는지</em>를 봐 주시면 좋겠습니다.
+  </div>
+
+  <h3>한 줄 요약</h3>
+  <div class="tiles">
+    <div class="tile">
+      <div class="v" style="font-size:20px;color:var(--s1)">1학년 · 관계</div>
+      <div class="k"><b>"더 친해지고 싶어요"</b><br>깊은 교제 부족 68.8%로 최고, 원투원 관계형성 4.31 최고, 찬양팀에 직접 서고 싶다 68.8%</div>
+      <div class="n">n=16 · 참석 16 / 미참석 1</div>
+    </div>
+    <div class="tile">
+      <div class="v" style="font-size:20px;color:var(--s2)">2학년 · 체력</div>
+      <div class="k"><b>"너무 지쳤어요"</b><br>피곤함 90%, 휴식 부족 70%, 집회가 길다 40%. 신앙 지표 전 항목 최저</div>
+      <div class="n">n=10 · 전원 참석</div>
+    </div>
+    <div class="tile">
+      <div class="v" style="font-size:20px;color:var(--s3)">3학년 · 기도</div>
+      <div class="k"><b>"더 기도하고 싶어요"</b><br>기도시간 부족 57.1% 최고, 집회 과다 0%, 시작 전 기대 4.14 최고</div>
+      <div class="n">n=14 · 참석 14 / 미참석 1</div>
+    </div>
+  </div>
+
+  <!-- 1학년 -->
+  <div class="card">
+    <h3><span class="tag" style="background:color-mix(in srgb,var(--s1) 16%,transparent);color:var(--s1)">1학년 · 16명</span>친해지고 싶은 마음이 컸던 것 같습니다</h3>
+    <p>1학년은 <b>사람과 가까워지는 것에 관한 문항에서 거의 모두 가장 높은 값</b>이 나왔습니다.
+      반대로 조용히 앉아서 돌아보는 시간은 조금 길게 느낀 편이었습니다.
+      아이들에게 이번 수련회는 "친해지는 자리"에 가까웠던 것 같습니다.</p>
+
+    <div class="chart">
+      <div class="row"><div class="lab">깊은 교제 시간 부족</div><div class="bars"><div class="track"><span class="fill s1" style="width:68.8%"></span><em><b>68.8%</b> · 11명 <span style="color:var(--good)">전 학년 최고</span></em></div></div></div>
+      <div class="row"><div class="lab">원투원 관계형성 (5점)</div><div class="bars"><div class="track"><span class="fill s1" style="width:86.2%"></span><em><b>4.31</b> <span style="color:var(--muted)">2학년 3.80 · 3학년 3.71</span></em></div></div></div>
+      <div class="row"><div class="lab">레크레이션 관계형성</div><div class="bars"><div class="track"><span class="fill s1" style="width:85%"></span><em><b>4.25</b> <span style="color:var(--muted)">2학년 3.90 · 3학년 3.71</span></em></div></div></div>
+      <div class="row"><div class="lab">찬양팀에 함께 서고 싶다</div><div class="bars"><div class="track"><span class="fill s1" style="width:68.8%"></span><em><b>68.8%</b> · 11명 <span style="color:var(--muted)">3학년 28.6%</span></em></div></div></div>
+      <div class="row"><div class="lab">리플렉션이 "길었다"</div><div class="bars"><div class="track"><span class="fill s1" style="width:25%"></span><em><b>25%</b> · 4명 <span style="color:var(--muted)">전 학년 최고</span></em></div></div></div>
+      <div class="row"><div class="lab">GBS "내용이 어려웠다"</div><div class="bars"><div class="track"><span class="fill s1" style="width:18.8%"></span><em><b>18.8%</b> · 3명 <span style="color:var(--muted)">2학년 10% · 3학년 0%</span></em></div></div></div>
+    </div>
+
+    <div class="verdict">
+      <b>세 가지가 눈에 들어옵니다.</b>
+      <ul class="b" style="margin-bottom:0">
+        <li><b>좋았던 프로그램이 몇 개에 몰려 있습니다.</b>
+          원투원 28점, 물놀이 23점, 레크레이션 20점으로 위쪽 세 개에 모입니다.
+          같이 몸으로 부딪히는 활동이 주로 남은 모습이고, 차분히 마음을 나누는 순서는 아직 덜 와닿은 듯합니다
+          (축복의 시간 2점 · 3학년은 9점).</li>
+        <li><b>수련회에 온 이유로 "지난 수련회의 좋은 기억"이 유난히 많았습니다</b>(33점, 16명 중 14명).
+          중등부에서 올라온 아이들이 그 기억을 안고 왔다는 이야기로 읽힙니다.
+          그렇다면 <em>올해 1학년이 좋았다고 느끼는 것이 내년 신입생에게 그대로 이어질 수</em> 있겠습니다.</li>
+        <li><b>"내용이 어려웠다"는 이야기는 1학년에서만 나왔습니다</b>(18.8% · 3학년은 0%).
+          앞의 ③에서 선생님들이 난이도를 짚으신 것이, 어쩌면 <b>저학년 아이들 이야기</b>였을 수 있습니다.
+          그렇다면 전체 눈높이를 낮추기보다 <b>반이나 학년에 따라 적용 부분을 나누는 쪽</b>이
+          3학년 만족도(GBS 4.00)를 지키면서 갈 수 있는 방법이 아닐까 싶습니다.
+          한 선생님 제안과도 이어집니다 — <em>"전체 교안 이후에 각 반별로 적용되는 포인트가 좀 더 세밀하게 설계/준비 되도록."</em></li>
+      </ul>
+      1학년 학생이 남긴 글 중에 짝 배정에 대한 구체적인 이야기가 있었습니다 —
+      <em>"원투원할때 다 랜덤으로 돌리면 더 많은 사람들과 친해질 수 있을 것 같아요! 이번에 팀에서, 학년에서 돌려서 다 친한친구들과 했었습니다..!"</em>
+    </div>
+  </div>
+
+  <!-- 2학년 -->
+  <div class="card">
+    <h3><span class="tag" style="background:color-mix(in srgb,var(--s2) 16%,transparent);color:var(--s2)">2학년 · 10명</span>많이 지쳐 있었던 것으로 보입니다</h3>
+    <p>2학년은 <b>"시간이 길었다"고 답한 항목이 세 학년 중 유일하게 눈에 띄게 많았고</b>,
+      <b>신앙 프로그램 만족도는 모든 항목에서 가장 낮았습니다.</b>
+      이 둘이 따로 있는 이야기는 아닐 것 같습니다.</p>
+
+    <div class="chart">
+      <div class="row"><div class="lab">저녁집회 집중 저해 — 피곤함</div><div class="bars"><div class="track"><span class="fill s2" style="width:90%"></span><em><b>90%</b> · 9명 <span style="color:var(--crit)">1학년 62.5% · 3학년 57.1%</span></em></div></div></div>
+      <div class="row"><div class="lab">프로그램 사이 휴식 부족</div><div class="bars"><div class="track"><span class="fill s2" style="width:70%"></span><em><b>70%</b> · 7명 <span style="color:var(--muted)">3학년 28.6%</span></em></div></div></div>
+      <div class="row"><div class="lab">자유시간 부족</div><div class="bars"><div class="track"><span class="fill s2" style="width:50%"></span><em><b>50%</b> · 5명 <span style="color:var(--muted)">전 학년 최고</span></em></div></div></div>
+      <div class="row"><div class="lab">집회시간이 "길었다"</div><div class="bars"><div class="track"><span class="fill s2" style="width:40%"></span><em><b>40%</b> · 4명 <span style="color:var(--muted)">3학년 0%</span></em></div></div></div>
+      <div class="row"><div class="lab">GBS "시간이 너무 길었다"</div><div class="bars"><div class="track"><span class="fill s2" style="width:30%"></span><em><b>30%</b> · 3명 <span style="color:var(--muted)">3학년 0%</span></em></div></div></div>
+      <div class="row"><div class="lab">기도시간이 "길었다"</div><div class="bars"><div class="track"><span class="fill s2" style="width:30%"></span><em><b>30%</b> · 3명 <span style="color:var(--muted)">1학년 0% · 3학년 7.1%</span></em></div></div></div>
+    </div>
+
+    <h4>신앙 만족도가 전 항목에서 가장 낮습니다</h4>
+    <div class="tw"><table>
+      <thead><tr><th>지표 (5점)</th><th class="num">1학년</th><th class="num">2학년</th><th class="num">3학년</th><th class="num">2학년 격차</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>리플렉션 도움 정도</td><td class="num">4.19</td><td class="num neg">3.60</td><td class="num">4.07</td><td class="num neg">−0.53</td></tr>
+        <tr class="hi"><td>GBS 기도 이해 도움</td><td class="num">4.00</td><td class="num neg">3.70</td><td class="num">4.07</td><td class="num neg">−0.34</td></tr>
+        <tr><td>GBS 신앙적 의미</td><td class="num">3.75</td><td class="num neg">3.70</td><td class="num">4.00</td><td class="num">−0.18</td></tr>
+        <tr><td>리플렉션 신앙적 의미</td><td class="num">3.81</td><td class="num neg">3.70</td><td class="num">3.71</td><td class="num">−0.06</td></tr>
+        <tr><td>저녁집회 신앙적 의미</td><td class="num">4.31</td><td class="num">4.20</td><td class="num">4.29</td><td class="num">−0.10</td></tr>
+      </tbody>
+    </table>
+    <small class="src">2학년 격차 = 2학년 값 − 나머지 두 학년 평균 · 저녁집회만 학년 차가 거의 없습니다(4.20~4.31)</small></div>
+
+    <div class="verdict">
+      <b>2학년이 신앙에 대한 온도가 낮고 시큰둥하다는 것은 아닙니다. 세 가지 지표는 오히려 그 반대를 나타냅니다.</b>
+      <ul class="b">
+        <li><b>세 학년 중 유일하게 "개인적인 결단 및 영적 필요"가 1위였습니다</b>(16점 · 지난 기억 12점).
+          1학년과 3학년은 모두 "지난 수련회의 좋은 기억"이 1위였습니다.
+          2학년은 <em>지난 기억을 따라서라기보다 스스로 마음먹고</em> 온 쪽에 가까워 보입니다.</li>
+        <li><b>저녁집회 만족도는 4.20으로 다른 학년과 거의 같습니다.</b>
+          낮게 나온 것은 앉아서 오래 하는 시간(리플렉션·GBS) 쪽입니다.</li>
+        <li><b>피곤하다고 답한 학생이 90%였습니다.</b> 열 명 중 아홉 명입니다.
+          집중을 방해한 이유로 가장 많이 꼽힌 것이 체력이었습니다.</li>
+      </ul>
+      이렇게 놓고 보면 2학년에게 필요한 것은 영적인 자극이라기보다 <b>쉴 틈</b>에 가까워 보입니다.
+      <em>프로그램이 더 있었으면</em>이 아니라 <em>지금 프로그램을 감당할 여유가 있었으면</em> 쪽이었던 것 같습니다.
+      앞의 3번(프로그램을 조금 줄이고 쉬는 시간을 넣는 것)이 가장 도움이 될 학년이기도 합니다.
+      <br><br>
+      <b>찬양에 대한 답에서도 2학년만 조금 다른 모습이 보입니다.</b>
+      <br><br>
+      "안정적인 연주와 가창 덕분에 찬양에 몰입할 수 있었다"를 고른 2학년이 <b>60%</b>였습니다.
+      1학년(31.3%)이나 3학년(28.6%)의 두 배쯤 됩니다.
+      "찬양 가사가 내 마음과 기도제목에 딱 맞았을 때"는 <b>90%</b>로 더 높았고요.
+      <br>
+      반대로 "뜨거운 인도에 따라 함께 목소리 높여 찬양할 때"는 <b>40%</b>에 그쳤습니다. 1학년은 62.5%였습니다.
+      <br><br>
+      쉽게 말하면 2학년은 <b>분위기가 뜨거워서라기보다, 노래가 좋고 가사가 마음에 닿을 때</b> 은혜를 받았다고 답한 셈입니다.
+      같은 학년이 수련회에 온 이유로 "담임 선생님의 연락"을 한 명도 고르지 않았다는 점과 나란히 놓고 보면,
+      <b>마음이 움직이는 지점이 분위기나 권유보다 내용 쪽에 가까운 학년</b>일 수 있겠다 싶습니다.
+      <br><br>
+      다만 열 명의 답에서 미루어 본 것이라, 그럴 수도 있겠다는 정도로 봐 주시면 좋겠습니다.
+    </div>
+  </div>
+
+  <!-- 3학년 -->
+  <div class="card">
+    <h3><span class="tag" style="background:color-mix(in srgb,var(--s3) 16%,transparent);color:var(--s3)">3학년 · 14명</span>기도할 시간을 가장 많이 이야기했습니다</h3>
+    <p>3학년은 <b>가장 준비된 마음으로 왔고, 신앙 프로그램 점수도 높은 편</b>이었습니다.
+      그러면서 아쉬움도 가장 많이 남겼는데, 그 방향이 대체로 하나였습니다 — 기도할 시간입니다.</p>
+
+    <div class="chart">
+      <div class="row"><div class="lab">집회 후 기도시간 부족</div><div class="bars"><div class="track"><span class="fill s3" style="width:57.1%"></span><em><b>57.1%</b> · 8명 <span style="color:var(--good)">전 학년 최고</span></em></div></div></div>
+      <div class="row"><div class="lab">시작 전 마음 준비 (5점)</div><div class="bars"><div class="track"><span class="fill s3" style="width:82.8%"></span><em><b>4.14</b> <span style="color:var(--muted)">1학년 3.63 · 2학년 3.80</span></em></div></div></div>
+      <div class="row"><div class="lab">GBS 신앙적 의미 (5점)</div><div class="bars"><div class="track"><span class="fill s3" style="width:80%"></span><em><b>4.00</b> <span style="color:var(--muted)">전 학년 최고</span></em></div></div></div>
+      <div class="row"><div class="lab">"함께 찬양하며 기도할 때" 은혜</div><div class="bars"><div class="track"><span class="fill s3" style="width:71.4%"></span><em><b>71.4%</b> · 10명 <span style="color:var(--muted)">1학년 50% · 2학년 40%</span></em></div></div></div>
+      <div class="row"><div class="lab">집회시간이 "길었다"</div><div class="bars"><div class="track"><span class="fill s3 zero"></span><em><b>0%</b> · 0명 <span style="color:var(--muted)">더 길어도 된다는 뜻</span></em></div></div></div>
+      <div class="row"><div class="lab">금·토·일이 "아쉬웠다"</div><div class="bars"><div class="track"><span class="fill s3" style="width:28.6%"></span><em><b>28.6%</b> · 4명 <span style="color:var(--muted)">1학년 0%</span></em></div></div></div>
+    </div>
+
+    <div class="verdict">
+      <b>네 가지가 눈에 들어옵니다.</b>
+      <ul class="b">
+        <li><b>기도 요구가 정량·정성 양쪽에서 가장 강합니다.</b> 부족 57.1%에 과다는 7.1%뿐이고,
+          주관식 언급 밀도도 0.64건/인으로 최고입니다. 한 3학년 학생은 유지·아쉬움·제안 <b>세 문항 모두에 기도시간만</b> 적었습니다.
+          그리고 요구가 구체적입니다 — <em>"학생들 전체가 다같이 모여서 기도하거나 학년끼리 모여서 기도하거나"</em>.
+          <b>개인 기도가 아니라 공동 기도를 원합니다.</b> 찬양에서도 "함께 찬양하며 기도할 때"가 71.4%로 1위였던 것과 일치합니다.</li>
+        <li><b>기억에 남는 프로그램이 특정한 몇 개에 몰리지 않고 고르게 퍼져 있습니다.</b>
+          레크레이션 14 · 원투원 14 · 경주자의 밤 13 · 멘토-멘티 11 · 달란트 10 · 축복의 시간 9로 점수 차이가 크지 않습니다.
+          1학년이 28점에서 2점까지 벌어진 것과는 사뭇 다릅니다.
+          <br><b>축복의 시간이 세 학년 중 가장 높게 나온 것도 3학년</b>이었고(9점 · 1학년 2점),
+          반대로 물놀이는 7점으로 3학년에서 가장 낮았습니다(1학년은 23점).
+          활동보다 이야기를 나누는 순서 쪽에 더 마음이 갔던 것으로 보입니다.</li>
+        <li><b>금·토·일에 대한 아쉬움이 가장 큽니다</b>(28.6%, 1학년은 0%).
+          주관식이 이유를 말해 줍니다 — <em>"고학년일수록 보통 주말에 학원 일정이 더 많이 잡혀 있다"</em>.
+          <b>금·토·일 유지 결정은 그대로 두되, 3학년에게는 별도 배려가 필요합니다.</b>
+          미참석 사례 A도 3학년이었고 사유가 학원·보충수업이었습니다.</li>
+        <li><b>환경에 대한 지적이 여러 항목으로 나뉘어 나왔습니다.</b>
+          "특별한 문제 없음"을 고른 3학년이 50%(14명 중 7명)로 세 학년 중 가장 낮았습니다(1학년 68.8% · 2학년 60%).
+          나머지 학생들이 고른 것은 실내 온도·안내방송·장소·소음으로, <b>한 항목에 몰리지 않고 각각 한 명씩</b>이었습니다.
+          여러 명이 같이 지적한 항목은 없었습니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>학년별 종합 비교표</h3>
+  <div class="tw"><table>
+    <thead><tr><th>지표</th><th class="num">1학년 (16)</th><th class="num">2학년 (10)</th><th class="num">3학년 (14)</th><th>패턴</th></tr></thead>
+    <tbody>
+      <tr><td colspan="5" style="background:var(--plane);font-weight:650;font-size:12px;color:var(--muted)">시간 부족 체감 (부족률)</td></tr>
+      <tr><td>깊은 교제</td><td class="num hi"><b>68.8%</b></td><td class="num">50.0%</td><td class="num">50.0%</td><td>1학년 ↑ · 전 학년 과다 0</td></tr>
+      <tr><td>집회 후 기도</td><td class="num">43.8%</td><td class="num">40.0%</td><td class="num hi"><b>57.1%</b></td><td>3학년 ↑ · 2학년만 과다 30%</td></tr>
+      <tr><td>프로그램 사이 휴식</td><td class="num">43.8%</td><td class="num hi"><b>70.0%</b></td><td class="num">28.6%</td><td>2학년 ↑↑</td></tr>
+      <tr><td>자유시간</td><td class="num">31.3%</td><td class="num hi"><b>50.0%</b></td><td class="num">28.6%</td><td>2학년 ↑</td></tr>
+      <tr><td colspan="5" style="background:var(--plane);font-weight:650;font-size:12px;color:var(--muted)">시간 과다 체감 (과다율)</td></tr>
+      <tr><td>집회시간</td><td class="num">12.5%</td><td class="num hi"><b>40.0%</b></td><td class="num">0%</td><td>2학년만 길다고 느낌</td></tr>
+      <tr><td>리플렉션</td><td class="num hi"><b>25.0%</b></td><td class="num">10.0%</td><td class="num">14.3%</td><td>1학년 ↑</td></tr>
+      <tr><td>GBS</td><td class="num">18.8%</td><td class="num">20.0%</td><td class="num">7.1%</td><td>3학년만 더 원함</td></tr>
+      <tr><td colspan="5" style="background:var(--plane);font-weight:650;font-size:12px;color:var(--muted)">만족도 (5점 척도)</td></tr>
+      <tr><td>시작 전 마음 준비</td><td class="num">3.63</td><td class="num">3.80</td><td class="num hi"><b>4.14</b></td><td>학년 오를수록 ↑</td></tr>
+      <tr><td>저녁집회</td><td class="num hi"><b>4.31</b></td><td class="num">4.20</td><td class="num">4.29</td><td>학년 차 거의 없음</td></tr>
+      <tr><td>GBS 도움</td><td class="num">4.00</td><td class="num neg">3.70</td><td class="num hi"><b>4.07</b></td><td>2학년 ↓</td></tr>
+      <tr><td>리플렉션 도움</td><td class="num hi"><b>4.19</b></td><td class="num neg">3.60</td><td class="num">4.07</td><td>2학년 ↓↓</td></tr>
+      <tr><td colspan="5" style="background:var(--plane);font-weight:650;font-size:12px;color:var(--muted)">관계 형성 기여 (5점 척도)</td></tr>
+      <tr><td>원투원</td><td class="num hi"><b>4.31</b></td><td class="num">3.80</td><td class="num">3.71</td><td>학년 오를수록 ↓</td></tr>
+      <tr><td>레크레이션</td><td class="num hi"><b>4.25</b></td><td class="num">3.90</td><td class="num">3.71</td><td>학년 오를수록 ↓</td></tr>
+      <tr><td>경주자의 밤</td><td class="num">3.13</td><td class="num hi"><b>3.80</b></td><td class="num">3.21</td><td>2학년만 높음</td></tr>
+      <tr><td>멘토-멘티</td><td class="num">3.38</td><td class="num hi"><b>3.80</b></td><td class="num">3.57</td><td>2학년만 높음</td></tr>
+      <tr><td colspan="5" style="background:var(--plane);font-weight:650;font-size:12px;color:var(--muted)">참여 동기 1위 (3-2-1 가중)</td></tr>
+      <tr><td>학년 내 1위</td><td class="num">지난 기억 <b>33</b></td><td class="num hi">개인 결단 <b>16</b></td><td class="num">지난 기억 <b>24</b></td><td>2학년만 역전</td></tr>
+      <tr><td>담임 연락</td><td class="num">4점 · 3명</td><td class="num">0점 · 0명</td><td class="num">4점 · 2명</td><td>학년 차 거의 없음</td></tr>
+      <tr><td>포스터·홍보</td><td class="num">8점</td><td class="num hi"><b>10점</b></td><td class="num neg">1점</td><td>저학년에 더 닿음</td></tr>
+      <tr><td>수련회 전 기도회</td><td class="num">10점</td><td class="num neg">2점</td><td class="num hi"><b>13점</b></td><td>3학년 ↑</td></tr>
+      <tr><td colspan="5" style="background:var(--plane);font-weight:650;font-size:12px;color:var(--muted)">기타</td></tr>
+      <tr><td>금·토·일 "아쉬웠다"</td><td class="num">0%</td><td class="num">20.0%</td><td class="num hi"><b>28.6%</b></td><td>학년 오를수록 ↑ (학원)</td></tr>
+      <tr><td>GBS "내용이 어려웠다"</td><td class="num hi"><b>18.8%</b></td><td class="num">10.0%</td><td class="num">0%</td><td>저학년 전용 문제</td></tr>
+      <tr><td>찬양팀에 함께 서고 싶다</td><td class="num hi"><b>68.8%</b></td><td class="num">50.0%</td><td class="num">28.6%</td><td>학년 오를수록 ↓</td></tr>
+      <tr><td>환경 "특별한 문제 없음"</td><td class="num hi"><b>68.8%</b></td><td class="num">60.0%</td><td class="num">50.0%</td><td>3학년은 여러 항목에 1명씩 흩어짐</td></tr>
+    </tbody>
+  </table>
+  <small class="src">분모는 각 학년 참석자 · <b>정확도: 정확</b>(전수 집계). 다만 학년당 10~16명이므로 5%p 안팎의 차이는 1명 차이일 수 있습니다.</small></div>
+
+  <div class="verdict">
+    <b>다행인 것은 세 학년이 원하는 것이 서로 부딪치지 않는다는 점입니다.</b>
+    <ul class="b">
+      <li><b>기도할 시간을 늘리면</b> — 3학년(부족 57.1%)과 1학년(부족 43.8%, <b>길었다는 학생 0명</b>)에게 바로 도움이 됩니다.
+        2학년에서만 길었다는 답이 30% 있었는데, 이건 기도가 싫어서라기보다 <em>체력 쪽 이야기</em>로 보입니다.</li>
+      <li><b>프로그램을 조금 줄이고 쉬는 시간·이동 시간을 넣으면</b> — 2학년(쉬는 시간 부족 70%)에게 가장 도움이 되고,
+        <b>그러고 나면 2학년도 기도할 기운이 남을 수 있습니다.</b> 3번을 먼저 하고 1번을 하는 순서가 자연스러워 보입니다.</li>
+      <li><b>원투원을 늘리면</b> — 1학년(깊은 교제 부족 68.8%)에게 가장 도움이 되고,
+        2·3학년도 절반이 부족하다고 답해서 아쉬워할 학년이 없어 보입니다.</li>
+    </ul>
+    <b>세 가지를 함께 해 보면 세 학년 모두에게 도움이 될 것 같고, 하나만 하면 한 학년에만 닿을 것 같습니다.</b>
+    특히 <b>프로그램은 그대로 둔 채 기도 시간만 늘리면 2학년에게는 오히려 부담이 될 수 있으니</b>,
+    이 조합은 피하는 편이 좋겠습니다.
+  </div>
+
+  <h3>학년별로 다르게 접근하는 것을 생각해 볼 만합니다</h3>
+  <p class="lede"><b>시간표를 학년마다 따로 짜자는 이야기는 아닙니다.</b> 그건 현실적으로 어렵습니다.
+    아래 "해 볼 만한 것"은 <b>같은 일정 안에서 나눌 수 있는 것들</b>로만 골랐습니다 —
+    조 편성, GBS 반별 진행, 담임 선생님의 반 운영, 기도할 때 앉는 자리처럼 이미 학년이나 반으로 나뉘어 있는 부분입니다.
+    <br>
+    전체 시간표에 관한 것(프로그램 수, 집회·리플렉션 길이 등)은 <b>학년을 나누지 않고 하나로 정하되,
+    어느 쪽으로 기울일지 판단할 때 학년별 응답을 참고하는 정도</b>로 봐 주시면 좋겠습니다.</p>
+  <div class="tw"><table>
+    <thead><tr><th style="white-space:nowrap">학년</th><th>많이 바라는 것</th><th>해 볼 만한 것</th><th>조심하면 좋을 것</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="white-space:nowrap"><b>1학년</b></td>
+        <td>친해지는 것 · 어울릴 자리</td>
+        <td>원투원 짝을 <b>학년과 팀을 섞어</b> 지어주기(지금은 친한 친구끼리 되는 편) · 몸으로 하는 활동은 그대로 · GBS 내용을 반별 눈높이에 맞춰보기</td>
+        <td>리플렉션 시간을 늘리는 것 — 이미 25%가 길게 느꼈습니다</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><b>2학년</b></td>
+        <td>쉴 틈 · 여유</td>
+        <td>2학년만 따로 할 수 있는 건 많지 않습니다. 대신 <b>전체 일정에 여유를 두면 2학년이 가장 크게 덕을 봅니다</b>
+          (프로그램 사이 시간 · 자고 일어나는 시간) · 반 안에서는 분위기보다 <b>내용과 완성도</b>로 다가가기</td>
+        <td>프로그램이나 집회를 더 늘리는 것 — 이미 40%가 길게 느꼈습니다</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><b>3학년</b></td>
+        <td>함께 기도하는 시간 · 마지막 수련회</td>
+        <td><b>학년끼리, 또는 다 같이 모여 기도하는 시간</b>을 따로 두기(아이들이 직접 적은 요청입니다) ·
+          축복의 시간에 서로 기도해 주는 시간 넣어보기(3학년에서 가장 높게 나온 순서입니다) · 고3이 일부만 참여할 수 있는 방법 열어두기</td>
+        <td>3학년에게는 홍보물이 잘 닿지 않았습니다(1점) · 물놀이 시간을 늘리는 것도 3학년에겐 7점으로 가장 낮았습니다</td>
+      </tr>
+    </tbody>
+  </table></div>
+</section>
+
+
+<!-- ═══════════════ 8. 실행 제안 ═══════════════ -->
+<section id="actions">
+  <h2><span class="n">09</span>다음에 해 볼 만한 것들</h2>
+  <p class="lede">설문 숫자가 직접 가리키는 것만 담았습니다. 오른쪽 "근거" 칸의 번호는 앞의 몇 번 이야기에서 나온 것인지 표시한 것입니다.
+    <b>정해진 계획이 아니라 함께 이야기해 볼 목록</b>으로 봐 주시면 좋겠습니다.</p>
+  <p class="lede">목록이 길어 보이지만 <b>없앨 것은 거의 없고, 대부분 시간을 조금씩 옮기는 일</b>입니다.
+    올해 세워 둔 틀 위에서 손볼 수 있는 것들이라, 처음부터 다시 짤 필요는 없어 보입니다.</p>
+
+  <h3>먼저 이야기 나눠 보면 좋을 것</h3>
+  <div class="tw"><table>
+    <thead><tr><th class="num">#</th><th>실행</th><th>구체안</th><th class="num">근거</th></tr></thead>
+    <tbody>
+      <tr class="hi"><td class="num">1</td><td><b>강사·주제 조기 확정</b></td><td>가장 먼저 결정. 설교 눈높이(고등학생)를 섭외 조건에 명시하고, 설교 개요를 GBS 교안 제작 전에 확보해 두 자료를 연결</td><td class="num">③⑤</td></tr>
+      <tr class="hi"><td class="num">2</td><td><b>저녁집회 기도시간 확보</b></td><td>집회 총량은 유지하고 찬양 시간 일부를 기도로 이전. 기도 인도자를 사전 지정(담당 목사 부재 시 대안 필수)</td><td class="num">①</td></tr>
+      <tr class="hi"><td class="num">3</td><td><b>원투원 시간 확대</b></td><td>학생 요청 최다. "부족" 57.5%에 "과다" 0명 — 늘려서 손해 볼 위험이 없는 유일한 항목. 짝 배정은 학년·팀 섞기(현재는 친한 친구끼리 됨) 또는 뽑기 방식</td><td class="num">④</td></tr>
+      <tr><td class="num">4</td><td><b>프로그램 1개 축소</b></td><td>새 프로그램 추가 금지. 덜어낸 시간을 기도·원투원에 배분. 프로그램 사이 이동 버퍼를 일정표에 명시적으로 넣기</td><td class="num">⑧</td></tr>
+      <tr><td class="num">5</td><td><b>주방·식사 3인 팀 편성</b></td><td>겸임 없이 전담. 헬퍼 71%가 지목한 최대 인력 공백</td><td class="num">⑦</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>준비하면서 함께 생각해 볼 것</h3>
+  <div class="tw"><table>
+    <thead><tr><th class="num">#</th><th>실행</th><th>구체안</th><th class="num">근거</th></tr></thead>
+    <tbody>
+      <tr><td class="num">6</td><td><b>담임·헬퍼 겸임 최소화</b></td><td>12명 중 5명 겸임이 과부하의 구조적 원인. 겸임이 불가피하면 담당 시간대를 물리적으로 분리</td><td class="num">⑦</td></tr>
+      <tr><td class="num">7</td><td><b>GBS·리플렉션 매뉴얼 제작</b></td><td>교사 요청 최다 보완점. 담임뿐 아니라 전체 교사가 사전 숙지. 반별 적용 포인트를 별도 안내</td><td class="num">③</td></tr>
+      <tr><td class="num">8</td><td><b>축복의 시간 — 진행 방식 사전 안내 + 서로 기도해 주는 시간 넣기</b></td><td>학생과 선생님이 같은 제안을 하셨습니다 · 3학년에서 가장 높게 나온 순서 · 기도 시간 확대(②번)와 이어짐</td><td class="num">①④</td></tr>
+      <tr><td class="num">9</td><td><b>찬양팀 통합 4단계</b></td><td>① 수련회 전 고등부 예배 1회 방문 ② 집회 1회 학생 코러스 ③ 기도회 반주는 고등부가 ④ 최소 1끼 함께 식사</td><td class="num">⑥</td></tr>
+      <tr><td class="num">10</td><td><b>레크레이션 → 물놀이 순서</b></td><td>레크레이션으로 친해진 뒤 물놀이. 교사 2명이 같은 제안(단, 둘째 날 집회 졸음 이슈는 함께 검토)</td><td class="num">④</td></tr>
+      <tr><td class="num">11</td><td><b>부분 참여·중간 합류 제도화</b></td><td>미참석 사례 A와 참석자 주관식 양쪽에서 수요 확인. 특히 고3 학사 일정 대응</td><td class="num">Chapter 7</td></tr>
+      <tr><td class="num">12</td><td><b>회의록 공유 체계</b></td><td>준비 회의 불참자를 위한 회의록 공유. 명확성 최저 항목이 "다른 교사의 역할"(4.17)이었던 것과 직결</td><td class="num">⑦</td></tr>
+      <tr class="hi"><td class="num">13</td><td><b>학년끼리 모여 기도하는 시간과 공간 마련</b></td><td>3학년 학생이 직접 요청 — <em>"학년끼리 모여서 기도하거나"</em> · 선생님도 <em>"학년별로 중보해주는 시간"</em>을 적으심 · 한 학생은 집회 후 자유 기도 공간(방 하나)을 두 번 요청 · 3학년 기도 부족 57.1%, "함께 기도할 때" 은혜 71.4%로 학년 중 1위</td><td class="num">① · Chapter 8</td></tr>
+      <tr class="hi"><td class="num">14</td><td><b>원투원 짝을 학년·팀 섞어 배정</b></td><td>현재 방식은 친한 친구끼리 매칭됨. 1학년이 구체적으로 지적. 뽑기 방식 복귀 요청도 있음. 관계 니즈가 가장 큰 학년(깊은 교제 부족 68.8%)의 효과를 직접 키움</td><td class="num">④ · Chapter 8</td></tr>
+      <tr><td class="num">15</td><td><b>GBS 전체 눈높이 대신 반별 적용 포인트</b></td><td>"내용이 어려웠다"는 1학년 18.8% · 3학년 0%. 전체를 낮추면 3학년 만족도(GBS 4.00)를 깎음. 선생님 제안과 동일</td><td class="num">③ · Chapter 8</td></tr>
+    </tbody>
+  </table>
+  <small class="src"><b>순서를 한 번 생각해 보시면 좋겠습니다.</b> 4번(프로그램을 조금 줄이는 것)을 먼저 하고 2번(기도 시간을 늘리는 것)을 하는 편이 자연스러워 보입니다.
+    프로그램을 그대로 둔 채 기도 시간만 늘리면, 이미 피곤하다는 학생이 90%이고 집회가 길다는 학생이 40%인 2학년에게는 부담이 될 수 있습니다.</small></div>
+
+  <h3>큰 결정 없이 바로 해 볼 수 있는 것</h3>
+  <ul class="b">
+    <li><b>달란트 문방구 재고 재배분</b> — 예산 증액 없이 인기 품목 비중만 상향 (주관식 6건 동일 지적)</li>
+    <li><b>마지막 날 동선 여유</b> — 주일 3부 예배 연결 시간 확보 (선생님 의견)</li>
+    <li><b>일정표에 특송 시각 명시</b> — 한 선생님이 근본 원인으로 짚으신 구체적인 누락입니다</li>
+    <li><b>빨래·젖은 수건 널 곳 안내</b> — 학생 의견</li>
+    <li><b>집회 후 자유 기도 공간 개방</b> — 학생 2명이 구체 장소까지 지목하며 요청</li>
+    <li><b>드럼 음량 조정</b> — 찬양·기도 시간에 소리가 컸다는 학생 의견</li>
+    <li><b>하루 10분 부모님께 연락하는 시간</b> — 학생이 직접 요청한 것이고 비용이 들지 않습니다</li>
+  </ul>
+
+  <div class="verdict">
+    <b>함께 생각해 볼만한 것들</b>
+    <ul class="b" style="margin-bottom:0">
+      <li><b>주말에 학원 일정이 몰린 학생과 고3을 위한 방법</b> —
+        금·토·일 일정은 학생 85%와 담임 선생님 열 분 모두가 좋게 보셨습니다.
+        다만 아쉽다는 답이 <b>학년이 올라갈수록 늘었습니다</b>(1학년 0% · 2학년 20% · 3학년 28.6%).
+        <br>
+        이유는 한 가지가 아니었습니다. 주말 학원 부담, 주일에 함께 나눌 시간이 한 주 밀린 것,
+        나흘 동안 예배드리고 싶다는 것이 섞여 있었습니다. 한 학생은 이렇게 적었습니다 —
+        <em>"고학년일수록 보통 주말에 학원 일정이 더 많이 잡혀 있다고 느낌. 따라서 수련회 참석에 대한 부담이 기존보다는 조금 더 컸음."</em>
+        다른 학생은 <em>"금토일은 날짜가 애메해서 학원을 다 빠지기 아까움"</em>이라고 했습니다.
+        <br>
+        전체 일정을 다시 옮기기보다, <b>주말에 학원이 있는 학생과 고3이 함께할 수 있는 길을 따로 열어 두는 것</b>을
+        생각해 볼 만합니다 — 일부만 참여하거나 중간에 합류할 수 있게 하는 것, 날짜를 훨씬 미리 알려 학원 일정을 조율할 수 있게 하는 것 정도입니다.
+        수련회에 오지 못한 3학년 학생도 같은 것을 요청했습니다(Chapter 7).</li>
+      <li><b>저녁집회는 전체 길이보다 그 안의 기도 시간이 핵심으로 보입니다</b>
+        <br>
+        먼저 <b>집회 전체 길이</b>는 손댈 이유가 뚜렷하지 않습니다.
+        40명 중 29명(72.5%)이 "적당했다"고 답했고, 길었다는 6명(15%)과 부족했다는 5명(12.5%)이 거의 비슷했습니다.
+        <br>
+        반면 <b>집회가 끝난 뒤 기도하는 시간</b>은 답이 한쪽으로 기울었습니다.
+        부족했다 19명(47.5%), 적당했다 17명(42.5%), 길었다 4명(10%)입니다.
+        <b>같은 집회 안에서도 전체 길이는 괜찮았는데 기도 시간만 짧게 느낀 것</b>입니다.
+        한 학생의 글이 이 차이를 그대로 보여줍니다 —
+        <em>"찬양시간을 조금 줄이고 말씀과 기도회를 늘려주세요!!"</em>
+        <br>
+        집회를 늘리거나 줄이기보다, <b>지금 길이 안에서 기도 쪽에 시간을 옮겨 보는 것</b>이 답에 가장 가까워 보입니다.
+        <br><br>
+        <span style="color:var(--muted)">덧붙여, 선생님이 매기신 점수만 보면 저녁집회를 줄이는 쪽을 떠올리실 수 있어 한 가지 짚어 둡니다.
+        두 점수는 서로 다른 것을 물은 것입니다.</span>
+        <br>
+        <b>학생 4.28</b> — "저녁집회가 신앙적으로 의미 있었고, 집중할 수 있게 진행되었다고 느꼈나요?"에
+        아이들이 스스로 매긴 점수입니다(1점 전혀 그렇지 않다 ~ 5점 매우 그렇다, 40명).
+        <b>세 신앙 프로그램 중 가장 높았습니다</b>(GBS 3.83 · 리플렉션 3.75).
+        <br>
+        <b>선생님 3.80</b> — "학생들이 저녁집회에 참여할 때 집중도가 어땠나요?"에
+        담임 열 분이 <em>보시기에</em> 매기신 점수입니다(1점 매우 낮았다 ~ 5점 매우 높았다).
+        <br>
+        <span style="color:var(--muted)">하나는 아이들 마음속 이야기고, 다른 하나는 겉으로 보인 모습입니다.
+        겉이 산만해 보여도 아이들에게는 가장 크게 남은 시간이었을 수 있습니다(자세한 내용은 Chapter 4 ②번).</span></li>
+      <li><b>리플렉션은 늘리지만 않으면 될 것 같습니다</b>
+        <br>
+        답을 그대로 펼치면 이렇습니다 — <b>적당했다 31명(77.5%)</b>, 조금 길었다 7명(17.5%), 조금 부족했다 2명(5%).
+        <b>"너무 길었다"를 고른 학생은 한 명도 없었습니다.</b>
+        <br>
+        네 명 중 세 명이 적당하다고 했으니 <b>크게 손댈 근거는 보이지 않습니다.</b>
+        다만 일곱 항목 중 <b>길었다는 답이 부족했다는 답보다 많은 것은 리플렉션뿐</b>이라,
+        <b>시간을 늘리는 쪽은 피하는 편이 좋겠습니다.</b>
+        <br>
+        <span style="color:var(--muted)">줄이자는 쪽도 근거가 강하지는 않습니다. 길게 느낀 7명 중 "너무"라고 한 사람은 없었으니까요.
+        지금 길이를 유지하면서 지켜보는 정도가 맞을 것 같습니다.</span>
+        <br><br>
+        길게 느낀 쪽이 주로 1학년(25% · 3학년 14.3% · 2학년 10%)이었는데,
+        학년마다 시간을 다르게 주기는 어려우니 <b>길이보다 진행을 돕는 쪽</b>이 현실적일 것 같습니다.
+        무엇을 적으면 되는지 안내해 주는 가이드문이 있으면 저학년이 따라오기 쉬울 수 있겠습니다.
+        실제로 선생님 한 분도 <em>"리플렉션 가이드문이 있으면 좋았을 것 같음"</em>이라고 적으셨습니다.</li>
+      <li><b>홍보물에 무엇을 담을지 — 양보다 방향</b><br>
+        홍보물을 고른 학생은 12명으로 세 번째로 많았습니다(⑤ 참고). 여러 아이들에게 알리는 중요한 채널이었던 것으로 보입니다.
+        다만 대부분 2·3순위로 골라서, <em>이것 때문에 가기로 했다</em>는 쪽까지는 아니었습니다.
+        <br>
+        일정과 안내를 알리는 역할은 이미 하고 있으니, 같은 노력으로
+        <b>지난 수련회에서 무엇이 좋았는지, 아이들의 삶이 어떻게 달라졌는지</b>를 담아 보는 쪽을 고려해 볼 만합니다.
+        아이들을 가장 크게 움직인 두 가지가 <em>지난 수련회의 좋은 기억</em>과 <em>개인적인 결단과 영적 필요</em>였으니까요.
+        <br>
+        <em>학년에 따라 반응도 달랐습니다</em> — 2학년은 10점으로 학년 안에서 네 번째였고 3학년은 1점이었습니다.
+        홍보물로 닿기 좋은 쪽은 저학년일 수 있겠습니다.</li>
+      <li><b>일정에 쉴 틈을 넣는 것 — 2학년이 가장 크게 덕을 볼 것 같습니다</b> —
+        2학년은 집회가 길다 40%, 쉬는 시간 부족 70%, 피곤함 90%였습니다.
+        학년별로 프로그램을 따로 짜기는 어려우니, <b>전체 일정에 여유를 두는 방향</b>으로 가면 좋겠습니다.
+        그러면 가장 지쳐 있던 2학년이 가장 크게 도움을 받게 됩니다.
+        낮게 나온 신앙 점수를 영적인 자극을 더해서 풀려고 하면 오히려 힘들어질 수 있습니다.</li>
+      <li><b>기도할 시간 — 두 갈래로 나눠 생각해 볼 수 있겠습니다</b>
+        <br>
+        답을 모아 보면 기도에 대한 이야기가 성격이 다른 두 가지로 갈립니다.
+        <br><br>
+
+        <b>① 집회 안의 기도 시간 — 전체가 함께 넉넉한 시간으로</b><br>
+        집회가 끝난 뒤 기도하는 시간이 부족했다는 학생이 19명(47.5%), 길었다는 학생이 4명(10%)이었습니다.
+        <b>전체가 함께 드리는 시간이니 일정에서 넉넉히 잡아 두면 되는 부분</b>입니다.
+        앞서 본 대로 집회를 길게 하기보다 <em>지금 길이 안에서 찬양과 기도의 배분을 옮기는 쪽</em>이 답에 가까워 보입니다.
+        <br><br>
+
+        <b>② 집회 밖의 기도 자리 — 따로 시간을 잡고, 따로 공간을 열어서</b><br>
+        전체 집회와 별개로 <b>늦은 시간대에 기도할 수 있는 방을 하나 열어 두는 운영</b>을 생각해 볼 만합니다.
+        여기는 전체가 아니라 <em>원하는 사람이, 또는 학년끼리 모여</em> 기도하는 자리라 학년별로 나눠도 무리가 없습니다.
+        학생과 선생님 양쪽에서 이 이야기가 나왔습니다 —
+        <br>
+        <em>"둘째날에 더 적극적으로 학생들 전체가 다같이 모여서 기도하거나 학년끼리 모여서 기도하거나 하는 시간이 있으면 더 좋을 것 같습니다"</em>(3학년 학생)
+        <br>
+        <em>"선생님이 아이들을 위해 기도해주는 시간 / 학년별로 중보해주는 시간 / 자율적으로 서로 기도해주는 시간"</em>(선생님)
+        <br>
+        <em>"마지막날은 기도회 12시까지 하면 좋겠다"</em>(선생님) — 늦은 시간대를 직접 언급하신 분도 계셨습니다.
+        <br>
+        공간에 대한 요청도 구체적이었습니다. 한 학생이 두 문항에 걸쳐 같은 이야기를 적었습니다 —
+        <em>"저녁 집회 후 자유 기도 공간 주세요.(부얶 옆방)"</em>,
+        <em>"집회 후 자유 기도할 수 있도록 부얶 옆방 사용하고 싶어요"</em>.
+        <b>큰 준비 없이 방 하나를 정해 두고 시간을 알려 주는 정도로도 될 것 같습니다.</b>
+        <br><br>
+
+        <b>②번은 특히 고3에게 잘 맞을 것 같습니다.</b>
+        3학년은 기도 시간이 부족했다는 답이 57.1%로 가장 높았고, 집회가 길다는 답은 한 명도 없었습니다.
+        시작 전 마음 준비도 4.14로 가장 높았고, 은혜받은 순간으로
+        <em>"친구들, 선생님들과 다 함께 찬양하며 기도할 때"</em>를 71.4%가 골랐습니다(1학년 50% · 2학년 40%).
+        마지막 수련회를 보내는 학년이라는 점까지 놓고 보면,
+        늦은 시간에 학년끼리 모여 기도하는 자리가 특별하게 남을 수 있겠습니다.
+        <br>
+        <span style="color:var(--muted)">다만 늦은 시간 운영은 다음 날 일정과 겹칩니다.
+        2학년은 피곤하다는 답이 90%였으니, <b>모두가 참여하는 자리가 아니라 원하는 사람만 오는 자리</b>로 두는 편이 좋겠습니다.</span></li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════ 9. 주관식 원문 ═══════════════ -->
+<section id="verbatim">
+  <h2><span class="n">10</span>직접 쓰신 글 전체</h2>
+  <div class="notice">
+    아래는 오탈자까지 포함해 학생과 선생님이 적어 주신 글 그대로입니다.
+    고치면 뜻이 달라질 수 있어 손대지 않았습니다.
+    <br><br>
+    <b>누가 썼는지 알 수 없도록 두 가지를 해 두었습니다.</b>
+    <br>
+    ① <b>문항마다 순서를 무작위로 섞었습니다.</b>
+    원래는 제출한 순서대로 놓여 있었는데, 그러면 여러 문항에서 같은 자리에 있는 글을 이어 붙여
+    한 사람이 무엇을 썼는지 짐작할 수 있게 됩니다. 그래서 문항별로 순서를 흩어 두었습니다.
+    <br>
+    ② <b>번호를 문항 안에서만 새로 매겼습니다.</b>
+    앞의 번호는 <em>그 문항 안에서 몇 번째 글인지</em>만 뜻합니다.
+    <b>어느 문항의 3번과 다른 문항의 3번은 서로 다른 사람</b>입니다. 번호로 사람을 이을 수 없습니다.
+    <br><br>
+    <b>한 줄 한 줄 마음을 담아 남겨 주신 이야기들이니, 소중히 읽어 주시면 좋겠습니다.</b>
+    인쇄하면 접힌 항목까지 모두 펼쳐져 나옵니다.
+  </div>
+
+  <details>
+    <summary>학생 — 금·토·일 일정에 대한 생각 (28건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>목 금 토 수련회를 간 후 주일까지 이어지는 게 좋을 것 같은데 이번에는 금 토 일 수련회를 진행해서 주일에 이야기 나눌 시간이 일주일 밀려서 아쉬웠어요.</li>
+      <li><b>2</b>금토일이 좋은 이유: 학원 부담 적어짐
+목금토가 좋은 이유: 여유로움, 무려 4일동안 예배를 드릴 수 있다는 장점</li>
+      <li><b>3</b>사람마다 다르겠지만, 고학년일수록 보통 주말에 학원 일정이 더 많이 잡혀 있다고 느낌. 따라서 수련회 참석에 대한 부담이 기존보다는 조금 더 컸음.</li>
+      <li><b>4</b>학원빼야돼서</li>
+      <li><b>5</b>학업 일정 조정에는 금토일이 좋았을 수 있지먼 프로그램과 그런 시간들은 목금토가 더 알차게 느껴졌을거같다</li>
+      <li><b>6</b>목 금 토가 편해요</li>
+      <li><b>7</b>학원</li>
+      <li><b>8</b>금토일 일정이 좋았습니다</li>
+      <li><b>9</b>학원을 많이 빠지지 않아도 돼서 좋았다</li>
+      <li><b>10</b>학원을 한번 더 빼지 않아도 되어서 좋았고 김화수양관에서 예배를 한번에 드리고 집에 갈 수 있어서 좋았습니다.</li>
+      <li><b>11</b>.</li>
+      <li><b>12</b>설교가 어렵긴 했으나 마음에 와닿는 내용이었다.</li>
+      <li><b>13</b>좋았어요</li>
+      <li><b>14</b>처음이니까?</li>
+      <li><b>15</b>지난 수련회는 목금토 다 학원이 있어서 부분참석을 했는데 이번엔</li>
+      <li><b>16</b>금토일은 날짜가 애메해서 학원을 다 빠지기 아까움</li>
+      <li><b>17</b>평일에 참석하는 시간이 하루뿐이라 시간을 낼 수 있어서 좋았다.</li>
+      <li><b>18</b>그냥 저는 상관이 없었어서요</li>
+      <li><b>19</b>피로도/학업</li>
+      <li><b>20</b>금 토 일로 해야 일요일에 다시 교회에 와서 예배를 드리는 번거로움이 없기 때문이다.</li>
+      <li><b>21</b>학원 일정 때문에 금토일이 편했습니다</li>
+      <li><b>22</b>학원 일정도 거의 안 겹치는 점에서 좋다고 생각했다.</li>
+      <li><b>23</b>없습니다!</li>
+      <li><b>24</b>대부분 둘째 날 밤 늦게까지 잠을 자지 않아서 피로를 회복하지 못한 채 주일 예배를 드리는 경우가 많습니다. 그래서 차라리 일요일까지 수련회를 진행하는 것이 더 좋았던 것 같습니다.</li>
+      <li><b>25</b>학원 시간이 포함되지 않아서</li>
+      <li><b>26</b>좋았다</li>
+      <li><b>27</b>주일까지 이어지는게 좋다</li>
+      <li><b>28</b>수련회 마치고 다음날에 교회가기 힘든데..^^매우좋았습니다 하지만 일정이 좀 더 빡빡해져서 꼭 좋진 않은 것 같아요</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>학생 — 친구·선후배와 가까워진 순간 (21건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>원투원</li>
+      <li><b>2</b>원투원이요</li>
+      <li><b>3</b>원투원에서 잘 모르던 선배와 대화하면서 즐거운 시간을 보낼 수 있어서 좋았다.</li>
+      <li><b>4</b>프로그램 활동보다 개인적인 나눔들이 더 기억에 남아요</li>
+      <li><b>5</b>모둔 활동</li>
+      <li><b>6</b>원투원이 특히 도움이 되었습니다</li>
+      <li><b>7</b>서로 물에 담그기</li>
+      <li><b>8</b>레크레이션이 사람들과 가까워지는데 매우 큰역할을 하는 것 같다</li>
+      <li><b>9</b>원투원때 가까워지는 계기가 생겨서 좋았습니다. 좀 더 시간이 길어도 좋을것같습니다</li>
+      <li><b>10</b>멘토멘티를 적은 인원으로 해서 더욱 가까워질 수 있었다.</li>
+      <li><b>11</b>원투원과 수영장 이 두 프로그램에서 조금 얘기를 나눌 수 있어서 좋았습니다.</li>
+      <li><b>12</b>같은 조원이 되면서 선생님들과 친구들과 모든 활동에서 더 가까워질 수 있었던 것 같았다.</li>
+      <li><b>13</b>레크레이션, 믈놀이, 롤링페이퍼 쓰기</li>
+      <li><b>14</b>경주자의 밤 활동을 하면서 선후배 간에 같이 더 친해지는 시간이 있었던 것 같다</li>
+      <li><b>15</b>레크레이션 활동을 할때 조 사람들과 많이 친해진것 같아.</li>
+      <li><b>16</b>물놀이</li>
+      <li><b>17</b>원투원</li>
+      <li><b>18</b>원투원이요</li>
+      <li><b>19</b>조별활동으로 많이 친해질수 있던거같다</li>
+      <li><b>20</b>원투원이요!</li>
+      <li><b>21</b>롤링페이퍼</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>학생 — 프로그램 아쉬움 · 다시 하고 싶은 것 (21건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>Gbs</li>
+      <li><b>2</b>원투원을 더 다양한 사람이랑 해보고 싶다. 캠프파이어랑 별을 보러가는 활동도 했으면 좋겠다.</li>
+      <li><b>3</b>원투원에 많은 시간을 써주셨으면 합니더</li>
+      <li><b>4</b>없슴니다</li>
+      <li><b>5</b>원투원할때 다 랜덤으로 돌리면 더 많은 사람들과 친해질 수 있을 것 같아요! 이번에 팀에서, 학년에서 돌려서 다 친한친구들과 했었습니다..!</li>
+      <li><b>6</b>원투원 나눔 시간 30분 정도 더 했으면 좋겠어요</li>
+      <li><b>7</b>멘토-멘티</li>
+      <li><b>8</b>원투원을 다시 하고 싶다.</li>
+      <li><b>9</b>프로그램에 아쉬움은 없었고 집회때 기도를 더 열심히 할 것을 후회하고 있다.</li>
+      <li><b>10</b>별로 없었다</li>
+      <li><b>11</b>물놀이 시간 연장</li>
+      <li><b>12</b>설교가 너무 어려워서 아쉬웠어요.</li>
+      <li><b>13</b>원투원이 굉장히 좋은 것 같다.</li>
+      <li><b>14</b>둘째날 기도회 시간이 더 길었으면 좋겠습니다! GBS 시간 덕분에 수련회 내내 말씀을 가까이 할 수 있어서 다음에도 있었으면 좋겠어요</li>
+      <li><b>15</b>바꿨으면 하는 것: 수영 시간이 너무 짧았어요, 저녁 집회 시간이 짧았어요.
+하고 싶은 것: GBS, ! 집회 후 자유 기도할 수 있도록 부얶 옆방 사용하고 싶어요 !</li>
+      <li><b>16</b>멘토멘티 조금 어려웠습니다. 차라리 관심사보단 고민이나 상황이 비슷한 쪽인 학년으로 나누는게 좋을것 같기도 합니다</li>
+      <li><b>17</b>원투원과 수영시간 그리고 레크레이션</li>
+      <li><b>18</b>물놀이가 둘째날이면 좋겠다</li>
+      <li><b>19</b>원투원이 너무 짧았어요 ㅠㅠ</li>
+      <li><b>20</b>축복의 시간에 인터뷰보다 서로 중보기도 해주는 시간을 가졌으면 어땠을까 라는 생각이 들었습니다.</li>
+      <li><b>21</b>없습니다</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>학생 — 달란트 문방구 (21건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>달란트 획득 방식이 좋았음. 최대한 모두가 누릴 수 있게 해주는 게 만족스러웠음.</li>
+      <li><b>2</b>그냥 완벽.</li>
+      <li><b>3</b>샤프같은 건 안 파시나요</li>
+      <li><b>4</b>달란트를 많이 뿌려서 제품을 사기가 쉬었다. 다음부턴 조기 재고 소진을 방지하기 위해 넉넉한 용량으로 준비 되어있으면 좋겠다.</li>
+      <li><b>5</b>유행하는 물건을 달란트로 살 수 있어서 좋았다. 간식은 좀 더 다양하게 들어왔으면 좋겠다.</li>
+      <li><b>6</b>귀여운 굿즈들이 많아서 사고 싶은게 많았다.</li>
+      <li><b>7</b>좋았어요</li>
+      <li><b>8</b>맛난게 많아서 좋았다</li>
+      <li><b>9</b>말랑이 재고가 더 많았었으면 좋았었을 것 같았다</li>
+      <li><b>10</b>전부 좋았슴니다</li>
+      <li><b>11</b>이번에 물품도 좋고 달란트 획득 방식도 너무 좋았습니다!</li>
+      <li><b>12</b>다 좋았습니다</li>
+      <li><b>13</b>문방구 운영 부분에서 상품이 빨리 매진 되기도 했고, 원하는 상품을 살 수가 없는 부분이 좀 아쉬웠다.</li>
+      <li><b>14</b>인기 많은 물품의 물량 부족, 밤티 말씀 키링이 너무 많았다. 하지만 너무너무 좋았어요!</li>
+      <li><b>15</b>부분참이었습니다ㅜ</li>
+      <li><b>16</b>저녁 집회 때 기도시간 늘었으면 좋겠어요</li>
+      <li><b>17</b>달란트를 받을수 있는 방식이 조금 한정적이라고 느꼈습니다.</li>
+      <li><b>18</b>인기많은 물품의 물량 부족</li>
+      <li><b>19</b>재밌었지만 수량이 갈수록 모자른 느낌이라 아쉬웠습니다. 인기 춤목이 더 들어오면 좋겠습니다(말랑이 등)</li>
+      <li><b>20</b>말랑이가좋았습니다!!!!!!!!!!</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>학생 — 꼭 유지해 주세요 (16건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>금 토 일 일정이 좋은 것 같다</li>
+      <li><b>2</b>나눔 시간 때 모두의 의견을 물어보고 할 때 조감 더 집중을 해줬으면 좋겠다</li>
+      <li><b>3</b>물놀이 예이</li>
+      <li><b>4</b>없슴니다</li>
+      <li><b>5</b>밥이 맛있었어요 프로그램도 재밌었습니다</li>
+      <li><b>6</b>원투원</li>
+      <li><b>7</b>야식</li>
+      <li><b>8</b>.</li>
+      <li><b>9</b>저녁 집회 후 자유 기도 공간 주세요.(부얶 옆방)</li>
+      <li><b>10</b>저녁집회 시간</li>
+      <li><b>11</b>원투원은 항상 좋은 것 같습니다. 대신 서로 짝지어주는 방식이 다소 어수선해서 전처럼 뽑기 형식으로 하는 게 깔끔할 것 같아요</li>
+      <li><b>12</b>원투원이 넘 좋아요</li>
+      <li><b>13</b>기도시간 확보.</li>
+      <li><b>14</b>레크레이샨</li>
+      <li><b>15</b>지금 분위기 좋은거같습니다</li>
+      <li><b>16</b>원투원 시간을 늘랴즈세여</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>학생 — 아쉬웠던 점 · 불편했던 점 (19건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>레크레이션</li>
+      <li><b>2</b>딱히 없었다</li>
+      <li><b>3</b>없슴니다</li>
+      <li><b>4</b>쉬는시간이 살짝 부족했어요</li>
+      <li><b>5</b>찬양 및 기도 시간에 드럼 소리가 컸어요</li>
+      <li><b>6</b>물놀이 시간과 저녁 집회 기도 시간이 부족했어요. 경주자의 밤을 진행하고 있는데 타 학년이 미리 끝나서 저희 학년 공간을 사용하고자 해서, 경주자의 밤을 제대로 진행하지 못했어요.</li>
+      <li><b>7</b>안내 하는 부분에서 진로나 신앙, 학업 등을 하는 조 활동에서 뭔가 흐지부지 마무리 된 것 같은 느낌이 들었다.</li>
+      <li><b>8</b>기도회 시간이 너무 짧았어요</li>
+      <li><b>9</b>기도회 좀 더 길어졌으면 합니다..</li>
+      <li><b>10</b>원투원 늘려주세요</li>
+      <li><b>11</b>기도 시간이 더 길었으면 좋겠습니다!</li>
+      <li><b>12</b>기도시간의 부족.</li>
+      <li><b>13</b>전체적으로 계속 활동 시간들이 밀리면서 급하게 진행되는 느낌이 들어서 아쉬웠고 그래서 쉬는 느낌만 들었어요 ㅠㅠ</li>
+      <li><b>14</b>물놀이 시간</li>
+      <li><b>15</b>수영장이 2시간이어서 좀 짧다고 느껴졌다. 젖은 수건이나 빨래를 널 곳을 찾지 못해 좀 불편했다.</li>
+      <li><b>16</b>원투원 시간이 좀 짧고 저녁집회 기도 시간도 조금 부족했다.</li>
+      <li><b>17</b>물놀이시간이 진짜 너무부족해서 너무너무 아쉬웠어요</li>
+      <li><b>18</b>원투원시간을 늘려주세여</li>
+      <li><b>19</b>대체로 좋았지만 저녁집회에서 기도시간이 조금 짧았습니다. 원투원도 짧게 느껴졌고, 수영시간도 좀 더 늘어나면 좋겠습니다</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>학생 — 다음에는 이렇게 해주세요 (17건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>없스니다</li>
+      <li><b>2</b>기도 시간 확보해주세요</li>
+      <li><b>3</b>기도회 시간 늘려주세요</li>
+      <li><b>4</b>물놀이시간 늘려주세요!!!!!!!!</li>
+      <li><b>5</b>원투원 시간을 늘려주시고 많은 사람과 대화 나누고 싶어요</li>
+      <li><b>6</b>찬양시간을 조금 줄이고 말씀과 기도회를 늘려주세요!!</li>
+      <li><b>7</b>원투원이 좀 더 길었다면 좋을 것 같다.</li>
+      <li><b>8</b>다음 수련회에는 기도 시간이 조금 더 길었으면 좋겠습니다!!</li>
+      <li><b>9</b>레크에이션 바꿔주세요</li>
+      <li><b>10</b>물놀이 시간과 저녁 집회 기도 시간이 부족했어요.</li>
+      <li><b>11</b>기도 시간도 늘려주시고 둘째날에 더 적극적으로 학생들 전체가 다같이 모여서 기도하거나 학년끼리 모여서 기도하거나 하는 시간이 있으면 더 좋을 것 같습니다.</li>
+      <li><b>12</b>이번것도 재미있었지만 더 재미있는 레크리에이션 기대합니다</li>
+      <li><b>13</b>물놀이 시간 연장</li>
+      <li><b>14</b>원투원 시간이 조금 길어져서 더 다양한 사람들과 해보고 싶고 저녁집회때 찬양과 기도를 거 좀 더 하면 좋겠다.</li>
+      <li><b>15</b>없습니다</li>
+      <li><b>16</b>다음수련회는 고등부끼리 친햐지는 시간이 더 많아졌으면 좋겠습니다. 그리고 고등부 찬양팀이 스는 시간도 있으면 좋을 것 같아요!</li>
+      <li><b>17</b>하루에 한 10분정도만 부모님께 연락드리는 시간이 있었으면 좋겠습니다..🥹</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>학생 — 객관식 '기타' 직접입력 (9건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>[저녁집회 집중 저해] 기도시간이 너무 짧아서 아쉬웠어요</li>
+      <li><b>2</b>[참여 동기] 기타</li>
+      <li><b>3</b>[참여 동기] 학원</li>
+      <li><b>4</b>[GBS 개선점] 너무는 아니지만 그래도 본문이 다소 어려운 부분이였습니다!</li>
+      <li><b>5</b>[저녁집회 집중 저해] 목 디스크</li>
+      <li><b>6</b>[참여 동기] 놀기</li>
+      <li><b>7</b>[환경] 벌레가 많았습니다 ㅠㅠ</li>
+      <li><b>8</b>[저녁집회 집중 저해] 둘째 날 저녁집회 기도시간은 조금 더 길었으면 좋겠습니다</li>
+      <li><b>9</b>[환경] 추워요..</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 — 준비 과정에서 정보가 늦거나 빠져 어려웠던 일 (10건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>수련회 회의 시 불참할 사정이 있는 경우를 고려하여 주요 회의록을 공유해주면 좋겠음.</li>
+      <li><b>2</b>없습니다</li>
+      <li><b>3</b>특별히 없었습니다</li>
+      <li><b>4</b>X</li>
+      <li><b>5</b>저는 식사, 간식 등을 맡았는데 혼자 하기 버거웠습니다. 도와주시는 분들이 계셨지만 그 분들도 다른 여러 섬김을 겸하고 있어서 도움을 계속 요청하기 어려웠습니다. 식사,간식관련 섬김은 3명 이상 정도 팀을 이뤄 같이 움직여야 할 것 같습니다.</li>
+      <li><b>6</b>특별히 없었습니다. 다만 멘토링을 어떻게 해야할지 걱정됬었어요 ㅎ</li>
+      <li><b>7</b>집회 후 소그룹 가이드</li>
+      <li><b>8</b>축복의 시간때 인터뷰 형식인지 몰랐고(특별한 문제는 아님) 기도의 시간연장으로 같이 기도한다고 생각했는데, 흐름이 약간 끊기는 느낌이었습니다. 기도시간이 짧아서 아쉬워서 더 그렇게 느꼈던것 같아요.</li>
+      <li><b>9</b>준비와 강사선임, 주제까지 전반적으로 늦어진것이 어려움이 있었음. 빨리 결정하고 준비하는게 필요하다는 생각</li>
+      <li><b>10</b>정보는 잘 공유된 것 같습니다.
+준비과정도 원활했구요</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 — 일정(금·토·일) 장단점 · 담임 (10건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>일정이 순조롭게 잘 진행되었다고 생각합니다. 프로그램이 적지 않았는데, 유연하고 원활한 진행이었어요.</li>
+      <li><b>2</b>마지막날이 너무 분주했던것 같다. 교회 3부 에배에 대한 시간적 여유가 없었던걸로 보인다.</li>
+      <li><b>3</b>식사시간내려가는과정 너무어수선분위기 조별의단합이 느껴지지않음.아이들간식시간 식사시간과 많이겹쳐진가 같음</li>
+      <li><b>4</b>프로그램 사이 개인 정비 및 이동 시간이 부족했던 것 같습니다.</li>
+      <li><b>5</b>큰 문제 없었습니다.</li>
+      <li><b>6</b>금토일 변경으로 참석율이 올라갔음</li>
+      <li><b>7</b>없습니다</li>
+      <li><b>8</b>금토일이라 확실히 학생들 부담 덜함</li>
+      <li><b>9</b>좀 타이트한 일정때문에 벅차기도 했습니다. 특히 여러 역할을 하는 경우</li>
+      <li><b>10</b>물놀이 첫째날 좋았습니다</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 — 성경공부·리플렉션 자료 개선점 · 담임 (10건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>리플렉션 가이드문이 있으면 좋았을 것 같음. 성경공부가 다소 어려웠음. 설교와 연결되는 부분이 부족했음</li>
+      <li><b>2</b>담임 선생님 이외에도 모든 선생님이 GBS 및 큐티 내용을 미리 숙지하고 계시면 훨씬 좋을 것 같습니다. (현장에서 진행 시 다른 선생님들의 참여 및 보조가 있어야 아이들에게 짧은 시간에 내용을 전달하는 것의 어려움을 줄일 수 있습니다.)</li>
+      <li><b>3</b>미리 준비했던것은 좋았던것 같다. 준비만 잘 된다면 시간적 여유가 있으면 좋겠다.</li>
+      <li><b>4</b>없습니다</li>
+      <li><b>5</b>교사들끼리 미리먼저 충분한 나눔을가진후서로 소통한후에 하면 더 종핬을듯합니다</li>
+      <li><b>6</b>GBS나 QT는 메뉴얼 있으면 좋겠습니다!</li>
+      <li><b>7</b>집회 말씀 가이드 미리 받았으면 좋았을 것 같아요</li>
+      <li><b>8</b>성경공부의 경우, 시간이 된다면 선생님들끼리 수련회 전에 한 번 더 하는것도 좋을것 같아요.</li>
+      <li><b>9</b>학생 눈높이에 맞도록 조절될 팰요가 있습니다.
+(전체 교안 이후에 각 반별로 적용되는 포인트가 좀 더 세밀하게 설계/준비 되도록 도움을 주는 것이 필요)</li>
+      <li><b>10</b>없음</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 — 인력 배치 제안 · 헬퍼 (6건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>밥차가 오긴 했지만, 주방일이 아예 없는 게 아닙니다.
+잔 설거지, 간식준비 등이 있는데 너무 (담당 교사)만 하시게 된 것 같아서 다음에는 식당에 인력배치가 필요해 보입니다.</li>
+      <li><b>2</b>특별히 좋은 생각이 아직 없네요</li>
+      <li><b>3</b>준비할 때부터 필요한 인력이 어디인지 파악하는것과 겹치는것을 방지하는 것이 필요</li>
+      <li><b>4</b>인력이 부족한파트를 사전에 파악하긴 어려우니, 이번 피드백을 참고해서 다음수련회 때 반영하면 좋을것 같아요.</li>
+      <li><b>5</b>역할분담이 잘 됐고 맡은 분들이 신실하게 잘 섬겨주셔서 원활했던 것 같습니다.</li>
+      <li><b>6</b>3명 정도 팀을 이뤄 같이 섬기거나 그것이 불가능하다면 역할을 세분화하여 다같이 참여할 수 있도록 해주세요. 설거지, 청소, 테이블 닦기 등 할 일이 많았어요.</li>
+    </ul>
+    <small class="src">※ 위 글 하나에는 특정 선생님의 실명이 들어 있어, 이 리포트에서만 "(담당 교사)"로 바꿔 적었습니다.</small>
+    </div>
+  </details>
+
+  <details>
+    <summary>교사 — 찬양팀을 향한 격려와 조언 (12건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>"우리는 찬양팀만 섬기로 왔어."의 느낌이 강해서 아쉬웠다. 부족하더라도 고등부 아이들이 찬양팀으로 섬기고, 기도회만 선생님들이 반주하면 어떨까 싶다.</li>
+      <li><b>2</b>수고하셨습니다.</li>
+      <li><b>3</b>대학부 생활도 바쁜 가운데 항상 수련회 찬양팀으로 섬김해주셔서 너무 감사해요. 수련회때 아이들 챙기느라 찬양팀에게 따뜻한 말 한마디 못한건 미안하고 아쉽습니다!</li>
+      <li><b>4</b>찬양팀의 찬양으로 첫날저녁부터 은혜를 많이 받았습니다.</li>
+      <li><b>5</b>고등부 수련회를 위해 시간을 내어 열심히 준비하시고 현장에서 마음을 드려 섬겨주신 것 너무 감사합니다. 이후에도 좋은 인연으로 연결되면 좋겠어요.</li>
+      <li><b>6</b>시간을 내어 섬겨주셔서 감사합니다
+덕분에 아이들이 은혜 가운제 수련회를 마칠 수 있었습니다!</li>
+      <li><b>7</b>없습니다</li>
+      <li><b>8</b>늘 섬겨주셔서 감사합니다 🤗</li>
+      <li><b>9</b>헌신해준 찬양팀 감사합니다</li>
+      <li><b>10</b>함께 섬겨주셔서 정말 감사합니다.
+찬양팀은 따로 식사하고 따로 모여 있는 것이 어쩔 수 없는 부분도 있겠지만 수련회 기간 내내 함께 교제하지 못하고 분리되어 있는 것 같아 안타까웠습니다.</li>
+      <li><b>11</b>섬김과 수고가 감사. 찬양팀과 고등부가 함께 수련회를 한다는 느낌을 받으면 좋겠다.</li>
+      <li><b>12</b>시간과 마음을 내어주셔서 감사합니다</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 KPT ① — 다음에도 반드시 이어갈 것 (11건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>GBS, 준비 기도회</li>
+      <li><b>2</b>수련회 전에, 그리고 수련회 중에 교사들끼리 GBS 등 미리 나누며 준비한 시간이 좋았습니다.</li>
+      <li><b>3</b>준비팀이 역할분담을 잘 하셨는데 그런 중에도 몇 지체들이 상당히 부담이 된다는 느낌이 들었습니다.
+특정인이 과부하 걸리지 않고 효율적으로 분담하고 협력하여 준비하는 부분에서 올해보다 조금 더 잘 되면 좋겠습니다.</li>
+      <li><b>4</b>GBS 깊은 나눔, 서로에 대한 기도</li>
+      <li><b>5</b>레크레이션 / 물놀이 아이들이 좋아했다. 다만 레크레이션하고 아이들이 친해졌는데, 물놀일 때는 어색했다는 의견이 있었다. 레크레이션을 먼저 진행했으면 재미있을 것 같다.</li>
+      <li><b>6</b>없습니다</li>
+      <li><b>7</b>GBS 를 이번처럼 깊이 있게 하면 좋겠다.</li>
+      <li><b>8</b>준비기도회
+GBS준비
+릴레이 기도회</li>
+      <li><b>9</b>예배 후 기도회</li>
+      <li><b>10</b>아이들이 성경봉독 대표기도 부분이 좋았습니다</li>
+      <li><b>11</b>GBS와 QT, 전반적인 프로그램이 전부 다 좋았습니다</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 KPT ② — 가장 먼저 고쳐야 할 문제 (12건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>역할 분배가 미리 더 정확하게 이루어지면 현장에서의 혼란을 줄일 수 있을 것 같습니다.</li>
+      <li><b>2</b>강사, 교사, 헬퍼, 디렉터가 좀 더 긴밀하게 조율되었으면 좋겠다. 딜레이 되지 않도록, 쉬는 시간이 명확하게 확보되었으면 좋겠다. 헬퍼와 교사를 분리하도록</li>
+      <li><b>3</b>아직도 일이 소수에게 집중이 된다는 것은 생각해 볼 사항 이라고 봅니다.</li>
+      <li><b>4</b>물놀이는 둘째날에 하는걸로</li>
+      <li><b>5</b>특별히 없습니다.</li>
+      <li><b>6</b>특송 안내, GBS QT 메뉴얼</li>
+      <li><b>7</b>축복의 시간에 인터뷰 말고 다같이 기도해주기, 개인 기도시간, 함께 기도하는 시간 늘리기, 저녁집회 기도회 인도해주실 분이 계셨으면 좋겠다.</li>
+      <li><b>8</b>없습니더</li>
+      <li><b>9</b>달란트 부분에 대한 의욕을 줄수 있는 모이는시간준수라든가 방법들이 좀더 다양하게 팀에대한 좀더 하나된마음을 가질수있는의식</li>
+      <li><b>10</b>기도시간 늘리기</li>
+      <li><b>11</b>이번 수련회는 담당 목사님의 부재로 인해 기도시간이 짧고 깊이가 없다는 느낌이 들었다. 아이들을 위한 기도시간이 절대적으로 부족한 느낌이었다.(선생님이 아이들을 위해 기도해주는 시간 / 학년별로 중보해주는 시간 / 자율적으로 서로 기도해주는 시간)</li>
+      <li><b>12</b>준비하는 과정에서 에너지가 많이 쓰입니다. 서로를 위한 기도와 연합이 먼저이지만, 일을 조금 더 효율적으로 하는 방법들에 대한 고민이 필요한것 같아요. (선생님들의 보호차원)</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 KPT ③ — 그 문제의 근본 원인 (11건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>시간표에 특송 언제하는 지 보여주면 좋겠음</li>
+      <li><b>2</b>담당 목사의 부재</li>
+      <li><b>3</b>특별히 없습니다.</li>
+      <li><b>4</b>좀 빡빡했던 프로그램? 교사들이 너무 많이 섬김</li>
+      <li><b>5</b>없습니다</li>
+      <li><b>6</b>역할분담에 초점을 맞추다보니 전체적인 맥락과 흐름을 놓친 것 같다. 부분별 소통보다 다같이 소통하며 이해하는 시간이 더 늘어나기를. . 준비하는 시간이 짧았음에도 이렇게 섬겨주셔서 진심으로 감사합니다.</li>
+      <li><b>7</b>일정</li>
+      <li><b>8</b>시간 제약과 기도 인도 협력</li>
+      <li><b>9</b>계획에 없던 일이 생겼을 때 맡아서 해주실 인력이 부족해서, 맡은 조 아이들 케어에 필요한 시간과 프로그램 진행/보조에 필요한 시간이 겹쳐서</li>
+      <li><b>10</b>의사소통하는 것 자체를 힘들어 하는 것
+(불편해도 피하지 않고 말하고, 일을 나누는 것. 그리고 누가 못하더라도 알아서 채우는 것)</li>
+      <li><b>11</b>프로그램전반 전체적으로  운영하는시간과 어떻게 아이들반에대한 결집시키는 부분이 좀  진행하는 샘들이 크게 생각하지 않은것이 아닐까 생각합니다</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 KPT ④ — 다음에 해볼 만한 방법 (9건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>레크레이션 - 물놀이 순서 변경(단점 : 둘째날 집회시간에 졸음 이슈)</li>
+      <li><b>2</b>학생을 참여시킬 수 있는 방법이 있으면 좋겠습니다.</li>
+      <li><b>3</b>찬양팀 중간에 마이크 잡고 같이 기도하도록 안내</li>
+      <li><b>4</b>.</li>
+      <li><b>5</b>여유있는 프로그램 구성, 꼭 필요한것만, 욕심을 버리고...</li>
+      <li><b>6</b>없습니다</li>
+      <li><b>7</b>없음</li>
+      <li><b>8</b>특별히 없습니다.</li>
+      <li><b>9</b>축복의 시간 인터뷰 말고 다같이 기도해주기, 마지막날은 기도회 12시까지 하면 좋겠다.</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 KPT ⑤ — 다음 준비팀이 가장 먼저 결정할 한 가지 (10건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>말씀 ( 강사)</li>
+      <li><b>2</b>없습니다</li>
+      <li><b>3</b>.</li>
+      <li><b>4</b>목사님 컨택 집회 말씀</li>
+      <li><b>5</b>강사와 주제!!! 섬김이 구성</li>
+      <li><b>6</b>고등부 자체 찬양팀</li>
+      <li><b>7</b>기도</li>
+      <li><b>8</b>시대에 비추어 볼때, 고등부의 영적 흐름과 필요를 파악하는 것
+이것을 통해 주제와 강사 (내/외부 결정)를 기도하며 정하면서 마음을 모으는 것.</li>
+      <li><b>9</b>담당인원과 역할분담</li>
+      <li><b>10</b>준비하시는 선생님들 간 소통 방식 (조별/전체/프로그램별)
+- 프로그램 진행 방식을 해당 프로그램을 맡지 않으시는 선생님들께도 미리 공유할 필요성 고려 (인솔이나 TK 등으로 참여하시기 때문)</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 KPT ⑥ — 자유 의견 (10건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>진행이나 프로그램은 너무도 좋았습니다.</li>
+      <li><b>2</b>고생많으셨어요. 감사합니다.</li>
+      <li><b>3</b>이번 수련회 준비로 고생 많았고, 특별히 기도의 시간을 많이 가질 수 있어서 좋았음</li>
+      <li><b>4</b>어려운 상황 속에서 헌신적이고 신실하게 섬겨주신 준비팀 너무너무 감사드립니다. 모든 것 아시는 주님께서 갚아주시고 은혜주시기를 원합니다.</li>
+      <li><b>5</b>다들 고생하셨습니다:)</li>
+      <li><b>6</b>없습니다</li>
+      <li><b>7</b>정말 너무 너무 애쓰셨습니다. 감사합니다.
+특히 이번 수련회를 통해 선생님들과 교제하고 가까와질 수 있어서 좋았습니다.</li>
+      <li><b>8</b>고생많으셨습니다 !!</li>
+      <li><b>9</b>아이들에 대한 정보가 준비하시는 선생님들 사이에서 사전에 많이 공유되어서 마니또 등 프로그램 구성에도 반영되면 좋겠습니다</li>
+      <li><b>10</b>모두 수고 많았습니다. 선생님들도 더 친밀해졌을까요????</li>
+    </ul></div>
+  </details>
+
+  <details>
+    <summary>교사 — 객관식 '기타' 직접입력 (4건)</summary>
+    <div class="dbody"><ul class="q">
+      <li><b>1</b>[현장 섬김 어려움] 사전 정보 없이 투입</li>
+      <li><b>2</b>[학생 집중 저해] 설교 말씀이 어려웠음</li>
+      <li><b>3</b>[일정 지연 원인] 첫날 길어졌던 설교</li>
+      <li><b>4</b>[시간 조정 필요] 기도시간이 조금 더 확보되는것이 필요한것 같습니다.</li>
+    </ul></div>
+  </details>
+</section>
+
+
+<!-- ═══════════════ 10. 방법론 ═══════════════ -->
+<section id="method">
+  <h2><span class="n">11</span>어떻게 집계했나</h2>
+  <p class="lede">숫자를 어디서 가져왔고 어떻게 계산했는지, 그리고 어디까지 믿고 어디부터는 조심해야 하는지 적어 두었습니다.
+    바쁘시면 건너뛰셔도 됩니다.</p>
+
+  <h3>어디서 온 숫자인가</h3>
+  <div class="tw"><table>
+    <thead><tr><th>구분</th><th>내용</th><th class="num">정확도</th></tr></thead>
+    <tbody>
+      <tr><td>정량 집계 (비율·평균·분포)</td><td>Supabase <code>public.survey_responses</code> 전수 집계. 표본추출·보간 없음</td><td class="num pos">정확</td></tr>
+      <tr><td>3-2-1 가중점수</td><td>응답 배열의 순서를 그대로 가중 (1순위 3점 / 2순위 2점 / 3순위 1점)</td><td class="num pos">정확</td></tr>
+      <tr><td>주관식 원문</td><td>DB 저장값 그대로. 오탈자 미교정. 실명 1건만 치환</td><td class="num pos">정확</td></tr>
+      <tr><td>주제별 언급 횟수 (교사 KPT 표)</td><td>6개 주관식 문항을 수작업 분류. 분류 기준에 따라 변동 가능</td><td class="num">추정 · ±1건</td></tr>
+      <tr><td>학년별 집계 (Chapter 8)</td><td>전수 집계이나 <b>학년당 n=10~16</b>. 수치 자체는 정확하지만 모집단 추정치로는 불안정</td><td class="num">정확 <span style="color:var(--muted)">(해석 주의)</span></td></tr>
+      <tr><td>학년별 기도 언급 밀도</td><td>"기도" 키워드가 포함된 서술을 세어 학년 인원으로 나눔. 한 사람이 여러 문항에 적으면 중복 계산</td><td class="num">추정</td></tr>
+      <tr><td>인과 해석 (⑦의 겸임 구조 원인 등)</td><td>정량 + 주관식 정황을 종합한 <b>분석자 해석</b>. 설문이 직접 측정한 값 아님</td><td class="num">해석</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>시간 문항만 평균을 내지 않은 이유</h3>
+  <div class="verdict">
+    시간에 대해 물은 문항의 보기는 <em>너무 부족 / 조금 부족 / 적당 / 조금 길었다 / 너무 길었다</em>였습니다.
+    양쪽 끝이 서로 반대 이야기라, 이걸 1~5점으로 바꿔 평균을 내면
+    "절반은 너무 부족하다, 절반은 너무 길다"고 답한 항목이 <b>"적당(3점)"으로 나와 버립니다.</b>
+    실제와 정반대가 되는 셈이라, 이 문항만 평균 대신 <b>몇 명이 어느 쪽을 골랐는지</b> 그대로 보여드렸습니다.
+    <br><br>
+    설문 프로그램에도 같은 규칙을 심어 두었습니다. 이 문항은 보기를 숫자가 아닌 글자로 저장해서,
+    대시보드가 자동으로 평균 대신 분포를 그리도록 해 두었습니다. 설계 문서 8.2에 그 이유를 적어 두었습니다.
+  </div>
+
+  <h3>비교할 때 조심한 것들</h3>
+  <ul class="b">
+    <li><b>선택지가 다른 문항은 직접 비교하지 않았습니다.</b> 크로스체크 ③에서 학생 저녁집회 문항에는 "내용의 난이도" 선택지가 없어,
+      GBS 문항 값을 <em>참고</em>로 병기하고 차트에 경고를 달았습니다.</li>
+    <li><b>척도가 다른 값을 한 차트에 겹치지 않았습니다.</b> 크로스체크 ④에서 학생 가중점수(최대 55)와 교사 인원수(최대 8)는
+      단위가 달라, 양쪽을 모두 <em>"선택한 사람 비율"</em>로 환산해 같은 축에 놓았고 가중점수는 별도 표로 분리했습니다.</li>
+    <li><b>분모를 문항마다 명시했습니다.</b> 교사 문항은 역할 분기 때문에 n=12 / n=10 / n=7이 섞여 있습니다.</li>
+    <li><b>차트는 이중 축을 쓰지 않았습니다.</b> 모든 비교는 단일 축입니다.</li>
+    <li><b>학년별 분석은 단일 수치로 결론 내리지 않았습니다.</b> 학년당 10~16명이라 1명이 6.3~10%p를 움직입니다.
+      Chapter 8에는 <em>여러 문항에서 같은 방향으로 반복해서 나타난 패턴</em>만 실었고
+      (예: 2학년의 "지침"은 피곤함·휴식·자유시간·집회 길이·GBS 길이 5개 문항이 동시에 지지),
+      한두 항목에서만 튄 값은 해석하지 않았습니다. <b>유의성 검정은 이 표본 크기로는 불가능합니다.</b></li>
+    <li><b>학년별 집계는 참석자만 대상으로 했습니다.</b> 미참석 2명(1학년 1 · 3학년 1)은 분기 문항 자체를 받지 않아 제외했습니다.
+      따라서 학년별 분모는 1학년 16 · 2학년 10 · 3학년 14입니다(전체 42명이 아닌 40명 기준).</li>
+  </ul>
+
+  <h3>이 리포트로는 알 수 없는 것</h3>
+  <ul class="b">
+    <li><b>수련회에 오지 못한 학생들 전체의 생각</b> — 두 명이 답해서는 알기 어렵습니다. 따로 여쭐 방법이 필요합니다.</li>
+    <li><b>설문에 답하지 않은 분들의 생각</b> — 원하는 분만 답한 것이라, 답하지 않은 쪽 이야기는 담기지 않았습니다.</li>
+    <li><b>반별 차이</b> — 어느 반에서 온 응답인지는 자료에 남아 있지만, 익명을 지키기 위해 반별로는 나누지 않았습니다.
+      반별로 보는 것이 필요하다면 몇 명 이상일 때만 묶어서 볼지부터 함께 정하면 좋겠습니다.</li>
+    <li><b>설교가 어땠는지</b> — 저녁집회를 물은 문항이 찬양·말씀·기도를 묶어 놓아서,
+      설교만 따로는 알 수 없습니다. 직접 쓴 글에 몇 마디 나온 것이 전부입니다.
+      <b>다음에는 찬양·설교·기도를 나눠 물으면 좋겠습니다.</b></li>
+    <li><b>작년과 비교했을 때 나아졌는지</b> — 같은 문항으로 물은 과거 자료가 없어 비교할 수 없습니다.
+      <b>이번 문항을 그대로 두고 내년에 다시 물으면, 그때부터는 해마다 비교해 볼 수 있습니다.</b></li>
+  </ul>
+</section>
+
+<!-- ═══════════════ 맺음말 ═══════════════ -->
+<section id="closing">
+  <h2>맺으며</h2>
+  <div class="open">
+    <p>설문을 정리하면서 가장 많이 만난 말은 <b>"더 기도하고 싶었다"</b>였습니다.
+      아이들 열아홉 명이 기도할 시간이 짧았다고 했고, 선생님들도 같은 곳을 짚으셨습니다.
+      아쉬움이라기보다 <b>더 바라는 마음</b>에 가까워 보입니다.
+      그런 마음이 남았다면 사흘이 헛되지 않았다는 뜻일 것입니다.</p>
+
+    <p>숫자 뒤에는 사람이 있었습니다.
+      주방에서 설거지를 하신 분, 반 아이를 챙기면서 프로그램까지 맡으신 분,
+      찬양팀에게 인사 한마디 못 건넨 것을 미안해하신 분.
+      <b>아무도 자기가 힘들었다는 말을 앞세우지 않았습니다.</b>
+      대신 옆 사람이 무거워 보인다는 이야기를 적으셨습니다.
+      이 리포트에서 고칠 것으로 꼽힌 것들은 대개, 그렇게 서로를 아끼다 생긴 자리입니다.</p>
+
+    <p>바꿔야 할 것으로 적힌 목록이 길어 보일 수 있습니다.
+      그런데 하나씩 뜯어보면 <b>없앨 것보다 조금씩 옮길 것이 대부분</b>이었습니다.
+      기도할 시간을 조금 더, 서로 이야기할 시간을 조금 더, 숨 돌릴 틈을 조금 더.
+      큰 틀은 이미 세워져 있습니다.</p>
+
+    <p>내년에 아이들을 다시 부르는 가장 큰 힘이 <em>지난 수련회의 좋은 기억</em>이었다는 것을 기억합니다.
+      올해 우리가 함께 보낸 사흘이, 그 아이들 안에 그렇게 남아 있기를 바랍니다.
+      <b>수고하셨습니다. 그리고 여기까지 이끌어 주신 하나님께 감사드립니다.</b></p>
+  </div>
+</section>
+
+
+<!-- ═══════════════ 부록 A ═══════════════ -->
+<section id="appendix" class="mx">
+  <h2><span class="n">부록 A</span>전 문항 데이터 표</h2>
+  <p class="lede">본문에서 다룬 수치를 <b>문항 하나도 빠뜨리지 않고</b> 전체·학년별로 나란히 놓은 원자료 표입니다.
+    본문을 읽지 않고 이 표만 봐도 설문 전체를 확인할 수 있고, 반대로 본문의 어떤 주장이든 여기서 근거 수치를 찾을 수 있습니다.</p>
+
+  <div class="mxleg">
+    <span><i style="background:color-mix(in srgb,var(--s2) 13%,transparent)"></i>학년 중 최고값</span>
+    <span><i style="background:color-mix(in srgb,var(--s1) 11%,transparent)"></i>학년 중 최저값</span>
+    <span>%는 해당 학년 인원 대비 · 복수선택 문항은 합이 100%를 넘습니다</span>
+  </div>
+
+  <h3>A-1. 학생 — 전 문항 <span style="color:var(--muted);font-weight:400;font-size:13px">참석자 40명 기준 (1학년 16 · 2학년 10 · 3학년 14)</span></h3>
+  <div class="tw"><table>
+    <colgroup><col><col class="call"><col class="cg"><col class="cg"><col class="cg"><col></colgroup>
+    <thead><tr>
+      <th>문항 · 항목</th><th class="num hall">전체 (40)</th><th class="num">1학년 (16)</th><th class="num">2학년 (10)</th><th class="num">3학년 (14)</th><th>패턴</th>
+    </tr></thead>
+    <tbody>
+
+    <tr class="grp"><td colspan="6">기본 — 일정과 마음가짐</td></tr>
+    <tr><td class="q">금·토·일 "아주 좋았다"</td><td class="all">45.0%</td><td class="g mmax">56.3%</td><td class="g">40.0%</td><td class="g mmin">35.7%</td><td class="pat">학년 오를수록 ↓</td></tr>
+    <tr><td class="q">금·토·일 "상관없다 / 둘 다 괜찮다"</td><td class="all">40.0%</td><td class="g mmax">43.8%</td><td class="g">40.0%</td><td class="g mmin">35.7%</td><td class="pat">—</td></tr>
+    <tr><td class="q">금·토·일 <b>"조금 아쉬웠다"</b></td><td class="all">15.0%</td><td class="g mmin z">0%</td><td class="g">20.0%</td><td class="g mmax">28.6%</td><td class="pat">3학년 ↑ (주말 학원)</td></tr>
+    <tr><td class="q">시작 전 마음 준비 <span style="color:var(--muted)">(5점 평균)</span></td><td class="all">3.85</td><td class="g mmin">3.63</td><td class="g">3.80</td><td class="g mmax">4.14</td><td class="pat">학년 오를수록 ↑</td></tr>
+    <tr><td class="q">전체 일정 "대체로 적당했다"</td><td class="all">77.5%</td><td class="g mmin">75.0%</td><td class="g mmax">80.0%</td><td class="g">78.6%</td><td class="pat">학년 차 없음</td></tr>
+    <tr><td class="q">전체 일정 "빡빡했다" <span style="color:var(--muted)">(조금+많이)</span></td><td class="all">20.0%</td><td class="g mmax">25.0%</td><td class="g">20.0%</td><td class="g mmin">14.3%</td><td class="pat">—</td></tr>
+    <tr><td class="q">전체 일정 "여유로웠지만 지루했다"</td><td class="all">2.5%</td><td class="g mmin z">0%</td><td class="g mmin z">0%</td><td class="g mmax">7.1%</td><td class="pat">1명</td></tr>
+
+    <tr class="grp"><td colspan="6">참여 동기 — 3-2-1 가중점수 (1순위 3점 / 2순위 2점 / 3순위 1점)</td></tr>
+    <tr><td class="q"><b>지난 수련회의 좋은 기억</b></td><td class="all">69점</td><td class="g mmax">33점</td><td class="g mmin">12점</td><td class="g">24점</td><td class="pat">1·3학년 1위 · 전체 1위</td></tr>
+    <tr><td class="q">개인적인 결단 및 영적 필요</td><td class="all">47점</td><td class="g mmax">17점</td><td class="g">16점</td><td class="g mmin">14점</td><td class="pat"><b>2학년 유일 1위</b></td></tr>
+    <tr><td class="q">수련회 전 예배 후 기도회</td><td class="all">25점</td><td class="g">10점</td><td class="g mmin">2점</td><td class="g mmax">13점</td><td class="pat">3학년 ↑ · 홍보물보다 높음</td></tr>
+    <tr><td class="q">친구 · 선후배의 권유</td><td class="all">21점</td><td class="g">7점</td><td class="g mmax">10점</td><td class="g mmin">4점</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">포스터 · 홍보 영상 · 안내</td><td class="all">19점</td><td class="g">8점</td><td class="g mmax">10점</td><td class="g mmin">1점</td><td class="pat">고른 인원은 12명으로 3위 · 3학년에서는 낮음</td></tr>
+    <tr><td class="q">릴레이 기도문 참여</td><td class="all">14점</td><td class="g mmin">2점</td><td class="g mmax">6점</td><td class="g mmax">6점</td><td class="pat">1학년 ↓</td></tr>
+    <tr><td class="q"><b>담임 선생님의 관심과 연락</b></td><td class="all">8점</td><td class="g mmax">4점</td><td class="g mmin z">0점</td><td class="g mmax">4점</td><td class="pat">일곱 항목 중 가장 적게 선택됨</td></tr>
+
+    <tr class="grp"><td colspan="6">신앙 프로그램 — 5점 평균</td></tr>
+    <tr><td class="q">저녁집회 신앙적 의미·집중</td><td class="all">4.28</td><td class="g mmax">4.31</td><td class="g mmin">4.20</td><td class="g">4.29</td><td class="pat">학년 차 거의 없음 · 전 항목 최고</td></tr>
+    <tr><td class="q">GBS 신앙적 의미·집중</td><td class="all">3.83</td><td class="g">3.75</td><td class="g mmin">3.70</td><td class="g mmax">4.00</td><td class="pat">3학년 ↑</td></tr>
+    <tr><td class="q">리플렉션 신앙적 의미·집중</td><td class="all">3.75</td><td class="g mmax">3.81</td><td class="g mmin">3.70</td><td class="g">3.71</td><td class="pat">—</td></tr>
+    <tr><td class="q">GBS 기도 이해에 도움 <span style="color:var(--muted)">(별도 척도)</span></td><td class="all">3.95</td><td class="g">4.00</td><td class="g mmin">3.70</td><td class="g mmax">4.07</td><td class="pat">2학년 ↓</td></tr>
+    <tr><td class="q">리플렉션 하루 정리에 도움 <span style="color:var(--muted)">(별도 척도)</span></td><td class="all">4.00</td><td class="g mmax">4.19</td><td class="g mmin">3.60</td><td class="g">4.07</td><td class="pat"><b>2학년 ↓↓ (−0.53)</b></td></tr>
+
+    <tr class="grp"><td colspan="6">시간 배분 — "부족" 응답 비율 (평균 금지 · 분포로만)</td></tr>
+    <tr><td class="q"><b>깊은 교제</b> (원투원·멘토멘티)</td><td class="all">57.5%</td><td class="g mmax">68.8%</td><td class="g mmin">50.0%</td><td class="g mmin">50.0%</td><td class="pat"><b>과다 전 학년 0명</b></td></tr>
+    <tr><td class="q"><b>집회 후 기도시간</b></td><td class="all">47.5%</td><td class="g">43.8%</td><td class="g mmin">40.0%</td><td class="g mmax">57.1%</td><td class="pat">3학년 ↑</td></tr>
+    <tr><td class="q">프로그램 사이 휴식시간</td><td class="all">45.0%</td><td class="g">43.8%</td><td class="g mmax">70.0%</td><td class="g mmin">28.6%</td><td class="pat"><b>2학년 ↑↑</b></td></tr>
+    <tr><td class="q">자유시간</td><td class="all">35.0%</td><td class="g">31.3%</td><td class="g mmax">50.0%</td><td class="g mmin">28.6%</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">집회시간 (찬양+말씀)</td><td class="all">12.5%</td><td class="g mmax">18.8%</td><td class="g mmin z">0%</td><td class="g">14.3%</td><td class="pat">—</td></tr>
+    <tr><td class="q">GBS</td><td class="all">12.5%</td><td class="g">12.5%</td><td class="g mmin">10.0%</td><td class="g mmax">14.3%</td><td class="pat">—</td></tr>
+    <tr><td class="q">리플렉션</td><td class="all">5.0%</td><td class="g">6.3%</td><td class="g mmin z">0%</td><td class="g mmax">7.1%</td><td class="pat">—</td></tr>
+
+    <tr class="grp"><td colspan="6">시간 배분 — "길었다" 응답 비율</td></tr>
+    <tr><td class="q">리플렉션</td><td class="all">17.5%</td><td class="g mmax">25.0%</td><td class="g mmin">10.0%</td><td class="g">14.3%</td><td class="pat"><b>유일하게 과다 &gt; 부족</b> (7 vs 2)</td></tr>
+    <tr><td class="q">집회시간 (찬양+말씀)</td><td class="all">15.0%</td><td class="g">12.5%</td><td class="g mmax">40.0%</td><td class="g mmin z">0%</td><td class="pat"><b>2학년만 길다고 느낌</b></td></tr>
+    <tr><td class="q">GBS</td><td class="all">15.0%</td><td class="g">18.8%</td><td class="g mmax">20.0%</td><td class="g mmin">7.1%</td><td class="pat">3학년만 더 원함</td></tr>
+    <tr><td class="q"><b>집회 후 기도시간</b></td><td class="all">10.0%</td><td class="g mmin z">0%</td><td class="g mmax">30.0%</td><td class="g">7.1%</td><td class="pat"><b>1학년 반대 0명</b></td></tr>
+    <tr><td class="q">프로그램 사이 휴식시간</td><td class="all">2.5%</td><td class="g mmax">6.3%</td><td class="g mmin z">0%</td><td class="g mmin z">0%</td><td class="pat">1명</td></tr>
+    <tr><td class="q">깊은 교제 · 자유시간</td><td class="all z">0%</td><td class="g z">0%</td><td class="g z">0%</td><td class="g z">0%</td><td class="pat">늘려도 반대 없음</td></tr>
+
+    <tr class="grp"><td colspan="6">저녁집회 집중을 방해한 것 (복수선택)</td></tr>
+    <tr><td class="q"><b>피곤함</b></td><td class="all">67.5%</td><td class="g">62.5%</td><td class="g mmax">90.0%</td><td class="g mmin">57.1%</td><td class="pat"><b>전 학년 공통 1위</b></td></tr>
+    <tr><td class="q">특별히 어려운 점이 없었음</td><td class="all">27.5%</td><td class="g">25.0%</td><td class="g mmin">20.0%</td><td class="g mmax">35.7%</td><td class="pat">3학년 ↑</td></tr>
+    <tr><td class="q">찬양 / 말씀 / 기도의 구성</td><td class="all">20.0%</td><td class="g">18.8%</td><td class="g mmax">40.0%</td><td class="g mmin">7.1%</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">집회 시간이 너무 길었음</td><td class="all">17.5%</td><td class="g">12.5%</td><td class="g mmax">40.0%</td><td class="g mmin">7.1%</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">개인적으로 집중하기 어려웠음</td><td class="all">15.0%</td><td class="g">18.8%</td><td class="g mmax">30.0%</td><td class="g mmin z">0%</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">장소 / 온도 / 좌석 등의 환경</td><td class="all">7.5%</td><td class="g">6.3%</td><td class="g mmax">20.0%</td><td class="g mmin z">0%</td><td class="pat">—</td></tr>
+    <tr><td class="q">음향·조명 문제</td><td class="all">2.5%</td><td class="g mmin z">0%</td><td class="g mmax">10.0%</td><td class="g mmin z">0%</td><td class="pat">1명</td></tr>
+    <tr><td class="q">집회 시간이 너무 늦었음</td><td class="all">2.5%</td><td class="g mmin z">0%</td><td class="g mmax">10.0%</td><td class="g mmin z">0%</td><td class="pat">1명</td></tr>
+
+    <tr class="grp"><td colspan="6">GBS에서 나아졌으면 하는 점 (복수선택)</td></tr>
+    <tr><td class="q">특별히 개선할 점이 없었다</td><td class="all">42.5%</td><td class="g mmin">37.5%</td><td class="g mmax">50.0%</td><td class="g">42.9%</td><td class="pat">—</td></tr>
+    <tr><td class="q"><b>나눔이 충분히 이루어지기 어려웠다</b></td><td class="all">20.0%</td><td class="g mmax">25.0%</td><td class="g mmin">10.0%</td><td class="g">21.4%</td><td class="pat">GBS 최대 이슈 (난이도 아님)</td></tr>
+    <tr><td class="q">조별 분위기가 어려웠다</td><td class="all">12.5%</td><td class="g">12.5%</td><td class="g mmin z">0%</td><td class="g mmax">21.4%</td><td class="pat">—</td></tr>
+    <tr><td class="q">시간이 부족했다</td><td class="all">12.5%</td><td class="g mmax">18.8%</td><td class="g mmin z">0%</td><td class="g">14.3%</td><td class="pat">—</td></tr>
+    <tr><td class="q"><b>내용이 너무 어려웠다</b></td><td class="all">10.0%</td><td class="g mmax">18.8%</td><td class="g">10.0%</td><td class="g mmin z">0%</td><td class="pat"><b>저학년 전용 문제</b></td></tr>
+    <tr><td class="q">시간이 너무 길었다</td><td class="all">10.0%</td><td class="g">6.3%</td><td class="g mmax">30.0%</td><td class="g mmin z">0%</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">질문이 이해하기 어려웠다</td><td class="all">5.0%</td><td class="g">6.3%</td><td class="g mmax">10.0%</td><td class="g mmin z">0%</td><td class="pat">—</td></tr>
+    <tr><td class="q">내용이 너무 많았다</td><td class="all">2.5%</td><td class="g mmin z">0%</td><td class="g mmax">10.0%</td><td class="g mmin z">0%</td><td class="pat">1명</td></tr>
+
+    <tr class="grp"><td colspan="6">프로그램 — 관계 형성 기여도 (5점 평균, 전원 응답)</td></tr>
+    <tr><td class="q">원투원</td><td class="all">3.98</td><td class="g mmax">4.31</td><td class="g">3.80</td><td class="g mmin">3.71</td><td class="pat">학년 오를수록 ↓</td></tr>
+    <tr><td class="q">레크레이션</td><td class="all">3.98</td><td class="g mmax">4.25</td><td class="g">3.90</td><td class="g mmin">3.71</td><td class="pat">학년 오를수록 ↓</td></tr>
+    <tr><td class="q">멘토-멘티</td><td class="all">3.55</td><td class="g mmin">3.38</td><td class="g mmax">3.80</td><td class="g">3.57</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">물놀이</td><td class="all">3.48</td><td class="g mmax">3.50</td><td class="g mmin">3.40</td><td class="g mmax">3.50</td><td class="pat">학년 차 없음</td></tr>
+    <tr><td class="q">경주자의 밤</td><td class="all">3.33</td><td class="g mmin">3.13</td><td class="g mmax">3.80</td><td class="g">3.21</td><td class="pat"><b>2학년만 높음</b></td></tr>
+    <tr><td class="q">종범이네(달란트) 문방구</td><td class="all">3.30</td><td class="g mmin">3.19</td><td class="g">3.30</td><td class="g mmax">3.43</td><td class="pat">—</td></tr>
+    <tr><td class="q">축복의 시간</td><td class="all">3.25</td><td class="g mmax">3.31</td><td class="g mmin">3.20</td><td class="g">3.21</td><td class="pat">학년 차 거의 없음 (3.20~3.31)</td></tr>
+
+    <tr class="grp"><td colspan="6">프로그램 — 기억에 남는 정도 (3-2-1 가중점수, 학년 내 절대값)</td></tr>
+    <tr><td class="q">원투원</td><td class="all">55점</td><td class="g mmax">28점</td><td class="g mmin">13점</td><td class="g">14점</td><td class="pat">전체 1위 · 1·2학년 1위</td></tr>
+    <tr><td class="q">레크레이션</td><td class="all">45점</td><td class="g mmax">20점</td><td class="g mmin">11점</td><td class="g">14점</td><td class="pat">3학년 공동 1위</td></tr>
+    <tr><td class="q">물놀이</td><td class="all">42점</td><td class="g mmax">23점</td><td class="g">12점</td><td class="g mmin">7점</td><td class="pat">3학년에서 가장 낮음</td></tr>
+    <tr><td class="q">경주자의 밤</td><td class="all">26점</td><td class="g mmin">5점</td><td class="g">8점</td><td class="g mmax">13점</td><td class="pat">고학년 ↑ · 선택 인원은 18명(4위)</td></tr>
+    <tr><td class="q">멘토-멘티</td><td class="all">25점</td><td class="g">8점</td><td class="g mmin">6점</td><td class="g mmax">11점</td><td class="pat">3학년 ↑</td></tr>
+    <tr><td class="q">종범이네(달란트) 문방구</td><td class="all">21점</td><td class="g">7점</td><td class="g mmin">4점</td><td class="g mmax">10점</td><td class="pat">—</td></tr>
+    <tr><td class="q">축복의 시간</td><td class="all">14점</td><td class="g mmin">2점</td><td class="g">3점</td><td class="g mmax">9점</td><td class="pat"><b>3학년에서 가장 높음</b></td></tr>
+    <tr><td class="q" style="color:var(--muted)">→ 학년 내 편차 (최고−최저)</td><td class="all" style="color:var(--muted);font-weight:400">41점</td><td class="g" style="color:var(--muted)">26점 (뾰족)</td><td class="g" style="color:var(--muted)">10점</td><td class="g" style="color:var(--muted)">7점 (평탄)</td><td class="pat">1학년은 몰리고 3학년은 고름</td></tr>
+
+    <tr class="grp"><td colspan="6">달란트 문방구 · 환경</td></tr>
+    <tr><td class="q">문방구 "재미있었고 더 열심히 참여"</td><td class="all">67.5%</td><td class="g">68.8%</td><td class="g mmin">60.0%</td><td class="g mmax">71.4%</td><td class="pat">학년 차 없음</td></tr>
+    <tr><td class="q">문방구 "보통이었다"</td><td class="all">30.0%</td><td class="g">31.3%</td><td class="g mmax">40.0%</td><td class="g mmin">21.4%</td><td class="pat">—</td></tr>
+    <tr><td class="q">문방구 "기준이 아쉽고 불편했다"</td><td class="all">2.5%</td><td class="g mmin z">0%</td><td class="g mmin z">0%</td><td class="g mmax">7.1%</td><td class="pat">1명</td></tr>
+    <tr><td class="q">환경 "특별한 문제 없음"</td><td class="all">60.0%</td><td class="g mmax">68.8%</td><td class="g">60.0%</td><td class="g mmin">50.0%</td><td class="pat">3학년은 여러 항목에 1명씩 흩어짐</td></tr>
+    <tr><td class="q">환경 — 실내 온도 (냉방)</td><td class="all">12.5%</td><td class="g">12.5%</td><td class="g mmax">20.0%</td><td class="g mmin">7.1%</td><td class="pat">—</td></tr>
+    <tr><td class="q">환경 — 좌석</td><td class="all">10.0%</td><td class="g mmax">18.8%</td><td class="g">10.0%</td><td class="g mmin z">0%</td><td class="pat">—</td></tr>
+    <tr><td class="q">환경 — 화장실·샤워 / 음향 / 안내방송 / 장소 / 소음</td><td class="all">각 2.5%</td><td class="g">화장실 1</td><td class="g">음향 1</td><td class="g">안내·장소·소음 각 1</td><td class="pat">각 1명씩 분산</td></tr>
+
+    <tr class="grp"><td colspan="6">찬양팀 — 은혜받은 순간 (복수선택)</td></tr>
+    <tr><td class="q">찬양 가사가 마음·기도제목에 맞았을 때</td><td class="all">65.0%</td><td class="g">62.5%</td><td class="g mmax">90.0%</td><td class="g mmin">50.0%</td><td class="pat">2학년 ↑</td></tr>
+    <tr><td class="q">친구·선생님과 다 함께 찬양하며 기도할 때</td><td class="all">55.0%</td><td class="g">50.0%</td><td class="g mmin">40.0%</td><td class="g mmax">71.4%</td><td class="pat"><b>3학년 ↑ (공동체)</b></td></tr>
+    <tr><td class="q">뜨거운 인도에 따라 목소리 높여 찬양할 때</td><td class="all">52.5%</td><td class="g mmax">62.5%</td><td class="g mmin">40.0%</td><td class="g">50.0%</td><td class="pat">1학년 ↑ (열정)</td></tr>
+    <tr><td class="q">안정적인 악기 연주와 노래</td><td class="all">37.5%</td><td class="g">31.3%</td><td class="g mmax">60.0%</td><td class="g mmin">28.6%</td><td class="pat"><b>2학년 ↑ (완성도)</b></td></tr>
+
+    <tr class="grp"><td colspan="6">찬양팀 — 더 가까워지려면 (복수선택)</td></tr>
+    <tr><td class="q"><b>고등부가 코러스·악기로 함께 무대에</b></td><td class="all">50.0%</td><td class="g mmax">68.8%</td><td class="g">50.0%</td><td class="g mmin">28.6%</td><td class="pat">학년 오를수록 ↓</td></tr>
+    <tr><td class="q">지금도 충분히 좋고 감사하다</td><td class="all">40.0%</td><td class="g mmin">31.3%</td><td class="g mmax">50.0%</td><td class="g">42.9%</td><td class="pat">고학년 ↑</td></tr>
+    <tr><td class="q">수련회 중 찬양팀 선배와 대화·기도</td><td class="all">20.0%</td><td class="g mmin">18.8%</td><td class="g">20.0%</td><td class="g mmax">21.4%</td><td class="pat">학년 차 없음</td></tr>
+    <tr><td class="q">수련회 전 고등부 예배 방문</td><td class="all">12.5%</td><td class="g mmax">18.8%</td><td class="g">10.0%</td><td class="g mmin">7.1%</td><td class="pat">—</td></tr>
+    </tbody>
+  </table>
+  <small class="src">미참석 학생 2명(1학년 1 · 3학년 1)은 분기 문항 자체를 받지 않아 이 표에서 제외했습니다 — 원자료는 Chapter 7 참조.
+    학년별 학생 수 분포는 전체 42명 기준으로 1학년 17 · 2학년 10 · 3학년 15입니다.</small></div>
+
+  <h3>A-2. 교사 — 전 문항 <span style="color:var(--muted);font-weight:400;font-size:13px">익명·반 정보 미수집이라 학년 구분 없음 · 역할 분기로 분모가 다름</span></h3>
+  <div class="tw"><table>
+    <colgroup><col><col style="width:150px"><col style="width:64px"><col></colgroup>
+    <thead><tr><th>문항 · 항목</th><th class="num hall">값</th><th class="num">분모</th><th>메모</th></tr></thead>
+    <tbody>
+
+    <tr class="grp"><td colspan="4">구성</td></tr>
+    <tr><td class="q">역할 — 담임 / 담임+헬퍼 / 헬퍼</td><td class="all">5 / 5 / 2명</td><td class="g">12</td><td class="pat">겸임 5명이 과부하의 구조적 원인</td></tr>
+    <tr><td class="q">경력 — 1~2년 / 5년 이상 / 3~5년 / 올해가 처음</td><td class="all">4 / 4 / 2 / 2명</td><td class="g">12</td><td class="pat">신입 2명 포함</td></tr>
+
+    <tr class="grp"><td colspan="4">사전 준비 과정이 도움이 된 정도 (5점 평균)</td></tr>
+    <tr><td class="q"><b>전체 기도회 (예배 후 전체 기도회)</b></td><td class="all mmax">5.00</td><td class="g">12</td><td class="pat"><b>12명 전원 만점 — 유일한 항목</b></td></tr>
+    <tr><td class="q">사전 공지 및 일정 공유</td><td class="all">4.67</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">교사 전체 모임 (3주 동안 진행)</td><td class="all">4.58</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">릴레이 기도</td><td class="all">4.58</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">프로그램별 준비회의 (준비TF·담당자 모임)</td><td class="all">4.50</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">교사·학부모 기도회 (반모임·온라인 줌)</td><td class="all">4.45</td><td class="g">11</td><td class="pat">1명 미응답</td></tr>
+    <tr><td class="q">교사용 자료 / 가이드</td><td class="all mmin">4.42</td><td class="g">12</td><td class="pat">최저이나 여전히 높음</td></tr>
+    <tr><td class="q">수련회 전체 방향 및 목적 공유</td><td class="all mmin">4.42</td><td class="g">12</td><td class="pat">—</td></tr>
+
+    <tr class="grp"><td colspan="4">준비 과정의 명확성 (5점 평균) — 전 항목 4.17 이상</td></tr>
+    <tr><td class="q">전체 일정</td><td class="all mmax">4.75</td><td class="g">12</td><td class="pat">최고</td></tr>
+    <tr><td class="q">전체 수련회의 목적</td><td class="all">4.67</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">준비물 및 물품</td><td class="all">4.58</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">프로그램별 담당자</td><td class="all">4.50</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">나의 역할</td><td class="all">4.33</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">긴급상황 발생 시 대응방법</td><td class="all">4.33</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q">보고 / 의사결정 체계</td><td class="all">4.25</td><td class="g">12</td><td class="pat">—</td></tr>
+    <tr><td class="q"><b>다른 교사의 역할</b></td><td class="all mmin">4.17</td><td class="g">12</td><td class="pat"><b>최저 — 서로 빈자리를 못 메운 이유</b></td></tr>
+
+    <tr class="grp"><td colspan="4">담임 전용 (n=10 · 담임 5 + 겸임 5)</td></tr>
+    <tr><td class="q">금·토·일 일정 효과</td><td class="all mmax">4.70</td><td class="g">10</td><td class="pat">전원 4점 이상 (5점 7명 / 4점 3명)</td></tr>
+    <tr><td class="q">공과 자료·질문지 충분성</td><td class="all">4.20</td><td class="g">10</td><td class="pat">4점 6 / 5점 3 / 3점 1 · 주관식 보완 요청 8건</td></tr>
+    <tr><td class="q">학생 집중도 관찰 — GBS</td><td class="all mmax">4.40</td><td class="g">10</td><td class="pat"><b>학생 자기체감 3.83 → −0.57 과대평가</b></td></tr>
+    <tr><td class="q">학생 집중도 관찰 — 리플렉션</td><td class="all">4.30</td><td class="g">10</td><td class="pat"><b>학생 3.75 → −0.55 과대평가</b></td></tr>
+    <tr><td class="q">학생 집중도 관찰 — 저녁집회</td><td class="all mmin">3.80</td><td class="g">10</td><td class="pat"><b>학생 4.28 → +0.48 과소평가</b></td></tr>
+    <tr><td class="q">친밀감 형성 프로그램 — 레크레이션</td><td class="all mmax">80.0%</td><td class="g">10</td><td class="pat">8명 · 학생 선택률 50%</td></tr>
+    <tr><td class="q">친밀감 형성 — 물놀이</td><td class="all">50.0%</td><td class="g">10</td><td class="pat">5명 · 학생 42.5%</td></tr>
+    <tr><td class="q">친밀감 형성 — <b>원투원</b></td><td class="all">40.0%</td><td class="g">10</td><td class="pat">4명 · <b>학생 60% → 최대 미스매치</b></td></tr>
+    <tr><td class="q">친밀감 형성 — 멘토-멘티</td><td class="all">40.0%</td><td class="g">10</td><td class="pat">4명 · 학생 32.5%</td></tr>
+    <tr><td class="q">친밀감 형성 — 경주자의 밤 / 달란트 문방구</td><td class="all">각 20.0%</td><td class="g">10</td><td class="pat">각 2명 · 학생 45% / 30%</td></tr>
+    <tr><td class="q">친밀감 형성 — 축복의 시간</td><td class="all mmin z">0%</td><td class="g">10</td><td class="pat">0명 · 학생은 20% · 친밀감이 목적인 순서는 아니었던 점 감안</td></tr>
+    <tr><td class="q">학생 집중 저해 — <b>내용의 난이도</b></td><td class="all mmax">70.0%</td><td class="g">10</td><td class="pat"><b>교사 1위 · 학생은 10%(GBS 기준)</b></td></tr>
+    <tr><td class="q">학생 집중 저해 — 피로도</td><td class="all">40.0%</td><td class="g">10</td><td class="pat">학생 1위는 이것 (67.5%)</td></tr>
+    <tr><td class="q">학생 집중 저해 — 프로그램 간 간격 부족</td><td class="all">30.0%</td><td class="g">10</td><td class="pat">—</td></tr>
+    <tr><td class="q">학생 집중 저해 — 특별한 문제 없음</td><td class="all">20.0%</td><td class="g">10</td><td class="pat">—</td></tr>
+    <tr><td class="q">학생 집중 저해 — 시간대 / 안내 부족</td><td class="all">각 10.0%</td><td class="g">10</td><td class="pat">각 1명</td></tr>
+
+    <tr class="grp"><td colspan="4">헬퍼·담당자 전용 (n=7 · 헬퍼 2 + 겸임 5)</td></tr>
+    <tr><td class="q"><b>인력 배치 적절성</b> (5점 평균)</td><td class="all mmin">3.43</td><td class="g">7</td><td class="pat"><b>준비 문항 중 유일하게 4점 아래</b> · 5점 1 / 4점 4 / 2점 1 / 1점 1 — 답이 위아래로 갈림</td></tr>
+    <tr><td class="q">인력 부족 영역 — <b>주방 / 식사</b></td><td class="all mmax">71.4%</td><td class="g">7</td><td class="pat">5명 · 압도적 1위</td></tr>
+    <tr><td class="q">인력 부족 — 특별히 없었다</td><td class="all">28.6%</td><td class="g">7</td><td class="pat">2명</td></tr>
+    <tr><td class="q">인력 부족 — 청소 / 학생 이동·통제 / 방송·음향 / 안전관리</td><td class="all">각 14.3%</td><td class="g">7</td><td class="pat">각 1명</td></tr>
+    <tr><td class="q">사전 준비 어려움 — 역할분담·소통 부족</td><td class="all mmax">42.9%</td><td class="g">7</td><td class="pat">3명 · 3개 항목 동률 1위</td></tr>
+    <tr><td class="q">사전 준비 어려움 — 다른 프로그램과 일정 조율</td><td class="all mmax">42.9%</td><td class="g">7</td><td class="pat">3명</td></tr>
+    <tr><td class="q">사전 준비 어려움 — 인력 부족</td><td class="all mmax">42.9%</td><td class="g">7</td><td class="pat">3명</td></tr>
+    <tr><td class="q">사전 준비 어려움 — 기획안 확정 지연 / 없음</td><td class="all">각 28.6%</td><td class="g">7</td><td class="pat">각 2명</td></tr>
+    <tr><td class="q">사전 준비 어려움 — 준비 기간 부족</td><td class="all mmin">14.3%</td><td class="g">7</td><td class="pat">1명</td></tr>
+    <tr><td class="q">현장 어려움 — 특별한 어려움이 없었다</td><td class="all mmax">42.9%</td><td class="g">7</td><td class="pat">3명</td></tr>
+    <tr><td class="q">현장 어려움 — 역할은 알았지만 인력 부족</td><td class="all">28.6%</td><td class="g">7</td><td class="pat">2명</td></tr>
+    <tr><td class="q">현장 어려움 — 역할 겹침 / 정보 부족 / 시간 부족</td><td class="all">각 14.3%</td><td class="g">7</td><td class="pat">각 1명 · 기타 "사전 정보 없이 투입"</td></tr>
+
+    <tr class="grp"><td colspan="4">공통 (n=12)</td></tr>
+    <tr><td class="q">일정 지연 원인 — 프로그램 자체의 과도한 분량</td><td class="all mmax">41.7%</td><td class="g">12</td><td class="pat">5명 · 공동 1위</td></tr>
+    <tr><td class="q">일정 지연 원인 — 프로그램 사이 이동·준비 시간 부족</td><td class="all mmax">41.7%</td><td class="g">12</td><td class="pat">5명 · 학생 휴식 부족 45%와 일치</td></tr>
+    <tr><td class="q">일정 지연 — 시간 담당자↔진행자 신호·소통 부족</td><td class="all">25.0%</td><td class="g">12</td><td class="pat">3명</td></tr>
+    <tr><td class="q">일정 지연 — 예상하지 못한 현장 변수</td><td class="all">25.0%</td><td class="g">12</td><td class="pat">3명</td></tr>
+    <tr><td class="q">일정 지연 — 담당자 사이 일정 공유 부족 / 안내방송 부족</td><td class="all">각 16.7%</td><td class="g">12</td><td class="pat">각 2명</td></tr>
+    <tr><td class="q">일정 지연 — 생활 시간 부족 / 특별한 문제 없음</td><td class="all">각 8.3%</td><td class="g">12</td><td class="pat">각 1명 · 기타 "첫날 길어졌던 설교"</td></tr>
+    <tr><td class="q">시간 조정 필요 — 프로그램 시간</td><td class="all mmax">41.7%</td><td class="g">12</td><td class="pat">5명 · 1위</td></tr>
+    <tr><td class="q">시간 조정 — 자유시간 / 프로그램 사이 이동시간</td><td class="all">각 33.3%</td><td class="g">12</td><td class="pat">각 4명</td></tr>
+    <tr><td class="q">시간 조정 — 특별히 조정할 필요 없음</td><td class="all">25.0%</td><td class="g">12</td><td class="pat">3명</td></tr>
+    <tr><td class="q">시간 조정 — 집합·집회·리플렉션·샤워·출발전·GBS</td><td class="all">각 16.7%</td><td class="g">12</td><td class="pat">각 2명 · 기타 "기도시간 확보 필요"</td></tr>
+    <tr><td class="q">시간 조정 — 취침시간</td><td class="all mmin">8.3%</td><td class="g">12</td><td class="pat">1명</td></tr>
+
+    <tr class="grp"><td colspan="4">찬양팀 (n=12)</td></tr>
+    <tr><td class="q">도움받은 점 — 학생들이 마음 열고 나아가는 모습</td><td class="all mmax">41.7%</td><td class="g">12</td><td class="pat">5명 · 1위</td></tr>
+    <tr><td class="q">도움받은 점 — 뜨거운 인도로 집회 분위기가 열림</td><td class="all">25.0%</td><td class="g">12</td><td class="pat">3명</td></tr>
+    <tr><td class="q">도움받은 점 — 헌신과 수고에 은혜 / 특별히 없다</td><td class="all">각 16.7%</td><td class="g">12</td><td class="pat">각 2명</td></tr>
+    <tr><td class="q">도움받은 점 — 안정적 연주와 가창</td><td class="all mmin">8.3%</td><td class="g">12</td><td class="pat">1명 · 학생은 37.5%</td></tr>
+    <tr><td class="q">강화할 것 — 사전 관계 맺기</td><td class="all mmax">50.0%</td><td class="g">12</td><td class="pat">6명 · 공동 1위</td></tr>
+    <tr><td class="q">강화할 것 — 현장에서의 소통</td><td class="all mmax">50.0%</td><td class="g">12</td><td class="pat">6명 · 공동 1위</td></tr>
+    <tr><td class="q">강화할 것 — 진행과 흐름 공유</td><td class="all">41.7%</td><td class="g">12</td><td class="pat">5명</td></tr>
+    <tr><td class="q">강화할 것 — 아이들을 향한 기도 공유</td><td class="all mmin">25.0%</td><td class="g">12</td><td class="pat">3명</td></tr>
+    <tr><td class="q"><b>미래상 — 고등부 자체 인원 중심으로 세워간다</b></td><td class="all mmax">50.0%</td><td class="g">12</td><td class="pat">6명 · 가장 급진적 선택지가 1위</td></tr>
+    <tr><td class="q">미래상 — 코러스·보조로 함께 무대</td><td class="all">25.0%</td><td class="g">12</td><td class="pat">3명</td></tr>
+    <tr><td class="q">미래상 — 현 구조 유지 + 사전 교제 강화</td><td class="all">25.0%</td><td class="g">12</td><td class="pat">3명 · <b>참여 확대 지지 합계 75%</b> (학생 50%)</td></tr>
+
+    <tr class="grp"><td colspan="4">KPT 주관식 — 반복 출현 주제 (수작업 분류)</td></tr>
+    <tr><td class="q">일이 소수에게 몰림 · 과부하</td><td class="all">5건</td><td class="g">12</td><td class="pat">"아직도 일이 소수에게 집중" · "특정인이 과부하"</td></tr>
+    <tr><td class="q">GBS 유지 (긍정)</td><td class="all">5건</td><td class="g">12</td><td class="pat">"유지" 항목 중 최다 언급</td></tr>
+    <tr><td class="q">기도시간 부족</td><td class="all">4건</td><td class="g">12</td><td class="pat">"아이들을 위한 기도시간이 절대적으로 부족"</td></tr>
+    <tr><td class="q">준비·기도회 유지 (긍정)</td><td class="all">4건</td><td class="g">12</td><td class="pat">준비기도회 · 릴레이 기도회</td></tr>
+    <tr><td class="q">소통·정보 공유 방식</td><td class="all">4건</td><td class="g">12</td><td class="pat">"주요 회의록을 공유해주면 좋겠음"</td></tr>
+    <tr><td class="q">프로그램 분량 축소</td><td class="all">3건</td><td class="g">12</td><td class="pat">"꼭 필요한것만, 욕심을 버리고"</td></tr>
+    <tr><td class="q"><b>강사·주제 조기 확정</b></td><td class="all">3건</td><td class="g">12</td><td class="pat">"먼저 결정할 한 가지"에는 4명이 지목</td></tr>
+    <tr><td class="q">물놀이↔레크레이션 순서 변경</td><td class="all">2건</td><td class="g">12</td><td class="pat">레크로 친해진 뒤 물놀이</td></tr>
+    </tbody>
+  </table>
+  <small class="src">KPT 주제별 언급 횟수는 6개 주관식 문항을 합산해 수작업 분류한 결과입니다. <b>정확도: 추정 ±1건.</b> 원문 전체는 Chapter 10 참조.</small></div>
+
+  <h3>A-3. 미참석 학생 원자료 <span style="color:var(--muted);font-weight:400;font-size:13px">n=2 · 비율 환산 금지</span></h3>
+  <p style="font-size:13.5px;color:var(--ink2)">Chapter 7에 사례별 전체 응답을 표로 정리했습니다. 요약: 사례 A(3학년)는 학원·보충수업으로 못 왔고 다음 참여 의향 5/5에 부분참여 허용을 요청했으며,
+    사례 B(1학년)는 단체 생활 부담으로 가고 싶지 않았고 참여 의향 2/5에 케어 문항 3개를 모두 비웠습니다.</p>
+</section>
+
+<div class="foot">
+  2026 여름수련회 평가 · 학생 42명 / 교사 12명 · 수집 2026-08-08 ~ 08-16 · 분석 2026-08-17<br>
+  데이터 출처: Supabase <code>public.survey_responses</code> 전수 집계 · 이름을 받지 않은 익명 설문 · 내수동교회 고등부 수련회 TF
+</div>
+
+</div>
+</body>
+</html>
