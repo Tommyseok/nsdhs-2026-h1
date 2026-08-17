@@ -607,7 +607,7 @@ function renderServe() {
   if (mine) { st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (mine.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다'; }
   else { st.className = 'pending-tag'; st.textContent = '⏳ 아직 제출 전입니다'; }
   const sPct = Math.round(STATUSES.length / TEACHERS.length * 100);
-  document.getElementById('serve-meta').innerHTML = `<span class="p-rate">제출률 <span class="pct">${sPct}%</span> (${STATUSES.length}/${TEACHERS.length}명)</span><br>※ 교사 섬김 상황에 대한 응답 내용은 공개되지 않습니다. 아래는 제출 여부만 표시됩니다.`;
+  document.getElementById('serve-meta').innerHTML = `<span class="p-rate">제출률 <span class="pct">${sPct}%</span> (${STATUSES.length}/${TEACHERS.length}명)</span><br>※ 응답 내용(선택·메모)은 부장님과 총무만 열람합니다. 아래는 제출 여부만 표시됩니다.`;
   const submitted = new Set(STATUSES.map(s => s.teacher));
   const notYet = TEACHERS.filter(t => !submitted.has(t));
   document.getElementById('serve-names').innerHTML = `
