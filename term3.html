@@ -13,123 +13,144 @@
 <title>Runners 2026 · 새학기 편성 투표</title>
 <style>
   :root {
-    --bg: #0b0f17; --card: #1e293b; --border: #334155;
-    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
-    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+    --card: #ffffff; --border: #e2e8f0; --ink: #0f172a; --body: #334155; --muted: #64748b;
+    --accent: #7c3aed; --accent-soft: #ede9fe;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { overscroll-behavior-y: none; }
   body { margin: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%); color: var(--text);
+    background: #0b0f17; color: var(--body);
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
     line-height: 1.55; font-size: 15px; min-height: 100vh; }
   .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
 
+  /* ===== 게이트 (다크 유지) ===== */
   .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
-  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .gate-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,.5); color: #e5e7eb; }
   .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
-  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: var(--muted); text-align: center; }
-  .gate-card input, .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: #94a3b8; text-align: center; }
+  .gate-card input, .gate-card select { width: 100%; background: #0b0f17; color: #e5e7eb; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
   .gate-card input { text-align: center; letter-spacing: 2px; }
-  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
   #gate-err { color: #fca5a5; font-size: 12px; margin-top: 10px; min-height: 16px; text-align: center; }
 
-  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
-  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  /* ===== 헤더 (다크 유지) ===== */
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid #a78bfa; position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 0; padding-bottom: 0; }
   header h1 { margin: 0; font-size: 18px; color: #f1f5f9; flex: 1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   header .me { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
   header button { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
-  .sec { margin-top: 22px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px 18px; }
-  .sec h2 { margin: 0 0 12px; font-size: 17px; color: #f1f5f9; }
-  .sec .lead { font-size: 14px; color: #ddd6fe; line-height: 1.75; }
-  .sec .lead strong { color: #c4b5fd; }
+  /* ===== 본문 (화이트) ===== */
+  #app-root { background: #f4f6fa; min-height: 100vh; }
+  .sec { margin-top: 22px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px 18px; box-shadow: 0 1px 3px rgba(15,23,42,.05); }
+  .sec h2 { margin: 0 0 12px; font-size: 17px; color: var(--ink); }
+  .sec .lead { font-size: 14px; color: var(--body); line-height: 1.75; }
+  .sec .lead strong { color: #6d28d9; }
 
   .common-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 14px; }
-  .common-card { background: rgba(167,139,250,.08); border: 1px solid rgba(167,139,250,.3); border-radius: 12px; padding: 14px; font-size: 13.5px; line-height: 1.6; }
-  .common-card .t { font-weight: 800; color: #c4b5fd; margin-bottom: 6px; font-size: 14px; }
+  .common-card { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 14px; font-size: 13.5px; line-height: 1.6; color: #3b3560; }
+  .common-card .t { font-weight: 800; color: #6d28d9; margin-bottom: 6px; font-size: 14px; }
 
-  /* 프로세스 플로우 */
   .flow { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 14px 2px 6px; scrollbar-width: thin; }
-  .flow-step { flex: 1; min-width: 128px; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; text-align: center; position: relative; }
-  .flow-step.now { border-color: var(--accent); background: rgba(124,58,237,.15); box-shadow: 0 0 18px rgba(124,58,237,.25); }
-  .flow-step.done { border-color: rgba(16,185,129,.4); background: rgba(16,185,129,.07); }
-  .flow-step.done .n { background: linear-gradient(135deg, #059669, #34d399); }
-  .flow-step .badge-done { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 800; color: #6ee7b7; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.4); border-radius: 999px; padding: 1px 8px; }
-  .flow-extra { margin-top: 12px; background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.35); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: #fde68a; line-height: 1.6; }
-  .flow-extra strong { color: #fcd34d; }
-  .serve-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 12px; }
-  .serve-opt { background: rgba(255,255,255,.03); border: 2px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; font-size: 13px; line-height: 1.5; }
-  .serve-opt:hover { border-color: rgba(167,139,250,.5); }
-  .serve-opt.sel { border-color: var(--accent); background: rgba(124,58,237,.15); }
-  .serve-opt .st { font-weight: 800; color: #f1f5f9; display: block; margin-bottom: 3px; }
-  .serve-opt .sd { font-size: 11.5px; color: var(--muted); }
-  .flow-step .n { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
-  .flow-step .tt { font-size: 13px; font-weight: 800; color: #f1f5f9; }
+  .flow-step { flex: 1; min-width: 128px; background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 10px; text-align: center; }
+  .flow-step.now { border-color: #7c3aed; background: #f5f3ff; box-shadow: 0 2px 10px rgba(124,58,237,.15); }
+  .flow-step .n { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+  .flow-step .tt { font-size: 13px; font-weight: 800; color: var(--ink); }
   .flow-step .dd { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
-  .flow-step .badge-now { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 800; color: #fcd34d; background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.4); border-radius: 999px; padding: 1px 8px; }
-  .flow-arrow { flex: 0 0 auto; display: flex; align-items: center; padding: 0 5px; color: var(--accent); font-size: 20px; font-weight: 800; }
+  .flow-step .badge-now { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 800; color: #7c3aed; background: #ede9fe; border: 1px solid #c4b5fd; border-radius: 999px; padding: 1px 8px; }
+  .flow-arrow { flex: 0 0 auto; display: flex; align-items: center; padding: 0 5px; color: #7c3aed; font-size: 20px; font-weight: 800; }
+  .flow-extra { margin-top: 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: #92400e; line-height: 1.6; }
+  .flow-extra strong { color: #b45309; }
 
-  /* 투표 현황 */
-  .vote-bars { margin-top: 8px; }
-  .vbar-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-  .vbar-label { flex: 0 0 130px; font-size: 13px; font-weight: 800; color: #f1f5f9; }
-  .vbar-track { flex: 1; height: 26px; background: rgba(255,255,255,.05); border-radius: 8px; overflow: hidden; position: relative; }
-  .vbar-fill { height: 100%; border-radius: 8px; transition: width .6s; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 12px; font-weight: 800; color: #fff; min-width: 0; }
-  .vbar-fill.o1 { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
-  .vbar-fill.o2 { background: linear-gradient(90deg, #0e7490, #22d3ee); }
-  .vbar-fill.o3 { background: linear-gradient(90deg, #b45309, #fbbf24); }
-  .vote-meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
-  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #34d399; margin-right: 5px; animation: blink 1.6s infinite; vertical-align: 1px; }
-  @keyframes blink { 50% { opacity: .3; } }
+  .survey { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 5px solid #0284c7; border-radius: 14px; padding: 18px 16px; margin-top: 14px; }
+  .survey-badge { display: inline-block; font-size: 11px; font-weight: 800; color: #0369a1; background: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 999px; padding: 2px 10px; margin-bottom: 8px; letter-spacing: .5px; }
+  .q-block { margin-top: 14px; }
+  .q-title { font-size: 14.5px; font-weight: 800; color: var(--ink); margin-bottom: 4px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .q-title .qn { color: #0284c7; font-size: 13px; }
+  .q-title .req { color: #dc2626; font-size: 11px; font-weight: 700; }
+  .q-sub { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .radio-list { display: flex; flex-direction: column; gap: 7px; }
+  .radio-row { display: flex; align-items: flex-start; gap: 11px; background: #fff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 11px 13px; cursor: pointer; }
+  .radio-row:hover { border-color: #38bdf8; }
+  .radio-row.sel { border-color: #0284c7; background: #e0f2fe; }
+  .radio-dot { flex: 0 0 auto; width: 19px; height: 19px; border-radius: 50%; border: 2px solid #94a3b8; margin-top: 1px; position: relative; background: #fff; }
+  .radio-row.sel .radio-dot { border-color: #0284c7; }
+  .radio-row.sel .radio-dot::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: #0284c7; }
+  .radio-txt { font-size: 13.5px; line-height: 1.5; }
+  .radio-txt .rt-t { font-weight: 800; color: var(--ink); display: block; }
+  .radio-txt .rt-d { font-size: 11.5px; color: var(--muted); }
+  .survey textarea { width: 100%; background: #fff; color: var(--ink); border: 1px solid #cbd5e1; border-radius: 10px; padding: 11px 13px; font-size: 13.5px; font-family: inherit; resize: vertical; min-height: 60px; }
+  .survey-submit { margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .survey-submit button { background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; border: none; border-radius: 10px; padding: 12px 26px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .survey-submit .done-tag { font-size: 12.5px; font-weight: 700; color: #059669; }
+  .survey-submit .pending-tag { font-size: 12.5px; font-weight: 700; color: #b45309; }
 
-  /* 옵션 카드 */
-  .opt { margin-top: 26px; border: 2px solid var(--border); border-radius: 16px; overflow: hidden; }
-  .opt.o1 { border-color: rgba(167,139,250,.5); } .opt.o2 { border-color: rgba(34,211,238,.4); } .opt.o3 { border-color: rgba(251,191,36,.4); }
+  .opt { margin-top: 26px; border: 2px solid var(--border); border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(15,23,42,.05); }
+  .opt.o1 { border-color: #c4b5fd; } .opt.o2 { border-color: #67e8f9; } .opt.o3 { border-color: #fcd34d; }
   .opt-head { padding: 16px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .opt.o1 .opt-head { background: rgba(124,58,237,.15); } .opt.o2 .opt-head { background: rgba(14,116,144,.18); } .opt.o3 .opt-head { background: rgba(180,83,9,.15); }
-  .opt-head h2 { margin: 0; font-size: 18px; color: #f1f5f9; flex: 1; min-width: 200px; }
-  .vote-btn { background: rgba(255,255,255,.08); border: 2px solid rgba(255,255,255,.25); color: #fff; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; }
-  .vote-btn:hover { background: rgba(255,255,255,.16); }
-  .vote-btn.voted { background: linear-gradient(135deg, #059669, #34d399); border-color: #34d399; }
-  .opt-body { padding: 16px 18px; background: var(--card); }
-  .opt-desc { font-size: 13.5px; line-height: 1.7; color: #d8dee9; margin-bottom: 6px; }
-  .opt-desc strong { color: #f1f5f9; }
+  .opt.o1 .opt-head { background: #f5f3ff; } .opt.o2 .opt-head { background: #ecfeff; } .opt.o3 .opt-head { background: #fffbeb; }
+  .opt-head h2 { margin: 0; font-size: 18px; color: var(--ink); flex: 1; min-width: 200px; }
+  .vote-btn { border: none; color: #fff; border-radius: 999px; padding: 12px 24px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; box-shadow: 0 2px 8px rgba(15,23,42,.15); }
+  .opt.o1 .vote-btn { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+  .opt.o2 .vote-btn { background: linear-gradient(135deg, #0e7490, #22d3ee); }
+  .opt.o3 .vote-btn { background: linear-gradient(135deg, #b45309, #fbbf24); }
+  .vote-btn:hover { filter: brightness(1.08); }
+  .opt .vote-btn.voted { background: linear-gradient(135deg, #059669, #34d399); }
+  .opt-body { padding: 16px 18px; background: #fff; }
+  .opt-desc { font-size: 13.5px; line-height: 1.7; color: var(--body); margin-bottom: 6px; }
+  .opt-desc strong { color: var(--ink); }
   .opt-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; margin: 12px 0 4px; }
   .pt { font-size: 12.5px; padding: 10px 12px; border-radius: 10px; line-height: 1.55; }
-  .pt.plus { background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.3); color: #a7f3d0; }
-  .pt.minus { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.3); color: #fde68a; }
+  .pt.plus { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+  .pt.minus { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
 
   .fam { margin-top: 16px; }
-  .fam-title { font-size: 14px; font-weight: 800; color: #c4b5fd; padding: 8px 12px; background: rgba(124,58,237,.15); border-radius: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .fam-title { font-size: 14px; font-weight: 800; color: #5b21b6; padding: 8px 12px; background: #ede9fe; border-radius: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .fam-note { font-size: 11.5px; color: var(--muted); font-weight: 600; }
   .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 8px; }
-  .cls { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-  .cls-name { font-size: 13.5px; font-weight: 800; color: #f1f5f9; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .cls { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+  .cls-name { font-size: 13.5px; font-weight: 800; color: var(--ink); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .cls-name .cnt { font-size: 11px; color: var(--muted); font-weight: 600; }
-  .cls-name .two { font-size: 10px; font-weight: 800; color: #6ee7b7; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35); border-radius: 999px; padding: 1px 8px; }
+  .cls-name .two { font-size: 10px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 1px 8px; }
   .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-  .chip { font-size: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+  .chip { font-size: 12px; background: #fff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 3px 9px; white-space: nowrap; color: var(--ink); }
   .chip .rt { font-size: 10.5px; font-weight: 800; margin-left: 3px; }
-  .rt.hi { color: #6ee7b7; } .rt.mid { color: #fcd34d; } .rt.low { color: #fca5a5; } .rt.na { color: #94a3b8; }
-  .la-box { margin-top: 8px; background: rgba(245,158,11,.06); border: 1px dashed rgba(245,158,11,.35); border-radius: 10px; padding: 8px 10px; }
-  .la-box .la-t { font-size: 10.5px; font-weight: 800; color: #fcd34d; margin-bottom: 5px; }
+  .rt.hi { color: #059669; } .rt.mid { color: #b45309; } .rt.low { color: #dc2626; } .rt.na { color: #94a3b8; }
+  .la-box { margin-top: 8px; background: #fffbeb; border: 1px dashed #f59e0b; border-radius: 10px; padding: 8px 10px; }
+  .la-box .la-t { font-size: 10.5px; font-weight: 800; color: #b45309; margin-bottom: 5px; }
 
-  /* 의견 */
-  .cmt-box { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 14px; }
-  .cmt-box h3 { margin: 0 0 8px; font-size: 14px; color: #f1f5f9; }
+  .cmt-box { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
+  .cmt-box h3 { margin: 0 0 8px; font-size: 14px; color: var(--ink); }
   .cmt-form { display: flex; gap: 8px; }
-  .cmt-form textarea { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; font-family: inherit; resize: vertical; min-height: 44px; }
-  .cmt-form button { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border: none; border-radius: 10px; padding: 0 18px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .cmt-form textarea { flex: 1; background: #fff; color: var(--ink); border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; font-family: inherit; resize: vertical; min-height: 44px; }
+  .cmt-form button { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; border: none; border-radius: 10px; padding: 0 18px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit; }
   .cmt-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .cmt { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 9px 12px; }
+  .cmt { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; }
   .cmt .ch { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); margin-bottom: 3px; }
-  .cmt .ch .nm { font-weight: 800; color: #c4b5fd; }
-  .cmt .del { margin-left: auto; background: none; border: none; color: #fca5a5; font-size: 11px; cursor: pointer; font-family: inherit; }
-  .cmt .tx { font-size: 13.5px; white-space: pre-wrap; word-break: break-word; }
+  .cmt .ch .nm { font-weight: 800; color: #6d28d9; }
+  .cmt .del { margin-left: auto; background: none; border: none; color: #dc2626; font-size: 11px; cursor: pointer; font-family: inherit; }
+  .cmt .tx { font-size: 13.5px; white-space: pre-wrap; word-break: break-word; color: var(--body); }
   .legend { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
-  .footnote { margin: 28px 0 10px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: rgba(255,255,255,.02); border-radius: 8px; border-left: 2px solid var(--border); }
-  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e293b; border: 1px solid var(--accent); color: #fff; padding: 11px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 999; }
+  .footnote { margin: 28px 0 10px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #cbd5e1; }
+  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; margin-right: 5px; vertical-align: 1px; }
+  /* ===== 하단 비교 + 투표 ===== */
+  .cmp-vote { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 6px; }
+  .cmp-vote .radio-row { flex: 1; min-width: 175px; }
+  .cmp-vote .radio-row:hover { border-color: #a78bfa; }
+  .cmp-vote .radio-row.sel { border-color: #7c3aed; background: #f5f3ff; }
+  .cmp-vote .radio-row.sel .radio-dot { border-color: #7c3aed; }
+  .cmp-vote .radio-row.sel .radio-dot::after { background: #7c3aed; }
+  .my-vote-line { margin: 8px 0 14px; font-size: 14px; color: var(--body); background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+  .my-vote-line strong { color: #6d28d9; }
+  .cmp-wrap { overflow-x: auto; }
+  table.cmp { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+  table.cmp th, table.cmp td { padding: 10px 10px; border: 1px solid var(--border); text-align: left; vertical-align: top; line-height: 1.55; }
+  table.cmp thead th { font-size: 13px; font-weight: 800; color: var(--ink); text-align: center; }
+  table.cmp thead th.h1c { background: #f5f3ff; } table.cmp thead th.h2c { background: #ecfeff; } table.cmp thead th.h3c { background: #fffbeb; }
+  table.cmp tbody th { background: #f8fafc; font-size: 11.5px; color: var(--muted); font-weight: 700; white-space: nowrap; width: 92px; }
+  table.cmp td { color: var(--body); }
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0f172a; border: 1px solid #7c3aed; color: #fff; padding: 11px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 999; }
   #toast.show { opacity: 1; }
 </style>
 </head>
@@ -150,7 +171,7 @@
   </div>
 </div>
 
-<div id="app-root" style="display:none">
+<div id="app-root" style="display:none;padding-bottom:32px">
   <header>
     <div class="container">
       <h1>🗳 새학기 편성 투표 <span class="me" id="my-badge"></span></h1>
@@ -194,30 +215,66 @@
       <div class="legend">※ 투표 마감 일정은 카톡으로 안내됩니다. 마감 전까지 투표는 언제든 변경할 수 있습니다.</div>
     </div>
 
-    <!-- 1단계: 교사 섬김 응답 -->
+    <!-- 1단계: 교사 섬김 설문 -->
     <div class="sec" id="serve-sec">
-      <h2>🙋 1단계 — 교사 섬김 응답</h2>
-      <div class="lead" style="font-size:13.5px">새 텀에서 선생님의 섬김 계획을 알려주세요. 응답 내용은 <strong>교역자·총무만 열람</strong>하며, 배치 계획에만 사용됩니다.</div>
-      <div class="serve-opts" id="serve-opts"></div>
-      <textarea id="serve-note" placeholder="역할 분담·안식·복귀 관련 하고 싶은 말씀이 있다면 자유롭게 (선택)" maxlength="300" style="width:100%;margin-top:10px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13.5px;font-family:inherit;resize:vertical;min-height:44px"></textarea>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap">
-        <button onclick="saveServe()" style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;border-radius:10px;padding:11px 22px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit">섬김 응답 저장</button>
-        <span id="serve-state" style="font-size:12.5px;color:var(--muted)"></span>
+      <h2>📋 1단계 — 교사 섬김 상황 제출하기</h2>
+      <div class="survey">
+        <span class="survey-badge">📝 교사 섬김 상황 · 소요 30초 · 교역자·총무만 열람</span>
+        <div class="q-block">
+          <div class="q-title"><span class="qn">Q1.</span> 9월 새 텀에서 선생님의 섬김 계획은 어떻게 되시나요? <span class="req">*필수</span></div>
+          <div class="q-sub">해당하는 항목 하나를 선택해 주세요. 응답은 배치 계획에만 사용됩니다.</div>
+          <div class="radio-list" id="serve-opts"></div>
+        </div>
+        <div class="q-block">
+          <div class="q-title"><span class="qn">Q2.</span> 역할 분담·안식·복귀 관련 하고 싶은 말씀 <span style="font-size:11px;color:var(--muted);font-weight:600">(선택)</span></div>
+          <textarea id="serve-note" placeholder="자유롭게 적어주세요 (예: OO 학생을 맡고 싶습니다 / 이번 텀은 부담이 커서... 등)" maxlength="300"></textarea>
+        </div>
+        <div class="survey-submit">
+          <button onclick="saveServe()">📨 섬김 상황 제출하기</button>
+          <span id="serve-state"></span>
+        </div>
+        <div class="legend" id="serve-meta"></div>
       </div>
-      <div class="legend" id="serve-meta"></div>
     </div>
 
-    <!-- 결과 보기 링크 -->
-    <div class="sec" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <div style="flex:1;min-width:220px">
-        <h2 style="margin-bottom:4px"><span class="live-dot"></span>실시간 투표 결과</h2>
-        <div style="font-size:12.5px;color:var(--muted)">투표 현황은 별도 페이지에서 실시간으로 확인할 수 있습니다.</div>
-      </div>
-      <a href="term3-results.html" style="background:rgba(167,139,250,.15);border:1px solid var(--accent);color:#c4b5fd;border-radius:999px;padding:11px 22px;font-size:13.5px;font-weight:800;text-decoration:none;white-space:nowrap">📊 결과 보기 →</a>
+    <!-- 결과 안내 -->
+    <div class="sec" style="text-align:center">
+      <div style="font-size:13px;color:#64748b">🔒 투표·설문 결과는 취합 기간 동안 공개되지 않으며, <strong style="color:#6d28d9">버전 확정과 함께 공개</strong>됩니다.</div>
     </div>
 
-    <!-- 옵션 1/2/3 -->
+    <!-- 2단계: 편성안 투표 -->
+    <div class="sec" style="border-color:rgba(167,139,250,.45)">
+      <h2>🗳 2단계 — 편성안 투표</h2>
+      <div class="lead" style="font-size:13.5px">
+        아래 <strong>세 가지 편성안</strong>을 읽어보시고, 마음에 드는 안 하나의 <strong>[🗳 투표하기]</strong> 버튼을 눌러주세요.
+        투표는 1인 1표이며 <strong>마감 전까지 언제든 변경</strong>할 수 있습니다. 각 안 아래에 의견도 자유롭게 남겨주세요.
+      </div>
+    </div>
     <div id="options-root"></div>
+
+    <!-- 하단 요약 비교 + 투표 -->
+    <div class="sec" id="compare-sec">
+      <h2>📊 세 안 한눈에 비교 &amp; 투표</h2>
+      <div class="lead" style="font-size:13px">아래에서 바로 투표하거나 변경할 수 있습니다.</div>
+      <div class="cmp-vote" id="cmp-vote"></div>
+      <div class="my-vote-line" id="my-vote-line"></div>
+      <div class="cmp-wrap">
+        <table class="cmp">
+          <thead><tr><th style="background:#f8fafc"></th><th class="h1c">1안 · 찬양팀 대가족</th><th class="h2c">2안 · 14반 세분화</th><th class="h3c">3안 · 12반 새 조합</th></tr></thead>
+          <tbody>
+            <tr><th>컨셉</th><td>팀으로 다지기 — 교사·학생 모두 공동체로</td><td>반을 잘게 나눠 밀착 관리</td><td>안 만나본 조합으로 관계 확장</td></tr>
+            <tr><th>반 수</th><td>10반 (찬양 2반 포함)</td><td>14반</td><td>12반</td></tr>
+            <tr><th>반 재적</th><td>7~13명</td><td>5~7명</td><td>6~8명</td></tr>
+            <tr><th>실출석 예상</th><td>5~8명</td><td>3~5명</td><td>3~6명</td></tr>
+            <tr><th>교사 구조</th><td>모든 반 2인 (역할 분담 팀 사역)</td><td>담임 14 + 일부 반만 2인(6반)</td><td>담임 12 + 일부 반 2인(8반)</td></tr>
+            <tr><th>대가족</th><td>5개 (교사 4인 공동체)</td><td>학년별 3개</td><td>학년별 3개</td></tr>
+            <tr><th>찬양팀</th><td>별도 특별 소그룹 2반 (예배+훈련)</td><td>학년 반 소속 + 활동팀</td><td>학년 반 소속 + 활동팀</td></tr>
+            <tr><th>강점</th><td>케어 분담·백업, 모임 밀도 안정</td><td>학생 1인당 관심 최대</td><td>관계 편중 해소, 새 친구</td></tr>
+            <tr><th>유의점</th><td>고1 반 재적이 큼(12~13)</td><td>실출석 3명대 반 발생, 1인 담임 백업 없음</td><td>친한 그룹 흩어짐, 초반 적응 필요</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <div class="footnote">
       📊 이름 옆 %는 <strong>이번 텀(2학기 6/7~8/16, 11주) 출석률</strong>입니다 (입력된 주 기준 · "-"는 출석 데이터 미입력).
@@ -270,10 +327,10 @@ function logAccess(teacher, page) {
 
 /* ===== 교사 (현 명단 + 새학기 합류) ===== */
 const TEACHERS = [
-  '오신영','안종범','석준원','김광현','송진우','오덕현','이유성',
+  '안종범','석준원','김광현','송진우','오덕현','이유성',
   '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
   '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
-  '박진호','김현진','안강훈'
+  '박진호','김현진','안강훈','송가원'
 ];
 const PRIVATE_KEY = 'runners2026@jesus';
 
@@ -399,7 +456,7 @@ const SERVE_OPTS = [
   { k: 'serve_care',  t: '🤝 계속 섬깁니다 — 케어·서포트 역할 선호', d: '원투원·심방·지원 역할이 더 잘 맞아요' },
   { k: 'serve_any',   t: '💪 계속 섬깁니다 — 어떤 역할이든 좋아요', d: '팀·반 배치에 맡길게요' },
   { k: 'rest',        t: '🌿 이번 텀은 안식이 필요합니다', d: '한 텀 쉬어가며 회복하고 싶어요' },
-  { k: 'talk',        t: '☎️ 교역자·총무와 상의하고 싶습니다', d: '결정 전에 이야기 나누고 싶어요' },
+  { k: 'talk',        t: '☎️ 부장님/국장단과 상의하고 싶어요', d: '결정 전에 이야기 나누고 싶어요' },
 ];
 
 /* ===== 인증 ===== */
@@ -456,7 +513,7 @@ function renderOptions() {
       <div class="opt ${o.cls}" id="opt-${k}">
         <div class="opt-head">
           <h2>${esc(o.title)}</h2>
-          <button class="vote-btn" id="vote-btn-${k}" onclick="castVote(${k})">이 안에 투표</button>
+          <button class="vote-btn" id="vote-btn-${k}" onclick="castVote(${k})">🗳 ${k}안에 투표하기</button>
         </div>
         <div class="opt-body">
           <div class="opt-desc">${o.desc}</div>
@@ -480,14 +537,28 @@ function renderOptions() {
 }
 
 function renderVotes() {
-  // 현황 수치는 별도 결과 페이지(term3-results.html)에서 — 여기선 내 투표 상태만 표시
+  // 결과 수치는 비공개(확정 후 공개) — 여기선 내 투표 상태만 표시
   const mine = VOTES.find(v => v.teacher === (MY || ''));
   [1,2,3].forEach(k => {
     const btn = document.getElementById('vote-btn-' + k);
     if (!btn) return;
-    if (mine && mine.option === k) { btn.classList.add('voted'); btn.textContent = '✓ 내가 투표한 안'; }
-    else { btn.classList.remove('voted'); btn.textContent = '이 안에 투표'; }
+    if (mine && mine.option === k) { btn.classList.add('voted'); btn.textContent = '✅ 내가 선택한 안 (변경 가능)'; }
+    else { btn.classList.remove('voted'); btn.textContent = '🗳 ' + k + '안에 투표하기'; }
   });
+  // 하단 비교 섹션의 투표 라디오 + 상태 문구
+  const OPT_SHORT = { 1: '찬양팀 대가족 (10반)', 2: '14반 세분화', 3: '12반 새 조합' };
+  const wrap = document.getElementById('cmp-vote');
+  if (wrap) {
+    wrap.innerHTML = [1,2,3].map(k => `
+      <div class="radio-row ${mine && mine.option === k ? 'sel' : ''}" onclick="castVote(${k})">
+        <span class="radio-dot"></span>
+        <span class="radio-txt"><span class="rt-t">${k}안 · ${OPT_SHORT[k]}</span></span>
+      </div>`).join('');
+    const line = document.getElementById('my-vote-line');
+    line.innerHTML = mine
+      ? `✅ <strong>${esc(MY)} 선생님은 ${mine.option}안을 선택하셨습니다.</strong> (마감 전까지 변경 가능)`
+      : `⏳ ${esc(MY)} 선생님은 아직 투표 전입니다 — 위에서 안을 선택해 주세요.`;
+  }
 }
 
 function renderServe() {
@@ -500,18 +571,21 @@ function renderServe() {
     if (noteEl && !noteEl.value) noteEl.value = mine.note || '';
   }
   wrap.innerHTML = SERVE_OPTS.map(o => `
-    <div class="serve-opt ${SERVE_SEL === o.k ? 'sel' : ''}" onclick="SERVE_SEL='${o.k}';renderServe()">
-      <span class="st">${o.t}</span><span class="sd">${o.d}</span>
+    <div class="radio-row ${SERVE_SEL === o.k ? 'sel' : ''}" onclick="SERVE_SEL='${o.k}';renderServe()">
+      <span class="radio-dot"></span>
+      <span class="radio-txt"><span class="rt-t">${o.t}</span><span class="rt-d">${o.d}</span></span>
     </div>`).join('');
-  document.getElementById('serve-state').textContent = mine ? '✅ 응답 완료 (' + (mine.updated_at || '').substring(5, 10) + ' · 언제든 수정 가능)' : '아직 응답 전입니다';
-  document.getElementById('serve-meta').textContent = `※ 현재 ${STATUSES.length}명 / ${TEACHERS.length}명 응답 완료 · 응답 상세는 교역자·총무만 열람합니다.`;
+  const st = document.getElementById('serve-state');
+  if (mine) { st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (mine.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다'; }
+  else { st.className = 'pending-tag'; st.textContent = '⏳ 아직 제출 전입니다'; }
+  document.getElementById('serve-meta').textContent = `※ 현재 ${STATUSES.length}명 / ${TEACHERS.length}명 제출 완료 · 응답 내용은 교역자·총무만 열람합니다.`;
 }
 
 async function saveServe() {
-  if (!SERVE_SEL) { showToast('섬김 계획을 선택해 주세요'); return; }
+  if (!SERVE_SEL) { showToast('섬김 상황을 선택해 주세요'); return; }
   try {
     await StatusDB.save(MY, SERVE_SEL, (document.getElementById('serve-note').value || '').trim());
-    showToast('🙏 섬김 응답이 저장되었습니다');
+    showToast('🙏 섬김 상황이 제출되었습니다');
     await refresh();
   } catch (e) { console.error(e); showToast('⚠️ 저장 실패 — 다시 시도해 주세요'); }
 }

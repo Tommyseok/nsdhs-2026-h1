@@ -916,7 +916,6 @@ let REMOTE_ATT = {};
  * ============================================================ */
 const TEACHERS = [
   // 관리자 (국장단 + 부장 + 목사 + 총무)
-  {name:'오신영', cell:null,    role:'담당 목사',  position:'담당 목사',  admin:true},
   {name:'안종범', cell:null,    role:'부장집사',   position:'부장집사',   admin:true},
   {name:'석준원', cell:'셀11',  role:'담임·총무',  position:'총무',       admin:true},
   {name:'김광현', cell:null,    role:'교육국장',   position:'교육국장',   admin:true},
@@ -941,6 +940,8 @@ const TEACHERS = [
   {name:'이규리', cell:'셀8',   role:'부담임'},
   {name:'김주영', cell:'셀9',   role:'부담임'},
   {name:'오은규', cell:'셀12',  role:'부담임'},
+  {name:'박진호', cell:null, role:'신규 교사'},
+  {name:'송가원', cell:null, role:'신규 교사'},
 ];
 
 const CELL_TEACHERS = {
@@ -1249,16 +1250,7 @@ function showApp() {
   const greetEl = document.getElementById('greeting-text');
   const cellBadge = document.getElementById('my-cell-badge');
   const posBadge = document.getElementById('my-position-badge');
-  if (me.name === '오신영') {
-    // 담당 목사님 전용 환영 문구
-    greetEl.innerHTML = '💛 사랑하는 <strong style="color:#fde68a">오신영 목사님</strong> 환영합니다';
-    cellBadge.style.display = 'none';
-    posBadge.textContent = '🎉 우리 목사님 최고!!!';
-    posBadge.style.display = '';
-    posBadge.style.background = 'linear-gradient(135deg,#ec4899,#f59e0b)';
-    posBadge.style.color = '#fff';
-    posBadge.style.borderColor = 'transparent';
-  } else {
+  {
     greetEl.innerHTML = '👋 환영합니다, ' + escapeHtml(me.name) + ' 선생님';
     if (me.cell) { cellBadge.textContent = me.cell + ' · ' + me.role; cellBadge.style.display = ''; }
     else { cellBadge.style.display = 'none'; }
@@ -1502,7 +1494,7 @@ let SELECTED_CELL = null;
 function renderMyClass(me) {
   const titleEl = document.getElementById('my-class-title');
   const bodyEl = document.getElementById('my-class-body');
-  const seeAll = (me.name === '오신영');  // 담당 목사님: Home에서 전체(모든 셀) 보기
+  const seeAll = false;  // (전용 전체보기 폐지)
   // 담임 셀 없는 '일반' 케이스(목사님 제외)만 안내 표시
   if (!me.cell && !seeAll) {
     titleEl.textContent = '내 반';

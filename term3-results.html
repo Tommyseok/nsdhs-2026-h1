@@ -68,7 +68,7 @@
     <div class="gate-card">
       <div style="margin-bottom:12px"><img src="logo-runner.svg" alt="Runners" style="width:56px;height:56px;border-radius:14px"></div>
       <h1>📊 새학기 편성 — 실시간 결과</h1>
-      <p class="gate-sub">투표·응답 현황 (본인 확인 후 열람)</p>
+      <p class="gate-sub">🔒 관리자(교역자·국장단·총무) 전용 — 결과는 버전 확정 후 전체 공개됩니다</p>
       <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off">
       <select id="teacher-select"></select>
       <button onclick="mockLogin()">결과 보기</button>
@@ -115,12 +115,12 @@ const REST = URL_BASE + '/rest/v1';
 const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
 
 const TEACHERS = [
-  '오신영','안종범','석준원','김광현','송진우','오덕현','이유성',
+  '안종범','석준원','김광현','송진우','오덕현','이유성',
   '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
   '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
-  '박진호','김현진','안강훈'
+  '박진호','김현진','안강훈','송가원'
 ];
-const ADMINS = ['오신영','안종범','석준원','김광현','송진우','오덕현','이유성'];
+const ADMINS = ['안종범','석준원','김광현','송진우','오덕현','이유성'];
 const PRIVATE_KEY = 'runners2026@jesus';
 const OPT_NAMES = { 1: '1안 · 찬양팀 대가족 (10반)', 2: '2안 · 14반 세분화', 3: '3안 · 12반 새 조합' };
 const SERVE_LABELS = {
@@ -128,7 +128,7 @@ const SERVE_LABELS = {
   serve_care: ['🤝 계속 섬김 — 케어 역할 선호', 'st-serve'],
   serve_any:  ['💪 계속 섬김 — 역할 무관', 'st-serve'],
   rest:       ['🌿 안식 필요', 'st-rest'],
-  talk:       ['☎️ 상의 필요', 'st-talk'],
+  talk:       ['☎️ 부장님/국장단과 상의 희망', 'st-talk'],
 };
 
 let MY = null, POLL = null;
@@ -145,6 +145,7 @@ function mockLogin() {
   const err = document.getElementById('gate-err');
   if (pin !== PRIVATE_KEY) { err.textContent = '❌ 접근 코드가 일치하지 않습니다'; return; }
   if (!name) { err.textContent = '❌ 본인 이름을 선택해 주세요'; return; }
+  if (!ADMINS.includes(name)) { err.textContent = '🔒 이 페이지는 관리자만 열람할 수 있습니다. 결과는 확정 후 공개됩니다.'; return; }
   localStorage.setItem('mock_teacher', name);
   localStorage.setItem('access_pin', pin);
   showApp();
@@ -210,7 +211,7 @@ async function refresh() {
 
 function showApp() {
   MY = localStorage.getItem('mock_teacher');
-  if (!MY || !TEACHERS.includes(MY)) return;
+  if (!MY || !ADMINS.includes(MY)) return;
   document.getElementById('gate-root').style.display = 'none';
   document.getElementById('app-root').style.display = '';
   refresh();
