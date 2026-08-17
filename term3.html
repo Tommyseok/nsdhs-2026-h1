@@ -229,7 +229,7 @@
     <div class="sec" id="serve-sec">
       <h2>📋 1단계 — 교사 섬김 상황 제출하기</h2>
       <div class="survey">
-        <span class="survey-badge">📝 교사 섬김 상황 · 소요 30초 · 교역자·총무만 열람</span>
+        <span class="survey-badge">📝 교사 섬김 상황 · 소요 30초 · 응답 내용 비공개</span>
         <div class="q-block">
           <div class="q-title"><span class="qn">Q1.</span> 9월 새 텀에서 선생님의 섬김 계획은 어떻게 되시나요? <span class="req">*필수</span></div>
           <div class="q-sub">해당하는 항목 하나를 선택해 주세요. 응답은 배치 계획에만 사용됩니다.</div>
@@ -607,7 +607,7 @@ function renderServe() {
   if (mine) { st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (mine.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다'; }
   else { st.className = 'pending-tag'; st.textContent = '⏳ 아직 제출 전입니다'; }
   const sPct = Math.round(STATUSES.length / TEACHERS.length * 100);
-  document.getElementById('serve-meta').innerHTML = `<span class="p-rate">제출률 <span class="pct">${sPct}%</span> (${STATUSES.length}/${TEACHERS.length}명)</span><br>※ 응답 내용(선택·메모)은 교역자·총무만 열람합니다. 아래는 제출 여부만 표시됩니다.`;
+  document.getElementById('serve-meta').innerHTML = `<span class="p-rate">제출률 <span class="pct">${sPct}%</span> (${STATUSES.length}/${TEACHERS.length}명)</span><br>※ 교사 섬김 상황에 대한 응답 내용은 공개되지 않습니다. 아래는 제출 여부만 표시됩니다.`;
   const submitted = new Set(STATUSES.map(s => s.teacher));
   const notYet = TEACHERS.filter(t => !submitted.has(t));
   document.getElementById('serve-names').innerHTML = `
