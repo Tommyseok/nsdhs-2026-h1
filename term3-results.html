@@ -135,7 +135,8 @@ let MY = null, POLL = null;
 
 function fillSelect() {
   const sel = document.getElementById('teacher-select');
-  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + TEACHERS.map(t => `<option value="${t}">${t}</option>`).join('');
+  const sorted = TEACHERS.slice().sort((a, b) => a.localeCompare(b, 'ko'));
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + sorted.map(t => `<option value="${t}">${t}</option>`).join('');
   const saved = localStorage.getItem('mock_teacher');
   if (saved && TEACHERS.includes(saved)) sel.value = saved;
 }

@@ -134,6 +134,15 @@
   .legend { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
   .footnote { margin: 28px 0 10px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #cbd5e1; }
   .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; margin-right: 5px; vertical-align: 1px; }
+  /* ===== 참여 현황 (이름만, 내용 비공개) ===== */
+  .p-title { font-size: 11.5px; font-weight: 800; color: var(--muted); margin: 10px 0 4px; }
+  .p-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .p-chip { font-size: 12px; border-radius: 999px; padding: 3px 10px; font-weight: 600; }
+  .p-chip.ok { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+  .p-chip.no { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+  .p-rate { font-size: 13px; font-weight: 800; color: var(--ink); margin-top: 12px; }
+  .p-rate .pct { color: #6d28d9; }
+
   /* ===== 하단 비교 + 투표 ===== */
   .cmp-vote { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 6px; }
   .cmp-vote .radio-row { flex: 1; min-width: 175px; }
@@ -234,6 +243,7 @@
           <span id="serve-state"></span>
         </div>
         <div class="legend" id="serve-meta"></div>
+        <div id="serve-names"></div>
       </div>
     </div>
 
@@ -258,7 +268,8 @@
       <div class="lead" style="font-size:13px">아래에서 바로 투표하거나 변경할 수 있습니다.</div>
       <div class="cmp-vote" id="cmp-vote"></div>
       <div class="my-vote-line" id="my-vote-line"></div>
-      <div class="cmp-wrap">
+      <div id="vote-names"></div>
+      <div class="cmp-wrap" style="margin-top:12px">
         <table class="cmp">
           <thead><tr><th style="background:#f8fafc"></th><th class="h1c">1안 · 찬양팀 대가족</th><th class="h2c">2안 · 14반 세분화</th><th class="h3c">3안 · 12반 새 조합</th></tr></thead>
           <tbody>
@@ -462,7 +473,8 @@ const SERVE_OPTS = [
 /* ===== 인증 ===== */
 function fillSelect() {
   const sel = document.getElementById('teacher-select');
-  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + TEACHERS.map(t => `<option value="${t}">${t}</option>`).join('');
+  const sorted = TEACHERS.slice().sort((a, b) => a.localeCompare(b, 'ko'));
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + sorted.map(t => `<option value="${t}">${t}</option>`).join('');
   const saved = localStorage.getItem('mock_teacher');
   if (saved && TEACHERS.includes(saved)) sel.value = saved;
 }
@@ -558,6 +570,16 @@ function renderVotes() {
     line.innerHTML = mine
       ? `✅ <strong>${esc(MY)} 선생님은 ${mine.option}안을 선택하셨습니다.</strong> (마감 전까지 변경 가능)`
       : `⏳ ${esc(MY)} 선생님은 아직 투표 전입니다 — 위에서 안을 선택해 주세요.`;
+    // 투표 참여 현황 (누가 무엇을 골랐는지는 비공개, 참여 여부만)
+    const vPct = Math.round(VOTES.length / TEACHERS.length * 100);
+    const voted = new Set(VOTES.map(v => v.teacher));
+    const notVoted = TEACHERS.filter(t => !voted.has(t));
+    document.getElementById('vote-names').innerHTML = `
+      <div class="p-rate">투표 참여율 <span class="pct">${vPct}%</span> (${VOTES.length}/${TEACHERS.length}명) <span style="font-size:11px;color:var(--muted);font-weight:600">— 어떤 안을 골랐는지는 확정 전까지 비공개</span></div>
+      <div class="p-title">✅ 투표하신 선생님 (${voted.size}명)</div>
+      <div class="p-chips">${[...voted].sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<span class="p-chip ok">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">아직 없습니다</span>'}</div>
+      <div class="p-title">⏳ 아직 투표 전이신 선생님 (${notVoted.length}명)</div>
+      <div class="p-chips">${notVoted.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 투표 완료 🎉</span>'}</div>`;
   }
 }
 
@@ -578,7 +600,15 @@ function renderServe() {
   const st = document.getElementById('serve-state');
   if (mine) { st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (mine.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다'; }
   else { st.className = 'pending-tag'; st.textContent = '⏳ 아직 제출 전입니다'; }
-  document.getElementById('serve-meta').textContent = `※ 현재 ${STATUSES.length}명 / ${TEACHERS.length}명 제출 완료 · 응답 내용은 교역자·총무만 열람합니다.`;
+  const sPct = Math.round(STATUSES.length / TEACHERS.length * 100);
+  document.getElementById('serve-meta').innerHTML = `<span class="p-rate">제출률 <span class="pct">${sPct}%</span> (${STATUSES.length}/${TEACHERS.length}명)</span><br>※ 응답 내용(선택·메모)은 교역자·총무만 열람합니다. 아래는 제출 여부만 표시됩니다.`;
+  const submitted = new Set(STATUSES.map(s => s.teacher));
+  const notYet = TEACHERS.filter(t => !submitted.has(t));
+  document.getElementById('serve-names').innerHTML = `
+    <div class="p-title">✅ 제출하신 선생님 (${submitted.size}명)</div>
+    <div class="p-chips">${[...submitted].sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<span class="p-chip ok">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">아직 없습니다</span>'}</div>
+    <div class="p-title">⏳ 아직 제출 전이신 선생님 (${notYet.length}명)</div>
+    <div class="p-chips">${notYet.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 제출 완료 🎉</span>'}</div>`;
 }
 
 async function saveServe() {
