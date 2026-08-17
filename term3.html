@@ -150,6 +150,7 @@
   .p-chip.ok { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
   .p-chip.no { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
   .p-chip.rest { background: #f1f5f9; border: 1px solid #cbd5e1; color: #64748b; }
+  .p-chip.pend { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
   .p-rate { font-size: 13px; font-weight: 800; color: var(--ink); margin-top: 12px; }
   .p-rate .pct { color: #6d28d9; }
 
@@ -394,9 +395,10 @@ function logAccess(teacher, page) {
 const TEACHERS = [
   '안종범','석준원','김광현','송진우','오덕현','이유성',
   '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
-  '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
-  '박진호','송가원'
+  '이승헌','조세경','김희원','박해니','이규리','김주영','오은규'
 ];
+// 🕊 신규 합류 — 섬김 확정 후 투표 예정 (참여율 집계 제외, 열람은 가능)
+const PENDING_TEACHERS = ['박진호','송가원'];
 // 🌿 안식 중 (투표·설문 대상 제외)
 const REST_TEACHERS = ['김현진','안강훈','김시내','정귀희','문석주'];
 const PRIVATE_KEY = 'runners2026@jesus';
@@ -538,10 +540,10 @@ const SERVE_OPTS = [
 /* ===== 인증 ===== */
 function fillSelect() {
   const sel = document.getElementById('teacher-select');
-  const sorted = TEACHERS.slice().sort((a, b) => a.localeCompare(b, 'ko'));
+  const sorted = TEACHERS.concat(PENDING_TEACHERS).sort((a, b) => a.localeCompare(b, 'ko'));
   sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + sorted.map(t => `<option value="${t}">${t}</option>`).join('');
   const saved = localStorage.getItem('mock_teacher');
-  if (saved && TEACHERS.includes(saved)) sel.value = saved;
+  if (saved && (TEACHERS.includes(saved) || PENDING_TEACHERS.includes(saved))) sel.value = saved;
 }
 function mockLogin() {
   const pin = (document.getElementById('pin-input').value || '').trim();
@@ -632,7 +634,9 @@ function renderVotes() {
         <span class="radio-txt"><span class="rt-t">${k}안 · ${OPT_SHORT[k]}</span></span>
       </div>`).join('');
     const line = document.getElementById('my-vote-line');
-    line.innerHTML = mine
+    line.innerHTML = PENDING_TEACHERS.includes(MY)
+      ? `🕊 <strong>${esc(MY)} 선생님은 섬김 확정 후 투표 예정입니다.</strong> 지금은 각 안을 편하게 둘러봐 주세요.`
+      : mine
       ? `✅ <strong>${esc(MY)} 선생님은 ${mine.option}안을 선택하셨습니다.</strong> (마감 전까지 변경 가능)`
       : `⏳ ${esc(MY)} 선생님은 아직 투표 전입니다 — 위에서 안을 선택해 주세요.`;
     // 투표 참여 현황 (누가 무엇을 골랐는지는 비공개, 참여 여부만)
@@ -645,6 +649,8 @@ function renderVotes() {
       <div class="p-chips">${[...voted].sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<span class="p-chip ok">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">아직 없습니다</span>'}</div>
       <div class="p-title">⏳ 아직 투표 전이신 선생님 (${notVoted.length}명)</div>
       <div class="p-chips">${notVoted.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 투표 완료 🎉</span>'}</div>
+      <div class="p-title">🕊 섬김 확정 후 투표 예정 (${PENDING_TEACHERS.length}명)</div>
+      <div class="p-chips">${PENDING_TEACHERS.map(t => `<span class="p-chip pend">${esc(t)}</span>`).join('')}</div>
       <div class="p-title">🌿 안식 중인 선생님 (투표 대상 아님)</div>
       <div class="p-chips">${REST_TEACHERS.map(t => `<span class="p-chip rest">${esc(t)}</span>`).join('')}</div>`;
   }
@@ -665,7 +671,8 @@ function renderServe() {
       <span class="radio-txt"><span class="rt-t">${o.t}</span><span class="rt-d">${o.d}</span></span>
     </div>`).join('');
   const st = document.getElementById('serve-state');
-  if (mine) { st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (mine.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다'; }
+  if (PENDING_TEACHERS.includes(MY)) { st.className = 'pending-tag'; st.textContent = '🕊 섬김 확정 후 투표 예정입니다 — 제출 없이 둘러봐 주세요'; }
+  else if (mine) { st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (mine.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다'; }
   else { st.className = 'pending-tag'; st.textContent = '⏳ 아직 제출 전입니다'; }
   const sPct = Math.round(STATUSES.length / TEACHERS.length * 100);
   document.getElementById('serve-meta').innerHTML = `<span class="p-rate">제출률 <span class="pct">${sPct}%</span> (${STATUSES.length}/${TEACHERS.length}명)</span><br>※ 응답 내용(선택·메모)은 부장님과 총무만 열람합니다. 아래는 제출 여부만 표시됩니다.`;
@@ -676,11 +683,14 @@ function renderServe() {
     <div class="p-chips">${[...submitted].sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<span class="p-chip ok">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">아직 없습니다</span>'}</div>
     <div class="p-title">⏳ 아직 제출 전이신 선생님 (${notYet.length}명)</div>
     <div class="p-chips">${notYet.map(t => `<span class="p-chip no">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">전원 제출 완료 🎉</span>'}</div>
+    <div class="p-title">🕊 섬김 확정 후 투표 예정 (${PENDING_TEACHERS.length}명 · 제출 대상 아님)</div>
+    <div class="p-chips">${PENDING_TEACHERS.map(t => `<span class="p-chip pend">${esc(t)}</span>`).join('')}</div>
     <div class="p-title">🌿 안식 중인 선생님 (${REST_TEACHERS.length}명 · 제출 대상 아님)</div>
     <div class="p-chips">${REST_TEACHERS.map(t => `<span class="p-chip rest">${esc(t)}</span>`).join('')}</div>`;
 }
 
 async function saveServe() {
+  if (PENDING_TEACHERS.includes(MY)) { showToast('🕊 섬김 확정 후 참여하실 수 있어요'); return; }
   if (!SERVE_SEL) { showToast('섬김 상황을 선택해 주세요'); return; }
   try {
     await StatusDB.save(MY, SERVE_SEL, (document.getElementById('serve-note').value || '').trim());
@@ -795,6 +805,7 @@ async function saveEditCmt(id) {
 
 /* ===== 동작 ===== */
 async function castVote(k) {
+  if (PENDING_TEACHERS.includes(MY)) { showToast('🕊 섬김 확정 후 투표하실 수 있어요'); return; }
   try {
     await VoteDB.cast(MY, k);
     showToast('🗳 ' + k + '안에 투표했습니다 (마감 전까지 변경 가능)');
@@ -833,7 +844,7 @@ function showToast(msg) {
 /* ===== 진입 ===== */
 async function showApp() {
   MY = localStorage.getItem('mock_teacher');
-  if (!MY || !TEACHERS.includes(MY)) { logout(); return; }
+  if (!MY || !(TEACHERS.includes(MY) || PENDING_TEACHERS.includes(MY))) { logout(); return; }
   document.getElementById('gate-root').style.display = 'none';
   document.getElementById('app-root').style.display = '';
   document.getElementById('my-badge').textContent = MY + ' 선생님';
@@ -847,7 +858,7 @@ async function showApp() {
 fillSelect();
 const savedPin = localStorage.getItem('access_pin');
 const savedName = localStorage.getItem('mock_teacher');
-if (savedPin === PRIVATE_KEY && savedName && TEACHERS.includes(savedName)) showApp();
+if (savedPin === PRIVATE_KEY && savedName && (TEACHERS.includes(savedName) || PENDING_TEACHERS.includes(savedName))) showApp();
 document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') mockLogin(); });
 </script>
 

@@ -131,9 +131,9 @@ const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': '
 const TEACHERS = [
   '안종범','석준원','김광현','송진우','오덕현','이유성',
   '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
-  '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
-  '박진호','송가원'
+  '이승헌','조세경','김희원','박해니','이규리','김주영','오은규'
 ];
+const PENDING_TEACHERS = ['박진호','송가원']; // 섬김 확정 후 투표 예정 (집계 제외)
 const REST_TEACHERS = ['김현진','안강훈','김시내','정귀희','문석주'];
 const ADMINS = ['안종범','김광현','석준원','이유성','박대철','송진우','오덕현'];
 const PRIVATE_KEY = 'runners2026@jesus';
@@ -197,7 +197,8 @@ async function refresh() {
     const voted = new Set(votes.map(v => v.teacher));
     const missing = TEACHERS.filter(t => !voted.has(t));
     va.innerHTML = `<div class="admin-note">👑 관리자 보기 — 미투표 ${missing.length}명:</div>
-      <div class="chips">${missing.map(t => `<span class="chip miss">${esc(t)}</span>`).join('') || '<span class="chip">전원 투표 완료 🎉</span>'}</div>`;
+      <div class="chips">${missing.map(t => `<span class="chip miss">${esc(t)}</span>`).join('') || '<span class="chip">전원 투표 완료 🎉</span>'}</div>
+      <div class="admin-note">🕊 섬김 확정 후 투표 예정: ${PENDING_TEACHERS.join(' · ')}</div>`;
   } else va.innerHTML = '';
 
   // 섬김 응답
@@ -216,6 +217,7 @@ async function refresh() {
     sa.innerHTML = `<table><thead><tr><th>선생님</th><th>응답</th><th>메모</th><th>일자</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="color:var(--muted)">아직 응답이 없습니다</td></tr>'}</tbody></table>
       <div class="admin-note">👑 관리자 보기 — 미응답 ${missing.length}명:</div>
       <div class="chips">${missing.map(t => `<span class="chip miss">${esc(t)}</span>`).join('') || '<span class="chip">전원 응답 완료 🎉</span>'}</div>
+      <div class="admin-note">🕊 섬김 확정 후 투표 예정: ${PENDING_TEACHERS.join(' · ')}</div>
       <div class="admin-note">🌿 안식 중 (대상 제외): ${REST_TEACHERS.join(' · ')}</div>`;
   } else {
     sa.innerHTML = '<div class="admin-note">응답 상세는 교역자·총무만 열람할 수 있습니다.</div>';
