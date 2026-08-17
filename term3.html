@@ -119,6 +119,7 @@
   .cls-name .two { font-size: 10px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 1px 8px; }
   .chips { display: flex; flex-wrap: wrap; gap: 5px; }
   .chip { font-size: 12px; background: #fff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 3px 9px; white-space: nowrap; color: var(--ink); }
+  .chip .gr { font-size: 10.5px; color: var(--muted); font-weight: 700; margin-left: 1px; }
   .chip .rt { font-size: 10.5px; font-weight: 800; margin-left: 3px; }
   .rt.hi { color: #059669; } .rt.mid { color: #b45309; } .rt.low { color: #dc2626; } .rt.na { color: #94a3b8; }
   .la-box { margin-top: 8px; background: #fffbeb; border: 1px dashed #f59e0b; border-radius: 10px; padding: 8px 10px; }
@@ -379,6 +380,16 @@ const RATES = {
   '이서현':9,'이소민':27,'김도헌':0,'이하준':0,
 };
 
+/* ===== 학년 (85명) ===== */
+const GRADES = {
+  '명주원':3,'김준수':3,'조강인':3,'이에녹':3,'주성':3,'곽지원':3,'양인혁':3,'송성모':3,'백결':3,'조혁준':3,'장세민':3,'정원영':3,'김도헌':3,
+  '서이수':3,'조인상':3,'박지호':3,'한채은':3,'심희은':3,'김은우':3,'최가은':3,'나정인':3,'김다은':3,'정승빈':3,'김민채':3,'최승아':3,'최지윤':3,'최서윤':3,'박진서':3,'임소명':3,'오희수':3,'이소민':3,
+  '홍기진':2,'연해준':2,'김라일':2,'원대연':2,'이준호':2,'전지훈':2,'임태민':2,'최민호':2,
+  '장지현':2,'강은교':2,'유나린':2,'민예원':2,'김도연':2,'김나현':2,'윤서희':2,'양소희':2,'배유나':2,'이가영':2,'김주하':2,'김채은':2,'유재희':2,'김유진':2,
+  '권하율':1,'안민혁':1,'오현우':1,'이빛가온':1,'김한결':1,'박지웅':1,'김정록':1,'정태율':1,'윤성하':1,'나호윤':1,'박재영':1,'박동하':1,'송준원':1,'김재원':1,'박시우':1,'하어림':1,'이하준':1,
+  '하은유':1,'김은':1,'최지은':1,'조한나':1,'이서후':1,'오은수':1,'이주형':1,'이소현':1,'최유현':1,'최수지':1,'김강은':1,'고예나':1,'김강희':1,'박민주':1,'이서현':1,
+};
+
 /* ===== 3개 편성안 데이터 (a=출석 멤버, l=장결) ===== */
 const OPTIONS = {
   1: {
@@ -514,7 +525,7 @@ function rateHtml(n) {
   const cls = r >= 80 ? 'hi' : r >= 50 ? 'mid' : 'low';
   return `<span class="rt ${cls}">${r}%</span>`;
 }
-function chipHtml(n) { return `<span class="chip">${esc(n)}${rateHtml(n)}</span>`; }
+function chipHtml(n) { return `<span class="chip">${esc(n)}<span class="gr">(${GRADES[n] || '?'})</span>${rateHtml(n)}</span>`; }
 
 function renderOptions() {
   const root = document.getElementById('options-root');
