@@ -222,6 +222,13 @@ ul.b li{margin:.3em 0}
   body{font-size:16.5px;line-height:1.8}
   .wrap{padding:20px 15px 88px}
 
+  /* 좁은 화면에서는 첫 화면을 비워 둔다.
+     목차 상자는 장이 접혀 있어 이미 제목 목록이 보이므로 중복이고,
+     칩과 PDF 줄은 본문에 닿기까지 두 화면을 잡아먹는다.
+     둘 다 인쇄본·데스크톱에는 그대로 남는다. */
+  .meta,.pdfbar,.toc{display:none}
+  header{margin-bottom:18px}
+
   h1{font-size:25px}
   h2{font-size:20.5px}
   h3{font-size:17.5px;margin-top:24px}
@@ -323,12 +330,18 @@ ul.b li{margin:.3em 0}
 .deck{display:none}
 .mob .deck,
 .mob #summary .tiles{
-  display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:85%;gap:11px;
+  /* 카드 한 장이 본문과 같은 폭으로 꽉 차게 한다.
+     옆 카드가 살짝 보이면 다른 단락들과 폭이 어긋나 보여서 걸치지 않게 했다.
+     대신 아래 점과 "1 / 6" 이 다음 장이 있다는 것을 알려 준다.
+     scroll-padding 을 좌우 여백만큼 주어야 멈출 때 가장자리가 맞는다. */
+  display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:100%;gap:14px;
   align-items:start;   /* 짧은 항목이 빈 상자처럼 보이지 않게 내용만큼만 */
   overflow-x:auto;overscroll-behavior-x:contain;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scroll-padding-left:15px;
   margin:14px -15px 0;padding:3px 15px 14px;
-  scrollbar-width:none}
+  scrollbar-width:none;
+  transition:height .2s ease}   /* 높이는 아래 스크립트가 보고 있는 카드에 맞춘다 */
 .mob .deck::-webkit-scrollbar,
 .mob #summary .tiles::-webkit-scrollbar{display:none}
 .mob .deck > *,
@@ -2909,7 +2922,8 @@ GBS준비
       var opening = s.classList.contains("closed");
       setOpen(s, opening);
       var st = load(); st.open = openIds(); save(st);
-      if(opening) swipeHints();   /* 접혀 있던 표는 이제야 폭을 잴 수 있다 */
+      /* 접혀 있던 표와 카드는 이제야 크기를 잴 수 있다 */
+      if(opening){ swipeHints(); fitAll(); }
       /* 접을 때 제목이 화면 위로 사라지지 않도록 되돌린다 */
       if(!opening && h2.getBoundingClientRect().top < 0) h2.scrollIntoView({block:"start"});
     }
@@ -2926,7 +2940,7 @@ GBS준비
     if(MOB.matches && s.tagName === "SECTION"){
       setOpen(s, true);
       var st = load(); st.open = openIds(); save(st);
-      swipeHints();
+      swipeHints(); fitAll();
     }
     s.scrollIntoView({block:"start"});
   }
@@ -3012,34 +3026,51 @@ GBS준비
     wrap.parentNode.insertBefore(deck, wrap);
   });
 
-  /* 카드가 몇 장 중 몇 번째인지 알려 준다 */
-  function initDeck(deck, noun){
-    if(deck.dataset.nav) return;
-    deck.dataset.nav = "1";
+  /* 지금 보고 있는 카드가 몇 번째인지 */
+  function activeCard(deck){
+    var n = deck.children.length;
+    if(!n || !deck.scrollWidth) return 0;
+    return Math.min(n - 1, Math.max(0, Math.round(deck.scrollLeft / (deck.scrollWidth / n))));
+  }
+  /* 몇 번째 카드인지 · 짧은 카드 아래 빈 자리가 남지 않게 높이 맞추기.
+     둘이 어긋나면 "1 / 5"인데 두 번째 카드가 보이는 일이 생기므로 한 번에 처리한다. */
+  function initDeck(deck){
+    if(deck.dataset.deck) return;
+    deck.dataset.deck = "1";
     var n = deck.children.length;
     if(n < 2) return;
+
     var nav = document.createElement("div");
     nav.className = "dnav";
-    nav.innerHTML = '<span class="dc">1 / ' + n + '</span><span class="dots">' +
-      new Array(n).fill('<i></i>').join("") + '</span>' +
+    nav.innerHTML = '<span class="dc">1 / ' + n + '</span>' +
+      '<span class="dots">' + new Array(n).fill("<i></i>").join("") + "</span>" +
       '<span style="margin-left:auto">옆으로 넘겨 보세요</span>';
     deck.parentNode.insertBefore(nav, deck.nextSibling);
     var dots = nav.querySelectorAll("i"), label = nav.querySelector(".dc");
-    dots[0].className = "on";
+
+    deck._sync = function(){
+      /* 접혀 있는 장 안이거나 데스크톱이면 잴 수도, 잴 필요도 없다 */
+      if(!MOB.matches || !deck.clientWidth){ deck.style.height = ""; return; }
+      var i = activeCard(deck), c = deck.children[i];
+      label.textContent = (i + 1) + " / " + n;
+      dots.forEach(function(d, k){ d.className = k === i ? "on" : ""; });
+      var h = c ? c.getBoundingClientRect().height : 0;
+      deck.style.height = h ? (h + 17) + "px" : "";
+    };
+
     var t;
     deck.addEventListener("scroll", function(){
       clearTimeout(t);
-      t = setTimeout(function(){
-        var step = deck.scrollWidth / n;
-        var i = Math.min(n - 1, Math.max(0, Math.round(deck.scrollLeft / step)));
-        label.textContent = (i + 1) + " / " + n;
-        dots.forEach(function(d, k){ d.className = k === i ? "on" : ""; });
-      }, 60);
+      t = setTimeout(deck._sync, 60);
     }, {passive:true});
+    deck._sync();
   }
-  document.querySelectorAll(".deck").forEach(function(d){ initDeck(d); });
+
+  var decks = [].slice.call(document.querySelectorAll(".deck"));
   var sumTiles = document.querySelector("#summary .tiles");
-  if(sumTiles) initDeck(sumTiles);
+  if(sumTiles) decks.push(sumTiles);
+  decks.forEach(initDeck);
+  function fitAll(){ decks.forEach(function(d){ if(d._sync) d._sync(); }); }
 
   /* 6. 읽던 위치 기억 */
   var timer;
@@ -3063,10 +3094,14 @@ GBS준비
       closeSheet();
     }
     swipeHints();
+    fitAll();
   }
   apply();
   if(MOB.addEventListener) MOB.addEventListener("change", apply);
-  window.addEventListener("resize", function(){ clearTimeout(timer); timer = setTimeout(swipeHints, 200); });
+  window.addEventListener("resize", function(){
+    clearTimeout(timer);
+    timer = setTimeout(function(){ swipeHints(); fitAll(); }, 200);
+  });
 
   /* 8. 처음 들어왔을 때, 지난번 자리로 갈지 물어본다 */
   if(MOB.matches){
