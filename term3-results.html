@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="내수동 경주자 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Runners 2026 · 새학기 편성 결과</title>
+<style>
+  :root {
+    --bg: #0b0f17; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh; }
+  .container { max-width: 900px; margin: 0 auto; padding: 16px; }
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px 26px; max-width: 420px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,.5); text-align: center; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 19px; color: #f1f5f9; }
+  .gate-card .gate-sub { margin: 0 0 22px; font-size: 13px; color: var(--muted); }
+  .gate-card input, .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card input { text-align: center; letter-spacing: 2px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  #gate-err { color: #fca5a5; font-size: 12px; margin-top: 10px; min-height: 16px; }
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 16px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; flex: 1; }
+  header a, header button { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; }
+  .sec { margin-top: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+  .sec h2 { margin: 0 0 12px; font-size: 16px; color: #f1f5f9; }
+  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #34d399; margin-right: 6px; animation: blink 1.6s infinite; vertical-align: 1px; }
+  @keyframes blink { 50% { opacity: .3; } }
+  .vbar-row { display: flex; align-items: center; gap: 10px; margin: 12px 0; }
+  .vbar-label { flex: 0 0 150px; font-size: 13px; font-weight: 800; color: #f1f5f9; line-height: 1.35; }
+  .vbar-track { flex: 1; height: 30px; background: rgba(255,255,255,.05); border-radius: 8px; overflow: hidden; }
+  .vbar-fill { height: 100%; border-radius: 8px; transition: width .6s; display: flex; align-items: center; justify-content: flex-end; padding-right: 9px; font-size: 12.5px; font-weight: 800; color: #fff; }
+  .vbar-fill.o1 { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+  .vbar-fill.o2 { background: linear-gradient(90deg, #0e7490, #22d3ee); }
+  .vbar-fill.o3 { background: linear-gradient(90deg, #b45309, #fbbf24); }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { font-size: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 3px 10px; }
+  .chip.miss { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.3); color: #fca5a5; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+  th { color: var(--muted); font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .st-tag { font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; display: inline-block; }
+  .st-serve { background: rgba(16,185,129,.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,.35); }
+  .st-rest { background: rgba(245,158,11,.12); color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
+  .st-talk { background: rgba(56,189,248,.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,.35); }
+  .admin-note { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+  .cmt-sum { font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div style="margin-bottom:12px"><img src="logo-runner.svg" alt="Runners" style="width:56px;height:56px;border-radius:14px"></div>
+      <h1>📊 새학기 편성 — 실시간 결과</h1>
+      <p class="gate-sub">투표·응답 현황 (본인 확인 후 열람)</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">결과 보기</button>
+      <div id="gate-err"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <h1>📊 새학기 편성 — 실시간 결과</h1>
+      <a href="term3.html">← 투표 페이지</a>
+      <button onclick="location.reload()">🔄</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="sec">
+      <h2><span class="live-dot"></span>투표 현황 <span style="font-size:11px;color:var(--muted);font-weight:600">10초마다 자동 갱신</span></h2>
+      <div id="bars"></div>
+      <div class="meta" id="vote-meta"></div>
+      <div id="voters-admin"></div>
+    </div>
+
+    <div class="sec">
+      <h2>🙋 교사 섬김 응답 현황</h2>
+      <div class="meta" id="serve-meta"></div>
+      <div id="serve-admin"></div>
+    </div>
+
+    <div class="sec">
+      <h2>💬 의견 요약</h2>
+      <div class="cmt-sum" id="cmt-sum"></div>
+      <div class="admin-note">의견 전문은 투표 페이지의 각 안 아래에서 볼 수 있습니다.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+
+const TEACHERS = [
+  '오신영','안종범','석준원','김광현','송진우','오덕현','이유성',
+  '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
+  '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
+  '박진호','김현진','안강훈'
+];
+const ADMINS = ['오신영','안종범','석준원','김광현','송진우','오덕현','이유성'];
+const PRIVATE_KEY = 'runners2026@jesus';
+const OPT_NAMES = { 1: '1안 · 찬양팀 대가족 (10반)', 2: '2안 · 14반 세분화', 3: '3안 · 12반 새 조합' };
+const SERVE_LABELS = {
+  serve_lead: ['🙌 계속 섬김 — 반 인도 가능', 'st-serve'],
+  serve_care: ['🤝 계속 섬김 — 케어 역할 선호', 'st-serve'],
+  serve_any:  ['💪 계속 섬김 — 역할 무관', 'st-serve'],
+  rest:       ['🌿 안식 필요', 'st-rest'],
+  talk:       ['☎️ 상의 필요', 'st-talk'],
+};
+
+let MY = null, POLL = null;
+
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + TEACHERS.map(t => `<option value="${t}">${t}</option>`).join('');
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved && TEACHERS.includes(saved)) sel.value = saved;
+}
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  const err = document.getElementById('gate-err');
+  if (pin !== PRIVATE_KEY) { err.textContent = '❌ 접근 코드가 일치하지 않습니다'; return; }
+  if (!name) { err.textContent = '❌ 본인 이름을 선택해 주세요'; return; }
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function refresh() {
+  let votes = [], statuses = [], comments = [];
+  try {
+    [votes, comments, statuses] = await Promise.all([
+      fetch(REST + '/term3_votes?select=*', { headers: H }).then(r => r.ok ? r.json() : []),
+      fetch(REST + '/term3_comments?active=eq.true&select=option', { headers: H }).then(r => r.ok ? r.json() : []),
+      fetch(REST + '/term3_teacher_status?select=*', { headers: H }).then(r => r.ok ? r.json() : []),
+    ]);
+  } catch (e) { console.warn(e); return; }
+  const isAdmin = ADMINS.includes(MY);
+
+  // 투표 바
+  const counts = { 1: 0, 2: 0, 3: 0 };
+  votes.forEach(v => { if (counts[v.option] !== undefined) counts[v.option]++; });
+  const total = votes.length, max = Math.max(1, counts[1], counts[2], counts[3]);
+  document.getElementById('bars').innerHTML = [1,2,3].map(k => {
+    const pct = total ? Math.round(counts[k] / total * 100) : 0;
+    return `<div class="vbar-row"><div class="vbar-label">${OPT_NAMES[k]}</div>
+      <div class="vbar-track"><div class="vbar-fill o${k}" style="width:${Math.max(Math.round(counts[k]/max*100), counts[k] ? 13 : 0)}%">${counts[k] ? counts[k] + '표 (' + pct + '%)' : ''}</div></div></div>`;
+  }).join('');
+  document.getElementById('vote-meta').textContent = `참여 ${total}명 / 교사 ${TEACHERS.length}명`;
+
+  // 관리자: 투표 참여·미참여 명단
+  const va = document.getElementById('voters-admin');
+  if (isAdmin) {
+    const voted = new Set(votes.map(v => v.teacher));
+    const missing = TEACHERS.filter(t => !voted.has(t));
+    va.innerHTML = `<div class="admin-note">👑 관리자 보기 — 미투표 ${missing.length}명:</div>
+      <div class="chips">${missing.map(t => `<span class="chip miss">${esc(t)}</span>`).join('') || '<span class="chip">전원 투표 완료 🎉</span>'}</div>`;
+  } else va.innerHTML = '';
+
+  // 섬김 응답
+  document.getElementById('serve-meta').textContent = `응답 ${statuses.length}명 / ${TEACHERS.length}명`;
+  const sa = document.getElementById('serve-admin');
+  if (isAdmin) {
+    const responded = new Set(statuses.map(s => s.teacher));
+    const missing = TEACHERS.filter(t => !responded.has(t));
+    const rows = statuses.sort((a,b) => a.teacher.localeCompare(b.teacher, 'ko')).map(s => {
+      const [label, cls] = SERVE_LABELS[s.status] || [s.status, ''];
+      return `<tr><td style="font-weight:700;color:#f1f5f9;white-space:nowrap">${esc(s.teacher)}</td>
+        <td><span class="st-tag ${cls}">${label}</span></td>
+        <td style="color:#cbd5e1">${esc(s.note || '')}</td>
+        <td style="color:var(--muted);white-space:nowrap">${esc((s.updated_at || '').substring(5, 10))}</td></tr>`;
+    }).join('');
+    sa.innerHTML = `<table><thead><tr><th>선생님</th><th>응답</th><th>메모</th><th>일자</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="color:var(--muted)">아직 응답이 없습니다</td></tr>'}</tbody></table>
+      <div class="admin-note">👑 관리자 보기 — 미응답 ${missing.length}명:</div>
+      <div class="chips">${missing.map(t => `<span class="chip miss">${esc(t)}</span>`).join('') || '<span class="chip">전원 응답 완료 🎉</span>'}</div>`;
+  } else {
+    sa.innerHTML = '<div class="admin-note">응답 상세는 교역자·총무만 열람할 수 있습니다.</div>';
+  }
+
+  // 의견 요약
+  const cc = { 1: 0, 2: 0, 3: 0 };
+  comments.forEach(c => { if (cc[c.option] !== undefined) cc[c.option]++; });
+  document.getElementById('cmt-sum').textContent = `1안 ${cc[1]}건 · 2안 ${cc[2]}건 · 3안 ${cc[3]}건 (총 ${comments.length}건)`;
+}
+
+function showApp() {
+  MY = localStorage.getItem('mock_teacher');
+  if (!MY || !TEACHERS.includes(MY)) return;
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  refresh();
+  if (POLL) clearInterval(POLL);
+  POLL = setInterval(refresh, 10000);
+}
+
+fillSelect();
+if (localStorage.getItem('access_pin') === PRIVATE_KEY && TEACHERS.includes(localStorage.getItem('mock_teacher') || '')) showApp();
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') mockLogin(); });
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 */
+(function () {
+  const KEY = 'runners2026@jesus';
+  const ITEMS = [
+    ['term3.html', '🗳 새학기 편성', ''],
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['__sep__'],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['relations.html', '🕸 관계도', '?key=' + KEY],
+    ['attendance-overview.html', '📊 전체 출석현황', ''],
+    ['photos.html', '📸 사진 등록', ''],
+    ['outings.html', '🎒 아웃팅', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    it[0] === '__sep__'
+      ? '<span class="site-nav-sep" aria-hidden="true"></span>'
+      : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
+</body>
+</html>
