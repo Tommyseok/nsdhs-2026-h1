@@ -133,7 +133,8 @@
   .cmt { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; }
   .cmt .ch { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); margin-bottom: 3px; }
   .cmt .ch .nm { font-weight: 800; color: #6d28d9; }
-  .cmt .del { margin-left: auto; background: none; border: none; color: #dc2626; font-size: 11px; cursor: pointer; font-family: inherit; }
+  .cmt .edit { margin-left: auto; background: none; border: none; color: #6d28d9; font-size: 11px; cursor: pointer; font-family: inherit; font-weight: 700; }
+  .cmt .del { background: none; border: none; color: #dc2626; font-size: 11px; cursor: pointer; font-family: inherit; }
   .cmt .tx { font-size: 13.5px; white-space: pre-wrap; word-break: break-word; color: var(--body); }
   .legend { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
   .footnote { margin: 28px 0 10px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #cbd5e1; }
@@ -324,6 +325,10 @@ const VoteDB = {
   },
   async delComment(id) {
     await fetch(REST + '/term3_comments?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ active: false }) });
+  },
+  async updateComment(id, text) {
+    const r = await fetch(REST + '/term3_comments?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ text }) });
+    if (!r.ok) throw new Error('수정 실패 (' + r.status + ')');
   }
 };
 const StatusDB = {
@@ -632,7 +637,10 @@ async function saveServe() {
   } catch (e) { console.error(e); showToast('⚠️ 저장 실패 — 다시 시도해 주세요'); }
 }
 
+let EDITING_CMT = null; // 수정 중인 의견 id (자동 갱신으로부터 입력 보호)
+
 function renderComments() {
+  if (EDITING_CMT) return; // 수정 중에는 재렌더 안 함
   [1,2,3].forEach(k => {
     const list = COMMENTS.filter(c => c.option === k);
     const el = document.getElementById('cmt-list-' + k);
@@ -640,11 +648,45 @@ function renderComments() {
     el.innerHTML = list.length ? list.map(c => `
       <div class="cmt">
         <div class="ch"><span class="nm">${esc(c.teacher)}</span><span>${esc((c.created_at || '').substring(5, 16).replace('T', ' '))}</span>
-          ${c.teacher === MY ? `<button class="del" onclick="delComment('${esc(c.id)}')">삭제</button>` : ''}</div>
-        <div class="tx">${esc(c.text)}</div>
+          ${c.teacher === MY ? `<button class="edit" onclick="startEditCmt('${esc(c.id)}')">수정</button><button class="del" onclick="delComment('${esc(c.id)}')">삭제</button>` : ''}</div>
+        <div class="tx" id="cmt-tx-${esc(c.id)}">${esc(c.text)}</div>
       </div>
     `).join('') : '<div style="font-size:12px;color:var(--muted)">아직 의견이 없습니다 — 첫 의견을 남겨주세요!</div>';
   });
+}
+
+function startEditCmt(id) {
+  const c = COMMENTS.find(x => x.id === id);
+  if (!c || c.teacher !== MY) return;
+  EDITING_CMT = id;
+  const tx = document.getElementById('cmt-tx-' + id);
+  if (!tx) { EDITING_CMT = null; return; }
+  tx.innerHTML = `
+    <textarea id="cmt-edit-${esc(id)}" maxlength="500" style="width:100%;background:#fff;color:var(--ink);border:1.5px solid #7c3aed;border-radius:10px;padding:10px 12px;font-size:13.5px;font-family:inherit;resize:vertical;min-height:60px"></textarea>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button onclick="saveEditCmt('${esc(id)}')" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit">저장</button>
+      <button onclick="cancelEditCmt()" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">취소</button>
+    </div>`;
+  const ta = document.getElementById('cmt-edit-' + id);
+  ta.value = c.text;
+  ta.focus();
+}
+
+function cancelEditCmt() {
+  EDITING_CMT = null;
+  renderComments();
+}
+
+async function saveEditCmt(id) {
+  const ta = document.getElementById('cmt-edit-' + id);
+  const text = (ta.value || '').trim();
+  if (!text) { showToast('내용을 입력해 주세요'); return; }
+  try {
+    await VoteDB.updateComment(id, text);
+    EDITING_CMT = null;
+    showToast('✏️ 의견이 수정되었습니다');
+    await refresh();
+  } catch (e) { console.error(e); EDITING_CMT = null; showToast('⚠️ 수정 실패 — 다시 시도해 주세요'); }
 }
 
 /* ===== 동작 ===== */
