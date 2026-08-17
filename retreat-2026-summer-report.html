@@ -6,8 +6,11 @@
 <meta name="robots" content="noindex, nofollow">
 <title>2026 여름수련회 평가</title>
 <style>
+/* 종이처럼 밝은 화면 하나로 고정한다.
+   기기가 다크 모드여도 배경이 검게 바뀌지 않도록 color-scheme 을 light 로 못 박고,
+   다크 팔레트는 두지 않는다. */
 :root{
-  color-scheme: light;
+  color-scheme: light only;
   --plane:#f9f9f7; --surface:#fcfcfb;
   --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
   --grid:#e1e0d9; --axis:#c3c2b7; --hair:rgba(11,11,11,.10);
@@ -19,29 +22,8 @@
   --track:#efeee9;
   --radius:4px;
 }
-@media (prefers-color-scheme: dark){
-  :root:where(:not([data-theme="light"])){
-    color-scheme: dark;
-    --plane:#0d0d0d; --surface:#1a1a19;
-    --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
-    --grid:#2c2c2a; --axis:#383835; --hair:rgba(255,255,255,.10);
-    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
-    --d-2:#2a78d6; --d-1:#86b6ef; --d0:#383835; --dp1:#e66767; --dp2:#b52c2b;
-    --track:#242423;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme: dark;
-  --plane:#0d0d0d; --surface:#1a1a19;
-  --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
-  --grid:#2c2c2a; --axis:#383835; --hair:rgba(255,255,255,.10);
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
-  --d-2:#2a78d6; --d-1:#86b6ef; --d0:#383835; --dp1:#e66767; --dp2:#b52c2b;
-  --track:#242423;
-}
-
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%; background:var(--plane)}
 body{
   margin:0; background:var(--plane); color:var(--ink);
   font:15px/1.65 system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
