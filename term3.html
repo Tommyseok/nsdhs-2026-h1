@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="내수동 경주자 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Runners 2026 · 새학기 편성 투표</title>
+<style>
+  :root {
+    --bg: #0b0f17; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body { margin: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: var(--muted); text-align: center; }
+  .gate-card input, .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card input { text-align: center; letter-spacing: 2px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  #gate-err { color: #fca5a5; font-size: 12px; margin-top: 10px; min-height: 16px; text-align: center; }
+
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; flex: 1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  header .me { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
+  header button { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+  .sec { margin-top: 22px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px 18px; }
+  .sec h2 { margin: 0 0 12px; font-size: 17px; color: #f1f5f9; }
+  .sec .lead { font-size: 14px; color: #ddd6fe; line-height: 1.75; }
+  .sec .lead strong { color: #c4b5fd; }
+
+  .common-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 14px; }
+  .common-card { background: rgba(167,139,250,.08); border: 1px solid rgba(167,139,250,.3); border-radius: 12px; padding: 14px; font-size: 13.5px; line-height: 1.6; }
+  .common-card .t { font-weight: 800; color: #c4b5fd; margin-bottom: 6px; font-size: 14px; }
+
+  /* 프로세스 플로우 */
+  .flow { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 14px 2px 6px; scrollbar-width: thin; }
+  .flow-step { flex: 1; min-width: 128px; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; text-align: center; position: relative; }
+  .flow-step.now { border-color: var(--accent); background: rgba(124,58,237,.15); box-shadow: 0 0 18px rgba(124,58,237,.25); }
+  .flow-step .n { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+  .flow-step .tt { font-size: 13px; font-weight: 800; color: #f1f5f9; }
+  .flow-step .dd { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+  .flow-step .badge-now { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 800; color: #fcd34d; background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.4); border-radius: 999px; padding: 1px 8px; }
+  .flow-arrow { flex: 0 0 auto; display: flex; align-items: center; padding: 0 5px; color: var(--accent); font-size: 20px; font-weight: 800; }
+
+  /* 투표 현황 */
+  .vote-bars { margin-top: 8px; }
+  .vbar-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+  .vbar-label { flex: 0 0 130px; font-size: 13px; font-weight: 800; color: #f1f5f9; }
+  .vbar-track { flex: 1; height: 26px; background: rgba(255,255,255,.05); border-radius: 8px; overflow: hidden; position: relative; }
+  .vbar-fill { height: 100%; border-radius: 8px; transition: width .6s; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 12px; font-weight: 800; color: #fff; min-width: 0; }
+  .vbar-fill.o1 { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+  .vbar-fill.o2 { background: linear-gradient(90deg, #0e7490, #22d3ee); }
+  .vbar-fill.o3 { background: linear-gradient(90deg, #b45309, #fbbf24); }
+  .vote-meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #34d399; margin-right: 5px; animation: blink 1.6s infinite; vertical-align: 1px; }
+  @keyframes blink { 50% { opacity: .3; } }
+
+  /* 옵션 카드 */
+  .opt { margin-top: 26px; border: 2px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .opt.o1 { border-color: rgba(167,139,250,.5); } .opt.o2 { border-color: rgba(34,211,238,.4); } .opt.o3 { border-color: rgba(251,191,36,.4); }
+  .opt-head { padding: 16px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .opt.o1 .opt-head { background: rgba(124,58,237,.15); } .opt.o2 .opt-head { background: rgba(14,116,144,.18); } .opt.o3 .opt-head { background: rgba(180,83,9,.15); }
+  .opt-head h2 { margin: 0; font-size: 18px; color: #f1f5f9; flex: 1; min-width: 200px; }
+  .vote-btn { background: rgba(255,255,255,.08); border: 2px solid rgba(255,255,255,.25); color: #fff; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .vote-btn:hover { background: rgba(255,255,255,.16); }
+  .vote-btn.voted { background: linear-gradient(135deg, #059669, #34d399); border-color: #34d399; }
+  .opt-body { padding: 16px 18px; background: var(--card); }
+  .opt-desc { font-size: 13.5px; line-height: 1.7; color: #d8dee9; margin-bottom: 6px; }
+  .opt-desc strong { color: #f1f5f9; }
+  .opt-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; margin: 12px 0 4px; }
+  .pt { font-size: 12.5px; padding: 10px 12px; border-radius: 10px; line-height: 1.55; }
+  .pt.plus { background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.3); color: #a7f3d0; }
+  .pt.minus { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.3); color: #fde68a; }
+
+  .fam { margin-top: 16px; }
+  .fam-title { font-size: 14px; font-weight: 800; color: #c4b5fd; padding: 8px 12px; background: rgba(124,58,237,.15); border-radius: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .fam-note { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+  .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 8px; }
+  .cls { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+  .cls-name { font-size: 13.5px; font-weight: 800; color: #f1f5f9; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .cls-name .cnt { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .cls-name .two { font-size: 10px; font-weight: 800; color: #6ee7b7; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35); border-radius: 999px; padding: 1px 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { font-size: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+  .chip .rt { font-size: 10.5px; font-weight: 800; margin-left: 3px; }
+  .rt.hi { color: #6ee7b7; } .rt.mid { color: #fcd34d; } .rt.low { color: #fca5a5; } .rt.na { color: #94a3b8; }
+  .la-box { margin-top: 8px; background: rgba(245,158,11,.06); border: 1px dashed rgba(245,158,11,.35); border-radius: 10px; padding: 8px 10px; }
+  .la-box .la-t { font-size: 10.5px; font-weight: 800; color: #fcd34d; margin-bottom: 5px; }
+
+  /* 의견 */
+  .cmt-box { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 14px; }
+  .cmt-box h3 { margin: 0 0 8px; font-size: 14px; color: #f1f5f9; }
+  .cmt-form { display: flex; gap: 8px; }
+  .cmt-form textarea { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; font-family: inherit; resize: vertical; min-height: 44px; }
+  .cmt-form button { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border: none; border-radius: 10px; padding: 0 18px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .cmt-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .cmt { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 9px 12px; }
+  .cmt .ch { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); margin-bottom: 3px; }
+  .cmt .ch .nm { font-weight: 800; color: #c4b5fd; }
+  .cmt .del { margin-left: auto; background: none; border: none; color: #fca5a5; font-size: 11px; cursor: pointer; font-family: inherit; }
+  .cmt .tx { font-size: 13.5px; white-space: pre-wrap; word-break: break-word; }
+  .legend { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+  .footnote { margin: 28px 0 10px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: rgba(255,255,255,.02); border-radius: 8px; border-left: 2px solid var(--border); }
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e293b; border: 1px solid var(--accent); color: #fff; padding: 11px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 999; }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div style="text-align:center;margin-bottom:14px"><img src="logo-runner.svg" alt="Runners" style="width:62px;height:62px;border-radius:16px;box-shadow:0 8px 24px rgba(124,58,237,.4)"></div>
+      <div style="text-align:center;font-weight:800;letter-spacing:1px;color:#c4b5fd;font-size:13px;margin-bottom:10px">RUNNERS 2026</div>
+      <h1>🗳 새학기(3학기) 편성 투표</h1>
+      <p class="gate-sub">9월 새 텀 편성안 3가지 — 선생님의 선택과 의견을 들려주세요</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">접속</button>
+      <div id="gate-err"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <h1>🗳 새학기 편성 투표 <span class="me" id="my-badge"></span></h1>
+      <button onclick="location.reload()">🔄 새로고침</button>
+      <button onclick="logout()" style="background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.35);color:#fca5a5">🚪 로그아웃</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- 취지 -->
+    <div class="sec">
+      <h2>🌱 2026 마지막 텀 — 은혜의 깊이를 더하는, 다지는 기간</h2>
+      <div class="lead">
+        9월부터 시작하는 새 텀은 새로운 것을 벌이는 기간이 아니라, 한 해 동안 심긴 것을 다지고 <strong>은혜의 깊이를 더하는 기간</strong>입니다.
+        그래서 구조의 원리는 단순합니다 — <strong>교사도 모이고, 학생도 모입니다.</strong>
+        학생은 같은 시기를 통과하는 또래(학년)끼리 모이고, 교사는 팀으로 함께 사역합니다.
+        아래 세 가지 편성안을 읽어보시고, <strong>선호하는 안에 투표</strong>해 주세요. 각 안에 <strong>의견</strong>도 자유롭게 남겨주세요.
+      </div>
+      <div class="common-grid">
+        <div class="common-card"><div class="t">📌 공통 ① 고3 별도 운영</div>어떤 안이 선택되어도 고3은 별도의 반으로 묶어 수험 기간 전 집중 케어합니다. 수능 이후 복귀·진로 시즌까지 이어지는 트랙입니다.</div>
+        <div class="common-card"><div class="t">📌 공통 ② 투표로 버전 확정</div>선생님들의 의견을 취합한 후, 가장 많이 선택된 버전을 기본안으로 편성합니다.</div>
+        <div class="common-card"><div class="t">📌 공통 ③ 미세 조정 반영</div>버전 확정 이후의 세부 조정(학생 이동·반 구성 등)은 각 선생님들의 의견을 최대한 반영하여 적용합니다.</div>
+        <div class="common-card"><div class="t">📌 공통 ④ 학년별 · 남녀 합반 · 장결 통합</div>세 안 모두 학년별 구성과 남녀 합반이 기본이며, 장기결석 친구들도 일반 반 명단에 함께 배치해 돌아올 자리를 준비합니다.</div>
+      </div>
+    </div>
+
+    <!-- 프로세스 -->
+    <div class="sec">
+      <h2>🧭 진행 프로세스</h2>
+      <div class="flow">
+        <div class="flow-step"><span class="n">1</span><div class="tt">편성안 공유</div><div class="dd">3가지 안 공개<br>(이 페이지)</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step now"><span class="n">2</span><div class="tt">투표 & 의견</div><div class="dd">선생님 전원<br>선호 투표 + 의견 작성</div><span class="badge-now">지금 단계</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="n">3</span><div class="tt">취합 · 버전 확정</div><div class="dd">최다 득표안 기준<br>교역자·총무 확정</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="n">4</span><div class="tt">미세 조정</div><div class="dd">선생님 의견<br>최대한 반영</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="n">5</span><div class="tt">교사 배치 · 시작</div><div class="dd">팀 구성 후<br>9월 새 텀 출발 🏃</div></div>
+      </div>
+      <div class="legend">※ 투표 마감 일정은 카톡으로 안내됩니다. 마감 전까지 투표는 언제든 변경할 수 있습니다.</div>
+    </div>
+
+    <!-- 실시간 현황 -->
+    <div class="sec">
+      <h2><span class="live-dot"></span>실시간 투표 현황</h2>
+      <div class="vote-bars" id="vote-bars"><div style="color:var(--muted);font-size:13px">불러오는 중…</div></div>
+      <div class="vote-meta" id="vote-meta"></div>
+    </div>
+
+    <!-- 옵션 1/2/3 -->
+    <div id="options-root"></div>
+
+    <div class="footnote">
+      📊 이름 옆 %는 <strong>이번 텀(2학기 6/7~8/16, 11주) 출석률</strong>입니다 (입력된 주 기준 · "-"는 출석 데이터 미입력).
+      🤍 <strong>장결 칸</strong>의 친구들은 각 반 명단에 함께 소속되며, 케어 전담 교사가 원투원으로 연락·심방합니다.
+      교사 배치는 버전 확정 후 별도로 진행됩니다. 문의: 총무 석준원
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ===== Supabase (REST) ===== */
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+
+const VoteDB = {
+  async list() { const r = await fetch(REST + '/term3_votes?select=*', { headers: H }); return r.ok ? r.json() : []; },
+  async cast(teacher, option) {
+    const r = await fetch(REST + '/term3_votes?on_conflict=teacher', { method: 'POST',
+      headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H),
+      body: JSON.stringify({ teacher, option, updated_at: new Date().toISOString() }) });
+    if (!r.ok) throw new Error('투표 저장 실패 (' + r.status + ')');
+  },
+  async comments() { const r = await fetch(REST + '/term3_comments?active=eq.true&order=created_at.desc&select=*', { headers: H }); return r.ok ? r.json() : []; },
+  async addComment(rec) {
+    const r = await fetch(REST + '/term3_comments', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) });
+    if (!r.ok) throw new Error('의견 저장 실패 (' + r.status + ')');
+  },
+  async delComment(id) {
+    await fetch(REST + '/term3_comments?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ active: false }) });
+  }
+};
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher, page }) }).catch(() => {});
+}
+
+/* ===== 교사 (현 명단 + 새학기 합류) ===== */
+const TEACHERS = [
+  '오신영','안종범','석준원','김광현','송진우','오덕현','이유성',
+  '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
+  '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
+  '박진호','김현진','안강훈'
+];
+const PRIVATE_KEY = 'runners2026@jesus';
+
+/* ===== 이번 텀(2학기) 출석률 (11주 · 입력 주 기준, null=미입력) ===== */
+const RATES = {
+  '권하율':88,'하은유':100,'홍기진':100,'서이수':100,'장지현':88,'김은':0,
+  '강은교':100,'명주원':100,'조인상':100,'연해준':100,'유나린':36,
+  '박지호':95,'한채은':100,'김준수':60,'김라일':100,'안민혁':80,
+  '원대연':73,'이준호':18,'전지훈':0,'오현우':100,'이빛가온':91,
+  '민예원':50,'김도연':100,'최지은':50,'김나현':0,'윤서희':33,
+  '조한나':67,'김한결':100,'이서후':100,'임태민':0,'박지웅':100,
+  '조강인':33,'이에녹':100,'최민호':67,'김정록':100,'정태율':100,
+  '심희은':88,'김은우':38,'최가은':62,'양소희':100,'오은수':100,
+  '나정인':80,'주성':0,'곽지원':60,'양인혁':100,'김다은':80,
+  '이주형':100,'윤성하':100,'나호윤':83,'이소현':0,'배유나':0,'박재영':83,
+  '최유현':50,'이가영':91,'최수지':95,'박동하':18,'송준원':55,
+  '정승빈':100,'김주하':36,'김채은':36,'유재희':91,'김강은':100,
+  '고예나':58,'김민채':0,'송성모':0,'최승아':0,
+  '최지윤':10,'최서윤':10,'백결':0,'조혁준':0,
+  '김재원':null,'김유진':0,'김강희':0,'박서연':null,
+  '박시우':0,'하어림':0,'박진서':12,'임소명':25,
+  '오희수':0,'박민주':0,'장세민':0,'정원영':0,
+  '이서현':9,'이소민':27,'김도헌':0,'이하준':0,
+};
+
+/* ===== 3개 편성안 데이터 (a=출석 멤버, l=장결) ===== */
+const OPTIONS = {
+  1: {
+    cls: 'o1', title: '1안 · 찬양팀 대가족 (10반)',
+    desc: '<strong>컨셉: 팀으로 다지기.</strong> 학년별 반 + <strong>찬양팀을 별도의 특별 소그룹 2반</strong>으로 편성합니다. 찬양팀은 예배의 중심이 되는 핵심 자원들을 훈련시키고 믿음으로 성장시키는, <strong>예배와 훈련을 병행하는 공동체</strong>입니다(고1·2 한정). 반 수가 10개로 모든 반에 교사 2인이 배치되어, 한 사람이 GBS 인도·원투원·심방을 다 하지 않고 <strong>역할을 나누는 팀 사역</strong>이 가능합니다. 2개 반(교사 4명)이 하나의 대가족을 이루어 교사들도 작은 공동체가 됩니다.',
+    plus: '모든 반 교사 2인 — 케어 역할 분담·백업 가능 · 찬양팀 훈련 구조 · 실출석 5~8명으로 모임 밀도 안정',
+    minus: '고1 반의 재적이 큼(12~13명, 장결 5명 포함) · 찬양팀원은 학년 반과 분리되어 찬양 반에 소속',
+    groups: [
+      { fam: '♪ 찬양 대가족', note: '예배·훈련 병행 특별 소그룹 (고1·2)', classes: [
+        { nm: 'P1 (고1)', a: ['정태율','오현우','하은유','박서연','이주형','송준원'], l: [] },
+        { nm: 'P2 (고2·고1)', a: ['연해준','강은교','홍기진','김강은','최수지'], l: [] },
+      ]},
+      { fam: '고1 대가족', classes: [
+        { nm: '1A', a: ['김정록','오은수','최지은','이서후','안민혁','이빛가온','박재영'], l: ['김재원','박시우','하어림','이서현','박민주'] },
+        { nm: '1B', a: ['권하율','윤성하','나호윤','고예나','김한결','박지웅','최유현','조한나'], l: ['박동하','이하준','김은','김강희','이소현'] },
+      ]},
+      { fam: '고2 대가족', classes: [
+        { nm: '2C', a: ['유나린','장지현','김라일','원대연','김도연','윤서희'], l: ['김나현','김유진','이준호'] },
+        { nm: '2D', a: ['최민호','민예원','양소희','이가영','유재희','김주하','김채은'], l: ['전지훈','임태민','배유나'] },
+      ]},
+      { fam: '고3 대가족 ①', note: '수험 전 집중 케어 트랙', classes: [
+        { nm: '3E', a: ['명주원','양인혁','서이수','심희은','나정인'], l: ['송성모','김민채','김도헌'] },
+        { nm: '3F', a: ['이에녹','김준수','박지호','한채은'], l: ['백결','조혁준','최승아','오희수'] },
+      ]},
+      { fam: '고3 대가족 ②', note: '수험 전 집중 케어 트랙', classes: [
+        { nm: '3G', a: ['곽지원','김다은','임소명','이소민'], l: ['장세민','정원영','주성','박진서'] },
+        { nm: '3H', a: ['조강인','조인상','정승빈','김은우','최가은'], l: ['최지윤','최서윤'] },
+      ]},
+    ],
+  },
+  2: {
+    cls: 'o2', title: '2안 · 14반 세분화',
+    desc: '<strong>컨셉: 최대한 잘게 나눠 밀착 관리.</strong> 반을 14개로 최대한 나눠 <strong>학생 한 명당 교사의 관심을 극대화</strong>하는 안입니다. 반 재적이 5~7명으로 작아지고, 교사는 모든 반에 1인 담임을 세우되 <strong>케어 부담이 큰 6개 반에만 2인을 배치</strong>합니다(👥 표시). 찬양팀은 별도 반 없이 각자 학년 반에 소속되며 찬양 사역팀으로 활동합니다.',
+    plus: '학생 1인당 관심 최대 · 더 많은 교사가 담임으로 세워짐 (리더십 확장)',
+    minus: '실출석 3~5명 반이 생겨 모임 동력이 약해질 수 있음 · 1인 담임 반(8개)은 교사 결석 시 백업 없음',
+    groups: [
+      { fam: '고1 (5반)', classes: [
+        { nm: '1-1', a: ['정태율','오현우','하은유','최지은','이서후'], l: ['김재원','박서연'] },
+        { nm: '1-2', a: ['안민혁','이빛가온','박재영','김정록','오은수'], l: ['박시우','하어림'] },
+        { nm: '1-3', two: true, a: ['권하율','윤성하','나호윤','이주형','고예나'], l: ['이소현','박민주'] },
+        { nm: '1-4', two: true, a: ['김한결','박지웅','최유현','조한나'], l: ['박동하','이하준'] },
+        { nm: '1-5', two: true, a: ['송준원','최수지','김강은'], l: ['김은','김강희','이서현'] },
+      ]},
+      { fam: '고2 (4반)', classes: [
+        { nm: '2-1', a: ['연해준','홍기진','강은교','유나린'], l: ['김나현','김유진'] },
+        { nm: '2-2', a: ['김라일','원대연','김도연','윤서희'], l: ['이준호'] },
+        { nm: '2-3', two: true, a: ['민예원','양소희','최민호'], l: ['전지훈','임태민','배유나'] },
+        { nm: '2-4', a: ['이가영','유재희','김주하','김채은','장지현'], l: [] },
+      ]},
+      { fam: '고3 (5반)', note: '수험 전 집중 케어 트랙', classes: [
+        { nm: '3-1', a: ['명주원','양인혁','서이수','심희은'], l: ['송성모','김도헌'] },
+        { nm: '3-2', a: ['이에녹','김준수','박지호','한채은'], l: ['백결','조혁준'] },
+        { nm: '3-3', two: true, a: ['곽지원','김다은','임소명','이소민'], l: ['장세민','정원영','주성'] },
+        { nm: '3-4', a: ['조강인','조인상','김은우','최가은'], l: ['최지윤','최서윤'] },
+        { nm: '3-5', two: true, a: ['나정인','정승빈'], l: ['김민채','최승아','오희수','박진서'] },
+      ]},
+    ],
+  },
+  3: {
+    cls: 'o3', title: '3안 · 12반 새 조합',
+    desc: '<strong>컨셉: 새로운 만남으로 관계 확장.</strong> 1·2학기 동안 <strong>같은 반이었던 적이 없는 학생들끼리</strong> 새로 조합한 안입니다(같은 반 이력 데이터 기반 — 전체 조합의 97% 이상이 처음 만나는 조합). 익숙한 무리에서 벗어나 새로운 친구를 만나고 관계망을 넓히는 리셋 버전입니다. 12개 반으로 구성하며, 케어 부담이 큰 8개 반에 2인을 배치합니다(👥 표시). 찬양팀은 별도 반 없이 각자 학년 반에 소속됩니다.',
+    plus: '관계 편중 해소 · 새 친구 형성 기회 · 학년 안에서 서로 모르는 사이가 없어짐',
+    minus: '기존 친한 그룹이 흩어짐 — 친구를 통한 장결 복귀 통로가 약해질 수 있음 · 초반 적응 기간 필요 (첫 6주 관계 형성 활동 필수)',
+    groups: [
+      { fam: '고1 (5반)', classes: [
+        { nm: 'N1-1', a: ['고예나','김한결','박재영','송준원','안민혁','하은유'], l: ['박시우'] },
+        { nm: 'N1-2', a: ['윤성하','이서후','이주형','정태율','조한나','최지은'], l: ['이하준'] },
+        { nm: 'N1-3', a: ['권하율','김강은','나호윤','박지웅','최수지'], l: ['김강희','하어림'] },
+        { nm: 'N1-4', two: true, a: ['김정록','이빛가온','최유현'], l: ['김은','김재원','박민주'] },
+        { nm: 'N1-5', two: true, a: ['박서연','오은수','오현우'], l: ['박동하','이서현','이소현'] },
+      ]},
+      { fam: '고2 (3반)', classes: [
+        { nm: 'N2-1', two: true, a: ['강은교','김주하','양소희','윤서희','장지현'], l: ['김나현','배유나','전지훈'] },
+        { nm: 'N2-2', two: true, a: ['연해준','유재희','이가영','최민호','홍기진'], l: ['김유진','이준호'] },
+        { nm: 'N2-3', a: ['김도연','김라일','김채은','민예원','원대연','유나린'], l: ['임태민'] },
+      ]},
+      { fam: '고3 (4반)', note: '수험 전 집중 케어 트랙', classes: [
+        { nm: 'N3-1', two: true, a: ['김다은','명주원','심희은','조강인'], l: ['김민채','주성','최서윤','최지윤'] },
+        { nm: 'N3-2', two: true, a: ['나정인','이에녹','정승빈','한채은'], l: ['김도헌','박진서','정원영','최승아'] },
+        { nm: 'N3-3', two: true, a: ['김은우','김준수','서이수','임소명','조인상'], l: ['백결','오희수','장세민'] },
+        { nm: 'N3-4', two: true, a: ['곽지원','박지호','양인혁','이소민','최가은'], l: ['송성모','조혁준'] },
+      ]},
+    ],
+  },
+};
+
+/* ===== 상태 ===== */
+let MY = null;
+let VOTES = [];
+let COMMENTS = [];
+let POLL = null;
+
+/* ===== 인증 ===== */
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + TEACHERS.map(t => `<option value="${t}">${t}</option>`).join('');
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved && TEACHERS.includes(saved)) sel.value = saved;
+}
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  const err = document.getElementById('gate-err');
+  if (pin !== PRIVATE_KEY) { err.textContent = '❌ 접근 코드가 일치하지 않습니다'; return; }
+  if (!name) { err.textContent = '❌ 본인 이름을 선택해 주세요'; return; }
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+function logout() {
+  localStorage.removeItem('mock_teacher');
+  location.reload();
+}
+
+/* ===== 렌더 ===== */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function rateHtml(n) {
+  const r = RATES[n];
+  if (r === null || r === undefined) return '<span class="rt na">-</span>';
+  const cls = r >= 80 ? 'hi' : r >= 50 ? 'mid' : 'low';
+  return `<span class="rt ${cls}">${r}%</span>`;
+}
+function chipHtml(n) { return `<span class="chip">${esc(n)}${rateHtml(n)}</span>`; }
+
+function renderOptions() {
+  const root = document.getElementById('options-root');
+  root.innerHTML = [1,2,3].map(k => {
+    const o = OPTIONS[k];
+    const famHtml = o.groups.map(g => `
+      <div class="fam">
+        <div class="fam-title">👨‍👩‍👧‍👦 ${esc(g.fam)} ${g.note ? `<span class="fam-note">— ${esc(g.note)}</span>` : ''}</div>
+        <div class="cls-grid">
+          ${g.classes.map(c => `
+            <div class="cls">
+              <div class="cls-name">${esc(c.nm)} <span class="cnt">재적 ${c.a.length + c.l.length}명</span>${c.two ? '<span class="two">👥 교사 2인 예정</span>' : ''}</div>
+              <div class="chips">${c.a.map(chipHtml).join('')}</div>
+              ${c.l.length ? `<div class="la-box"><div class="la-t">🤍 장결 — 함께 소속, 원투원 케어 대상</div><div class="chips">${c.l.map(chipHtml).join('')}</div></div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+    return `
+      <div class="opt ${o.cls}" id="opt-${k}">
+        <div class="opt-head">
+          <h2>${esc(o.title)}</h2>
+          <button class="vote-btn" id="vote-btn-${k}" onclick="castVote(${k})">이 안에 투표</button>
+        </div>
+        <div class="opt-body">
+          <div class="opt-desc">${o.desc}</div>
+          <div class="opt-points">
+            <div class="pt plus">👍 ${esc(o.plus)}</div>
+            <div class="pt minus">🤔 ${esc(o.minus)}</div>
+          </div>
+          ${famHtml}
+          <div class="cmt-box">
+            <h3>💬 ${k}안에 대한 의견</h3>
+            <div class="cmt-form">
+              <textarea id="cmt-input-${k}" placeholder="이 안에 대한 생각·우려·제안을 자유롭게 남겨주세요" maxlength="500"></textarea>
+              <button onclick="addComment(${k})">등록</button>
+            </div>
+            <div class="cmt-list" id="cmt-list-${k}"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderVotes() {
+  const counts = { 1: 0, 2: 0, 3: 0 };
+  VOTES.forEach(v => { if (counts[v.option] !== undefined) counts[v.option]++; });
+  const total = VOTES.length;
+  const max = Math.max(1, counts[1], counts[2], counts[3]);
+  document.getElementById('vote-bars').innerHTML = [1,2,3].map(k => {
+    const pct = total ? Math.round(counts[k] / total * 100) : 0;
+    const w = Math.round(counts[k] / max * 100);
+    return `<div class="vbar-row">
+      <div class="vbar-label">${OPTIONS[k].title.split(' · ')[0]} · ${OPTIONS[k].title.split(' · ')[1]}</div>
+      <div class="vbar-track"><div class="vbar-fill o${k}" style="width:${Math.max(w, counts[k] ? 14 : 0)}%">${counts[k] ? counts[k] + '표 (' + pct + '%)' : ''}</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('vote-meta').textContent = `참여 ${total}명 / 교사 ${TEACHERS.length}명 · 12초마다 자동 갱신`;
+  const mine = VOTES.find(v => v.teacher === (MY || ''));
+  [1,2,3].forEach(k => {
+    const btn = document.getElementById('vote-btn-' + k);
+    if (!btn) return;
+    if (mine && mine.option === k) { btn.classList.add('voted'); btn.textContent = '✓ 내가 투표한 안'; }
+    else { btn.classList.remove('voted'); btn.textContent = '이 안에 투표'; }
+  });
+}
+
+function renderComments() {
+  [1,2,3].forEach(k => {
+    const list = COMMENTS.filter(c => c.option === k);
+    const el = document.getElementById('cmt-list-' + k);
+    if (!el) return;
+    el.innerHTML = list.length ? list.map(c => `
+      <div class="cmt">
+        <div class="ch"><span class="nm">${esc(c.teacher)}</span><span>${esc((c.created_at || '').substring(5, 16).replace('T', ' '))}</span>
+          ${c.teacher === MY ? `<button class="del" onclick="delComment('${esc(c.id)}')">삭제</button>` : ''}</div>
+        <div class="tx">${esc(c.text)}</div>
+      </div>
+    `).join('') : '<div style="font-size:12px;color:var(--muted)">아직 의견이 없습니다 — 첫 의견을 남겨주세요!</div>';
+  });
+}
+
+/* ===== 동작 ===== */
+async function castVote(k) {
+  try {
+    await VoteDB.cast(MY, k);
+    showToast('🗳 ' + k + '안에 투표했습니다 (마감 전까지 변경 가능)');
+    await refresh();
+  } catch (e) { console.error(e); showToast('⚠️ 저장 실패 — 인터넷 확인 후 다시 시도'); }
+}
+async function addComment(k) {
+  const el = document.getElementById('cmt-input-' + k);
+  const text = (el.value || '').trim();
+  if (!text) { showToast('의견 내용을 입력해 주세요'); return; }
+  try {
+    await VoteDB.addComment({ id: 'C' + Date.now(), teacher: MY, option: k, text });
+    el.value = '';
+    showToast('💬 의견이 등록되었습니다');
+    await refresh();
+  } catch (e) { console.error(e); showToast('⚠️ 저장 실패 — 다시 시도해 주세요'); }
+}
+async function delComment(id) {
+  if (!confirm('이 의견을 삭제할까요?')) return;
+  await VoteDB.delComment(id);
+  await refresh();
+}
+async function refresh() {
+  try {
+    const [v, c] = await Promise.all([VoteDB.list(), VoteDB.comments()]);
+    VOTES = v; COMMENTS = c;
+    renderVotes(); renderComments();
+  } catch (e) { console.warn(e); }
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ===== 진입 ===== */
+async function showApp() {
+  MY = localStorage.getItem('mock_teacher');
+  if (!MY || !TEACHERS.includes(MY)) { logout(); return; }
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('my-badge').textContent = MY + ' 선생님';
+  logAccess(MY, 'term3');
+  renderOptions();
+  await refresh();
+  if (POLL) clearInterval(POLL);
+  POLL = setInterval(refresh, 12000);
+}
+
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && TEACHERS.includes(savedName)) showApp();
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') mockLogin(); });
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 — 새학기 편성이 최상위 메뉴 */
+(function () {
+  const KEY = 'runners2026@jesus';
+  const ITEMS = [
+    ['term3.html', '🗳 새학기 편성', ''],
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['__sep__'],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['relations.html', '🕸 관계도', '?key=' + KEY],
+    ['attendance-overview.html', '📊 전체 출석현황', ''],
+    ['photos.html', '📸 사진 등록', ''],
+    ['outings.html', '🎒 아웃팅', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    it[0] === '__sep__'
+      ? '<span class="site-nav-sep" aria-hidden="true"></span>'
+      : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
+</body>
+</html>
