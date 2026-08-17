@@ -171,6 +171,46 @@
   table.cmp td { color: var(--body); }
   #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0f172a; border: 1px solid #7c3aed; color: #fff; padding: 11px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 999; }
   #toast.show { opacity: 1; }
+
+  /* ===== 모바일 폰트 확대 ===== */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .sec h2 { font-size: 18px; }
+    .sec .lead { font-size: 15px; }
+    .common-card { font-size: 14.5px; }
+    .common-card .t { font-size: 15px; }
+    .flow-step .tt { font-size: 14px; }
+    .flow-step .dd { font-size: 12px; }
+    .flow-extra { font-size: 14px; }
+    .q-title { font-size: 15.5px; }
+    .q-sub { font-size: 13px; }
+    .radio-txt { font-size: 14.5px; }
+    .radio-txt .rt-d { font-size: 12.5px; }
+    .survey textarea, .cmt-form textarea { font-size: 15px; }
+    .survey-submit button, .vote-btn { font-size: 15px; }
+    .survey-submit .done-tag, .survey-submit .pending-tag { font-size: 13.5px; }
+    .opt-head h2 { font-size: 17px; }
+    .opt-desc { font-size: 14.5px; }
+    .pt { font-size: 13.5px; }
+    .fam-title { font-size: 15px; }
+    .fam-note { font-size: 12.5px; }
+    .cls-name { font-size: 14.5px; }
+    .cls-name .cnt { font-size: 12px; }
+    .cls-name .two { font-size: 11px; }
+    .chip { font-size: 13.5px; padding: 4px 11px; }
+    .chip .gr, .chip .rt { font-size: 12px; }
+    .la-box .la-t { font-size: 11.5px; }
+    .cmt .tx { font-size: 14.5px; }
+    .cmt .ch { font-size: 12.5px; }
+    .cmt .edit, .cmt .del, .cmt .reply-btn { font-size: 12.5px; }
+    .my-vote-line { font-size: 14.5px; }
+    .p-rate { font-size: 14px; }
+    .p-title { font-size: 12.5px; }
+    .p-chip { font-size: 13px; }
+    table.cmp { font-size: 13.5px; }
+    table.cmp tbody th { font-size: 12.5px; }
+    .legend, .footnote { font-size: 12.5px; }
+  }
 </style>
 </head>
 <body>
