@@ -271,7 +271,7 @@
       <div id="vote-names"></div>
       <div class="cmp-wrap" style="margin-top:12px">
         <table class="cmp">
-          <thead><tr><th style="background:#f8fafc"></th><th class="h1c">1안 · 찬양팀 대가족</th><th class="h2c">2안 · 14반 세분화</th><th class="h3c">3안 · 12반 새 조합</th></tr></thead>
+          <thead><tr><th style="background:#f8fafc"></th><th class="h1c">1안 · 학년별 소그룹 + 찬양팀 특별반</th><th class="h2c">2안 · 14반 세분화</th><th class="h3c">3안 · 12반 새 조합</th></tr></thead>
           <tbody>
             <tr><th>컨셉</th><td>팀으로 다지기 — 교사·학생 모두 공동체로</td><td>반을 잘게 나눠 밀착 관리</td><td>안 만나본 조합으로 관계 확장</td></tr>
             <tr><th>반 수</th><td>10반 (찬양 2반 포함)</td><td>14반</td><td>12반</td></tr>
@@ -370,7 +370,7 @@ const RATES = {
 /* ===== 3개 편성안 데이터 (a=출석 멤버, l=장결) ===== */
 const OPTIONS = {
   1: {
-    cls: 'o1', title: '1안 · 찬양팀 대가족 (10반)',
+    cls: 'o1', title: '1안 · 학년별 소그룹 + 찬양팀 특별반',
     desc: '<strong>컨셉: 팀으로 다지기 — 교사도 모이고, 학생도 모입니다.</strong> 학생은 같은 시기를 통과하는 또래(학년)끼리 모이고, 교사는 팀으로 함께 사역합니다. 학년별 반 + <strong>찬양팀을 별도의 특별 소그룹 2반</strong>으로 편성합니다. 찬양팀은 예배의 중심이 되는 핵심 자원들을 훈련시키고 믿음으로 성장시키는, <strong>예배와 훈련을 병행하는 공동체</strong>입니다(고1·2 한정). 반 수가 10개로 모든 반에 교사 2인이 배치되어, 한 사람이 GBS 인도·원투원·심방을 다 하지 않고 <strong>역할을 나누는 팀 사역</strong>이 가능합니다. 2개 반(교사 4명)이 하나의 대가족을 이루어 교사들도 작은 공동체가 됩니다.',
     plus: '모든 반 교사 2인 — 케어 역할 분담·백업 가능 · 찬양팀 훈련 구조 · 실출석 5~8명으로 모임 밀도 안정',
     minus: '고1 반의 재적이 큼(12~13명, 장결 5명 포함) · 찬양팀원은 학년 반과 분리되어 찬양 반에 소속',
@@ -558,7 +558,7 @@ function renderVotes() {
     else { btn.classList.remove('voted'); btn.textContent = '🗳 ' + k + '안에 투표하기'; }
   });
   // 하단 비교 섹션의 투표 라디오 + 상태 문구
-  const OPT_SHORT = { 1: '찬양팀 대가족 (10반)', 2: '14반 세분화', 3: '12반 새 조합' };
+  const OPT_SHORT = { 1: '학년별 소그룹 + 찬양팀 특별반', 2: '14반 세분화', 3: '12반 새 조합' };
   const wrap = document.getElementById('cmp-vote');
   if (wrap) {
     wrap.innerHTML = [1,2,3].map(k => `
