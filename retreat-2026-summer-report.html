@@ -39,6 +39,16 @@ h1{font-size:30px;line-height:1.25;margin:.35em 0 .3em;letter-spacing:-.02em}
 .chip{font-size:12px;padding:3px 9px;border:1px solid var(--hair);border-radius:999px;background:var(--surface);color:var(--ink2);white-space:nowrap}
 .chip b{color:var(--ink);font-weight:600}
 
+/* PDF 내려받기 */
+.pdfbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.pdfbtn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:8px;
+  background:var(--ink);color:var(--plane);text-decoration:none;font-size:13.5px;font-weight:600;
+  border:1px solid var(--ink);transition:opacity .15s}
+.pdfbtn:hover{opacity:.86}
+.pdfbtn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.pdfbtn svg{width:15px;height:15px;fill:currentColor}
+.pdfbar .why{font-size:12.5px;color:var(--muted);line-height:1.5}
+
 .notice{
   margin:20px 0 0;padding:12px 14px;border-radius:8px;
   border:1px solid var(--hair);border-left:3px solid var(--crit);
@@ -210,14 +220,41 @@ ul.b li{margin:.3em 0}
   .row{grid-template-columns:1fr;gap:3px}
   .row .lab{text-align:left}
 }
+/* ── A4 인쇄 / PDF ── */
+@page{ size:A4 portrait; margin:15mm 13mm; }
 @media print{
-  body{background:#fff}
+  html,body{background:#fff}
+  body{font-size:9.6pt; line-height:1.55}
   .wrap{max-width:none;padding:0}
-  details{border:none} details > summary{display:none}
-  .dbody{padding:0}
-  details:not([open]) .dbody{display:block}
-  section{break-inside:avoid-page}
-  .card{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+  .pdfbar{display:none !important}
+  .toc a{border-bottom:none}
+
+  /* 첫 장은 표지처럼 — 제목을 세로 가운데에 둔다 */
+  header{display:flex;flex-direction:column;justify-content:center;min-height:238mm}
+
+  /* 접힌 항목은 모두 펼쳐서 인쇄한다 */
+  details{border:none;background:none;margin:8px 0}
+  details > summary{display:none}
+  details .dbody{display:block;padding:0}
+
+  /* 장마다 새 쪽에서 시작 */
+  section{break-before:page}
+  header{break-after:auto}
+  h2,h3,h4{break-after:avoid}
+
+  /* 표는 머리글을 쪽마다 반복하고 행이 잘리지 않게 */
+  .tw{overflow:visible}
+  table{font-size:8.4pt}
+  thead{display:table-header-group}
+  tr{break-inside:avoid}
+  th,td{padding:3px 5px}
+
+  /* 작은 덩어리는 쪽을 넘기지 않는다 */
+  .tile,.gi,.pc,.peek,.row,.dstack,ul.q li{break-inside:avoid}
+
+  /* 막대·색 배경이 그대로 인쇄되도록 */
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -236,6 +273,14 @@ ul.b li{margin:.3em 0}
     <span class="chip">응답 방식 <b>완전 익명</b></span>
     <span class="chip">데이터 정확도 <b>정확</b> — DB 전수 집계</span>
     <span class="chip">분석일 <b>2026-08-17</b></span>
+  </div>
+
+  <div class="pdfbar">
+    <a class="pdfbtn" href="https://tommyseok.github.io/nsdhs-2026-h1/retreat-2026-summer-report.pdf" download>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4l-4.7-5.7 1.4-1.4L12 13.6V3z"/><path d="M4 19h16v2H4z"/></svg>
+      A4 PDF 내려받기
+    </a>
+    <span class="why">휴대폰에서는 화면 폭에 맞춰 표가 좁아집니다. 종이에 인쇄하거나 그대로 보관하실 때는 PDF가 편합니다.</span>
   </div>
 </header>
 
