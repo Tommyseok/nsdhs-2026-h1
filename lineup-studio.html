@@ -457,7 +457,7 @@ const TEACHER_POOL = [
   { n: '이규리', t: '역할 무관' }, { n: '고은솔', t: '역할 무관 · 고3 사양' }, { n: '오은규', t: '역할 무관' },
   { n: '박해니', t: '케어 선호' }, { n: '오덕현', t: '케어 선호' },
   { n: '최희승', t: '섬김 확정' },
-  { n: '박진호', t: '확정 대기' }, { n: '송가원', t: '확정 대기' },
+  // 박진호·송가원은 다음 텀 합류 — 이번 텀 배치 풀 제외
 ];
 const TEACHER_NAMES = TEACHER_POOL.map(x => x.n);
 // 교사↔학생 분리 (해당 학생이 있는 반에 배치 시 경고)
@@ -493,7 +493,7 @@ function renderHub() {
   if (!el) return;
   const appCnt = APPS.length;
   const steps = [
-    { n: '1', cls: 'done', badge: ['done', '✅ 이번 텀 완료'], t: '선생님 현황 파악', d: '섬김 가능 여부 설문 — 21명 응답 완료 (배정 가능 17명 + 확정 대기 2명).<br>다음 텀부터: 국장이 "OO년 OO번째 텀 섬김현황 파악"을 생성 → 공유 URL 발행 → 자동 집계 (예정)',
+    { n: '1', cls: 'done', badge: ['done', '✅ 이번 텀 완료'], t: '선생님 현황 파악', d: '섬김 가능 여부 설문 — 21명 응답 완료 (이번 텀 배정 가능 17명 · 박진호/송가원은 다음 텀 합류).<br>다음 텀부터: 국장이 "OO년 OO번째 텀 섬김현황 파악"을 생성 → 공유 URL 발행 → 자동 집계 (예정)',
       acts: `<a class="sbtn" href="term3-results.html" target="_blank">📊 설문 결과 보기</a>` },
     { n: '2', cls: 'now', badge: ['now', '🔵 진행 중'], t: '초기 학생 라인업 구성', d: '반 수·특별반·특수조건(분리/유지)을 입력해 학생 라인업을 만듭니다. 자동 편성 + 수동 조정.',
       acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button> <button class="sbtn" onclick="setView('board');setTimeout(openAuto,100)">⚙️ 자동 편성</button>` },
