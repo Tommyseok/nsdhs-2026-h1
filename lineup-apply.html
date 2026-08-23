@@ -167,10 +167,11 @@
         <input type="text" id="collab" maxlength="300" placeholder="기타 — 그 외 원하는 방식이 있다면 자유롭게">
       </div>
       <div class="q">
-        <div class="qt">Q5. 심방·주중 케어는 어느 정도 가능하세요?</div>
-        <div class="qs">① 주중에 학생을 만나거나 연락할 <b>시간</b>을 낼 수 있나요? (하나 선택)</div>
+        <div class="qt">Q5. 평소 학생들과는 어떻게 연결되고 계세요?</div>
+        <div class="qs" style="color:#059669;font-weight:700">정답도, 기준도 없습니다 — 지금 편하신 모습 그대로 알려주시면, 반·팀을 구성할 때 서로 보완되도록 참고만 합니다.</div>
+        <div class="qs">① 요즘 나의 학생 케어 <b>리듬</b>에 가장 가까운 것은? (하나 선택)</div>
         <div class="tag-grid" style="margin-bottom:10px"><div class="tg-chips" id="vavail-grid"></div></div>
-        <div class="qs">② 선호하거나 가능한 <b>심방·케어 방식</b>을 골라주세요. (복수 선택)</div>
+        <div class="qs">② 나에게 <b>익숙하거나 잘 맞는 연결 방식</b>은? (복수 선택)</div>
         <div class="tag-grid"><div class="tg-chips" id="vtype-grid"></div></div>
       </div>
       <div id="prefill-hint" style="display:none;margin-top:16px;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;font-size:12.5px;color:#92400e;font-weight:600">
@@ -260,19 +261,19 @@ const COLLAB_TYPES = [
 ];
 COLLAB_TYPES.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
 
-// ═══ 심방·주중 케어 (Q5) ═══
+// ═══ 학생 케어 리듬 (Q5 — 약속 요구가 아니라 지금 모습 그대로) ═══
 const VISIT_AVAIL = [
-  ['avail_yes', '🙆 주중에 시간 낼 수 있어요', '평일 저녁·주말 등 정기적으로 가능'],
-  ['avail_some', '🙋 가끔은 가능해요', '한 달 1~2회 정도'],
-  ['avail_no', '🙅 주중은 어려워요', '주일 중심으로 섬길게요'],
+  ['avail_yes', '🗓 주중에도 종종 만나거나 연락하는 편이에요', '밥·카톡 등으로 자연스럽게 이어가요'],
+  ['avail_some', '📱 주중엔 가끔 연락 정도예요', '만남은 특별한 일이 있을 때'],
+  ['avail_no', '⛪ 주일에 보는 것에 집중하는 편이에요', '주중은 각자의 자리에서'],
 ];
 const VISIT_TYPES = [
   ['v_meal', '🍜 밥·카페에서 만나기'],
-  ['v_online', '💬 카톡·전화·영상통화'],
-  ['v_act', '🎮 액티비티 (운동·게임·놀이)'],
+  ['v_online', '💬 카톡·전화로 안부 나누기'],
+  ['v_act', '🎮 운동·게임 같이 하기'],
   ['v_home', '🏠 가정 심방'],
-  ['v_church', '⛪ 주일에 교회에서 깊은 대화'],
-  ['v_gift', '✉️ 편지·간식 등 마음 표현'],
+  ['v_church', '⛪ 주일에 깊게 대화하기'],
+  ['v_gift', '✉️ 편지·간식으로 마음 표현하기'],
 ];
 VISIT_AVAIL.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
 VISIT_TYPES.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
