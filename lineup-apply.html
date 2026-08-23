@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<title>Runners 2026 · 반 지망 접수</title>
+<style>
+  :root { --border: #e2e8f0; --ink: #0f172a; --body: #334155; --muted: #64748b; --accent2: #7c3aed; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: #f4f6fa; color: var(--body);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 14.5px; min-height: 100vh; }
+  .container { max-width: 820px; margin: 0 auto; padding: 16px; }
+
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px 28px; max-width: 440px; width: 100%; color: #e5e7eb; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .sub { margin: 0 0 20px; font-size: 13px; color: #94a3b8; text-align: center; }
+  .gate-card input, .gate-card select { width: 100%; background: #0b0f17; color: #e5e7eb; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 10px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .gate-err { color: #fca5a5; font-size: 12.5px; min-height: 18px; margin-top: 8px; text-align: center; }
+
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 15px 0; border-bottom: 2px solid #a78bfa; }
+  header .container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 0; padding-bottom: 0; }
+  header h1 { margin: 0; font-size: 17px; color: #f1f5f9; flex: 1; }
+  header .badge { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
+  header button { background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.35); color: #fca5a5; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+  .sec { margin-top: 16px; background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+  .sec h2 { margin: 0 0 10px; font-size: 16px; color: var(--ink); }
+  .lead { font-size: 13.5px; color: var(--body); }
+  .priv { margin-top: 10px; padding: 10px 14px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 10px; font-size: 12.5px; color: #5b21b6; font-weight: 600; }
+
+  /* 반 카드 */
+  .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-top: 12px; }
+  .cls { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+  .cls .nm { font-size: 14.5px; font-weight: 800; color: var(--ink); }
+  .cls .cnt { font-size: 11px; color: var(--muted); font-weight: 600; margin-left: 6px; }
+  .cls .roster { margin-top: 6px; font-size: 12px; color: var(--body); line-height: 1.7; }
+  .cls .la-line { font-size: 11.5px; color: #b45309; margin-top: 4px; }
+  .cls .pick { margin-top: 8px; display: flex; gap: 5px; }
+  .cls .pick button { flex: 1; border: 1px solid #cbd5e1; background: #fff; color: #64748b; border-radius: 8px; padding: 6px 0; font-size: 11.5px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .cls .pick button.on1 { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+  .cls .pick button.on2 { background: #0891b2; border-color: #0891b2; color: #fff; }
+  .cls .pick button.on3 { background: #d97706; border-color: #d97706; color: #fff; }
+
+  /* 폼 */
+  .q { margin-top: 16px; }
+  .q .qt { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+  .q .qs { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .choice-line { display: flex; gap: 8px; flex-wrap: wrap; }
+  .choice-line .cbox { flex: 1; min-width: 140px; }
+  .choice-line label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+  select, input[type=text], textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--ink); background: #fff; }
+  textarea { resize: vertical; min-height: 64px; }
+  .radio-list { display: flex; flex-direction: column; gap: 6px; }
+  .radio-row { display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px; cursor: pointer; background: #fff; }
+  .radio-row.sel { border-color: #7c3aed; background: #f5f3ff; }
+  .radio-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #cbd5e1; flex-shrink: 0; }
+  .radio-row.sel .radio-dot { border-color: #7c3aed; background: radial-gradient(circle, #7c3aed 45%, transparent 50%); }
+  .radio-txt { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+
+  .submit-row { margin-top: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .submit-row button { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; border: none; border-radius: 10px; padding: 13px 26px; font-size: 14.5px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .done-tag { font-size: 13px; font-weight: 800; color: #059669; }
+  .pending-tag { font-size: 13px; font-weight: 700; color: #b45309; }
+
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f172a; color: #fff; padding: 11px 20px; border-radius: 999px; font-size: 13.5px; font-weight: 700; z-index: 500; transition: transform .25s; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+  #toast.show { transform: translateX(-50%); }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .cls .roster { font-size: 13px; }
+    .radio-txt { font-size: 14.5px; }
+    select, input[type=text], textarea { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div style="text-align:center;margin-bottom:14px"><img src="logo-runner.svg" alt="Runners" style="width:56px;height:56px;border-radius:14px"></div>
+      <h1>🙋 반 지망 접수</h1>
+      <p class="sub">새 텀 라인업 — 섬기고 싶은 반에 지원해 주세요</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">입장하기</button>
+      <div class="gate-err" id="gate-err"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <h1>🙋 반 지망 접수</h1>
+      <span class="badge" id="my-badge"></span>
+      <button onclick="logout()">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="sec">
+      <h2>📋 반 구성 미리보기 <span style="font-size:11.5px;color:var(--muted);font-weight:600" id="draft-label"></span></h2>
+      <div class="lead">아래 반 구성을 보고, 각 반 카드의 <b>1·2·3 버튼</b>으로 지망을 선택하거나 아래 폼에서 직접 고를 수 있습니다. 학생 구성은 확정 전 일부 조정될 수 있습니다.</div>
+      <div class="priv">🔒 제출 내용(지망·역할·동역자·코멘트)은 <b>교육국장단만</b> 열람합니다. 다른 선생님에게 공개되지 않습니다.</div>
+      <div class="cls-grid" id="cls-grid"></div>
+    </div>
+
+    <div class="sec">
+      <h2>✍️ 지망 제출</h2>
+      <div class="q">
+        <div class="qt">Q1. 섬기고 싶은 반 (1~3지망) <span style="color:#dc2626;font-size:12px">*1지망 필수</span></div>
+        <div class="choice-line">
+          <div class="cbox"><label>1지망</label><select id="choice1" onchange="syncPicks()"></select></div>
+          <div class="cbox"><label>2지망</label><select id="choice2" onchange="syncPicks()"></select></div>
+          <div class="cbox"><label>3지망</label><select id="choice3" onchange="syncPicks()"></select></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="qt">Q2. 원하는 역할</div>
+        <div class="radio-list" id="role-list"></div>
+      </div>
+      <div class="q">
+        <div class="qt">Q3. 함께 섬기고 싶은 동역자 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
+        <div class="qs">같은 반(2인 1조)으로 함께하고 싶은 선생님이 있다면 적어주세요.</div>
+        <input type="text" id="partner" list="teacher-names" placeholder="선생님 이름 (자유 입력)">
+        <datalist id="teacher-names"></datalist>
+      </div>
+      <div class="q">
+        <div class="qt">Q4. 맡고 싶은 학생 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
+        <div class="qs">특별히 마음이 가는 학생이 있다면 배치에 참고합니다.</div>
+        <input type="text" id="wish" placeholder="예: ○○○, ○○○">
+      </div>
+      <div class="q">
+        <div class="qt">Q5. 특별 코멘트 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
+        <textarea id="comment" maxlength="500" placeholder="배치에 참고할 상황·요청을 자유롭게 적어주세요"></textarea>
+      </div>
+      <div class="submit-row">
+        <button onclick="submitApp()">📨 지망 제출하기</button>
+        <span id="app-state" class="pending-tag">⏳ 아직 제출 전입니다</span>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--muted)">마감 전까지 다시 제출하면 수정됩니다.</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+const PRIVATE_KEY = 'runners2026@jesus';
+const TERM = '2026-3';
+const ALL_TEACHERS = [
+  '안종범','석준원','김광현','송진우','오덕현','이유성',
+  '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
+  '이승헌','조세경','김희원','박해니','이규리','김주영','오은규',
+  '박진호','송가원',
+  '김현진','안강훈','김시내','정귀희','문석주','박정향'
+];
+const ROLES = [ ['lead','🙌 담임 (반 인도)'], ['care','🤝 케어담임 (장결·원투원 중심)'], ['any','💪 역할 무관'] ];
+// 장결 표시용 (초안 데이터에 학년·장결 정보가 없어 최소 정보만 하드코딩)
+const LA = new Set(['김재원','박시우','하어림','이서현','이소현','박민주','박동하','이하준','김은','김강희','김나현','김유진','이준호','임태민','전지훈','배유나','송성모','김민채','김도헌','백결','조혁준','최승아','오희수','장세민','정원영','주성','박진서','최지윤','최서윤']);
+
+let MY = null, DRAFT = null, ROLE_SEL = null;
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher, page }) }).catch(() => {});
+}
+
+/* ===== 드래프트 로드 (확정 우선 → 최신) ===== */
+async function loadDraft() {
+  const r = await fetch(REST + '/lineup_drafts?active=eq.true&select=id,name,status,data,updated_at&order=updated_at.desc', { headers: H });
+  const rows = r.ok ? await r.json() : [];
+  DRAFT = rows.find(d => d.status === 'final') || rows[0] || null;
+}
+function classNames() { return DRAFT ? DRAFT.data.classes.map(c => c.nm) : []; }
+
+function renderClasses() {
+  const grid = document.getElementById('cls-grid');
+  document.getElementById('draft-label').textContent = DRAFT ? `기준: ${DRAFT.name}` : '';
+  if (!DRAFT) { grid.innerHTML = '<div style="font-size:13px;color:var(--muted)">아직 공개된 반 구성이 없습니다.</div>'; return; }
+  grid.innerHTML = DRAFT.data.classes.map(c => {
+    const att = c.students.filter(n => !LA.has(n));
+    const la = c.students.filter(n => LA.has(n));
+    return `<div class="cls">
+      <span class="nm">${esc(c.nm)}</span><span class="cnt">재적 ${c.students.length}명</span>
+      <div class="roster">${att.map(esc).join(' · ')}</div>
+      ${la.length ? `<div class="la-line">🤍 장결: ${la.map(esc).join(' · ')}</div>` : ''}
+      <div class="pick">
+        ${[1,2,3].map(k => `<button id="pk-${esc(c.nm)}-${k}" onclick="pickClass('${esc(c.nm)}',${k})">${k}지망</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  // 셀렉트 옵션
+  const opts = '<option value="">— 선택 —</option>' + classNames().map(nm => `<option value="${esc(nm)}">${esc(nm)}</option>`).join('');
+  ['choice1','choice2','choice3'].forEach(id => { document.getElementById(id).innerHTML = opts; });
+  document.getElementById('teacher-names').innerHTML = ALL_TEACHERS.filter(t => t !== MY).sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<option value="${t}">`).join('');
+  renderRoles();
+  syncPicks();
+}
+function renderRoles() {
+  document.getElementById('role-list').innerHTML = ROLES.map(([k, label]) => `
+    <div class="radio-row ${ROLE_SEL === k ? 'sel' : ''}" onclick="ROLE_SEL='${k}';renderRoles()">
+      <span class="radio-dot"></span><span class="radio-txt">${label}</span>
+    </div>`).join('');
+}
+function pickClass(nm, k) {
+  const sel = document.getElementById('choice' + k);
+  sel.value = sel.value === nm ? '' : nm;
+  syncPicks();
+}
+function syncPicks() {
+  // 중복 제거: 같은 반이 두 지망에 있으면 뒤 지망 해제
+  const vals = [1,2,3].map(k => document.getElementById('choice' + k).value);
+  for (let i = 1; i < 3; i++) for (let j = 0; j < i; j++) if (vals[i] && vals[i] === vals[j]) { document.getElementById('choice' + (i + 1)).value = ''; vals[i] = ''; }
+  // 카드 버튼 상태
+  document.querySelectorAll('.cls .pick button').forEach(b => { b.className = ''; });
+  [1,2,3].forEach(k => {
+    const v = document.getElementById('choice' + k).value;
+    if (!v) return;
+    const b = document.getElementById('pk-' + v + '-' + k);
+    if (b) b.className = 'on' + k;
+  });
+}
+
+/* ===== 제출 ===== */
+async function loadMine() {
+  const r = await fetch(REST + `/lineup_applications?teacher=eq.${encodeURIComponent(MY)}&active=eq.true&select=*`, { headers: H });
+  const rows = r.ok ? await r.json() : [];
+  if (!rows.length) return;
+  const a = rows[0];
+  [1,2,3].forEach(k => { if (a['choice' + k]) document.getElementById('choice' + k).value = a['choice' + k]; });
+  ROLE_SEL = a.role || null;
+  document.getElementById('partner').value = a.partner || '';
+  document.getElementById('wish').value = a.wish || '';
+  document.getElementById('comment').value = a.comment || '';
+  const st = document.getElementById('app-state');
+  st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (a.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다';
+  renderRoles(); syncPicks();
+}
+async function submitApp() {
+  const c1 = document.getElementById('choice1').value;
+  if (!c1) { showToast('1지망 반을 선택해 주세요'); return; }
+  const row = {
+    teacher: MY, term: TERM,
+    choice1: c1,
+    choice2: document.getElementById('choice2').value || null,
+    choice3: document.getElementById('choice3').value || null,
+    role: ROLE_SEL,
+    partner: (document.getElementById('partner').value || '').trim() || null,
+    wish: (document.getElementById('wish').value || '').trim() || null,
+    comment: (document.getElementById('comment').value || '').trim() || null,
+    updated_at: new Date().toISOString(), active: true,
+  };
+  try {
+    const r = await fetch(REST + '/lineup_applications?on_conflict=teacher', {
+      method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H), body: JSON.stringify(row) });
+    if (!r.ok) throw new Error(r.status);
+    showToast('🙏 지망이 제출되었습니다');
+    await loadMine();
+  } catch (e) { console.error(e); showToast('⚠️ 제출 실패 — 다시 시도해 주세요'); }
+}
+
+/* ===== 인증 ===== */
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + ALL_TEACHERS.slice().sort((a, b) => a.localeCompare(b, 'ko')).map(t => `<option value="${t}">${t}</option>`).join('');
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved && ALL_TEACHERS.includes(saved)) sel.value = saved;
+}
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  const err = document.getElementById('gate-err');
+  if (pin !== PRIVATE_KEY) { err.textContent = '❌ 접근 코드가 일치하지 않습니다'; return; }
+  if (!name) { err.textContent = '❌ 본인 이름을 선택해 주세요'; return; }
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+function logout() { localStorage.removeItem('mock_teacher'); location.reload(); }
+async function showApp() {
+  MY = localStorage.getItem('mock_teacher');
+  if (!MY || !ALL_TEACHERS.includes(MY)) { logout(); return; }
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('my-badge').textContent = MY + ' 선생님';
+  logAccess(MY, 'lineup-apply');
+  await loadDraft();
+  renderClasses();
+  await loadMine();
+}
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && ALL_TEACHERS.includes(savedName)) showApp();
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') mockLogin(); });
+</script>
+</body>
+</html>
