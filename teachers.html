@@ -1173,422 +1173,8 @@ const PREV_INFO = {
  *    type: alert(긴급), health(건강), school(학교), family(가족),
  *          spirit(신앙), relation(관계), career(진로), attend(출석)
  * ==================================================================== */
-const STUDENT_NOTES = {
-  /* ===== 대가족 1 ===== */
-  // 셀 1
-  '권하율':[
-    {t:'alert',  m:'🚨 시험기간 김밥천국 모임에서 손목 그을 정도의 위험 표현 → 자해 신호 지속 모니터링 필요'},
-    {t:'school', m:'⚠️ 현재 자퇴 상태'},
-    {t:'family', m:'부모님의 기대가 매우 큼'},
-    {t:'school', m:'대치동 거주 · 학업 스트레스 매우 심함'},
-    {t:'spirit', m:'공부 욕심·주관 뚜렷'},
-  ],
-  '하은유':[
-    {t:'spirit', m:'찬양팀·제자반. 다 잘하는 친구'},
-    {t:'attend', m:'출석 매우 우수 (95%)'},
-  ],
-  '홍기진':[
-    {t:'spirit', m:'하나님 존재는 느끼지만 확신은 모르겠다고 표현'},
-    {t:'relation', m:'⚠️ 김주영T와 친한 사이 — 진지한 얘기 끊는 역할. **김주영T 같은 반 지양**'},
-  ],
-  '서이수':[
-    {t:'health', m:'🚨 알레르기: 오징어'},
-    {t:'school', m:'홈스쿨링 출신 — 고등학교 자퇴한 아이들과는 다름 (초등부터 홈스쿨링)'},
-    {t:'family', m:'언니 이안이도 홈스쿨링으로 같이 생활. 언니는 현재 서울 대학교 근처 자취 중'},
-    {t:'spirit', m:'혼자서도 큐티 잘하고 신앙생활 잘 하려 함'},
-    {t:'family', m:'부모님도 신앙생활 우선 가치관 — 고등부 주일학교 관한 건 우선순위로 말씀하심'},
-    {t:'career', m:'논술 입시 스트레스 큼. 작년 학원 적응 X → 입시 과외로 시간관리 중'},
-  ],
-  '장지현':[
-    {t:'family', m:'장성현 동생'},
-    {t:'spirit', m:'내성적, 듣는 편. 출석 양호'},
-  ],
-  '김은':[
-    {t:'spirit', m:'🆕 2학기 신규 등록 — 첫 출석 신생'},
-    {t:'attend', m:'관찰 기간 — 라포 형성 우선'},
-  ],
-  // 셀 2
-  '강은교':[
-    {t:'alert',  m:'🚨 우울증 약 미성년자 최대치 복용 중. 텀 바뀌는 것 자체에 불안 큼'},
-    {t:'relation', m:'또래 트라우마(특히 동학년) 강함. 1·3학년에는 거부감 없음'},
-    {t:'spirit', m:'굉장히 똑똑·지적 욕구 강함. 책 좋아하고 말씀이 들어가면 열심히'},
-    {t:'relation', m:'✓ 연해준과 같은 반 본인 요청 (셀 2 매칭 ✓). 유나린(또래 여학생 1명) 매칭도 ✓'},
-    {t:'relation', m:'⚠️ 한미소와는 완전 절교 (미소가 차단) — 별도 셀 분리'},
-  ],
-  '명주원':[
-    {t:'school', m:'서울예고 바이올린 전공'},
-    {t:'spirit', m:'조용한 줄 알았는데 반 모임에서 말 많고 자기 얘기 잘 함'},
-    {t:'career', m:'특이 취미 — 히브리어 배우기, 이집트 상형문자'},
-  ],
-  '조인상':[
-    {t:'school', m:'대원여고. 출석 100%'},
-    {t:'spirit', m:'잘 견디는 성격 → 어디든 배치 가능'},
-    {t:'relation', m:'최승아(Sp1)와 친구 — 접촉점 유지'},
-    {t:'relation', m:'⚠️ 1학기에 곽지원과 매번 같은 반 → 본인 투덜 (2학기엔 다른 셀 ✓)'},
-    {t:'relation', m:'✓ 김준수 잘 다루는 편 — 인접 셀 배치 가능'},
-  ],
-  '연해준':[
-    {t:'alert',  m:'본인이 많이 지친 상태 (학년장·반장 등 책임 과중)'},
-    {t:'spirit', m:'찬양팀 싱어'},
-    {t:'family', m:'작년 누나(아영) 재수로 가족 분위기 어려웠음'},
-    {t:'relation', m:'⚠️ 전지훈과 5/17 싸움 — **차편·셀 분리 필수** (2학기에 셀 4 분리 ✓)'},
-    {t:'relation', m:'친구들 플러팅 자제 요청했다가 "왜 갑자기"라는 반응'},
-  ],
-  '유나린':[
-    {t:'spirit', m:'출석 100%. 내성적이지만 유연하게 품을 수 있는 성격'},
-    {t:'relation', m:'✓ 강은교가 수련회 때 인사해줘서 좋아함 — 셀 2에서 또래 여학생 역할 ✓'},
-  ],
-
-  /* ===== 대가족 2 ===== */
-  // 셀 3
-  '박지호':[
-    {t:'school', m:'이화여고. 출석 거의 없음'},
-  ],
-  '한채은':[
-    {t:'school', m:'김포고. 출석 100%'},
-    {t:'career', m:'스포츠/사관학교 진로 고민'},
-  ],
-  '김준수':[
-    {t:'family', m:'김주영(이전 06반 부담임) 동생'},
-    {t:'spirit', m:'1학기 소그룹에서 마음을 좀 엶 (장난 → 삶 나눔으로). 태율이에게 형으로서 조언하는 모습'},
-    {t:'relation', m:'⚠️ **김희원T와 안 맞음** — 잡으려는 타입. **분리 필수** (2학기 셀 3 분리 ✓)'},
-    {t:'relation', m:'⚠️ 양인혁과 동반 지각 페어 (빈도 줄어드는 중)'},
-    {t:'relation', m:'⚠️ 정승빈과 매번 같은 반 → 시끄러움. 분리 권장'},
-    {t:'relation', m:'✓ 조인상이 준수를 잘 다룸'},
-  ],
-  '김라일':[
-    {t:'family', m:'김윤일 동생'},
-    {t:'spirit', m:'⚠️ 모태신앙·오래 다녔지만 "나의 하나님 모르겠다" 솔직히 표현 — 솔직함은 긍정 신호'},
-    {t:'spirit', m:'GBS에서 적극적 모습. 밑바닥 알고 케어해줄 교사 필요'},
-  ],
-  '안민혁':[
-    {t:'family', m:'부모님과 가끔 결석'},
-  ],
-  // 셀 4
-  '원대연':[
-    {t:'family', m:'재정/돈에 대한 의식 강함. 가족에게 해주고 싶은 마음으로 공부 열심'},
-    {t:'spirit', m:'중등부 때 선생님·목사님 기도 안에서 자란 학생'},
-    {t:'relation', m:'카톡 답 2주 뒤 확인 등 산만함. 본인은 "기도제목 없다·좋아요"만 표현'},
-  ],
-  '이준호':[
-    {t:'school', m:'대원외고. 학원으로 결석 잦음 (일요일 학원)'},
-    {t:'attend', m:'카톡방·연락엔 잘 응답. 학기 초·방학엔 출석 양호 예상'},
-  ],
-  '전지훈':[
-    {t:'alert',  m:'⚠️ 5/17 "교회 안 가겠다" 통보 — 연해준과 싸움이 원인'},
-    {t:'school', m:'충암고'},
-    {t:'relation', m:'⚠️ **연해준과 차편·셀 분리 필수** (2학기 셀 4 분리 ✓)'},
-    {t:'relation', m:'✓ 이수지T와 카톡 라포 형성 — 1학기 담임. 일어나면 무조건 오려고 함'},
-  ],
-  '오현우':[
-    {t:'spirit', m:'⭐ 1학기 6반에서 유일하게 구원의 확신 표현'},
-    {t:'career', m:'학업 스트레스 있으나 건강하게 풀어내는 편'},
-  ],
-  '이빛가온':[
-    {t:'spirit', m:'⚠️ 너무 열심히 대답·반응함 → 한 텀 거의 "대답 담당"'},
-    {t:'relation', m:'또래끼리 어울리는 욕구 있음 → 본인이 대답을 덜해도 되는 반 권장'},
-  ],
-
-  /* ===== 대가족 3 ===== */
-  // 셀 5
-  '민예원':[
-    {t:'spirit', m:'신앙 고민 있음. 친해지는 데 시간 필요'},
-    {t:'family', m:'부모님과 이수지T 매주 소통'},
-    {t:'relation', m:'✓ 이수지T 반 유지 권장 (2학기 셀 5 유지 ✓)'},
-  ],
-  '김도연':[
-    {t:'school', m:'학교 반장. 반 모임에서 활달'},
-    {t:'relation', m:'예원과 친함 (어머니 부탁으로 같은 반 유지 요청)'},
-    {t:'relation', m:'⚠️ 이가영(셀 11)에게 상처 받은 경험 — 분리 ✓'},
-  ],
-  '최지은':[
-    {t:'family', m:'최가은(셀 8) 동생. 춘천 거주'},
-    {t:'attend', m:'예배·소그룹은 잘 옴. 시험기간 2주 결석'},
-    {t:'relation', m:'1학년 또래와 거리감 (찬양팀·전도부 등 출신 친구에 비해). 마음 여는 데 시간 필요, 약간 내성적'},
-    {t:'spirit', m:'2학기엔 1학년 여학생과 묶을 기회 권장됨'},
-  ],
-  '김나현':[
-    {t:'alert',  m:'🔄 1학기 거의 안 옴 → 장결. 2학기 정규 합류'},
-    {t:'school', m:'김도헌과 같은 학교'},
-    {t:'spirit', m:'"교회 안 나갈 것" 본인 표명 (1학기). 단톡방은 안 나감, 회피성 답변'},
-    {t:'relation', m:'김도헌(Sp6)을 통한 접촉 검토'},
-  ],
-  '윤서희':[
-    {t:'spirit', m:'🆕 2학기 신규 등록 — 첫 출석 신생'},
-    {t:'attend', m:'관찰 기간 — 라포 형성 우선'},
-  ],
-  // 셀 6
-  '조한나':[
-    {t:'school', m:'기독교 대안학교 다님 — 신앙 배경 있음'},
-    {t:'spirit', m:'⭐ 신앙 깊고 고민 깊음 → 어디 가도 잘 적응. 새 교사 반 도우미로 적합'},
-  ],
-  '김한결':[
-    {t:'alert',  m:'학업 스트레스 매우 심함'},
-    {t:'family', m:'형은 하나고 출신·재수 중. 어머니 교수님'},
-    {t:'spirit', m:'큐티/기도는 꾸준히 함'},
-    {t:'relation', m:'⚠️ F쌤(특정 교사) 동생과 초등 시절 갈등 — 같은 반 분리 요청'},
-  ],
-  '이서후':[
-    {t:'school', m:'세화여고. 공부/내신 스트레스 큼, 학교 옮기고 싶어함'},
-    {t:'attend', m:'예배 끝나고 카페로 공부하러 빠짐. 여름 수련회 안 간다는 얘기'},
-    {t:'relation', m:'또래와 어울리는 욕구 있음 → 1학년 또래 섞이는 반 권장'},
-  ],
-  '임태민':[
-    {t:'attend', m:'⚠️ 출석 저조 (1학기 32%) — 학원으로 결석 잦음, 공부 욕심 큼'},
-    {t:'spirit', m:'체육대회 때 가장 밝은 모습'},
-    {t:'relation', m:'간식 까다로움 (소시지·핫바 호불호). 무던하게 받아줄 교사 적합'},
-  ],
-  '박지웅':[
-    {t:'career', m:'보컬 전공'},
-    {t:'relation', m:'1남 페어 부족했던 셀 6으로 이동 — 김한결과 1남 페어 ✓'},
-  ],
-
-  /* ===== 대가족 4 ===== */
-  // 셀 7
-  '조강인':[
-    {t:'alert',  m:'⚠️ 농구 진로 위기 (점수제 평가 못 받음, 학교 옮기거나 유급 고려 중)'},
-    {t:'school', m:'용산고. 아버지가 유명 농구인 → 압박'},
-    {t:'health', m:'예배 때 무릎 아파함'},
-    {t:'spirit', m:'학교명은 본인이 아직 말 안 함 → 기도 요청'},
-  ],
-  '이에녹':[
-    {t:'school', m:'INFJ. 중앙고'},
-    {t:'relation', m:'⚠️ 결이 안 맞는 친구들과 함께면 정색 (동성애 얘기·장난에 민감)'},
-    {t:'spirit', m:'진중하게 조언·마음 읽어줄 교사 필요. 형들을 워낙 좋아함'},
-    {t:'relation', m:'✓ 석준원T와 케미 좋음 (학생들도 인정)'},
-    {t:'relation', m:'⚠️ **김희원T와는 서로 힘들어함** — 같은 반 X (2학기 셀 7로 분리 ✓)'},
-  ],
-  '최민호':[
-    {t:'spirit', m:'🆕 1학기 새신자 — 초신자, 복음을 알고 싶어하지만 못 알아듣는 부분 있음'},
-    {t:'relation', m:'어른들에게 잘함, 자기 얘기 잘 함, 감성적 (설교 듣고 울었다고 함)'},
-    {t:'attend', m:'수련회 카톡도 먼저 보냄. 태준이 친구'},
-    {t:'spirit', m:'⚠️ 다른 분으로 옮기지 말고 기존 담임이 이어서 인도 권장 (탐색 과정 반복 비효율)'},
-  ],
-  '김정록':[
-    {t:'attend', m:'출석 100%'},
-  ],
-  '정태율':[
-    {t:'career', m:'드럼. 체대 입시 시작·학원 다님'},
-    {t:'spirit', m:'말 걸면 잘 함, 장난 좋아함, 형들과 친함. 1학년 친구들과도 잘 어울림'},
-  ],
-  // 셀 8
-  '심희은':[
-    {t:'school', m:'덕성여고. 마이웨이·페이스 분명'},
-    {t:'spirit', m:'강남 집회 등 자주 참여, 부모님 지원. 본인을 몰아세우는 성향 있음 → 위로·격려 필요'},
-    {t:'health', m:'초콜릿 좋아하고 밥 잘 안 먹음'},
-  ],
-  '김은우':[
-    {t:'school', m:'덕성여고. 심희은 친구'},
-    {t:'spirit', m:'⚠️ 반응이 극과 극 ("열심히 해라" or "너무 예쁘다") — 그냥 사람 대 사람으로 대해줄 교사 필요. 격려가 절실'},
-  ],
-  '최가은':[
-    {t:'school', m:'춘천여고. 최지은(셀 5) 언니'},
-    {t:'attend', m:'출석 양호 (시험기간 결석)'},
-  ],
-  '양소희':[
-    {t:'family', m:'유아부 봉사 중이라 고등부에 잘 못 옴. 어머니가 교회 일로 늦게 옴'},
-    {t:'spirit', m:'⚠️ 모든 것이 불편. 친구 별로 없음, K 선생님을 피해다님'},
-    {t:'relation', m:'친구 1명이 옆에 붙어줄 수 있는 반 권장. (어린이날 선물 못 받음 → 다음 주 전달)'},
-  ],
-  '오은수':[
-    {t:'family', m:'오은규T 친동생'},
-    {t:'spirit', m:'⚠️ 중등부 때 힘들었음 → 중등부 또래·중등부 목사님 불편. 또래 여자애에게 말 거는 것도 싫어함'},
-    {t:'relation', m:'⚠️ **친언니 오은규T와 같은 반 원하지 않음** (이규리T 직접 확인) → 셀 12 부담임 오은규T와 분리됨 ✓'},
-    {t:'relation', m:'1학년 또래 여학생 1명 + 언니 1명 필요'},
-  ],
-
-  /* ===== 대가족 5 ===== */
-  // 셀 9
-  '나정인':[
-    {t:'family', m:'어머니 수술 마치고 외할머니가 집에 와 계심. 잘 지내는 중'},
-    {t:'family', m:'나호윤(셀 10) 누나'},
-    {t:'spirit', m:'⭐ 영적으로 안정 → 어디 가도 잘 적응'},
-  ],
-  '주성':[
-    {t:'spirit', m:'🆕 1학기 새신자로 합류 (최근 처음 옴)'},
-    {t:'relation', m:'✓ 곽지원·정원영·장세민과 친한 그룹 — 셀 9에 곽지원과 함께 배치 ✓'},
-  ],
-  '곽지원':[
-    {t:'spirit', m:'학기 초 걱정 → 1학기 회복세. 기도/큐티 강하게 권유했더니 따라옴'},
-    {t:'attend', m:'매주 출석. 카톡 댓글도 다는 중'},
-    {t:'relation', m:'⚠️ 1학기에 조인상과 매번 같은 반 → 본인 투덜. 2학기 분리 ✓'},
-    {t:'relation', m:'✓ 장세민·정원영·주성과 친한 그룹 — 둘둘 배치 (셀 9에 주성과 ✓, 정원영 Sp5)'},
-  ],
-  '양인혁':[
-    {t:'school', m:'영락고 위탁학교 (실용음악·재즈피아노)'},
-    {t:'relation', m:'⚠️ **김준수와 항상 동반 지각** 페어 — 빈도 줄어드는 중. **분리** (2학기 분리 ✓)'},
-  ],
-  '김다은':[
-    {t:'spirit', m:'신앙적 고민 지속 → "당연한 성화 과정"으로 받아들임. 출석 양호'},
-    {t:'career', m:'역사에 관심 많고 역사 쪽으로 진학 예정. 안산동산고등학교(모교)로 돌아가서 교사를 하는 것이 꿈'},
-    {t:'spirit', m:'⭐ 영적으로 안정 → 어디 가도 잘 적응'},
-  ],
-  '박재영':[
-    {t:'spirit', m:'🆕 2학기 신규 등록 — 1학년 남학생'},
-    {t:'attend', m:'관찰 기간 — 라포 형성 우선'},
-  ],
-  // 셀 10
-  '이주형':[
-    {t:'spirit', m:'큰 이슈 언급 없음 (1학기)'},
-  ],
-  '윤성하':[
-    {t:'spirit', m:'ENTP → INTP. 취향 맞는 대화에선 말 많아짐 (밴드·록·J-pop)'},
-    {t:'relation', m:'이소민 동생(이소현)과 밴드 얘기로 친해짐 — 셀 10에 함께 ✓. 분위기 맞춰줄 친구·교사 필요'},
-  ],
-  '나호윤':[
-    {t:'family', m:'나정인(셀 9) 동생. 큰 이슈 언급 없음 (1학기)'},
-  ],
-  '이소현':[
-    {t:'spirit', m:'🆕 1학기 새신자로 합류 — 이소민(Sp6) 동생'},
-    {t:'spirit', m:'"소그룹 재밌었다·다음에도 이 반?" 본인 요청'},
-    {t:'relation', m:'✓ 즐길 수 있는 반 권장. 윤성하와 밴드 얘기로 친해짐'},
-  ],
-  '배유나':[
-    {t:'attend', m:'🔄 1학기 거의 출석 못 함 (1~2번). 2학기 정규 합류'},
-    {t:'family', m:'입시 스트레스. 집에 다른 가족 출석자 없어서 혼자 옴 (학원·차편 등 장벽 多)'},
-  ],
-
-  /* ===== 대가족 6 ===== */
-  // 셀 11
-  '최유현':[
-    {t:'spirit', m:'텐션 높고 막내'},
-    {t:'relation', m:'스킨십 좋아함, 누군가 옆에 없으면 불안. 조용한 반에서는 잘 안 나옴 → 활발한 반 권장'},
-  ],
-  '이가영':[
-    {t:'school', m:'서울예고'},
-    {t:'relation', m:'⚠️ 본인 얘기 매우 많이 함 → 주변 또래(특히 김도연·이도윤) 싫어함'},
-    {t:'relation', m:'⚠️ 장문 카톡 보내서 상처 잘 줌 (뒤끝 김). 김도연과 분리 ✓'},
-    {t:'relation', m:'어린 남자 선생님 좋아함. 잘 들어주는 교사 필요 — 일대일 또는 일대이 적합'},
-  ],
-  '최수지':[
-    {t:'attend', m:'공부 스트레스 있으나 양호'},
-    {t:'spirit', m:'⚠️ "기도의 필요성을 잘 모르겠다"는 신앙 상태 — 신앙적 양육 필요'},
-  ],
-  '박동하':[
-    {t:'school', m:'⚠️ 기숙사 살아서 거의 못 옴 (출석 32%)'},
-  ],
-  '송준원':[
-    {t:'family', m:'송예원 동생'},
-    {t:'attend', m:'1학기엔 출석 양호, 말 걸면 잘 대답 (축구 등으로 가끔 결석)'},
-    {t:'relation', m:'1학기 7반에서 유일한 남학생 (누나들 사이) → 2학기엔 박동하와 같은 셀로 1남 페어 ✓'},
-  ],
-  // 셀 12
-  '정승빈':[
-    {t:'family', m:'정유빈T(현 셀 6 담임)·정효빈 동생. 효빈이 재수 → 본인도 부담'},
-    {t:'career', m:'⚠️ 고3 학업 스트레스'},
-    {t:'relation', m:'⚠️ 김준수와 같은 반 너무 자주 → 분리 ✓ (셀 12). 평온한 반이 더 적합'},
-  ],
-  '김주하':[
-    {t:'family', m:'⚠️ 부모님 다른 교회 출석. 집이 멀어서 매주 출석 어려움 (작은 교회 갔다가 돌아옴)'},
-    {t:'spirit', m:'얌전·소극적'},
-    {t:'attend', m:'차량 또는 동행 친구 확인 필요 (액션 아이템)'},
-  ],
-  '김채은':[
-    {t:'school', m:'이대부고. 공부 스트레스로 결석'},
-    {t:'spirit', m:'말 시키면 잘 함'},
-  ],
-  '유재희':[
-    {t:'school', m:'서울공연예술고등학교 미술전공'},
-    {t:'relation', m:'⚠️ 말 매우 많음 (한 번 마음 열면 본인 얘기 많이 함). 가영(셀 11)과 비슷한 유형이지만 상처는 덜 받는 편'},
-    {t:'family', m:'부모님 끌고 오지 않으면 안 올 것 같다고 본인이 표현'},
-  ],
-  '김강은':[
-    {t:'spirit', m:'찬양팀. 밝음, 출석 100% (1학기 13반)'},
-    {t:'relation', m:'한결과 분리 (사용자 요청). 2학기 셀 12 전원 여학생 환경'},
-  ],
-
-  /* ===== Special 1 ===== */
-  '고예나':[
-    {t:'school', m:'드와이트 외국인 학교. 이사로 출석 어려움'},
-  ],
-  '김민채':[
-    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
-  ],
-  '송성모':[
-    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
-  ],
-  '최승아':[
-    {t:'attend', m:'⚠️ 장기결석. 부모님 반대로 출석 못 함'},
-    {t:'relation', m:'조인상(셀 2) 친구 — 접촉점 유지'},
-  ],
-  /* ===== Special 2 ===== */
-  '최지윤':[
-    {t:'school', m:'상명고. 최서윤(Sp2) 쌍둥이'},
-    {t:'attend', m:'⚠️ 한 번도 출석 안 함 → 장결'},
-  ],
-  '최서윤':[
-    {t:'family', m:'최지윤(Sp2) 쌍둥이'},
-    {t:'attend', m:'출석 거의 없음'},
-  ],
-  '백결':[
-    {t:'attend', m:'⚠️ 일요일 학원으로 거의 못 옴'},
-  ],
-  '조혁준':[
-    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
-  ],
-  /* ===== Special 3 ===== */
-  '김재원':[
-    {t:'alert',  m:'🚨 즉시 접촉 필요 — 특별한 관심·사랑 필요'},
-    {t:'family', m:'어머니도 요즘 교회에 안 나오심'},
-  ],
-  '김유진':[
-    {t:'attend', m:'⚠️ 한 번도 출석 안 함. 연락도 안 받음 → 장기결석'},
-  ],
-  '김강희':[
-    {t:'family', m:'춘천 거주. 수련회 외 출석 어려움'},
-  ],
-  '박서연':[
-    {t:'family', m:'부모님과 인도네시아 선교'},
-  ],
-  /* ===== Special 4 ===== */
-  '박시우':[
-    {t:'alert',  m:'🚨 즉시 접촉 필요 — 발언 없음, 라포 형성부터'},
-  ],
-  '하어림':[
-    {t:'family', m:'현재 유학 중. 여름방학에 한국 들어옴 → 다음 텀 선생님이 만날 수 있음'},
-  ],
-  '박진서':[
-    {t:'career', m:'⚠️ 금융권 취업 준비. 출석 거의 안 함'},
-    {t:'relation', m:'3학년 학습/진로 케어가 가능한 교사 적합'},
-  ],
-  '임소명':[
-    {t:'career', m:'⚠️ 금융권 취업 준비. 출석 거의 안 함'},
-    {t:'relation', m:'3학년 학습/진로 케어가 가능한 교사 적합'},
-  ],
-  /* ===== Special 5 ===== */
-  '오희수':[
-    {t:'school', m:'정의여고. 출석 없음'},
-  ],
-  '박민주':[
-    {t:'attend', m:'발언 없음 (1학기)'},
-  ],
-  '장세민':[
-    {t:'school', m:'성동공고'},
-    {t:'relation', m:'⚠️ 반에서 가장 안 섞임. 카톡 보내면 가장 먼저 대답 (관심받으면 그 주에 나옴)'},
-    {t:'spirit', m:'은은한 관심을 가져주는 교사 필요'},
-    {t:'relation', m:'✓ 친한 친구 그룹: 곽지원·정원영·주성 (같은 대가족 5에 곽지원·주성·정원영 배치 ✓)'},
-  ],
-  '정원영':[
-    {t:'attend', m:'장기결석 (1학기)'},
-    {t:'relation', m:'✓ 곽지원·장세민·주성과 친한 그룹 — 대가족 5 내 배치 ✓'},
-  ],
-  /* ===== Special 6 ===== */
-  '이서현':[
-    {t:'family', m:'오빠 이지환. 늦잠 자는 경우 많음'},
-  ],
-  '이소민':[
-    {t:'school', m:'동화고. 집이 멀어서 아쉽지만 어디든 잘 적응'},
-    {t:'career', m:'밴드·J-pop 좋아함'},
-    {t:'family', m:'동생 이소현(셀 10)이 1학기 말 처음 옴'},
-  ],
-  '김도헌':[
-    {t:'spirit', m:'카톡 응답은 잘 함'},
-    {t:'attend', m:'⚠️ 학원 시간과 겹쳐 2번 정도만 출석 후 결석. 안 겹치면 나오려 함'},
-  ],
-  '이하준':[
-    {t:'attend', m:'장기결석 — 발언 없음 (1학기)'},
-  ],
-};
+let STUDENT_NOTES = {};
+// 🔒 상세 메모는 암호화 저장소(student_notes)에 있습니다 — 교적부 코드 입력 시 로드 (unlockVault)
 
 /* ====================================================================
  * 5. 분리/유지 페어
@@ -1618,112 +1204,57 @@ const KEEP_PAIRS = [
  *      출처: 구글시트 26년_1학기_교적부 (2026-06-04 기준)
  *      필드: school, phone, birthday, address, parent, parentPhone, note
  * ==================================================================== */
-const CONTACT = {
-  // ===== 셀 1 (대가족 1) =====
-  '권하율':   {school:'자퇴 (前 대치동 학원가)', phone:'010-9986-4787', birthday:'2010-02-11', address:'서울시 강남구 선릉로 221 403동 1403호', parent:'나정은', parentPhone:'010-9986-2301', note:'🚨 현재 자퇴 상태 · 부모 기대 매우 큼'},
-  '하은유':   {school:'', phone:'010-8406-2642', birthday:'2010-02-13', address:'경기 고양시 일산로488 후곡마을13단지 2동 203호', parent:'나주영', parentPhone:'010-8252-1819'},
-  '홍기진':   {school:'행신고등학교', phone:'010-5640-2936', birthday:'2009-11-13', address:'경기도 고양시 토당동 대곡역 롯데캐슬 엘크라데씨', parent:'김혜진 · 홍정기', parentPhone:'010-6250-5933 · 010-5778-2936'},
-  '서이수':   {school:'홈스쿨링', phone:'010-4196-3863', birthday:'2008-08-07', address:'경기도 용인시 수지구 동천로 178번길 4, 더샵동천포레스트 104동 103호', parent:'임미리', parentPhone:'010-4911-7986', note:'🦑 알레르기: 오징어. 언니 이안(서울 대학가 자취)', family:'언니 이안 (서울 대학가 자취)'},
-  '장지현':   {school:'진관고등학교', phone:'010-2132-1938', birthday:'2009-11-03', address:'서울 은평구 진관1로 21-10 박석고개 힐스테이트 117동 602호', parent:'윤현실', parentPhone:'010-4488-1938', family:'오빠 장성현'},
-  '김은':     {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'2학기 신규 등록 — 교적부 정보 미입력'},
-  // ===== 셀 2 =====
-  '강은교':   {school:'자퇴 (前 성심여고, 검정고시)', phone:'010-5309-6276', birthday:'2009-04-04', address:'서울시 성북구 길음로 118 길음뉴타운 412-1703', parent:'이영은', parentPhone:'010-4573-2082'},
-  '명주원':   {school:'서울예고 (바이올린)', phone:'010-7160-3987', birthday:'2008-01-19', address:'서울시 서대문구 통일로 34길 43(홍제동) 홍제원 현대아파트 111동 204호', parent:'양윤실', parentPhone:'010-8993-3987'},
-  '조인상':   {school:'대원여고', phone:'010-9970-9343', birthday:'2008-04-14', address:'서울시 동대문구 약령시로 25 안암골 벽산아파트 104동 302호', parent:'이정민', parentPhone:'010-3191-9343'},
-  '연해준':   {school:'충암고등학교', phone:'010-8291-1494', birthday:'2009-04-21', address:'서울시 서대문구 응암로28 DMC한양아파트 3동 101호', parent:'연한흠', parentPhone:'010-8291-1494'},
-  '유나린':   {school:'수주고등학교', phone:'010-8801-9390', birthday:'2009-09-14', address:'경기도 부천시 고강로154번길 73-17 엘리시아 나-302호', parent:'한은선', parentPhone:'010-8843-9390'},
-  // ===== 셀 3 =====
-  '박지호':   {school:'이화여고', phone:'010-7689-4080', birthday:'2008-01-25', address:'서울시 서대문구 독립문로 8길 54 천연뜨란채 101동 803호', parent:'박승아', parentPhone:'010-7702-4080'},
-  '한채은':   {school:'김포고등학교', phone:'010-4203-6250', birthday:'2008-05-01', address:'경기도 김포시 김포한강 11로 276 반도유보라 2차 710동 1301호', parent:'문세현', parentPhone:'010-9476-6250'},
-  '김준수':   {school:'서인고등학교', phone:'010-5586-3977', birthday:'', address:'서울시 송파구 잠실동 341-20 302호', parent:'이윤희', parentPhone:'010-2474-0527', family:'누나 김주영T (셀 9 부담임 / 前 06반 부담임)'},
-  '김라일':   {school:'지산고등학교', phone:'010-3137-4620', birthday:'2009-11-10', address:'파주시 범벅들길 100 603동 801호', parent:'김성년', parentPhone:'010-8584-8291', family:'형 김윤일'},
-  '안민혁':   {school:'', phone:'010-8531-2573', birthday:'2010-11-11', address:'서울 강서구 양천로27길 95 (삼도아파트) 501호', parent:'이근정', parentPhone:'010-3375-9927'},
-  // ===== 셀 4 =====
-  '원대연':   {school:'대성고등학교', phone:'010-5476-7145', birthday:'2009-01-21', address:'서울특별시 은평구 진관1로55 은평뉴타운 마고정 307동', parent:'김미현', parentPhone:'010-8924-2145'},
-  '이준호':   {school:'대원외고', phone:'010-9755-6485', birthday:'2009-06-13', address:'서울 강남구 삼성동 풍림 아파트 2차 403호(봉은사로 105길 12-7)', parent:'김진경', parentPhone:'010-2755-6485', family:'형 이준성'},
-  '전지훈':   {school:'충암고등학교', phone:'010-4229-9658', birthday:'2009-09-12', address:'', parent:'', parentPhone:''},
-  '오현우':   {school:'광신고등학교', phone:'010-4220-9363', birthday:'2010-06-08', address:'서울 관악구 참숯1길 19, e편한세상서울대입구2차 503동 1302호', parent:'강유미', parentPhone:'010-4415-0145'},
-  '이빛가온': {school:'', phone:'010-3542-1732', birthday:'2010-01-10', address:'서울 은평구 진흥로 267 북한산래미안아파트 102-102', parent:'문희주', parentPhone:'010-7254-4190'},
-  // ===== 셀 5 =====
-  '민예원':   {school:'배화여고', phone:'010-3192-1831', birthday:'2009-12-07', address:'서울 종로구 통일로 230, 경희궁 롯데캐슬 아파트 103동 504호', parent:'박보연', parentPhone:'010-3505-6693'},
-  '김도연':   {school:'배화여고', phone:'010-5932-4084', birthday:'2009-03-07', address:'서울 종로구 통일로 14길 24, 401호', parent:'장은희', parentPhone:'010-9273-4084'},
-  '최지은':   {school:'춘천여고', phone:'010-9263-2891', birthday:'2010-12-19', address:'강원도 춘천시 동면 만천로 107 한일유앤아이 105-402', parent:'조남희', parentPhone:'010-2040-6483', note:'최가은(셀 8) 동생', family:'언니 최가은 (셀 8)'},
-  '김나현':   {school:'배화여고', phone:'010-8268-7473', birthday:'2009-02-14', address:'서울 종로구 신교동 1-27 3층', parent:'양승은', parentPhone:'010-3233-7473'},
-  '윤서희':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'2학기 신규 등록 — 교적부 정보 미입력'},
-  // ===== 셀 6 =====
-  '조한나':   {school:'기독교 대안학교', phone:'010-8880-5210', birthday:'2010-05-24', address:'경기 남양주시 다산중앙로82번길 15 자연앤이편한세상 5112동 1505호', parent:'김지연', parentPhone:'010-6500-0675'},
-  '김한결':   {school:'중앙고', phone:'010-4310-4522', birthday:'2010-01-15', address:'서울시 종로구 통일로 18길 34 인왕산 2차 아이파크 203동 102호', parent:'정덕유', parentPhone:'010-4310-4522', family:'동생 김한성·김한나'},
-  '이서후':   {school:'세화여고', phone:'010-7423-4295', birthday:'2010-08-18', address:'서울 송파구 오금로 32길 14 삼성래미안 110동 902호', parent:'김어진', parentPhone:'010-7433-4295'},
-  '임태민':   {school:'선정고등학교', phone:'010-6357-5217', birthday:'2009-03-23', address:'서울 은평구 갈현로 11길29 2층', parent:'임병준', parentPhone:'010-6357-5250'},
-  '박지웅':   {school:'(보컬 전공)', phone:'010-4997-8192', birthday:'2010-06-23', address:'인천광역시 미추홀구 독배로251번길 24 101-3203 (힐스테이트 학익)', parent:'조은선', parentPhone:'010-4996-8192'},
-  // ===== 셀 7 =====
-  '조강인':   {school:'용산고등학교 (농구부)', phone:'010-2966-9509', birthday:'2008-08-24', address:'서울시 성북구 아리랑로 19가길 20 정릉꿈에그린 102동 1105호', parent:'김정은', parentPhone:'010-3699-9509'},
-  '이에녹':   {school:'중앙고등학교', phone:'010-3669-2609', birthday:'2008-09-26', address:'서울시 은평구 수색로 322 DMC SK뷰 아이파크포레 120동 109호', parent:'채선미', parentPhone:'010-5665-0117'},
-  '최민호':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'1학기 새신자 합류 (태준이 친구) — 교적부 정보 미입력'},
-  '김정록':   {school:'', phone:'010-5080-2293', birthday:'2010-04-08', address:'서울 강남구 밤고개로 21-25 래미안 포레 308-1002', parent:'문정현', parentPhone:'010-4878-1127'},
-  '정태율':   {school:'(체대 입시·드럼)', phone:'010-7222-4357', birthday:'2010-01-27', address:'서울시 은평구 응암동 127동 204호', parent:'황수연', parentPhone:'010-6435-4357'},
-  // ===== 셀 8 =====
-  '심희은':   {school:'덕성여고', phone:'010-4868-7755', birthday:'2008-12-04', address:'서울시 종로구 통일로 246-20 무악현대아파트 103동 1302호', parent:'조민경', parentPhone:'010-5190-7755'},
-  '김은우':   {school:'덕성여고', phone:'010-4361-3688', birthday:'2008-02-15', address:'서울 종로구 창신동', parent:'김정희', parentPhone:'010-7324-3688'},
-  '최가은':   {school:'춘천여고', phone:'010-9262-2891', birthday:'2008-08-28', address:'강원도 춘천시 동면 만천로 107 한일유앤아이 105-402', parent:'조남희', parentPhone:'010-2040-6483', note:'최지은(셀 5) 언니', family:'동생 최지은 (셀 5)'},
-  '양소희':   {school:'', phone:'010-8203-0348', birthday:'2009-03-28', address:'서울시 종로구 통일로 12길 40-11 201호', parent:'이진우', parentPhone:'010-7183-7169'},
-  '오은수':   {school:'', phone:'010-3041-7454', birthday:'2010-03-10', address:'서울 종로구 무악동 무악현대아파트 104-1604', parent:'김연정', parentPhone:'010-2657-7454', note:'오은규T(셀 12 부담임) 친동생', family:'친언니 오은규T (셀 12 부담임) · 언니 오은율'},
-  // ===== 셀 9 =====
-  '나정인':   {school:'동화고등학교', phone:'010-3024-0430', birthday:'2008-04-30', address:'경기도 남양주시 다산지금로 16번길 88 7105동 803호', parent:'우인숙', parentPhone:'010-8464-5025', note:'나호윤(셀 10) 누나', family:'동생 나호윤 (셀 10)'},
-  '주성':     {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'1학기 새신자 합류 — 교적부 정보 미입력'},
-  '곽지원':   {school:'중앙고', phone:'010-2715-0882', birthday:'2008-12-19', address:'서울시 종로구 사직로 8길 24 경희궁의 아침2단지 아파트 1101호', parent:'김은주', parentPhone:'010-2508-2074'},
-  '양인혁':   {school:'영락고등학교 (실용음악·재즈피아노)', phone:'010-2515-7018', birthday:'2008-01-19', address:'서울시 관악구 관악로 40길 60(봉천동) 관악 현대아파트 118동 403호', parent:'이정희', parentPhone:'010-2561-7399'},
-  '김다은':   {school:'안산 동산고등학교', phone:'010-4197-2380', birthday:'2008-10-06', address:'경기도 남양주시 다산중앙로 146번길7 다산롯데캐슬 2209-102', parent:'양지현', parentPhone:'010-7274-2380', note:'🎯 역사 전공 희망 — 안산동산고(모교) 교사 꿈', family:'어머니 양지현T (셀 7 담임 / 1학기 08반 담임)'},
-  '박재영':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'2학기 신규 등록 — 교적부 정보 미입력'},
-  // ===== 셀 10 =====
-  '이주형':   {school:'덕성여고', phone:'010-9565-2135', birthday:'2010-07-01', address:'서울시 종로구 삼청로 9길31 삼청빌라 201호', parent:'이호준', parentPhone:'010-9790-6052'},
-  '윤성하':   {school:'(은평 거주)', phone:'010-3733-4649', birthday:'2010-11-13', address:'서울시 은평구 진관2로 57-7 249동 1002호(진관동 은평뉴타운 우물골 6단지)', parent:'이혜정', parentPhone:'010-8426-4649'},
-  '나호윤':   {school:'', phone:'010-5791-5025', birthday:'2010-10-02', address:'경기도 남양주시 다산지금로 16번길 88 7105동 803호', parent:'우인숙', parentPhone:'010-8464-5025', note:'나정인(셀 9) 동생', family:'누나 나정인 (셀 9)'},
-  '이소현':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'1학기 새신자 합류 (이소민 Sp6 동생) — 교적부 정보 미입력', family:'언니 이소민 (Sp6)'},
-  '배유나':   {school:'', phone:'', birthday:'2009-07-09', address:'', parent:'', parentPhone:''},
-  // ===== 셀 11 =====
-  '최유현':   {school:'배화여고', phone:'010-9296-6484', birthday:'2010-05-08', address:'서울 종로구 자하문로 115-14', parent:'이영숙', parentPhone:'010-8235-6484'},
-  '이가영':   {school:'서울예고', phone:'010-9100-8049', birthday:'2009-04-19', address:'서울시 종로구 사직로8길 4 스페이스본 101동 1106호', parent:'안효정 · 이광선', parentPhone:'010-4384-9971 · 010-6703-9999'},
-  '최수지':   {school:'(수원 거주)', phone:'010-5498-1046', birthday:'2010-04-06', address:'수원시 팔달구 고등로15, 107동 1404호(고등동, 수원역푸르지오자이)', parent:'이승연', parentPhone:'010-2396-7755'},
-  '박동하':   {school:'(기숙사 거주)', phone:'010-9795-7182', birthday:'2010-06-01', address:'서울 도봉구 마들로 551 (쌍용아파트) 104동 1802호', parent:'강상이', parentPhone:'010-4134-2968'},
-  '송준원':   {school:'', phone:'010-7111-9895', birthday:'2010-04-25', address:'경기도 성남시 분당구 판교로 20 302동 2803호', parent:'황인애', parentPhone:'010-3052-9895', note:'송예원 동생', family:'누나 송예원'},
-  // ===== 셀 12 =====
-  '정승빈':   {school:'서울 세종고등학교', phone:'010-5969-2538', birthday:'2008-06-03', address:'서울시 강남구 자곡로 175, 710동 705호(자곡동, 강남아이파크아파트)', parent:'정수현', parentPhone:'010-4207-2538', note:'정유빈T(셀 6 담임)·정효빈 동생', family:'언니 정유빈T (셀 6 담임) · 언니 정효빈 (재수)'},
-  '김주하':   {school:'수주고등학교 (부천 거주)', phone:'010-2497-2658', birthday:'2009-05-28', address:'경기도 부천시', parent:'', parentPhone:''},
-  '김채은':   {school:'이대부고', phone:'010-8250-1778', birthday:'2009-03-10', address:'서울시 서대문구 통일로 332 홍제청구3차 301동302호', parent:'박시원', parentPhone:'010-4438-1777'},
-  '유재희':   {school:'서울공연예술고등학교 (미술)', phone:'010-2916-4379', birthday:'2009-08-13', address:'서울시 송파구 올림픽로 135 리센츠 214동 2001호', parent:'박진영', parentPhone:'010-3481-4456'},
-  '김강은':   {school:'(종로 거주)', phone:'010-3149-4766', birthday:'2010-12-11', address:'서울 종로구 통일로 246-20 무악현대아파트 104동 804호', parent:'신지연', parentPhone:'010-8429-3366'},
-  // ===== Special 1 =====
-  '고예나':   {school:'드와이트 외국인학교', phone:'010-4919-6354', birthday:'2010-03-11', address:'서울 종로구 경희궁2길 5-3 → 이사', parent:'', parentPhone:''},
-  '김민채':   {school:'', phone:'010-6784-1124', birthday:'2008-11-24', address:'서울시 강서구 우장산로38 우장산롯데1차아파트 1001동 803호', parent:'반소령', parentPhone:'010-9011-0599'},
-  '송성모':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'교적부 정보 미입력'},
-  '최승아':   {school:'대원여고', phone:'010-5539-0616', birthday:'', address:'', parent:'', parentPhone:'', note:'조인상(셀 2) 친구. 부모님 반대로 출석 안 함'},
-  // ===== Special 2 =====
-  '최지윤':   {school:'상명고등학교 (노원)', phone:'010-5936-0646', birthday:'2008-11-06', address:'서울 노원구 덕릉로 517 중계2차 아파트 105동 301호', parent:'지은혜', parentPhone:'010-7399-6461', note:'최서윤(Sp2) 쌍둥이', family:'쌍둥이 최서윤 (Sp2)'},
-  '최서윤':   {school:'상명고등학교 (노원)', phone:'010-5909-0646', birthday:'2008-11-06', address:'서울 노원구 덕릉로 517 중계2차 아파트 105동 301호', parent:'지은혜', parentPhone:'010-7399-6461', note:'최지윤(Sp2) 쌍둥이', family:'쌍둥이 최지윤 (Sp2)'},
-  '백결':     {school:'정발고', phone:'010-7310-2406', birthday:'2008-01-28', address:'경기도 고양시 일산서구 경의로 605, 1206동 301호', parent:'문선희', parentPhone:'010-3049-1004'},
-  '조혁준':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'교적부 정보 미입력'},
-  // ===== Special 3 =====
-  '김재원':   {school:'', phone:'010-7233-7680', birthday:'2010-02-01', address:'서울시 종로구 백석동길 304-8 부암스카이빌 b동 102호', parent:'이정애', parentPhone:'010-6341-1692', note:'🚨 즉시 접촉 필요 — 어머니도 교회 안 나오심'},
-  '김유진':   {school:'명지고등학교', phone:'010-2926-6382', birthday:'2009-04-01', address:'서대문구 홍제동 인왕산 홍제원현대아파트 117동 701호', parent:'최복녀', parentPhone:'010-8338-6516'},
-  '김강희':   {school:'(춘천 거주)', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'교적부 상세 정보 미입력'},
-  '박서연':   {school:'(부모님 인도네시아 선교)', phone:'010-5654-1860', birthday:'2010-02-22', address:'경기 양평군 청운면 비룡점말1길 9-2', parent:'이아연', parentPhone:'010-2831-1860'},
-  // ===== Special 4 =====
-  '박시우':   {school:'', phone:'010-8794-2905', birthday:'2010-11-02', address:'경기 김포시 전원로 28', parent:'', parentPhone:'', note:'🚨 즉시 접촉 필요'},
-  '하어림':   {school:'해외 유학 중', phone:'010-5073-2419', birthday:'2010-11-18', address:'서울시 종로구 사직동 풍림스페이스본A 102-106', parent:'이은지', parentPhone:'010-7159-6460', note:'여름방학 한국 들어옴'},
-  '박진서':   {school:'서울여자상업고등학교', phone:'010-4641-8619', birthday:'2008-03-29', address:'종로구 경교장길 35', parent:'이인아(모)', parentPhone:'010-4946-8619', note:'금융권 취업 준비'},
-  '임소명':   {school:'서울여자상업고등학교', phone:'010-5679-7671', birthday:'2008-01-18', address:'금천구', parent:'조현숙(모)', parentPhone:'010-2406-3691', note:'금융권 취업 준비'},
-  // ===== Special 5 =====
-  '오희수':   {school:'정의여고', phone:'010-4546-9124', birthday:'2008-05-06', address:'서울시 도봉구 시루봉로5길 48 벽산A2차 102-603', parent:'문보연', parentPhone:'010-8360-9123'},
-  '박민주':   {school:'', phone:'', birthday:'', address:'', parent:'', parentPhone:'', note:'교적부 정보 미입력'},
-  '장세민':   {school:'성동공고', phone:'010-3499-4965', birthday:'', address:'', parent:'', parentPhone:'', note:'카톡 답 가장 빠른 학생'},
-  '정원영':   {school:'중앙고', phone:'010-2609-8057', birthday:'', address:'', parent:'', parentPhone:'', note:'장기결석'},
-  // ===== Special 6 =====
-  '이서현':   {school:'(강서 거주)', phone:'010-3083-7006', birthday:'2010-10-26', address:'서울 강서구 공항대로 63길14, 302-303', parent:'김해란', parentPhone:'010-9789-7006', note:'오빠 이지환', family:'오빠 이지환'},
-  '이소민':   {school:'동화고등학교 (동대문 거주)', phone:'010-2528-1035', birthday:'2008-09-28', address:'', parent:'김지은', parentPhone:'010-2843-1035', note:'동생 이소현(셀 10)', family:'동생 이소현 (셀 10)'},
-  '김도헌':   {school:'', phone:'010-9055-6327', birthday:'', address:'', parent:'', parentPhone:'', note:'학원 시간과 겹쳐 결석'},
-  '이하준':   {school:'', phone:'010-7130-3705', birthday:'2010-01-12', address:'경기도 성남시 분당구 서현동 87번지 삼성한신아파트 133동 1106호', parent:'남궁진', parentPhone:'010-6400-3705'},
-};
+let CONTACT = {};
+// 🔒 연락처·가족 정보는 암호화 저장소(student_vault)에 있습니다 — 교적부 코드 입력 시 로드
+const Vault = (() => {
+  const SALT = 'nsdhs-vault-2026', ITER = 150000;
+  const API = 'https://hycwzggbgnimuuhporwf.supabase.co/rest/v1';
+  const AKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+  const AH = { apikey: AKEY, Authorization: 'Bearer ' + AKEY };
+  const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  async function derive(code) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: new TextEncoder().encode(SALT), iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  }
+  async function dec(k, cipher, iv) {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(iv) }, k, unb64(cipher));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+  async function unlock(code) {
+    const k = await derive(code);
+    const chk = await (await fetch(API + '/student_vault?name=eq.__check__&select=cipher,iv', { headers: AH })).json();
+    if (!chk.length) throw new Error('vault 미설정');
+    await dec(k, chk[0].cipher, chk[0].iv); // 오답 시 예외
+    const [vault, notes] = await Promise.all([
+      fetch(API + '/student_vault?select=name,cipher,iv&name=neq.__check__', { headers: AH }).then(r => r.json()),
+      fetch(API + '/student_notes?active=eq.true&select=name,cipher,iv,created_at&order=created_at.asc', { headers: AH }).then(r => r.json()),
+    ]);
+    const c = {}, n = {};
+    for (const r of vault) { try { c[r.name] = await dec(k, r.cipher, r.iv); } catch (e) {} }
+    for (const r of notes) { try { const o = await dec(k, r.cipher, r.iv); (n[r.name] = n[r.name] || []).push({ t: o.t || 'etc', m: o.m || '' }); } catch (e) {} }
+    CONTACT = c; STUDENT_NOTES = n;
+    try { sessionStorage.setItem('vault_code', code); } catch (e) {}
+  }
+  return { unlock };
+})();
+async function unlockVault() {
+  const code = prompt('🔒 교적부 코드를 입력하세요 (총무에게 문의)');
+  if (!code) return false;
+  try { await Vault.unlock(code.trim()); afterVaultLoad(); return true; }
+  catch (e) { alert('❌ 코드가 올바르지 않습니다'); return false; }
+}
+function afterVaultLoad() {
+  if (!document.getElementById('root')) return;
+  render();
+  CONTACT_RENDERED = false;
+  if (CURRENT_TAB === 'contact') { renderContact(); CONTACT_RENDERED = true; }
+}
+async function tryVaultRestore() {
+  let code = null;
+  try { code = sessionStorage.getItem('vault_code'); } catch (e) {}
+  if (!code) return;
+  try { await Vault.unlock(code); afterVaultLoad(); } catch (e) { try { sessionStorage.removeItem('vault_code'); } catch (e2) {} }
+}
 
 /* ====================================================================
  * 6. 편성 (assignments.html과 동일 데이터)
@@ -2191,9 +1722,16 @@ function entryBannerHtml() {
   `;
 }
 
+function vaultBannerHtml(kind) {
+  return `<div style="margin:14px 0;padding:14px 16px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.4);border-radius:12px;font-size:13px;color:#ddd6fe;line-height:1.7">
+    🔒 ${kind}는 암호화되어 보관됩니다. 교적부 코드를 입력하면 이 기기(탭)에서 열람할 수 있습니다.
+    <button onclick="unlockVault()" style="margin-left:8px;background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit">교적부 코드 입력</button>
+  </div>`;
+}
 function renderContact() {
   const root = document.getElementById('root-contact');
-  root.innerHTML = entryBannerHtml() + tocHtml() + FAMILY_GROUPS.map(contactFamilyHtml).join('');
+  const lock = Object.keys(CONTACT).length ? '' : vaultBannerHtml('연락처·가족 정보');
+  root.innerHTML = lock + entryBannerHtml() + tocHtml() + FAMILY_GROUPS.map(contactFamilyHtml).join('');
 }
 
 /* ====================================================================
@@ -2373,7 +1911,8 @@ function switchTab(tab) {
 
 function render() {
   const root = document.getElementById('root');
-  root.innerHTML = tocHtml() + FAMILY_GROUPS.map(familyHtml).join('');
+  const lock = Object.keys(STUDENT_NOTES).length ? '' : vaultBannerHtml('학생 상세 메모');
+  root.innerHTML = lock + tocHtml() + FAMILY_GROUPS.map(familyHtml).join('');
 
   // 검색 — 3개 탭 모두 동작
   const search = document.getElementById('search');
@@ -2405,6 +1944,7 @@ function render() {
  * 8. 부팅 — 데이터·렌더 함수가 모두 정의된 이후 인증 실행
  * ==================================================================== */
 authorize();
+tryVaultRestore();
 </script>
 
 <script>
@@ -2416,6 +1956,7 @@ authorize();
     ['dashboard.html', '🏠 Home', ''],
     ['attendance.html', '📝 출석 입력', ''],
     ['prayer.html', '🙏 학생상황·기도', ''],
+    ['students.html', '👤 학생 정보', ''],
     ['__sep__'],
     ['teachers.html', '🗂 셀편성', '?key=' + KEY],
     ['relations.html', '🕸 관계도', '?key=' + KEY],
