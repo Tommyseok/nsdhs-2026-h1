@@ -356,3 +356,12 @@ publish/
 - **소속**: jwsuk@madup.com (회사 계정, MCP가 이 계정으로 OAuth됨)
 - **언어**: 한국어
 - **선호**: 결과물 중심, 자율적 문제 해결, 시각적 검증
+
+## 2026-08-23 — 편성 스튜디오 + 학생 정보 허브 + 교적부 암호화
+
+- **lineup-studio.html** (신규, 국장단 7인 전용, nav 미등재): 편성 보드(반 컬럼+학생 카드+사진, DnD/모바일 탭이동), 한국어 명령 바("이름 N반으로"/"교환"/"분리"/"같이"/"취소"), 제약 관리(직접 추가·삭제), 자동 편성(JS — SEP/KEEP/이력/균형), 드래프트 저장·불러오기·확정(lineup_drafts), 사진 클릭 확대
+- **students.html** (신규, 전 교사): 학생 그리드(사진·학년·성별·현재반·출석%·장결)+검색/필터, 상세 패널(주차별 출석 스트립·연락처🔒·상황 메모 타임라인 열람/작성)
+- **신규 테이블**: lineup_drafts / student_vault / student_notes (anon SEL/INS/UPD, DELETE 미허용)
+- **🔒 교적부 암호화 체계**: 연락처·상황메모는 AES-GCM(PBKDF2 150k, salt 'nsdhs-vault-2026') 브라우저 암호화 후 저장. 키 = 교적부 코드(소스 미포함, 총무 관리·카톡 공유). 열람 시 1회 입력 → sessionStorage. 코드 변경 시 재암호화 스크립트(scratchpad/vault_migrate.mjs) 필요
+- **teachers.html PII 제거**: 평문 CONTACT(86명 연락처)·STUDENT_NOTES(212건) 소스에서 삭제 → vault 로더로 대체(교적부 코드 입력 시 기존 탭 그대로 동작). ⚠️ git 히스토리에는 평문 잔존 — 완전 제거는 history rewrite 별도 결정
+- 전 페이지 nav에 '👤 학생 정보' 추가. 시드 드래프트 D-seed-v1 = 10반 확정용 초안(final-lineup-10.md)
