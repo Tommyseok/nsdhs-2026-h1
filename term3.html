@@ -114,16 +114,40 @@
   .fam-note { font-size: 11.5px; color: var(--muted); font-weight: 600; }
   .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 8px; }
   .cls { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-  .cls-name { font-size: 13.5px; font-weight: 800; color: var(--ink); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .cls-name .cnt { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .cls-name { font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 9px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .cls-name .cnt { font-size: 11.5px; color: var(--muted); font-weight: 600; }
   .cls-name .two { font-size: 10px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 1px 8px; }
   .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-  .chip { font-size: 12px; background: #fff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 3px 9px; white-space: nowrap; color: var(--ink); }
-  .chip .gr { font-size: 10.5px; color: var(--muted); font-weight: 700; margin-left: 1px; }
-  .chip .rt { font-size: 10.5px; font-weight: 800; margin-left: 3px; }
+  .chip { font-size: 13.5px; font-weight: 700; background: #fff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 4px 11px; white-space: nowrap; color: var(--ink); }
+  .chip .gr { font-size: 11px; color: var(--muted); font-weight: 700; margin-left: 1px; }
+  .chip .rt { font-size: 11px; font-weight: 800; margin-left: 3px; }
   .rt.hi { color: #059669; } .rt.mid { color: #b45309; } .rt.low { color: #dc2626; } .rt.na { color: #94a3b8; }
   .la-box { margin-top: 8px; background: #fffbeb; border: 1px dashed #f59e0b; border-radius: 10px; padding: 8px 10px; }
-  .la-box .la-t { font-size: 10.5px; font-weight: 800; color: #b45309; margin-bottom: 5px; }
+  .la-box .la-t { font-size: 11px; font-weight: 800; color: #b45309; margin-bottom: 5px; }
+
+  /* ===== 공개 투표 현황 (논의 단계) ===== */
+  .vres { margin-top: 14px; }
+  .vres-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .vres-label { flex-shrink: 0; width: 44px; text-align: center; font-size: 14px; font-weight: 800; padding: 5px 0; border-radius: 9px; }
+  .vres-label.o1 { background: #ede9fe; color: #5b21b6; } .vres-label.o2 { background: #cffafe; color: #0e7490; } .vres-label.o3 { background: #fef3c7; color: #b45309; }
+  .vres-track { flex: 1; background: #f1f5f9; border: 1px solid var(--border); border-radius: 999px; height: 30px; overflow: hidden; }
+  .vres-fill { height: 100%; border-radius: 999px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; font-size: 12.5px; font-weight: 800; color: #fff; min-width: 0; white-space: nowrap; transition: width .5s ease; }
+  .vres-fill.o1 { background: linear-gradient(90deg, #8b5cf6, #7c3aed); } .vres-fill.o2 { background: linear-gradient(90deg, #22d3ee, #0891b2); } .vres-fill.o3 { background: linear-gradient(90deg, #fbbf24, #d97706); }
+  .vres-meta { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+
+  /* ===== 옵션 탭 (버전별 학생 보기) ===== */
+  .opt-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .opt-tab { flex: 1; min-width: 130px; text-align: center; padding: 12px 8px; border-radius: 12px; border: 2px solid var(--border); background: #fff; font-weight: 800; font-size: 14.5px; cursor: pointer; color: #64748b; font-family: inherit; }
+  .opt-tab .sub { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 3px; }
+  .opt-tab:hover { border-color: #94a3b8; }
+  .opt-tab.sel { color: #fff; }
+  .opt-tab.sel .sub { color: rgba(255,255,255,.85); }
+  .opt-tab.sel.t1 { background: #7c3aed; border-color: #7c3aed; }
+  .opt-tab.sel.t2 { background: #0891b2; border-color: #0891b2; }
+  .opt-tab.sel.t3 { background: #d97706; border-color: #d97706; }
+  .opt-tab.sel.tall { background: #334155; border-color: #334155; }
+  .opt-more { margin-top: 14px; text-align: center; }
+  .opt-more button { background: #f8fafc; border: 1px solid var(--border); color: #475569; border-radius: 999px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
   .cmt-box { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
   .cmt-box h3 { margin: 0 0 8px; font-size: 14px; color: var(--ink); }
@@ -195,12 +219,14 @@
     .pt { font-size: 13.5px; }
     .fam-title { font-size: 15px; }
     .fam-note { font-size: 12.5px; }
-    .cls-name { font-size: 14.5px; }
+    .cls-name { font-size: 15.5px; }
     .cls-name .cnt { font-size: 12px; }
     .cls-name .two { font-size: 11px; }
-    .chip { font-size: 13.5px; padding: 4px 11px; }
+    .chip { font-size: 14.5px; padding: 5px 12px; }
     .chip .gr, .chip .rt { font-size: 12px; }
     .la-box .la-t { font-size: 11.5px; }
+    .opt-tab { min-width: 100px; font-size: 13.5px; padding: 11px 6px; }
+    .vres-fill { font-size: 12px; }
     .cmt .tx { font-size: 14.5px; }
     .cmt .ch { font-size: 12.5px; }
     .cmt .edit, .cmt .del, .cmt .reply-btn { font-size: 12.5px; }
@@ -247,9 +273,8 @@
       <h2>🌱 2026 마지막 텀 — 은혜의 깊이를 더하는, 다지는 기간</h2>
       <div class="lead">
         9월부터 시작하는 새 텀은 한 해 동안 심긴 것을 다지고 <strong>은혜의 깊이를 더하는 기간</strong>입니다.
-        이번 편성은 선생님들의 두 가지 응답으로 완성됩니다 —
-        <strong>① 섬김 가능 여부 응답</strong> (아래 1단계), <strong>② 세 가지 편성안 중 선호 투표</strong> (아래 2단계).
-        각 안을 읽어보시고 두 가지 모두 참여해 주세요. 안마다 <strong>의견</strong>도 자유롭게 남겨주세요.
+        이제 <strong>투표 결과를 공개하고 편성안을 함께 논의하는 단계</strong>입니다.
+        아래에서 안별 학생 편성을 살펴보시고, <strong>의견</strong>을 자유롭게 남겨주세요. 확정 전까지 투표 변경도 가능합니다.
       </div>
       <div class="common-grid">
         <div class="common-card"><div class="t">📌 공통적용 포인트 1 — 고3 별도 운영</div>어떤 안이 선택되어도 고3은 별도의 반으로 묶어 수험 기간 전 집중 케어합니다. 수능 이후 복귀·진로 시즌까지 이어지는 트랙입니다.</div>
@@ -263,16 +288,16 @@
     <div class="sec">
       <h2>🧭 라인업 구성 프로세스</h2>
       <div class="flow">
-        <div class="flow-step now" style="cursor:pointer" onclick="document.getElementById('serve-sec').scrollIntoView({behavior:'smooth'})"><span class="n">1</span><div class="tt">교사 섬김 파악</div><div class="dd">담임 섬김 가능 여부<br>(안식 · 복귀 · 역할 분담)</div><span class="badge-now">🙋 응답 받는 중</span></div>
+        <div class="flow-step" style="cursor:pointer" onclick="document.getElementById('serve-sec').scrollIntoView({behavior:'smooth'})"><span class="n">1</span><div class="tt">교사 섬김 파악</div><div class="dd">담임 섬김 가능 여부<br>(안식 · 복귀 · 역할 분담)</div></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step now"><span class="n">2</span><div class="tt">라인업 구성 선정</div><div class="dd">옵션 1 · 2 · 3 중<br>투표로 결정</div><span class="badge-now">🗳 투표 진행 중</span></div>
+        <div class="flow-step now"><span class="n">2</span><div class="tt">라인업 구성 선정</div><div class="dd">옵션 1 · 2 · 3 중<br>투표로 결정</div><span class="badge-now">💬 결과 공개 · 논의 중</span></div>
         <div class="flow-arrow">→</div>
         <div class="flow-step"><span class="n">3</span><div class="tt">학생 조합 구성</div><div class="dd">같이 묶어야 하는 친구들<br>피해야 하는 친구들 반영</div></div>
         <div class="flow-arrow">→</div>
         <div class="flow-step"><span class="n">4</span><div class="tt">교사 배치</div><div class="dd">반별 지원<br>(1 · 2 · 3지망) 반영 🏃</div></div>
       </div>
       <div class="flow-extra">⭐ <strong>특별하게, 자신이 맡고 싶은 학생이 있으면 그 부분도 반영됩니다.</strong> — 교사 배치 단계에서 반 지망과 함께 알려주세요.</div>
-      <div class="legend">※ 투표 마감 일정은 카톡으로 안내됩니다. 마감 전까지 투표는 언제든 변경할 수 있습니다.</div>
+      <div class="legend">※ 지금은 투표 결과를 공개하고 함께 논의하는 단계입니다. 확정 전까지 투표는 언제든 변경할 수 있습니다.</div>
     </div>
 
     <!-- 1단계: 교사 섬김 설문 -->
@@ -303,13 +328,16 @@
       <div style="font-size:13px;color:#64748b">🔒 교사 섬김 상황은 공개되지 않습니다.</div>
     </div>
 
-    <!-- 2단계: 편성안 투표 -->
-    <div class="sec" style="border-color:rgba(167,139,250,.45)">
-      <h2>🗳 2단계 — 편성안 투표</h2>
+    <!-- 2단계: 편성안 투표 + 공개 논의 -->
+    <div class="sec" style="border-color:rgba(167,139,250,.45)" id="vote-sec">
+      <h2>🗳 2단계 — 편성안 투표 &amp; 공개 논의</h2>
       <div class="lead" style="font-size:13.5px">
-        아래 <strong>세 가지 편성안</strong>을 읽어보시고, 마음에 드는 안 하나의 <strong>[🗳 투표하기]</strong> 버튼을 눌러주세요.
-        투표는 1인 1표이며 <strong>마감 전까지 언제든 변경</strong>할 수 있습니다. 각 안 아래에 의견도 자유롭게 남겨주세요.
+        지금은 <strong>투표 결과를 공개하고 함께 논의하는 단계</strong>입니다.
+        아래 현황을 보시고, 각 안의 학생 편성을 살펴보며 의견을 나눠주세요. <strong>확정 전까지 투표는 언제든 변경</strong>할 수 있습니다.
       </div>
+      <div class="vres" id="vres"></div>
+      <div class="vres-meta" id="vres-meta"></div>
+      <div class="opt-tabs" id="opt-tabs"></div>
     </div>
     <div id="options-root"></div>
 
@@ -570,9 +598,29 @@ function rateHtml(n) {
 }
 function chipHtml(n) { return `<span class="chip">${esc(n)}<span class="gr">(${GRADES[n] || '?'})</span>${rateHtml(n)}</span>`; }
 
+let OPT_VIEW = 1; // 1|2|3|'all' — 논의용 버전별 보기
+const OPT_TAB_INFO = {
+  1: ['1안', '10반 학년별 + 찬양팀', 't1'],
+  2: ['2안', '14반 세분화 · 학년 혼합', 't2'],
+  3: ['3안', '12반 새 조합', 't3'],
+};
+function setOptView(v) {
+  if (EDITING_CMT || REPLYING_CMT) { showToast('작성 중인 의견을 먼저 등록하거나 취소해 주세요'); return; }
+  OPT_VIEW = v;
+  renderOptions(); renderVotes(); renderComments();
+}
+function renderTabs() {
+  const bar = document.getElementById('opt-tabs');
+  if (!bar) return;
+  bar.innerHTML = [1,2,3].map(k => `
+    <button class="opt-tab ${OPT_VIEW === k ? 'sel ' + OPT_TAB_INFO[k][2] : ''}" onclick="setOptView(${k})">${OPT_TAB_INFO[k][0]}<span class="sub">${OPT_TAB_INFO[k][1]}</span></button>`).join('')
+    + `<button class="opt-tab ${OPT_VIEW === 'all' ? 'sel tall' : ''}" onclick="setOptView('all')">전체<span class="sub">세 안 이어서 보기</span></button>`;
+}
 function renderOptions() {
+  renderTabs();
   const root = document.getElementById('options-root');
-  root.innerHTML = [1,2,3].map(k => {
+  const keys = OPT_VIEW === 'all' ? [1,2,3] : [OPT_VIEW];
+  root.innerHTML = keys.map(k => {
     const o = OPTIONS[k];
     const famHtml = o.groups.map(g => `
       <div class="fam">
@@ -609,6 +657,7 @@ function renderOptions() {
             </div>
             <div class="cmt-list" id="cmt-list-${k}"></div>
           </div>
+          ${OPT_VIEW !== 'all' ? `<div class="opt-more"><button onclick="document.getElementById('vote-sec').scrollIntoView({behavior:'smooth'})">⬆️ 다른 안 보기 · 투표 현황으로</button></div>` : ''}
         </div>
       </div>
     `;
@@ -616,7 +665,22 @@ function renderOptions() {
 }
 
 function renderVotes() {
-  // 결과 수치는 비공개(확정 후 공개) — 여기선 내 투표 상태만 표시
+  // 📢 논의 단계 — 투표 결과 공개
+  const vres = document.getElementById('vres');
+  if (vres) {
+    const counts = { 1: 0, 2: 0, 3: 0 };
+    VOTES.forEach(v => { if (counts[v.option] !== undefined) counts[v.option]++; });
+    const total = VOTES.length, max = Math.max(1, counts[1], counts[2], counts[3]);
+    vres.innerHTML = [1,2,3].map(k => {
+      const pct = total ? Math.round(counts[k] / total * 100) : 0;
+      const w = counts[k] ? Math.max(Math.round(counts[k] / max * 100), 16) : 0;
+      return `<div class="vres-row">
+        <div class="vres-label o${k}">${k}안</div>
+        <div class="vres-track"><div class="vres-fill o${k}" style="width:${w}%">${counts[k] ? counts[k] + '표 · ' + pct + '%' : ''}</div></div>
+      </div>`;
+    }).join('');
+    document.getElementById('vres-meta').textContent = `참여 ${total}명 / 투표 대상 ${TEACHERS.length}명 — 확정 전까지 변경 가능 · 누가 어느 안을 선택했는지는 표시되지 않습니다`;
+  }
   const mine = VOTES.find(v => v.teacher === (MY || ''));
   [1,2,3].forEach(k => {
     const btn = document.getElementById('vote-btn-' + k);
@@ -644,7 +708,7 @@ function renderVotes() {
     const voted = new Set(VOTES.map(v => v.teacher));
     const notVoted = TEACHERS.filter(t => !voted.has(t));
     document.getElementById('vote-names').innerHTML = `
-      <div class="p-rate">투표 참여율 <span class="pct">${vPct}%</span> (${VOTES.length}/${TEACHERS.length}명) <span style="font-size:11px;color:var(--muted);font-weight:600">— 투표 결과는 확정된 이후에도 공개되지 않습니다</span></div>
+      <div class="p-rate">투표 참여율 <span class="pct">${vPct}%</span> (${VOTES.length}/${TEACHERS.length}명) <span style="font-size:11px;color:var(--muted);font-weight:600">— 결과는 상단 '투표 &amp; 공개 논의'에 공개되어 있습니다</span></div>
       <div class="p-title">✅ 투표하신 선생님 (${voted.size}명)</div>
       <div class="p-chips">${[...voted].sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<span class="p-chip ok">${esc(t)}</span>`).join('') || '<span style="font-size:12px;color:var(--muted)">아직 없습니다</span>'}</div>
       <div class="p-title">⏳ 아직 투표 전이신 선생님 (${notVoted.length}명)</div>
