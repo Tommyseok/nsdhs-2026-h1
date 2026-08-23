@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <link rel="icon" type="image/svg+xml" href="logo-runner.svg">
-<title>Runners 2026 · 편성 스튜디오</title>
+<title>Runners 2026 · 라인업 편성 스튜디오</title>
 <style>
   :root {
     --border: #e2e8f0; --ink: #0f172a; --body: #334155; --muted: #64748b;
@@ -113,6 +113,43 @@
   #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f172a; color: #fff; padding: 11px 20px; border-radius: 999px; font-size: 13.5px; font-weight: 700; z-index: 500; transition: transform .25s; box-shadow: 0 10px 30px rgba(0,0,0,.3); max-width: 90vw; }
   #toast.show { transform: translateX(-50%); }
 
+  /* ===== 프로세스 허브 ===== */
+  .hub-title { margin-top: 20px; }
+  .hub-title h2 { margin: 0; font-size: 19px; color: var(--ink); }
+  .hub-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .step-card { margin-top: 12px; background: #fff; border: 1.5px solid var(--border); border-radius: 16px; padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .step-card.now { border-color: #a78bfa; box-shadow: 0 4px 16px rgba(124,58,237,.09); }
+  .step-card.future { opacity: .75; background: #f8fafc; }
+  .step-num { flex-shrink: 0; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; background: #ede9fe; color: #5b21b6; }
+  .step-card.done .step-num { background: #ecfdf5; color: #059669; }
+  .step-card.future .step-num { background: #f1f5f9; color: #94a3b8; }
+  .step-body { flex: 1; min-width: 0; }
+  .step-body .st { font-size: 15px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .step-badge { font-size: 10.5px; font-weight: 800; border-radius: 999px; padding: 2px 9px; }
+  .step-badge.done { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .step-badge.now { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+  .step-badge.future { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; }
+  .step-body .sd { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.6; }
+  .step-actions { margin-top: 10px; display: flex; gap: 7px; flex-wrap: wrap; }
+
+  /* ===== 교사 슬롯 ===== */
+  .tch-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center; }
+  .tch { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 999px; padding: 2px 8px; }
+  .tch.warn { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+  .tch .x { background: none; border: none; color: #a5b4fc; cursor: pointer; font-size: 10px; padding: 0; line-height: 1; }
+  .tch-add { font-size: 10.5px; font-weight: 800; background: #fff; color: #64748b; border: 1px dashed #cbd5e1; border-radius: 999px; padding: 2px 9px; cursor: pointer; font-family: inherit; }
+  .tch-add:hover { border-color: #7c3aed; color: #7c3aed; }
+  .tpick { display: flex; flex-direction: column; gap: 5px; max-height: 50vh; overflow-y: auto; margin-top: 8px; }
+  .tpick .trow { display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 13.5px; background: #fff; }
+  .tpick .trow:hover { border-color: #a78bfa; background: #f5f3ff; }
+  .tpick .trow.off { opacity: .5; }
+  .tpick .tn { font-weight: 800; color: var(--ink); }
+  .tpick .tt2 { font-size: 11px; color: var(--muted); }
+  .tpick .star { margin-left: auto; font-size: 11.5px; font-weight: 800; color: #b45309; }
+  .app-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
+  .app-table th, .app-table td { text-align: left; padding: 7px 6px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  .app-table th { color: var(--muted); font-size: 11px; white-space: nowrap; }
+
   @media (max-width: 640px) {
     body { font-size: 15px; }
     .board { grid-template-columns: 1fr 1fr; }
@@ -128,8 +165,8 @@
   <div class="gate">
     <div class="gate-card">
       <div style="text-align:center;margin-bottom:14px"><img src="logo-runner.svg" alt="Runners" style="width:56px;height:56px;border-radius:14px"></div>
-      <h1>🧩 편성 스튜디오</h1>
-      <p class="sub">반 편성 도구 — 교육국장단 전용</p>
+      <h1>🧩 라인업 편성 스튜디오</h1>
+      <p class="sub">텀 라인업 구성 프로세스 — 교육국장단 전용</p>
       <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off">
       <select id="teacher-select"></select>
       <button onclick="mockLogin()">입장하기</button>
@@ -141,15 +178,27 @@
 <div id="app-root" style="display:none">
   <header>
     <div class="container">
-      <h1>🧩 편성 스튜디오</h1>
+      <h1>🧩 라인업 편성 스튜디오</h1>
       <span class="badge">👑 국장단 전용</span>
       <span class="badge" id="my-badge" style="background:rgba(167,139,250,.2);color:#c4b5fd;border-color:rgba(167,139,250,.4)"></span>
       <span class="sp"></span>
+      <button onclick="setView('hub')" id="view-hub-btn">🗺 프로세스</button>
+      <button onclick="setView('board')" id="view-board-btn">🧩 편성 보드</button>
       <button class="logout" onclick="logout()">로그아웃</button>
     </div>
   </header>
 
-  <div class="container">
+  <!-- ===== 프로세스 허브 ===== -->
+  <div class="container" id="hub-root">
+    <div class="hub-title">
+      <h2>라인업 구성 프로세스 — 2026년 3번째 텀</h2>
+      <div class="hub-sub">텀마다 이 순서로 라인업을 완성합니다. 단계를 눌러 진행하세요.</div>
+    </div>
+    <div id="hub-steps"></div>
+  </div>
+
+  <!-- ===== 편성 보드 ===== -->
+  <div class="container" id="board-root" style="display:none">
     <div class="studio-bar" id="studio-bar">
       <select id="draft-sel" onchange="pickDraft(this.value)"></select>
       <span class="dirty-dot" title="저장되지 않은 변경"></span>
@@ -157,6 +206,7 @@
       <button class="sbtn" onclick="saveDraft(true)">📄 다른 이름으로</button>
       <button class="sbtn" onclick="undoMove()" id="undo-btn">↩️ 실행취소</button>
       <button class="sbtn" onclick="openConstraints()">🔗 제약 관리</button>
+      <button class="sbtn" onclick="openApps()">🙋 지망 현황</button>
       <button class="sbtn" onclick="openAuto()">⚙️ 자동 편성</button>
       <button class="sbtn" onclick="addClass()">➕ 반 추가</button>
       <button class="sbtn ok" onclick="finalizeDraft()">✅ 확정</button>
@@ -219,6 +269,25 @@
     <div class="pair-list" id="keep-list"></div>
     <div style="font-size:11.5px;color:var(--muted);margin-top:10px">명령 바에서도 가능: <b>"이름1 이름2 분리"</b> / <b>"이름1 이름2 같이"</b>. 제약은 이 초안에 저장됩니다.</div>
     <div class="actions"><button class="sbtn primary" onclick="closeModal('cons-ovl')">닫기</button></div>
+  </div>
+</div>
+
+<!-- 교사 배치 모달 -->
+<div class="modal-ovl" id="tch-ovl">
+  <div class="modal">
+    <h3 id="tch-title">👨‍🏫 교사 배치</h3>
+    <div style="font-size:12px;color:var(--muted)">★ = 이 반 1지망 · ☆ = 2·3지망 · (배치됨) = 다른 반에 이미 배치</div>
+    <div class="tpick" id="tch-pick"></div>
+    <div class="actions"><button class="sbtn" onclick="closeModal('tch-ovl')">닫기</button></div>
+  </div>
+</div>
+
+<!-- 지망 현황 모달 (관리자) -->
+<div class="modal-ovl" id="apps-ovl">
+  <div class="modal" style="max-width:680px">
+    <h3>🙋 교사 지망 현황 <span style="font-size:11.5px;color:var(--muted);font-weight:600">국장단만 열람</span></h3>
+    <div id="apps-body"></div>
+    <div class="actions"><button class="sbtn primary" onclick="closeModal('apps-ovl')">닫기</button></div>
   </div>
 </div>
 
@@ -379,13 +448,159 @@ function logAccess(teacher, page) {
   fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher, page }) }).catch(() => {});
 }
 
+/* ===== 교사 풀 (섬김 설문 기준 배정 가능 19명) ===== */
+const TEACHER_POOL = [
+  { n: '박대철', t: '담임 희망' }, { n: '전성희', t: '담임 희망' }, { n: '김주영', t: '담임 희망' },
+  { n: '이유성', t: '담임 희망' }, { n: '정유빈', t: '담임 희망' },
+  { n: '김광현', t: '역할 무관' }, { n: '송진우', t: '역할 무관' }, { n: '석준원', t: '역할 무관' },
+  { n: '김희원', t: '역할 무관' }, { n: '이윤정', t: '역할 무관 · 고3 사양' }, { n: '양지현', t: '역할 무관' },
+  { n: '이규리', t: '역할 무관' }, { n: '고은솔', t: '역할 무관 · 고3 사양' }, { n: '오은규', t: '역할 무관' },
+  { n: '박해니', t: '케어 선호' }, { n: '오덕현', t: '케어 선호' },
+  { n: '최희승', t: '섬김 확정' },
+  { n: '박진호', t: '확정 대기' }, { n: '송가원', t: '확정 대기' },
+];
+const TEACHER_NAMES = TEACHER_POOL.map(x => x.n);
+// 교사↔학생 분리 (해당 학생이 있는 반에 배치 시 경고)
+const TEACHER_SEP = [['오은규', '오은수'], ['김주영', '홍기진']];
+let APPS = []; // lineup_applications
+
 /* ===== 상태 ===== */
 let MY = null;
 let DRAFT = null;      // { id, name, status, data }
 let UNDO = [];
 let SELECTED = null;
 let DIRTY = false;
+let VIEW = 'hub';
 const POOL = '__pool__';
+
+/* ===== 뷰 전환 + 프로세스 허브 ===== */
+function setView(v) {
+  VIEW = v;
+  document.getElementById('hub-root').style.display = v === 'hub' ? '' : 'none';
+  document.getElementById('board-root').style.display = v === 'board' ? '' : 'none';
+  if (v === 'hub') renderHub();
+  window.scrollTo({ top: 0 });
+}
+function applyUrl() { return location.origin + location.pathname.replace(/[^/]*$/, '') + 'lineup-apply.html'; }
+function copyApplyUrl() {
+  const url = applyUrl();
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
+    () => showToast('🔗 지망 페이지 링크 복사됨 — 카톡에 붙여넣어 공유하세요'),
+    () => { prompt('아래 링크를 복사하세요', url); });
+}
+function renderHub() {
+  const el = document.getElementById('hub-steps');
+  if (!el) return;
+  const appCnt = APPS.length;
+  const steps = [
+    { n: '1', cls: 'done', badge: ['done', '✅ 이번 텀 완료'], t: '선생님 현황 파악', d: '섬김 가능 여부 설문 — 21명 응답 완료 (배정 가능 17명 + 확정 대기 2명).<br>다음 텀부터: 국장이 "OO년 OO번째 텀 섬김현황 파악"을 생성 → 공유 URL 발행 → 자동 집계 (예정)',
+      acts: `<a class="sbtn" href="term3-results.html" target="_blank">📊 설문 결과 보기</a>` },
+    { n: '2', cls: 'now', badge: ['now', '🔵 진행 중'], t: '초기 학생 라인업 구성', d: '반 수·특별반·특수조건(분리/유지)을 입력해 학생 라인업을 만듭니다. 자동 편성 + 수동 조정.',
+      acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button> <button class="sbtn" onclick="setView('board');setTimeout(openAuto,100)">⚙️ 자동 편성</button>` },
+    { n: '3·4', cls: 'now', badge: ['now', '🔵 접수 중'], t: '교사 지망 + 지원 정보 접수', d: `선생님들이 1~3지망 반과 역할·동역자·맡고 싶은 학생·코멘트를 제출합니다. <b>비공개(국장단만 열람)</b>.<br>현재 제출: <b>${appCnt}명</b> / 대상 ${TEACHER_POOL.length}명`,
+      acts: `<button class="sbtn primary" onclick="copyApplyUrl()">🔗 지망 페이지 링크 복사</button> <a class="sbtn" href="lineup-apply.html" target="_blank">↗ 지망 페이지 열기</a> <button class="sbtn" onclick="openApps()">🙋 지망 현황 보기</button>` },
+    { n: '5', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '교사 배치', d: '지망·지원 정보를 참고해 반마다 교사를 배치합니다 (반 카드의 [+ 교사] 또는 명령 "이름 N반 배치"). 관리자 권한으로 언제든 조정.',
+      acts: `<button class="sbtn primary" onclick="setView('board')">👨‍🏫 보드에서 배치하기</button> <button class="sbtn" onclick="openApps()">🙋 지망 참고</button>` },
+    { n: '6', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '학생 세밀 조정', d: '교사 배치까지 된 상태에서 학생을 드래그·명령으로 미세 조정합니다.',
+      acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button>` },
+    { n: '7', cls: 'future', badge: ['future', '⚪ 예정'], t: '최종 배포 · 새 텀 시작', d: '확정본을 기준으로 출석 입력·학생 정보 등 전체 시스템이 새 텀으로 전환됩니다. (보드의 [✅ 확정] 후 총무와 함께 반영 — 원클릭 배포 기능 예정)',
+      acts: `` },
+  ];
+  el.innerHTML = steps.map(s => `
+    <div class="step-card ${s.cls}">
+      <div class="step-num">${s.n}</div>
+      <div class="step-body">
+        <div class="st">${s.t} <span class="step-badge ${s.badge[0]}">${s.badge[1]}</span></div>
+        <div class="sd">${s.d}</div>
+        ${s.acts ? `<div class="step-actions">${s.acts}</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+/* ===== 지망 데이터 ===== */
+async function loadApps() {
+  try {
+    const r = await fetch(REST + '/lineup_applications?active=eq.true&select=*', { headers: H });
+    APPS = r.ok ? await r.json() : [];
+  } catch (e) { console.warn(e); }
+}
+function appStars(clsNm) {
+  const first = APPS.filter(a => a.choice1 === clsNm).map(a => a.teacher);
+  const rest = APPS.filter(a => a.choice2 === clsNm || a.choice3 === clsNm).map(a => a.teacher);
+  return { first, rest };
+}
+function openApps() {
+  const body = document.getElementById('apps-body');
+  const ROLE_LBL = { lead: '담임', care: '케어담임', any: '무관' };
+  const submitted = new Set(APPS.map(a => a.teacher));
+  const notYet = TEACHER_NAMES.filter(t => !submitted.has(t));
+  const byClass = (DRAFT ? data().classes : []).map(c => {
+    const { first, rest } = appStars(c.nm);
+    if (!first.length && !rest.length) return '';
+    return `<div style="margin-top:6px;font-size:12.5px"><b>${esc(c.nm)}</b> — ★ ${first.map(esc).join(', ') || '-'} · ☆ ${rest.map(esc).join(', ') || '-'}</div>`;
+  }).join('');
+  const rows = APPS.slice().sort((a, b) => a.teacher.localeCompare(b.teacher, 'ko')).map(a => `
+    <tr><td style="font-weight:800;color:var(--ink);white-space:nowrap">${esc(a.teacher)}</td>
+    <td style="white-space:nowrap">${esc(a.choice1 || '')}${a.choice2 ? ' → ' + esc(a.choice2) : ''}${a.choice3 ? ' → ' + esc(a.choice3) : ''}</td>
+    <td>${ROLE_LBL[a.role] || ''}</td>
+    <td>${esc(a.partner || '')}</td>
+    <td>${esc(a.wish || '')}${a.wish && a.comment ? '<br>' : ''}${esc(a.comment || '')}</td></tr>`).join('');
+  body.innerHTML = `
+    <div style="font-size:12.5px;color:var(--muted)">제출 ${APPS.length} / ${TEACHER_POOL.length}명</div>
+    ${byClass ? `<div style="margin-top:8px;padding:10px 12px;background:#f8fafc;border-radius:10px"><div style="font-size:11.5px;font-weight:800;color:var(--muted)">반별 지망 (★1지망 ☆2·3지망)</div>${byClass}</div>` : ''}
+    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>지망</th><th>역할</th><th>동역자</th><th>맡고 싶은 학생 · 코멘트</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="5" style="color:var(--muted)">아직 제출이 없습니다</td></tr>'}</tbody></table></div>
+    <div style="margin-top:8px;font-size:12px;color:var(--muted)">⏳ 미제출: ${notYet.map(esc).join(' · ') || '없음'}</div>`;
+  document.getElementById('apps-ovl').classList.add('show');
+}
+
+/* ===== 교사 배치 ===== */
+function teacherHome(t) {
+  for (const c of data().classes) if ((c.teachers || []).includes(t)) return c.nm;
+  return null;
+}
+function assignTeacher(t, target) {
+  const c = data().classes.find(c => c.nm === target);
+  if (!c) { showToast('❓ 반을 찾을 수 없습니다: ' + target); return; }
+  snapshot();
+  for (const cc of data().classes) cc.teachers = (cc.teachers || []).filter(x => x !== t);
+  c.teachers.push(t);
+  markDirty(); render();
+  showToast('👨‍🏫 ' + t + ' → ' + target + ' 배치');
+}
+function unassignTeacher(t) {
+  if (!teacherHome(t)) { showToast(t + ' — 배치된 반이 없습니다'); return; }
+  snapshot();
+  for (const cc of data().classes) cc.teachers = (cc.teachers || []).filter(x => x !== t);
+  markDirty(); render();
+  showToast('↩️ ' + t + ' 배치 해제');
+}
+function openTeacherPick(clsNm) {
+  document.getElementById('tch-title').textContent = '👨‍🏫 ' + clsNm + ' — 교사 배치';
+  const { first, rest } = appStars(clsNm);
+  const cls = data().classes.find(c => c.nm === clsNm);
+  const stuSet = new Set(cls ? cls.students : []);
+  document.getElementById('tch-pick').innerHTML = TEACHER_POOL.map(({ n, t }) => {
+    const home = teacherHome(n);
+    const sep = TEACHER_SEP.find(([tt, ss]) => tt === n && stuSet.has(ss));
+    const star = first.includes(n) ? '★ 1지망' : rest.includes(n) ? '☆ 지망' : '';
+    return `<div class="trow ${home && home !== clsNm ? 'off' : ''}" onclick="assignTeacher('${n}','${esc(clsNm)}');closeModal('tch-ovl')">
+      <span class="tn">${n}</span><span class="tt2">${t}${home ? ' · ' + (home === clsNm ? '이 반에 배치됨' : home + ' 배치됨') : ''}${sep ? ' · ⚠️ ' + sep[1] + ' 분리 필요' : ''}</span>
+      ${star ? `<span class="star">${star}</span>` : ''}
+    </div>`;
+  }).join('');
+  document.getElementById('tch-ovl').classList.add('show');
+}
+function teacherViols() {
+  const out = [];
+  for (const c of data().classes) {
+    const stuSet = new Set(c.students);
+    for (const t of (c.teachers || [])) {
+      for (const [tt, ss] of TEACHER_SEP) if (tt === t && stuSet.has(ss)) out.push(`${c.nm}: ${t}T↔${ss}`);
+    }
+  }
+  return out;
+}
 
 function data() { return DRAFT.data; }
 function snapshot() { UNDO.push(JSON.stringify(DRAFT.data)); if (UNDO.length > 80) UNDO.shift(); }
@@ -408,6 +623,8 @@ async function pickDraft(id) {
   const rows = r.ok ? await r.json() : [];
   if (!rows.length) { showToast('초안을 찾을 수 없습니다'); return; }
   DRAFT = rows[0];
+  DRAFT.data.classes.forEach(c => { if (!Array.isArray(c.teachers)) c.teachers = []; });
+  if (!Array.isArray(DRAFT.data.pool)) DRAFT.data.pool = [];
   UNDO = []; SELECTED = null; clearDirty();
   render();
   showToast('📂 "' + DRAFT.name + '" 불러옴');
@@ -490,7 +707,7 @@ function addClass() {
   if (!nm) return;
   if (data().classes.some(c => c.nm === nm)) { showToast('이미 있는 반 이름입니다'); return; }
   snapshot();
-  data().classes.push({ nm, students: [] });
+  data().classes.push({ nm, students: [], teachers: [] });
   markDirty(); render();
 }
 function removeClass(nm) {
@@ -551,12 +768,20 @@ function render() {
   const cols = data().classes.map(c => {
     const st = classStats(c.students);
     const viols = classSepViols(c.students);
-    return `<div class="col ${viols.length ? 'viol' : ''}" data-target="${esc(c.nm)}"
+    const stuSet = new Set(c.students);
+    const tchHtml = (c.teachers || []).map(t => {
+      const warn = TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss));
+      const { first } = appStars(c.nm);
+      return `<span class="tch ${warn ? 'warn' : ''}" title="${warn ? '⚠️ 분리 필요 학생과 같은 반' : ''}">👨‍🏫 ${esc(t)}${first.includes(t) ? ' ★' : ''}<button class="x" onclick="event.stopPropagation();unassignTeacher('${esc(t)}')">✕</button></span>`;
+    }).join('');
+    const tViol = (c.teachers || []).some(t => TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss)));
+    return `<div class="col ${viols.length || tViol ? 'viol' : ''}" data-target="${esc(c.nm)}"
       ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${esc(c.nm)}')">
       <div class="col-head" onclick="tapCol('${esc(c.nm)}')">
         <button class="col-del" onclick="event.stopPropagation();removeClass('${esc(c.nm)}')" title="빈 반 삭제">✕</button>
         <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span><span class="move-here">여기로</span></div>
         <div class="stats">출석 <b>${st.att}</b> · 장결 <b>${st.la}</b> · 80%+ <b>${st.hi}</b> · 남 <b>${st.boys}</b> · 학년 <b>${st.g[1] || 0}/${st.g[2] || 0}/${st.g[3] || 0}</b></div>
+        <div class="tch-row">${tchHtml}<button class="tch-add" onclick="event.stopPropagation();openTeacherPick('${esc(c.nm)}')">+ 교사</button></div>
         ${viols.length ? `<span class="viol-tag">🚫 분리 위반 ${viols.length}건</span>` : ''}
       </div>
       <div class="col-body">${c.students.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
@@ -571,9 +796,13 @@ function render() {
     <div class="col-body">${data().pool.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">없음</div>'}</div>
   </div>`);
   board.innerHTML = cols.join('');
-  // 배너
+  // 배너 (학생 분리 + 교사 하드제약)
   const wb = document.getElementById('warn-banner');
-  if (allViol.length) { wb.classList.add('show'); wb.innerHTML = '🚫 <b>분리 제약 위반:</b> ' + allViol.map(esc).join(' · '); }
+  const tv = teacherViols();
+  const warnParts = [];
+  if (allViol.length) warnParts.push('🚫 <b>분리 제약 위반:</b> ' + allViol.map(esc).join(' · '));
+  if (tv.length) warnParts.push('⚠️ <b>교사 하드제약:</b> ' + tv.map(esc).join(' · '));
+  if (warnParts.length) { wb.classList.add('show'); wb.innerHTML = warnParts.join('<br>'); }
   else wb.classList.remove('show');
   const ib = document.getElementById('info-banner');
   const splits = keepSplits();
@@ -629,6 +858,14 @@ function runCmd() {
   const txt = (inp.value || '').trim();
   if (!txt) return;
   if (/^(취소|되돌리기|undo)$/i.test(txt)) { undoMove(); inp.value = ''; return; }
+  // 교사 배치 명령: "이름 N반 배치" / "이름 배치 해제"
+  const tMatch = TEACHER_NAMES.slice().sort((a, b) => b.length - a.length).find(t => txt.includes(t));
+  if (tMatch && /(배치 *해제|해제)/.test(txt)) { unassignTeacher(tMatch); inp.value = ''; return; }
+  if (tMatch && /배치/.test(txt)) {
+    const tgt = matchClass(txt);
+    if (!tgt || tgt === POOL) { showToast('❓ 배치할 반을 찾지 못했습니다 — 예: "' + tMatch + ' 3반 배치"'); return; }
+    assignTeacher(tMatch, tgt); inp.value = ''; return;
+  }
   const names = extractNames(txt);
   const target = matchClass(txt);
   if (names.length >= 2 && /(교환|서로 *바꿔|스왑|맞바꿔)/.test(txt)) { swapStudents(names[0], names[1]); inp.value = ''; return; }
@@ -767,10 +1004,10 @@ function runAuto() {
   if (g3sep && k3 > 0) {
     const g12 = all.filter(n => STUDENTS[n].g !== 3);
     const g3 = all.filter(n => STUDENTS[n].g === 3);
-    autoPartition(g12, k12, true).forEach((b, i) => classes.push({ nm: (i + 1) + '반', students: sortRoster(b) }));
-    autoPartition(g3, k3, false).forEach((b, i) => classes.push({ nm: '고3-' + (i + 1), students: sortRoster(b) }));
+    autoPartition(g12, k12, true).forEach((b, i) => classes.push({ nm: (i + 1) + '반', students: sortRoster(b), teachers: [] }));
+    autoPartition(g3, k3, false).forEach((b, i) => classes.push({ nm: '고3-' + (i + 1), students: sortRoster(b), teachers: [] }));
   } else {
-    autoPartition(all, k12, true).forEach((b, i) => classes.push({ nm: (i + 1) + '반', students: sortRoster(b) }));
+    autoPartition(all, k12, true).forEach((b, i) => classes.push({ nm: (i + 1) + '반', students: sortRoster(b), teachers: [] }));
   }
   DRAFT.data = { classes, pool: [], constraints: data().constraints };
   markDirty();
@@ -808,10 +1045,11 @@ async function showApp() {
   document.getElementById('app-root').style.display = '';
   document.getElementById('my-badge').textContent = MY;
   logAccess(MY, 'lineup-studio');
-  await Photos.load();
+  await Promise.all([Photos.load(), loadApps()]);
   const rows = await loadDraftList();
   if (rows.length) await pickDraft(rows.find(d => d.status === 'final')?.id || rows[0].id);
-  else { DRAFT = { id: null, name: '새 초안', status: 'draft', data: { classes: [{ nm: '1반', students: [] }], pool: Object.keys(STUDENTS).filter(n => !STUDENTS[n].ov), constraints: { sep: [], keep: [] } } }; render(); }
+  else { DRAFT = { id: null, name: '새 초안', status: 'draft', data: { classes: [{ nm: '1반', students: [], teachers: [] }], pool: Object.keys(STUDENTS).filter(n => !STUDENTS[n].ov), constraints: { sep: [], keep: [] } } }; render(); }
+  setView('hub');
 }
 fillSelect();
 const savedPin = localStorage.getItem('access_pin');
