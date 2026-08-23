@@ -54,11 +54,18 @@
   .photo-ovl img { max-width: min(86vw, 520px); max-height: 72vh; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.6); background: #1e293b; }
   .photo-ovl .cap { color: #f1f5f9; font-size: 17px; font-weight: 800; }
   .photo-ovl .cap .sub2 { font-size: 13px; color: #94a3b8; font-weight: 600; margin-left: 8px; }
-  /* 강점·도움 멀티칩 */
-  .tag-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  /* 강점·도움 멀티칩 (영역 그룹) */
+  .tag-grid { display: flex; flex-direction: column; gap: 10px; }
+  .tg-group { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+  .tg-head { font-size: 12.5px; font-weight: 800; color: var(--ink); margin-bottom: 7px; }
+  .tg-ref { font-size: 10.5px; font-weight: 600; color: var(--muted); margin-left: 6px; }
+  .tg-chips { display: flex; flex-wrap: wrap; gap: 7px; }
   .tagchip { border: 1.5px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; padding: 8px 15px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
   .tagchip.on { background: #7c3aed; border-color: #7c3aed; color: #fff; }
   .tagchip.on.need { background: #0891b2; border-color: #0891b2; }
+  .tagchip.ptype { border-radius: 12px; text-align: left; flex: 1 1 46%; min-width: 200px; }
+  .tagchip.ptype .pt-desc { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 2px; }
+  .tagchip.ptype.on .pt-desc { color: rgba(255,255,255,.85); }
   .cls .pick { margin-top: 8px; display: flex; gap: 5px; }
   .cls .pick button { flex: 1; border: 1px solid #cbd5e1; background: #fff; color: #64748b; border-radius: 8px; padding: 6px 0; font-size: 11.5px; font-weight: 800; cursor: pointer; font-family: inherit; }
   .cls .pick button.on1 { background: #7c3aed; border-color: #7c3aed; color: #fff; }
@@ -142,12 +149,12 @@
       </div>
       <div class="q">
         <div class="qt">Q2. 선생님의 강점은 어떤 부분인가요? <span style="font-size:11.5px;color:var(--muted);font-weight:600">(복수 선택)</span></div>
-        <div class="qs">잘하는 부분, 자신 있는 사역을 모두 골라주세요. 팀 구성 시 서로의 강점이 보완되도록 배치합니다.</div>
+        <div class="qs">교사 사역을 <b>말씀·가르침 / 관계·돌봄 / 영성·삶의 본 / 운영·세움</b> 네 영역(롬 12장·고전 12장의 은사 이해 기반)으로 나눴습니다. 자신 있는 부분을 모두 골라주세요 — 팀 구성 시 서로의 강점이 보완되도록 배치합니다.</div>
         <div class="tag-grid" id="strength-grid"></div>
       </div>
       <div class="q">
         <div class="qt">Q3. 도움받고 싶은 부분은 어떤 건가요? <span style="font-size:11.5px;color:var(--muted);font-weight:600">(복수 선택)</span></div>
-        <div class="qs">부담되거나 동역자의 도움이 필요한 부분을 골라주세요. 솔직할수록 좋은 팀이 됩니다.</div>
+        <div class="qs">같은 네 영역에서, 부담되거나 동역자의 도움이 필요한 부분을 골라주세요. 솔직할수록 좋은 팀이 됩니다. (모든 것을 잘해야 하는 게 아니라, 몸의 각 지체처럼 서로 보완하는 것이 목표입니다 — 고전 12:21)</div>
         <div class="tag-grid" id="need-grid"></div>
       </div>
       <div class="q">
@@ -155,7 +162,7 @@
         <div class="qs">① <b>이름으로</b> — 같은 반이나 같은 대가족에서 함께 섬기고 싶은 선생님이 있다면 적어주세요.</div>
         <input type="text" id="partner" list="teacher-names" placeholder="선생님 이름 (여러 명 가능)">
         <datalist id="teacher-names"></datalist>
-        <div class="qs" style="margin-top:12px">② <b>유형으로</b> — "이런 선생님과 함께 사역하고 싶어요" 에 해당하는 강점을 골라주세요. (복수 선택)</div>
+        <div class="qs" style="margin-top:12px">② <b>협업 성향으로</b> — "이렇게 함께 일하는 선생님과 사역하고 싶어요"에 해당하는 유형을 골라주세요. (복수 선택 — 사역 영역이 아니라 <b>함께 일하는 방식</b>입니다)</div>
         <div class="tag-grid" id="ptrait-grid"></div>
         <div class="qs" style="margin-top:12px">③ 원하는 <b>협업 방식</b>이 있다면 자유롭게 적어주세요. (예: 역할을 명확히 나누고 싶어요 / 함께 심방 다니고 싶어요)</div>
         <textarea id="collab" maxlength="300" placeholder="원하는 협업 방식 (자유롭게)"></textarea>
@@ -198,13 +205,40 @@ const ALL_TEACHERS = [
   '박진호','송가원',
   '김현진','안강훈','김시내','정귀희','문석주','박정향'
 ];
-// 강점·도움 선택지
-const TRAITS = [
-  ['word', '📖 말씀·GBS 인도'], ['one2one', '🤝 원투원·개인 케어'], ['visit', '🏠 심방·주중 만남'],
-  ['parent', '👨‍👩‍👧 학부모 소통'], ['newbie', '🌱 새친구·관계 형성'], ['pray', '🙏 기도·영적 돌봄'],
-  ['event', '🎉 행사·아웃팅 기획'], ['worship', '🎵 찬양·예배'], ['admin', '📋 행정·기록·시스템'],
+// ═══ 교사 사역 은사·강점 체계 ═══
+// 복음적 근거: 롬 12:6-8 · 고전 12장 · 벧전 4:10-11 (말씀 사역과 섬김 사역의 두 축), 딤전 4:12 (본이 됨)
+// 교육학적 근거: 교사 역량 4영역 — 교수(instruction) · 관계 돌봄(relational care) · 영적 모델링 · 공동체 운영(management)
+const DOMAINS = [
+  { k: 'teach', t: '📖 말씀 · 가르침', ref: '"가르치는 자면 가르치는 일로" (롬 12:7)', items: [
+    ['teach_word', '말씀 준비·GBS 인도', '본문을 연구하고 소그룹 나눔을 이끄는 것'],
+    ['teach_comm', '눈높이 소통·질문으로 이끌기', '아이들 언어로 풀고, 좋은 질문으로 생각을 여는 것'],
+  ]},
+  { k: 'care', t: '💞 관계 · 돌봄', ref: '"유모가 자기 자녀를 기름과 같이" (살전 2:7)', items: [
+    ['care_one', '한 영혼 돌봄 (원투원·심방·상담)', '한 명을 꾸준히 만나고 경청하며 마음을 여는 것'],
+    ['care_welcome', '환대·회복 (새친구·장결자)', '처음 온 아이, 떠나 있던 아이가 편해지게 하는 것'],
+  ]},
+  { k: 'spirit', t: '🔥 영성 · 삶의 본', ref: '"오직 말과 행실과 사랑과 믿음과 정절에 있어서 본이 되어" (딤전 4:12)', items: [
+    ['spirit_pray', '기도·중보', '학생과 반을 위해 꾸준히 기도로 붙드는 것'],
+    ['spirit_model', '삶의 본·신앙 나눔', '내 신앙의 이야기(간증·영적 대화)로 본을 보이는 것'],
+  ]},
+  { k: 'lead', t: '🧭 운영 · 세움', ref: '"다스리는 자는 부지런함으로" (롬 12:8)', items: [
+    ['lead_event', '모임 기획·행사 (아웃팅 등)', '함께 모일 자리를 만들고 즐겁게 운영하는 것'],
+    ['lead_admin', '운영·연결 (행정·기록·학부모 소통)', '출석·기록을 챙기고 학부모·교역자와 소통하는 것'],
+  ]},
 ];
-const TRAIT_LBL = Object.fromEntries(TRAITS);
+const TRAIT_LBL = {};
+DOMAINS.forEach(d => d.items.forEach(([k, l]) => { TRAIT_LBL[k] = l; }));
+
+// ═══ 동역자 협업 성향 (Q4 — 사역 영역과 다른 차원: "어떻게 함께 일하는 사람과") ═══
+const PARTNER_TYPES = [
+  ['p_lead', '🧭 이끌어주는 리더형', '방향을 잡고 결정을 내려주는'],
+  ['p_support', '🤲 꼼꼼한 서포터형', '뒤에서 챙기고 빈틈을 메워주는'],
+  ['p_energy', '💡 아이디어·에너지형', '새로운 시도와 활력을 불어넣는'],
+  ['p_steady', '🌊 차분한 안정형', '흔들림 없이 꾸준히 자리를 지키는'],
+  ['p_listen', '👂 공감·경청형', '마음을 나누고 함께 고민해주는'],
+  ['p_action', '🔨 실행·추진형', '정한 것을 바로 실행에 옮기는'],
+];
+PARTNER_TYPES.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
 
 const STUDENTS = {
   '강은교':{g:2,s:'여',rt:100,c:'셀2'},
@@ -386,13 +420,21 @@ function renderClasses() {
   syncPicks();
 }
 function renderTraits() {
-  const mk = (gridId, selSet, extraCls) => {
-    document.getElementById(gridId).innerHTML = TRAITS.map(([k, label]) => `
-      <button class="tagchip ${selSet.has(k) ? 'on ' + (extraCls || '') : ''}" onclick="toggleTrait('${gridId}','${k}')">${label}</button>`).join('');
+  // Q2·Q3: 4개 사역 영역 그룹으로 렌더
+  const mkDomains = (gridId, selSet, extraCls) => {
+    document.getElementById(gridId).innerHTML = DOMAINS.map(d => `
+      <div class="tg-group">
+        <div class="tg-head">${d.t} <span class="tg-ref">${esc(d.ref)}</span></div>
+        <div class="tg-chips">${d.items.map(([k, label, desc]) => `
+          <button class="tagchip ${selSet.has(k) ? 'on ' + (extraCls || '') : ''}" title="${esc(desc)}" onclick="toggleTrait('${gridId}','${k}')">${label}</button>`).join('')}
+        </div>
+      </div>`).join('');
   };
-  mk('strength-grid', STR_SEL, '');
-  mk('need-grid', NEED_SEL, 'need');
-  mk('ptrait-grid', PTRAIT_SEL, '');
+  mkDomains('strength-grid', STR_SEL, '');
+  mkDomains('need-grid', NEED_SEL, 'need');
+  // Q4: 협업 성향 유형 (설명 포함 칩)
+  document.getElementById('ptrait-grid').innerHTML = PARTNER_TYPES.map(([k, label, desc]) => `
+    <button class="tagchip ptype ${PTRAIT_SEL.has(k) ? 'on' : ''}" onclick="toggleTrait('ptrait-grid','${k}')">${label}<span class="pt-desc">${esc(desc)}</span></button>`).join('');
 }
 function toggleTrait(gridId, k) {
   const set = gridId === 'strength-grid' ? STR_SEL : gridId === 'need-grid' ? NEED_SEL : PTRAIT_SEL;

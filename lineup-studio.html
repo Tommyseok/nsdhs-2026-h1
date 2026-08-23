@@ -529,7 +529,15 @@ function appStars(clsNm) {
   const rest = APPS.filter(a => a.choice2 === clsNm || a.choice3 === clsNm).map(a => a.teacher);
   return { first, rest };
 }
-const TRAIT_LBL = { word: '📖 말씀·GBS', one2one: '🤝 원투원', visit: '🏠 심방', parent: '👨‍👩‍👧 학부모', newbie: '🌱 새친구', pray: '🙏 기도', event: '🎉 행사기획', worship: '🎵 찬양', admin: '📋 행정' };
+const TRAIT_LBL = {
+  // 사역 영역 8은사 (신규 체계)
+  teach_word: '📖 말씀·GBS', teach_comm: '💬 눈높이 소통', care_one: '🤝 한 영혼 돌봄', care_welcome: '🌱 환대·회복',
+  spirit_pray: '🙏 기도·중보', spirit_model: '✨ 삶의 본', lead_event: '🎉 기획·행사', lead_admin: '📋 운영·연결',
+  // 협업 성향 6유형 (Q4)
+  p_lead: '🧭 리더형', p_support: '🤲 서포터형', p_energy: '💡 에너지형', p_steady: '🌊 안정형', p_listen: '👂 경청형', p_action: '🔨 추진형',
+  // 구 키 호환
+  word: '📖 말씀·GBS', one2one: '🤝 원투원', visit: '🏠 심방', parent: '👨‍👩‍👧 학부모', newbie: '🌱 새친구', pray: '🙏 기도', event: '🎉 행사기획', worship: '🎵 찬양', admin: '📋 행정',
+};
 function traitNames(csv) { return (csv || '').split(',').filter(Boolean).map(k => TRAIT_LBL[k] || k).join(' '); }
 function openApps() {
   const body = document.getElementById('apps-body');
