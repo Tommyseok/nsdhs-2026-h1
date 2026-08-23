@@ -561,7 +561,7 @@ function openApps() {
     <td>${traitNames(a.strengths)}</td>
     <td>${traitNames(a.needs)}</td>
     <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">성향: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab_types ? '<br><span style="color:var(--muted)">방식: ' + traitNames(a.collab_types) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
-    <td>${a.visit_avail ? traitNames(a.visit_avail) : ''}${a.visit_types ? '<br><span style="color:var(--muted)">' + traitNames(a.visit_types) + '</span>' : ''}</td>
+    <td>${a.visit_avail ? traitNames(a.visit_avail) : ''}${a.visit_types ? '<br><span style="color:var(--muted)">' + traitNames(a.visit_types) + '</span>' : ''}${a.visit_etc ? '<br><span style="color:var(--muted)">기타: ' + esc(a.visit_etc) + '</span>' : ''}</td>
     <td>${esc(a.wish || '')}${a.wish && a.comment ? '<br>' : ''}${esc(a.comment || '')}</td></tr>`).join('');
   body.innerHTML = `
     <div style="font-size:12.5px;color:var(--muted)">제출 ${APPS.length} / ${TEACHER_POOL.length}명</div>
