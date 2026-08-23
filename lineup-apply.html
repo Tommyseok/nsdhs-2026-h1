@@ -162,19 +162,27 @@
         <datalist id="teacher-names"></datalist>
         <div class="qs" style="margin-top:12px">② <b>협업 성향으로</b> — "이렇게 함께 일하는 선생님과 사역하고 싶어요"에 해당하는 유형을 골라주세요. (복수 선택 — 사역 영역이 아니라 <b>함께 일하는 방식</b>입니다)</div>
         <div class="tag-grid" id="ptrait-grid"></div>
-        <div class="qs" style="margin-top:12px">③ 원하는 <b>협업 방식</b>이 있다면 자유롭게 적어주세요. (예: 역할을 명확히 나누고 싶어요 / 함께 심방 다니고 싶어요)</div>
-        <textarea id="collab" maxlength="300" placeholder="원하는 협업 방식 (자유롭게)"></textarea>
+        <div class="qs" style="margin-top:12px">③ 원하는 <b>협업 방식</b>을 골라주세요. (복수 선택 — 동역자와 한 반을 어떻게 운영하고 싶은지)</div>
+        <div class="tag-grid" style="margin-bottom:8px"><div class="tg-chips" id="collab-grid"></div></div>
+        <input type="text" id="collab" maxlength="300" placeholder="기타 — 그 외 원하는 방식이 있다면 자유롭게">
+      </div>
+      <div class="q">
+        <div class="qt">Q5. 심방·주중 케어는 어느 정도 가능하세요?</div>
+        <div class="qs">① 주중에 학생을 만나거나 연락할 <b>시간</b>을 낼 수 있나요? (하나 선택)</div>
+        <div class="tag-grid" style="margin-bottom:10px"><div class="tg-chips" id="vavail-grid"></div></div>
+        <div class="qs">② 선호하거나 가능한 <b>심방·케어 방식</b>을 골라주세요. (복수 선택)</div>
+        <div class="tag-grid"><div class="tg-chips" id="vtype-grid"></div></div>
       </div>
       <div id="prefill-hint" style="display:none;margin-top:16px;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;font-size:12.5px;color:#92400e;font-weight:600">
         📥 지난 <b>섬김 상황 설문</b>에 남기신 내용을 아래에 가져왔습니다 — 확인하고 추가할 부분이 있으면 반영해서 제출해 주세요.
       </div>
       <div class="q">
-        <div class="qt">Q5. 맡고 싶은 학생 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
+        <div class="qt">Q6. 맡고 싶은 학생 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
         <div class="qs">특별히 마음이 가는 학생이 있다면 배치에 참고합니다.</div>
         <input type="text" id="wish" placeholder="예: ○○○, ○○○">
       </div>
       <div class="q">
-        <div class="qt">Q6. 특별 코멘트 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
+        <div class="qt">Q7. 특별 코멘트 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
         <textarea id="comment" maxlength="500" placeholder="배치에 참고할 상황·요청을 자유롭게 적어주세요"></textarea>
       </div>
       <div class="submit-row">
@@ -240,6 +248,34 @@ const PARTNER_TYPES = [
   ['p_action', '🔨 실행·추진형', '정한 것을 바로 실행에 옮기는'],
 ];
 PARTNER_TYPES.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
+
+// ═══ 협업 방식 (Q4③ — 2인 1조를 어떻게 운영할지) ═══
+const COLLAB_TYPES = [
+  ['c_role', '📋 역할을 명확히 나누고 싶어요', '담임·케어 등 맡은 영역을 분명하게'],
+  ['c_together', '🤝 모든 사역을 함께 하고 싶어요', '구분 없이 같이 인도하고 같이 돌봄'],
+  ['c_alt', '🔄 번갈아 가며 인도하고 싶어요', 'GBS 인도를 교대로'],
+  ['c_visit', '🏠 심방·만남을 같이 다니고 싶어요', '주중 만남·아웃팅 동행'],
+  ['c_pray', '🙏 동역자와 정기적으로 기도하고 싶어요', '기도로 함께 시작하는 팀'],
+  ['c_flex', '🌊 상황에 맞게 유연하게 하고 싶어요', '정해두기보다 그때그때 조율'],
+];
+COLLAB_TYPES.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
+
+// ═══ 심방·주중 케어 (Q5) ═══
+const VISIT_AVAIL = [
+  ['avail_yes', '🙆 주중에 시간 낼 수 있어요', '평일 저녁·주말 등 정기적으로 가능'],
+  ['avail_some', '🙋 가끔은 가능해요', '한 달 1~2회 정도'],
+  ['avail_no', '🙅 주중은 어려워요', '주일 중심으로 섬길게요'],
+];
+const VISIT_TYPES = [
+  ['v_meal', '🍜 밥·카페에서 만나기'],
+  ['v_online', '💬 카톡·전화·영상통화'],
+  ['v_act', '🎮 액티비티 (운동·게임·놀이)'],
+  ['v_home', '🏠 가정 심방'],
+  ['v_church', '⛪ 주일에 교회에서 깊은 대화'],
+  ['v_gift', '✉️ 편지·간식 등 마음 표현'],
+];
+VISIT_AVAIL.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
+VISIT_TYPES.forEach(([k, l]) => { TRAIT_LBL[k] = l; });
 
 const STUDENTS = {
   '강은교':{g:2,s:'여',rt:100,c:'셀2'},
@@ -330,8 +366,8 @@ const STUDENTS = {
   '홍기진':{g:2,s:'남',rt:100,c:'셀1'}
 };
 
-let MY = null, DRAFT = null;
-const STR_SEL = new Set(), NEED_SEL = new Set(), PTRAIT_SEL = new Set();
+let MY = null, DRAFT = null, VAVAIL_SEL = null;
+const STR_SEL = new Set(), NEED_SEL = new Set(), PTRAIT_SEL = new Set(), CLB_SEL = new Set(), VTYPE_SEL = new Set();
 
 /* ===== 학생 사진 (photos.html 규칙) ===== */
 const Photos = (() => {
@@ -434,12 +470,21 @@ function renderTraits() {
   };
   mkFlat('strength-grid', STR_SEL, '');
   mkFlat('need-grid', NEED_SEL, 'need');
-  // Q4: 협업 성향 유형 (설명 포함 칩)
+  // Q4②: 협업 성향 유형 (설명 포함 칩)
   document.getElementById('ptrait-grid').innerHTML = PARTNER_TYPES.map(([k, label, desc]) => `
     <button class="tagchip ptype ${PTRAIT_SEL.has(k) ? 'on' : ''}" onclick="toggleTrait('ptrait-grid','${k}')">${label}<span class="pt-desc">${esc(desc)}</span></button>`).join('');
+  // Q4③: 협업 방식
+  document.getElementById('collab-grid').innerHTML = COLLAB_TYPES.map(([k, label, desc]) => `
+    <button class="tagchip ptype ${CLB_SEL.has(k) ? 'on' : ''}" onclick="toggleTrait('collab-grid','${k}')">${label}<span class="pt-desc">${esc(desc)}</span></button>`).join('');
+  // Q5①: 주중 가용성 (택1)
+  document.getElementById('vavail-grid').innerHTML = VISIT_AVAIL.map(([k, label, desc]) => `
+    <button class="tagchip ptype ${VAVAIL_SEL === k ? 'on' : ''}" onclick="VAVAIL_SEL = VAVAIL_SEL === '${k}' ? null : '${k}'; renderTraits()">${label}<span class="pt-desc">${esc(desc)}</span></button>`).join('');
+  // Q5②: 심방 방식 (복수)
+  document.getElementById('vtype-grid').innerHTML = VISIT_TYPES.map(([k, label]) => `
+    <button class="tagchip ${VTYPE_SEL.has(k) ? 'on' : ''}" onclick="toggleTrait('vtype-grid','${k}')">${label}</button>`).join('');
 }
 function toggleTrait(gridId, k) {
-  const set = gridId === 'strength-grid' ? STR_SEL : gridId === 'need-grid' ? NEED_SEL : PTRAIT_SEL;
+  const set = gridId === 'strength-grid' ? STR_SEL : gridId === 'need-grid' ? NEED_SEL : gridId === 'collab-grid' ? CLB_SEL : gridId === 'vtype-grid' ? VTYPE_SEL : PTRAIT_SEL;
   set.has(k) ? set.delete(k) : set.add(k);
   renderTraits();
 }
@@ -495,6 +540,9 @@ async function loadMine() {
   STR_SEL.clear(); (a.strengths || '').split(',').filter(Boolean).forEach(k => STR_SEL.add(k));
   NEED_SEL.clear(); (a.needs || '').split(',').filter(Boolean).forEach(k => NEED_SEL.add(k));
   PTRAIT_SEL.clear(); (a.partner_traits || '').split(',').filter(Boolean).forEach(k => PTRAIT_SEL.add(k));
+  CLB_SEL.clear(); (a.collab_types || '').split(',').filter(Boolean).forEach(k => CLB_SEL.add(k));
+  VTYPE_SEL.clear(); (a.visit_types || '').split(',').filter(Boolean).forEach(k => VTYPE_SEL.add(k));
+  VAVAIL_SEL = a.visit_avail || null;
   document.getElementById('partner').value = a.partner || '';
   document.getElementById('collab').value = a.collab || '';
   document.getElementById('wish').value = a.wish || '';
@@ -516,7 +564,10 @@ async function submitApp() {
     needs: [...NEED_SEL].join(',') || null,
     partner: (document.getElementById('partner').value || '').trim() || null,
     partner_traits: [...PTRAIT_SEL].join(',') || null,
+    collab_types: [...CLB_SEL].join(',') || null,
     collab: (document.getElementById('collab').value || '').trim() || null,
+    visit_avail: VAVAIL_SEL,
+    visit_types: [...VTYPE_SEL].join(',') || null,
     wish: (document.getElementById('wish').value || '').trim() || null,
     comment: (document.getElementById('comment').value || '').trim() || null,
     updated_at: new Date().toISOString(), active: true,

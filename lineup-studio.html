@@ -533,8 +533,13 @@ const TRAIT_LBL = {
   // 사역 영역 8은사 (신규 체계)
   teach_word: '📖 말씀·GBS', teach_comm: '💬 눈높이 소통', care_one: '🤝 한 영혼 돌봄', care_welcome: '🌱 환대·회복',
   spirit_pray: '🙏 기도·중보', spirit_model: '✨ 삶의 본', lead_event: '🎉 기획·행사', lead_admin: '📋 운영·연결',
-  // 협업 성향 6유형 (Q4)
+  // 협업 성향 6유형 (Q4②)
   p_lead: '🧭 리더형', p_support: '🤲 서포터형', p_energy: '💡 에너지형', p_steady: '🌊 안정형', p_listen: '👂 경청형', p_action: '🔨 추진형',
+  // 협업 방식 6유형 (Q4③)
+  c_role: '📋 역할분담', c_together: '🤝 모두함께', c_alt: '🔄 교대인도', c_visit: '🏠 심방동행', c_pray: '🙏 동역기도', c_flex: '🌊 유연하게',
+  // 심방 가용성·방식 (Q5)
+  avail_yes: '🙆 주중 가능', avail_some: '🙋 가끔 가능', avail_no: '🙅 주중 어려움',
+  v_meal: '🍜 밥·카페', v_online: '💬 카톡·전화', v_act: '🎮 액티비티', v_home: '🏠 가정심방', v_church: '⛪ 주일대화', v_gift: '✉️ 편지·간식',
   // 구 키 호환
   word: '📖 말씀·GBS', one2one: '🤝 원투원', visit: '🏠 심방', parent: '👨‍👩‍👧 학부모', newbie: '🌱 새친구', pray: '🙏 기도', event: '🎉 행사기획', worship: '🎵 찬양', admin: '📋 행정',
 };
@@ -553,13 +558,14 @@ function openApps() {
     <td style="white-space:nowrap">${esc(a.choice1 || '')}${a.choice2 ? ' → ' + esc(a.choice2) : ''}${a.choice3 ? ' → ' + esc(a.choice3) : ''}</td>
     <td>${traitNames(a.strengths)}</td>
     <td>${traitNames(a.needs)}</td>
-    <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">유형: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
+    <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">성향: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab_types ? '<br><span style="color:var(--muted)">방식: ' + traitNames(a.collab_types) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
+    <td>${a.visit_avail ? traitNames(a.visit_avail) : ''}${a.visit_types ? '<br><span style="color:var(--muted)">' + traitNames(a.visit_types) + '</span>' : ''}</td>
     <td>${esc(a.wish || '')}${a.wish && a.comment ? '<br>' : ''}${esc(a.comment || '')}</td></tr>`).join('');
   body.innerHTML = `
     <div style="font-size:12.5px;color:var(--muted)">제출 ${APPS.length} / ${TEACHER_POOL.length}명</div>
     ${byClass ? `<div style="margin-top:8px;padding:10px 12px;background:#f8fafc;border-radius:10px"><div style="font-size:11.5px;font-weight:800;color:var(--muted)">반별 지망 (★1지망 ☆2·3지망)</div>${byClass}</div>` : ''}
-    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>지망</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 동역자·협업</th><th>학생 · 코멘트</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="6" style="color:var(--muted)">아직 제출이 없습니다</td></tr>'}</tbody></table></div>
+    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>지망</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 동역자·협업</th><th>🏠 심방</th><th>학생 · 코멘트</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="7" style="color:var(--muted)">아직 제출이 없습니다</td></tr>'}</tbody></table></div>
     <div style="margin-top:8px;font-size:12px;color:var(--muted)">⏳ 미제출: ${notYet.map(esc).join(' · ') || '없음'}</div>`;
   document.getElementById('apps-ovl').classList.add('show');
 }
