@@ -529,9 +529,10 @@ function appStars(clsNm) {
   const rest = APPS.filter(a => a.choice2 === clsNm || a.choice3 === clsNm).map(a => a.teacher);
   return { first, rest };
 }
+const TRAIT_LBL = { word: '📖 말씀·GBS', one2one: '🤝 원투원', visit: '🏠 심방', parent: '👨‍👩‍👧 학부모', newbie: '🌱 새친구', pray: '🙏 기도', event: '🎉 행사기획', worship: '🎵 찬양', admin: '📋 행정' };
+function traitNames(csv) { return (csv || '').split(',').filter(Boolean).map(k => TRAIT_LBL[k] || k).join(' '); }
 function openApps() {
   const body = document.getElementById('apps-body');
-  const ROLE_LBL = { lead: '담임', care: '케어담임', any: '무관' };
   const submitted = new Set(APPS.map(a => a.teacher));
   const notYet = TEACHER_NAMES.filter(t => !submitted.has(t));
   const byClass = (DRAFT ? data().classes : []).map(c => {
@@ -542,14 +543,15 @@ function openApps() {
   const rows = APPS.slice().sort((a, b) => a.teacher.localeCompare(b.teacher, 'ko')).map(a => `
     <tr><td style="font-weight:800;color:var(--ink);white-space:nowrap">${esc(a.teacher)}</td>
     <td style="white-space:nowrap">${esc(a.choice1 || '')}${a.choice2 ? ' → ' + esc(a.choice2) : ''}${a.choice3 ? ' → ' + esc(a.choice3) : ''}</td>
-    <td>${ROLE_LBL[a.role] || ''}</td>
-    <td>${esc(a.partner || '')}</td>
+    <td>${traitNames(a.strengths)}</td>
+    <td>${traitNames(a.needs)}</td>
+    <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">유형: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
     <td>${esc(a.wish || '')}${a.wish && a.comment ? '<br>' : ''}${esc(a.comment || '')}</td></tr>`).join('');
   body.innerHTML = `
     <div style="font-size:12.5px;color:var(--muted)">제출 ${APPS.length} / ${TEACHER_POOL.length}명</div>
     ${byClass ? `<div style="margin-top:8px;padding:10px 12px;background:#f8fafc;border-radius:10px"><div style="font-size:11.5px;font-weight:800;color:var(--muted)">반별 지망 (★1지망 ☆2·3지망)</div>${byClass}</div>` : ''}
-    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>지망</th><th>역할</th><th>동역자</th><th>맡고 싶은 학생 · 코멘트</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="5" style="color:var(--muted)">아직 제출이 없습니다</td></tr>'}</tbody></table></div>
+    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>지망</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 동역자·협업</th><th>학생 · 코멘트</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="6" style="color:var(--muted)">아직 제출이 없습니다</td></tr>'}</tbody></table></div>
     <div style="margin-top:8px;font-size:12px;color:var(--muted)">⏳ 미제출: ${notYet.map(esc).join(' · ') || '없음'}</div>`;
   document.getElementById('apps-ovl').classList.add('show');
 }

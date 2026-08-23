@@ -34,12 +34,31 @@
   .priv { margin-top: 10px; padding: 10px 14px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 10px; font-size: 12.5px; color: #5b21b6; font-weight: 600; }
 
   /* 반 카드 */
-  .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-top: 12px; }
+  .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 12px; }
   .cls { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
   .cls .nm { font-size: 14.5px; font-weight: 800; color: var(--ink); }
   .cls .cnt { font-size: 11px; color: var(--muted); font-weight: 600; margin-left: 6px; }
-  .cls .roster { margin-top: 6px; font-size: 12px; color: var(--body); line-height: 1.7; }
-  .cls .la-line { font-size: 11.5px; color: #b45309; margin-top: 4px; }
+  .cls .stats { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .cls .stats b { color: var(--ink); }
+  .roster-chips { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .schip { display: flex; align-items: center; gap: 7px; background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 4px 9px 4px 5px; font-size: 12.5px; }
+  .schip img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #e2e8f0; cursor: zoom-in; flex-shrink: 0; }
+  .schip .sn { font-weight: 800; color: var(--ink); }
+  .schip .sm { font-size: 10.5px; color: var(--muted); }
+  .schip .srt { margin-left: auto; font-size: 10.5px; font-weight: 800; }
+  .schip .srt.hi { color: #059669; } .schip .srt.mid { color: #b45309; } .schip .srt.lo { color: #dc2626; }
+  .schip.la { background: #fffbeb; border-color: #fde68a; }
+  .schip.la .sn { color: #92400e; }
+  .photo-ovl { position: fixed; inset: 0; background: rgba(10,13,20,.88); z-index: 400; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; cursor: zoom-out; padding: 20px; }
+  .photo-ovl.show { display: flex; }
+  .photo-ovl img { max-width: min(86vw, 520px); max-height: 72vh; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.6); background: #1e293b; }
+  .photo-ovl .cap { color: #f1f5f9; font-size: 17px; font-weight: 800; }
+  .photo-ovl .cap .sub2 { font-size: 13px; color: #94a3b8; font-weight: 600; margin-left: 8px; }
+  /* 강점·도움 멀티칩 */
+  .tag-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tagchip { border: 1.5px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; padding: 8px 15px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .tagchip.on { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+  .tagchip.on.need { background: #0891b2; border-color: #0891b2; }
   .cls .pick { margin-top: 8px; display: flex; gap: 5px; }
   .cls .pick button { flex: 1; border: 1px solid #cbd5e1; background: #fff; color: #64748b; border-radius: 8px; padding: 6px 0; font-size: 11.5px; font-weight: 800; cursor: pointer; font-family: inherit; }
   .cls .pick button.on1 { background: #7c3aed; border-color: #7c3aed; color: #fff; }
@@ -122,22 +141,32 @@
         </div>
       </div>
       <div class="q">
-        <div class="qt">Q2. 원하는 역할</div>
-        <div class="radio-list" id="role-list"></div>
+        <div class="qt">Q2. 선생님의 강점은 어떤 부분인가요? <span style="font-size:11.5px;color:var(--muted);font-weight:600">(복수 선택)</span></div>
+        <div class="qs">잘하는 부분, 자신 있는 사역을 모두 골라주세요. 팀 구성 시 서로의 강점이 보완되도록 배치합니다.</div>
+        <div class="tag-grid" id="strength-grid"></div>
       </div>
       <div class="q">
-        <div class="qt">Q3. 함께 섬기고 싶은 동역자 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
-        <div class="qs">같은 반(2인 1조)으로 함께하고 싶은 선생님이 있다면 적어주세요.</div>
-        <input type="text" id="partner" list="teacher-names" placeholder="선생님 이름 (자유 입력)">
+        <div class="qt">Q3. 도움받고 싶은 부분은 어떤 건가요? <span style="font-size:11.5px;color:var(--muted);font-weight:600">(복수 선택)</span></div>
+        <div class="qs">부담되거나 동역자의 도움이 필요한 부분을 골라주세요. 솔직할수록 좋은 팀이 됩니다.</div>
+        <div class="tag-grid" id="need-grid"></div>
+      </div>
+      <div class="q">
+        <div class="qt">Q4. 함께 섬기고 싶은 동역자 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택 — 하나만 해도, 둘 다 해도 됩니다)</span></div>
+        <div class="qs">① <b>이름으로</b> — 같은 반이나 같은 대가족에서 함께 섬기고 싶은 선생님이 있다면 적어주세요.</div>
+        <input type="text" id="partner" list="teacher-names" placeholder="선생님 이름 (여러 명 가능)">
         <datalist id="teacher-names"></datalist>
+        <div class="qs" style="margin-top:12px">② <b>유형으로</b> — "이런 선생님과 함께 사역하고 싶어요" 에 해당하는 강점을 골라주세요. (복수 선택)</div>
+        <div class="tag-grid" id="ptrait-grid"></div>
+        <div class="qs" style="margin-top:12px">③ 원하는 <b>협업 방식</b>이 있다면 자유롭게 적어주세요. (예: 역할을 명확히 나누고 싶어요 / 함께 심방 다니고 싶어요)</div>
+        <textarea id="collab" maxlength="300" placeholder="원하는 협업 방식 (자유롭게)"></textarea>
       </div>
       <div class="q">
-        <div class="qt">Q4. 맡고 싶은 학생 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
+        <div class="qt">Q5. 맡고 싶은 학생 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
         <div class="qs">특별히 마음이 가는 학생이 있다면 배치에 참고합니다.</div>
         <input type="text" id="wish" placeholder="예: ○○○, ○○○">
       </div>
       <div class="q">
-        <div class="qt">Q5. 특별 코멘트 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
+        <div class="qt">Q6. 특별 코멘트 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택)</span></div>
         <textarea id="comment" maxlength="500" placeholder="배치에 참고할 상황·요청을 자유롭게 적어주세요"></textarea>
       </div>
       <div class="submit-row">
@@ -149,6 +178,10 @@
   </div>
 </div>
 
+<div class="photo-ovl" id="photo-ovl" onclick="this.classList.remove('show')">
+  <img src="" alt="">
+  <div class="cap"></div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -165,11 +198,138 @@ const ALL_TEACHERS = [
   '박진호','송가원',
   '김현진','안강훈','김시내','정귀희','문석주','박정향'
 ];
-const ROLES = [ ['lead','🙌 담임 (반 인도)'], ['care','🤝 케어담임 (장결·원투원 중심)'], ['any','💪 역할 무관'] ];
-// 장결 표시용 (초안 데이터에 학년·장결 정보가 없어 최소 정보만 하드코딩)
-const LA = new Set(['김재원','박시우','하어림','이서현','이소현','박민주','박동하','이하준','김은','김강희','김나현','김유진','이준호','임태민','전지훈','배유나','송성모','김민채','김도헌','백결','조혁준','최승아','오희수','장세민','정원영','주성','박진서','최지윤','최서윤']);
+// 강점·도움 선택지
+const TRAITS = [
+  ['word', '📖 말씀·GBS 인도'], ['one2one', '🤝 원투원·개인 케어'], ['visit', '🏠 심방·주중 만남'],
+  ['parent', '👨‍👩‍👧 학부모 소통'], ['newbie', '🌱 새친구·관계 형성'], ['pray', '🙏 기도·영적 돌봄'],
+  ['event', '🎉 행사·아웃팅 기획'], ['worship', '🎵 찬양·예배'], ['admin', '📋 행정·기록·시스템'],
+];
+const TRAIT_LBL = Object.fromEntries(TRAITS);
 
-let MY = null, DRAFT = null, ROLE_SEL = null;
+const STUDENTS = {
+  '강은교':{g:2,s:'여',rt:100,c:'셀2'},
+  '고예나':{g:1,s:'여',rt:58,c:'Sp1'},
+  '곽지원':{g:3,s:'남',rt:60,c:'셀9'},
+  '권하율':{g:1,s:'남',rt:88,c:'셀1'},
+  '김강은':{g:1,s:'여',rt:100,c:'셀12'},
+  '김강희':{g:1,s:'여',rt:0,la:1,c:'Sp3'},
+  '김나현':{g:2,s:'여',rt:0,la:1,c:'셀5'},
+  '김다은':{g:3,s:'여',rt:80,c:'셀9'},
+  '김도연':{g:2,s:'여',rt:100,c:'셀5'},
+  '김도헌':{g:3,s:'남',rt:0,la:1,c:'Sp6'},
+  '김라일':{g:2,s:'남',rt:100,c:'셀3'},
+  '김민채':{g:3,s:'여',rt:0,la:1,c:'Sp1'},
+  '김유진':{g:2,s:'여',rt:0,la:1,c:'Sp3'},
+  '김은':{g:1,s:'여',rt:0,la:1,c:'셀1'},
+  '김은우':{g:3,s:'여',rt:38,c:'셀8'},
+  '김재원':{g:1,s:'남',la:1,c:'Sp3'},
+  '김정록':{g:1,s:'남',rt:100,c:'셀7'},
+  '김주하':{g:2,s:'여',rt:36,c:'셀12'},
+  '김준수':{g:3,s:'남',rt:60,c:'셀3'},
+  '김채은':{g:2,s:'여',rt:36,c:'셀12'},
+  '김한결':{g:1,s:'남',rt:100,c:'셀6'},
+  '나정인':{g:3,s:'여',rt:80,c:'셀9'},
+  '나호윤':{g:1,s:'남',rt:83,c:'셀10'},
+  '명주원':{g:3,s:'남',rt:100,c:'셀2'},
+  '민예원':{g:2,s:'여',rt:50,c:'셀5'},
+  '박동하':{g:1,s:'남',rt:18,la:1,c:'셀11'},
+  '박민주':{g:1,s:'여',rt:0,la:1,c:'Sp5'},
+  '박서연':{g:1,s:'여',c:'Sp3',ov:1},
+  '박시우':{g:1,s:'남',rt:0,la:1,c:'Sp4'},
+  '박재영':{g:1,s:'남',rt:83,c:'셀10'},
+  '박지웅':{g:1,s:'남',rt:100,c:'셀6'},
+  '박지호':{g:3,s:'여',rt:95,c:'셀3'},
+  '박진서':{g:3,s:'여',rt:12,la:1,c:'Sp4'},
+  '배유나':{g:2,s:'여',rt:0,la:1,c:'셀10'},
+  '백결':{g:3,s:'남',rt:0,la:1,c:'Sp2'},
+  '서이수':{g:3,s:'여',rt:100,c:'셀1'},
+  '송성모':{g:3,s:'남',rt:0,la:1,c:'Sp1'},
+  '송준원':{g:1,s:'남',rt:55,c:'셀11'},
+  '심희은':{g:3,s:'여',rt:88,c:'셀8'},
+  '안민혁':{g:1,s:'남',rt:80,c:'셀3'},
+  '양소희':{g:2,s:'여',rt:100,c:'셀8'},
+  '양인혁':{g:3,s:'남',rt:100,c:'셀9'},
+  '연해준':{g:2,s:'남',rt:100,c:'셀2'},
+  '오은수':{g:1,s:'여',rt:100,c:'셀8'},
+  '오현우':{g:1,s:'남',rt:100,c:'셀4'},
+  '오희수':{g:3,s:'여',rt:0,la:1,c:'Sp5'},
+  '원대연':{g:2,s:'남',rt:73,c:'셀4'},
+  '유나린':{g:2,s:'여',rt:36,c:'셀2'},
+  '유재희':{g:2,s:'여',rt:91,c:'셀12'},
+  '윤서희':{g:2,s:'여',rt:33,c:'셀5'},
+  '윤성하':{g:1,s:'남',rt:100,c:'셀10'},
+  '이가영':{g:2,s:'여',rt:91,c:'셀11'},
+  '이빛가온':{g:1,s:'남',rt:91,c:'셀4'},
+  '이서현':{g:1,s:'여',rt:9,la:1,c:'Sp6'},
+  '이서후':{g:1,s:'여',rt:100,c:'셀6'},
+  '이소민':{g:3,s:'여',rt:27,c:'Sp6'},
+  '이소현':{g:1,s:'여',rt:0,la:1,c:'셀10'},
+  '이에녹':{g:3,s:'남',rt:100,c:'셀7'},
+  '이주형':{g:1,s:'여',rt:100,c:'셀10'},
+  '이준호':{g:2,s:'남',rt:18,la:1,c:'셀4'},
+  '이하준':{g:1,s:'남',rt:0,la:1,c:'Sp6'},
+  '임소명':{g:3,s:'여',rt:25,c:'Sp4'},
+  '임태민':{g:2,s:'남',rt:0,la:1,c:'셀6'},
+  '장세민':{g:3,s:'남',rt:0,la:1,c:'Sp5'},
+  '장지현':{g:2,s:'여',rt:88,c:'셀1'},
+  '전지훈':{g:2,s:'남',rt:0,la:1,c:'셀4'},
+  '정승빈':{g:3,s:'여',rt:100,c:'셀12'},
+  '정원영':{g:3,s:'남',rt:0,la:1,c:'Sp5'},
+  '정태율':{g:1,s:'남',rt:100,c:'셀7'},
+  '조강인':{g:3,s:'남',rt:33,c:'셀7'},
+  '조인상':{g:3,s:'여',rt:100,c:'셀2'},
+  '조한나':{g:1,s:'여',rt:67,c:'셀6'},
+  '조혁준':{g:3,s:'남',rt:0,la:1,c:'Sp2'},
+  '주성':{g:3,s:'남',rt:0,la:1,c:'셀9'},
+  '최가은':{g:3,s:'여',rt:62,c:'셀8'},
+  '최민호':{g:2,s:'남',rt:67,c:'셀7'},
+  '최서윤':{g:3,s:'여',rt:10,la:1,c:'Sp2'},
+  '최수지':{g:1,s:'여',rt:95,c:'셀11'},
+  '최승아':{g:3,s:'여',rt:0,la:1,c:'Sp1'},
+  '최유현':{g:1,s:'여',rt:50,c:'셀11'},
+  '최지윤':{g:3,s:'여',rt:10,la:1,c:'Sp2'},
+  '최지은':{g:1,s:'여',rt:50,c:'셀5'},
+  '하어림':{g:1,s:'남',rt:0,la:1,c:'Sp4'},
+  '하은유':{g:1,s:'여',rt:100,c:'셀1'},
+  '한채은':{g:3,s:'여',rt:100,c:'셀3'},
+  '홍기진':{g:2,s:'남',rt:100,c:'셀1'}
+};
+
+let MY = null, DRAFT = null;
+const STR_SEL = new Set(), NEED_SEL = new Set(), PTRAIT_SEL = new Set();
+
+/* ===== 학생 사진 (photos.html 규칙) ===== */
+const Photos = (() => {
+  const BUCKET = 'student-photos';
+  const SREST = URL_BASE + '/storage/v1';
+  let verMap = new Map();
+  function slug(name) { const b = new TextEncoder().encode(name); let h2 = ''; for (let i = 0; i < b.length; i++) h2 += b[i].toString(16).padStart(2, '0'); return h2; }
+  function publicUrl(name, ver) { let u = SREST + '/object/public/' + BUCKET + '/' + slug(name) + '.jpg'; if (ver) u += '?v=' + encodeURIComponent(ver); return u; }
+  function defaultAvatar(gender) {
+    const color = gender === '남' ? '%2360a5fa' : '%23f9a8d4';
+    return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23f1f5f9'/%3E%3Ccircle cx='32' cy='24' r='11' fill='" + color + "'/%3E%3Cellipse cx='32' cy='52' rx='19' ry='13' fill='" + color + "'/%3E%3C/svg%3E";
+  }
+  async function load() {
+    try {
+      const r = await fetch(SREST + '/object/list/' + BUCKET, { method: 'POST', headers: H, body: JSON.stringify({ prefix: '', limit: 1000 }) });
+      if (r.ok) (await r.json()).forEach(o => verMap.set(o.name.replace(/\.jpg$/, ''), o.updated_at || '1'));
+    } catch (e) { console.warn(e); }
+  }
+  function bigSrc(name) {
+    const s = STUDENTS[name] || {};
+    const ver = verMap.get(slug(name));
+    return ver ? publicUrl(name, ver) : defaultAvatar(s.s);
+  }
+  return { load, bigSrc, defaultAvatar };
+})();
+function openPhoto(name) {
+  const s = STUDENTS[name] || {};
+  const ovl = document.getElementById('photo-ovl');
+  ovl.querySelector('img').src = Photos.bigSrc(name);
+  ovl.querySelector('img').onerror = function () { this.onerror = null; this.src = Photos.defaultAvatar(s.s); };
+  ovl.querySelector('.cap').innerHTML = esc(name) + `<span class="sub2">고${s.g || '?'} · ${s.s || ''}${s.rt !== undefined ? ' · 출석 ' + s.rt + '%' : ''}${s.la ? ' · 🤍 장결' : ''}</span>`;
+  ovl.classList.add('show');
+}
 
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
@@ -192,12 +352,27 @@ function renderClasses() {
   document.getElementById('draft-label').textContent = DRAFT ? `기준: ${DRAFT.name}` : '';
   if (!DRAFT) { grid.innerHTML = '<div style="font-size:13px;color:var(--muted)">아직 공개된 반 구성이 없습니다.</div>'; return; }
   grid.innerHTML = DRAFT.data.classes.map(c => {
-    const att = c.students.filter(n => !LA.has(n));
-    const la = c.students.filter(n => LA.has(n));
+    const sorted = c.students.slice().sort((a, b) => {
+      const sa = STUDENTS[a] || {}, sb = STUDENTS[b] || {};
+      return (sa.la ? 1 : 0) - (sb.la ? 1 : 0) || (sa.g || 9) - (sb.g || 9) || a.localeCompare(b, 'ko');
+    });
+    const att = sorted.filter(n => !(STUDENTS[n] || {}).la).length;
+    const hi = sorted.filter(n => { const s = STUDENTS[n] || {}; return !s.la && (s.rt || 0) >= 80; }).length;
+    const chips = sorted.map(n => {
+      const s = STUDENTS[n] || {};
+      const rtCls = (s.rt || 0) >= 80 ? 'hi' : (s.rt || 0) >= 50 ? 'mid' : 'lo';
+      return `<div class="schip ${s.la ? 'la' : ''}">
+        <img src="${Photos.bigSrc(n)}" alt="" loading="lazy" onclick="openPhoto('${esc(n)}')"
+          onerror="this.onerror=null;this.src='${Photos.defaultAvatar(s.s)}'">
+        <span class="sn">${esc(n)}</span>
+        <span class="sm">고${s.g || '?'} · ${s.s || ''}${s.la ? ' · 🤍 장결' : ''}</span>
+        <span class="srt ${rtCls}">${s.rt === undefined ? '' : '출석 ' + s.rt + '%'}</span>
+      </div>`;
+    }).join('');
     return `<div class="cls">
       <span class="nm">${esc(c.nm)}</span><span class="cnt">재적 ${c.students.length}명</span>
-      <div class="roster">${att.map(esc).join(' · ')}</div>
-      ${la.length ? `<div class="la-line">🤍 장결: ${la.map(esc).join(' · ')}</div>` : ''}
+      <div class="stats">실출석 그룹 <b>${att}명</b> · 장결 케어 <b>${c.students.length - att}명</b> · 출석 80%+ <b>${hi}명</b></div>
+      <div class="roster-chips">${chips}</div>
       <div class="pick">
         ${[1,2,3].map(k => `<button id="pk-${esc(c.nm)}-${k}" onclick="pickClass('${esc(c.nm)}',${k})">${k}지망</button>`).join('')}
       </div>
@@ -207,14 +382,22 @@ function renderClasses() {
   const opts = '<option value="">— 선택 —</option>' + classNames().map(nm => `<option value="${esc(nm)}">${esc(nm)}</option>`).join('');
   ['choice1','choice2','choice3'].forEach(id => { document.getElementById(id).innerHTML = opts; });
   document.getElementById('teacher-names').innerHTML = ALL_TEACHERS.filter(t => t !== MY).sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<option value="${t}">`).join('');
-  renderRoles();
+  renderTraits();
   syncPicks();
 }
-function renderRoles() {
-  document.getElementById('role-list').innerHTML = ROLES.map(([k, label]) => `
-    <div class="radio-row ${ROLE_SEL === k ? 'sel' : ''}" onclick="ROLE_SEL='${k}';renderRoles()">
-      <span class="radio-dot"></span><span class="radio-txt">${label}</span>
-    </div>`).join('');
+function renderTraits() {
+  const mk = (gridId, selSet, extraCls) => {
+    document.getElementById(gridId).innerHTML = TRAITS.map(([k, label]) => `
+      <button class="tagchip ${selSet.has(k) ? 'on ' + (extraCls || '') : ''}" onclick="toggleTrait('${gridId}','${k}')">${label}</button>`).join('');
+  };
+  mk('strength-grid', STR_SEL, '');
+  mk('need-grid', NEED_SEL, 'need');
+  mk('ptrait-grid', PTRAIT_SEL, '');
+}
+function toggleTrait(gridId, k) {
+  const set = gridId === 'strength-grid' ? STR_SEL : gridId === 'need-grid' ? NEED_SEL : PTRAIT_SEL;
+  set.has(k) ? set.delete(k) : set.add(k);
+  renderTraits();
 }
 function pickClass(nm, k) {
   const sel = document.getElementById('choice' + k);
@@ -242,13 +425,16 @@ async function loadMine() {
   if (!rows.length) return;
   const a = rows[0];
   [1,2,3].forEach(k => { if (a['choice' + k]) document.getElementById('choice' + k).value = a['choice' + k]; });
-  ROLE_SEL = a.role || null;
+  STR_SEL.clear(); (a.strengths || '').split(',').filter(Boolean).forEach(k => STR_SEL.add(k));
+  NEED_SEL.clear(); (a.needs || '').split(',').filter(Boolean).forEach(k => NEED_SEL.add(k));
+  PTRAIT_SEL.clear(); (a.partner_traits || '').split(',').filter(Boolean).forEach(k => PTRAIT_SEL.add(k));
   document.getElementById('partner').value = a.partner || '';
+  document.getElementById('collab').value = a.collab || '';
   document.getElementById('wish').value = a.wish || '';
   document.getElementById('comment').value = a.comment || '';
   const st = document.getElementById('app-state');
   st.className = 'done-tag'; st.textContent = '✅ 제출 완료 (' + (a.updated_at || '').substring(5, 10) + ') — 다시 제출하면 수정됩니다';
-  renderRoles(); syncPicks();
+  renderTraits(); syncPicks();
 }
 async function submitApp() {
   const c1 = document.getElementById('choice1').value;
@@ -258,8 +444,11 @@ async function submitApp() {
     choice1: c1,
     choice2: document.getElementById('choice2').value || null,
     choice3: document.getElementById('choice3').value || null,
-    role: ROLE_SEL,
+    strengths: [...STR_SEL].join(',') || null,
+    needs: [...NEED_SEL].join(',') || null,
     partner: (document.getElementById('partner').value || '').trim() || null,
+    partner_traits: [...PTRAIT_SEL].join(',') || null,
+    collab: (document.getElementById('collab').value || '').trim() || null,
     wish: (document.getElementById('wish').value || '').trim() || null,
     comment: (document.getElementById('comment').value || '').trim() || null,
     updated_at: new Date().toISOString(), active: true,
@@ -298,7 +487,7 @@ async function showApp() {
   document.getElementById('app-root').style.display = '';
   document.getElementById('my-badge').textContent = MY + ' 선생님';
   logAccess(MY, 'lineup-apply');
-  await loadDraft();
+  await Promise.all([loadDraft(), Photos.load()]);
   renderClasses();
   await loadMine();
 }
