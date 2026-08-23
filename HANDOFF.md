@@ -373,3 +373,10 @@ publish/
 - **교사 배치**: 보드 반 카드에 교사 슬롯([+ 교사] 팝업 — 지망자 ★ 표시), 명령 "이름 N반 배치"/"배치 해제", 하드제약(오은규T↔오은수·김주영T↔홍기진) 경고, draft.classes[].teachers에 저장
 - 지망 현황 모달(국장단): 반별 ★☆ + 교사별 상세 + 미제출 명단
 - 향후: 1단계 Poll 생성기(텀별 섬김 설문 자동 생성·공유·집계), 7단계 원클릭 배포(확정본→시스템 데이터 전환)
+
+## 2026-08-23 (3) — 지망 폼 고도화 (lineup-apply.html 최종 스펙)
+
+- Q1 지망 1~3 (반 카드 버튼/셀렉트, 중복 방지) · Q2 강점 8은사(4영역×2, 성경 근거 범례, 플랫 칩) · Q3 "동역자가 채워주면 좋겠는 부분"(같은 8칩) · Q4 동역자(①이름 체크 — 배정가능 17명, 본인 제외 ②협업 성향 6유형 ③협업 방식 6유형[역할구분/멘토링/운영리듬 3축]+기타) · Q5 케어 리듬(택1)+케어 방식(복수)+기타 · Q6 맡고 싶은 학생 · Q7 코멘트
+- Q6·Q7은 term3_teacher_status.note에서 자동 프리필(학생명 추출→Q6, 원문→Q7, 지망 미제출자만)
+- lineup_applications 컬럼: teacher PK, term, choice1~3, strengths, needs, partner, partner_traits, collab_types, collab, visit_avail, visit_types, visit_etc, wish, comment, updated_at, active
+- 박진호·송가원 = 다음 텀 합류 (이번 텀 배치 풀·동역자 후보 제외, 17명 기준)
