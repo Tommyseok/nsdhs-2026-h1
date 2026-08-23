@@ -157,9 +157,8 @@
       </div>
       <div class="q">
         <div class="qt">Q4. 함께 섬기고 싶은 동역자 <span style="font-size:11.5px;color:var(--muted);font-weight:600">(선택 — 하나만 해도, 둘 다 해도 됩니다)</span></div>
-        <div class="qs">① <b>이름으로</b> — 같은 반이나 같은 대가족에서 함께 섬기고 싶은 선생님이 있다면 적어주세요.</div>
-        <input type="text" id="partner" list="teacher-names" placeholder="선생님 이름 (여러 명 가능)">
-        <datalist id="teacher-names"></datalist>
+        <div class="qs">① <b>이름으로</b> — 같은 반이나 같은 대가족에서 함께 섬기고 싶은 선생님이 있다면 체크해 주세요. (복수 선택)</div>
+        <div class="tag-grid"><div class="tg-chips" id="partner-grid"></div></div>
         <div class="qs" style="margin-top:12px">② <b>협업 성향으로</b> — "이렇게 함께 일하는 선생님과 사역하고 싶어요"에 해당하는 유형을 골라주세요. (복수 선택 — 사역 영역이 아니라 <b>함께 일하는 방식</b>입니다)</div>
         <div class="tag-grid" id="ptrait-grid"></div>
         <div class="qs" style="margin-top:12px">③ 원하는 <b>협업 방식</b>을 골라주세요. (복수 선택 — 동역자와 한 반을 어떻게 운영하고 싶은지)</div>
@@ -369,7 +368,9 @@ const STUDENTS = {
 };
 
 let MY = null, DRAFT = null, VAVAIL_SEL = null;
-const STR_SEL = new Set(), NEED_SEL = new Set(), PTRAIT_SEL = new Set(), CLB_SEL = new Set(), VTYPE_SEL = new Set();
+const STR_SEL = new Set(), NEED_SEL = new Set(), PTRAIT_SEL = new Set(), CLB_SEL = new Set(), VTYPE_SEL = new Set(), PARTNER_SEL = new Set();
+// 동역자 후보 = 새 텀 배정 가능 교사 (섬김 확정 17 + 확정 대기 2)
+const PARTNER_POOL = ['박대철','전성희','김주영','이유성','정유빈','김광현','송진우','석준원','김희원','이윤정','양지현','이규리','고은솔','오은규','박해니','오덕현','최희승','박진호','송가원'];
 
 /* ===== 학생 사진 (photos.html 규칙) ===== */
 const Photos = (() => {
@@ -454,7 +455,6 @@ function renderClasses() {
   // 셀렉트 옵션
   const opts = '<option value="">— 선택 —</option>' + classNames().map(nm => `<option value="${esc(nm)}">${esc(nm)}</option>`).join('');
   ['choice1','choice2','choice3'].forEach(id => { document.getElementById(id).innerHTML = opts; });
-  document.getElementById('teacher-names').innerHTML = ALL_TEACHERS.filter(t => t !== MY).sort((a,b)=>a.localeCompare(b,'ko')).map(t => `<option value="${t}">`).join('');
   renderTraits();
   syncPicks();
 }
@@ -484,6 +484,13 @@ function renderTraits() {
   // Q5②: 심방 방식 (복수)
   document.getElementById('vtype-grid').innerHTML = VISIT_TYPES.map(([k, label]) => `
     <button class="tagchip ${VTYPE_SEL.has(k) ? 'on' : ''}" onclick="toggleTrait('vtype-grid','${k}')">${label}</button>`).join('');
+  // Q4①: 동역자 이름 체크 (본인 제외)
+  document.getElementById('partner-grid').innerHTML = PARTNER_POOL.filter(t => t !== MY).sort((a, b) => a.localeCompare(b, 'ko')).map(t => `
+    <button class="tagchip ${PARTNER_SEL.has(t) ? 'on' : ''}" onclick="togglePartner('${t}')">${t}</button>`).join('');
+}
+function togglePartner(t) {
+  PARTNER_SEL.has(t) ? PARTNER_SEL.delete(t) : PARTNER_SEL.add(t);
+  renderTraits();
 }
 function toggleTrait(gridId, k) {
   const set = gridId === 'strength-grid' ? STR_SEL : gridId === 'need-grid' ? NEED_SEL : gridId === 'collab-grid' ? CLB_SEL : gridId === 'vtype-grid' ? VTYPE_SEL : PTRAIT_SEL;
@@ -546,7 +553,7 @@ async function loadMine() {
   VTYPE_SEL.clear(); (a.visit_types || '').split(',').filter(Boolean).forEach(k => VTYPE_SEL.add(k));
   VAVAIL_SEL = a.visit_avail || null;
   document.getElementById('visit-etc').value = a.visit_etc || '';
-  document.getElementById('partner').value = a.partner || '';
+  PARTNER_SEL.clear(); (a.partner || '').split(/[,\s·]+/).filter(Boolean).forEach(n => { if (PARTNER_POOL.includes(n)) PARTNER_SEL.add(n); });
   document.getElementById('collab').value = a.collab || '';
   document.getElementById('wish').value = a.wish || '';
   document.getElementById('comment').value = a.comment || '';
@@ -565,7 +572,7 @@ async function submitApp() {
     choice3: document.getElementById('choice3').value || null,
     strengths: [...STR_SEL].join(',') || null,
     needs: [...NEED_SEL].join(',') || null,
-    partner: (document.getElementById('partner').value || '').trim() || null,
+    partner: [...PARTNER_SEL].join(', ') || null,
     partner_traits: [...PTRAIT_SEL].join(',') || null,
     collab_types: [...CLB_SEL].join(',') || null,
     collab: (document.getElementById('collab').value || '').trim() || null,
