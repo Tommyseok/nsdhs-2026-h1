@@ -54,12 +54,10 @@
   .photo-ovl img { max-width: min(86vw, 520px); max-height: 72vh; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.6); background: #1e293b; }
   .photo-ovl .cap { color: #f1f5f9; font-size: 17px; font-weight: 800; }
   .photo-ovl .cap .sub2 { font-size: 13px; color: #94a3b8; font-weight: 600; margin-left: 8px; }
-  /* 강점·도움 멀티칩 (영역 그룹) */
-  .tag-grid { display: flex; flex-direction: column; gap: 10px; }
-  .tg-group { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
-  .tg-head { font-size: 12.5px; font-weight: 800; color: var(--ink); margin-bottom: 7px; }
-  .tg-ref { font-size: 10.5px; font-weight: 600; color: var(--muted); margin-left: 6px; }
-  .tg-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  /* 강점·도움 멀티칩 (플랫 — 몇 개든 자유 선택) */
+  .tag-grid { display: block; }
+  .tg-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tg-legend { margin-top: 8px; font-size: 10.5px; color: var(--muted); line-height: 1.7; }
   .tagchip { border: 1.5px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; padding: 8px 15px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
   .tagchip.on { background: #7c3aed; border-color: #7c3aed; color: #fff; }
   .tagchip.on.need { background: #0891b2; border-color: #0891b2; }
@@ -149,7 +147,7 @@
       </div>
       <div class="q">
         <div class="qt">Q2. 선생님의 강점은 어떤 부분인가요? <span style="font-size:11.5px;color:var(--muted);font-weight:600">(복수 선택)</span></div>
-        <div class="qs">교사 사역을 <b>말씀·가르침 / 관계·돌봄 / 영성·삶의 본 / 운영·세움</b> 네 영역(롬 12장·고전 12장의 은사 이해 기반)으로 나눴습니다. 자신 있는 부분을 모두 골라주세요 — 팀 구성 시 서로의 강점이 보완되도록 배치합니다.</div>
+        <div class="qs">교사 사역을 <b>말씀·가르침 / 관계·돌봄 / 영성·삶의 본 / 운영·세움</b> 네 영역(롬 12장·고전 12장의 은사 이해 기반)으로 나눴습니다. <b>영역 구분 없이 자신 있는 것을 몇 개든</b> 골라주세요 — 팀 구성 시 서로의 강점이 보완되도록 배치합니다.</div>
         <div class="tag-grid" id="strength-grid"></div>
       </div>
       <div class="q">
@@ -420,18 +418,19 @@ function renderClasses() {
   syncPicks();
 }
 function renderTraits() {
-  // Q2·Q3: 4개 사역 영역 그룹으로 렌더
-  const mkDomains = (gridId, selSet, extraCls) => {
-    document.getElementById(gridId).innerHTML = DOMAINS.map(d => `
-      <div class="tg-group">
-        <div class="tg-head">${d.t} <span class="tg-ref">${esc(d.ref)}</span></div>
-        <div class="tg-chips">${d.items.map(([k, label, desc]) => `
-          <button class="tagchip ${selSet.has(k) ? 'on ' + (extraCls || '') : ''}" title="${esc(desc)}" onclick="toggleTrait('${gridId}','${k}')">${label}</button>`).join('')}
-        </div>
-      </div>`).join('');
+  // Q2·Q3: 8개 칩을 한 흐름으로 (영역은 아이콘 + 하단 범례로만 — 영역별 택1로 오해하지 않도록)
+  const mkFlat = (gridId, selSet, extraCls) => {
+    const chips = DOMAINS.flatMap(d => {
+      const emoji = d.t.split(' ')[0];
+      return d.items.map(([k, label, desc]) => `
+        <button class="tagchip ${selSet.has(k) ? 'on ' + (extraCls || '') : ''}" title="${esc(desc)}" onclick="toggleTrait('${gridId}','${k}')">${emoji} ${label}</button>`);
+    }).join('');
+    const legend = DOMAINS.map(d => `${d.t.replace(/ · /g, '·')} <span style="color:#94a3b8">${esc(d.ref.match(/\(([^)]+)\)/)?.[1] || '')}</span>`).join(' &nbsp;·&nbsp; ');
+    document.getElementById(gridId).innerHTML = `<div class="tg-chips">${chips}</div>
+      <div class="tg-legend">${legend}</div>`;
   };
-  mkDomains('strength-grid', STR_SEL, '');
-  mkDomains('need-grid', NEED_SEL, 'need');
+  mkFlat('strength-grid', STR_SEL, '');
+  mkFlat('need-grid', NEED_SEL, 'need');
   // Q4: 협업 성향 유형 (설명 포함 칩)
   document.getElementById('ptrait-grid').innerHTML = PARTNER_TYPES.map(([k, label, desc]) => `
     <button class="tagchip ptype ${PTRAIT_SEL.has(k) ? 'on' : ''}" onclick="toggleTrait('ptrait-grid','${k}')">${label}<span class="pt-desc">${esc(desc)}</span></button>`).join('');
