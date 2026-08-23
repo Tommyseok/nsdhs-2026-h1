@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<title>Runners 2026 · 편성 스튜디오</title>
+<style>
+  :root {
+    --border: #e2e8f0; --ink: #0f172a; --body: #334155; --muted: #64748b;
+    --accent: #a78bfa; --accent2: #7c3aed; --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: #f4f6fa; color: var(--body);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.5; font-size: 14px; min-height: 100vh; }
+  .container { max-width: 1500px; margin: 0 auto; padding: 14px; }
+
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px 28px; max-width: 440px; width: 100%; color: #e5e7eb; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .sub { margin: 0 0 20px; font-size: 13px; color: #94a3b8; text-align: center; }
+  .gate-card input, .gate-card select { width: 100%; background: #0b0f17; color: #e5e7eb; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 10px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .gate-err { color: #fca5a5; font-size: 12.5px; min-height: 18px; margin-top: 8px; text-align: center; }
+
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 13px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 0; padding-bottom: 0; }
+  header h1 { margin: 0; font-size: 17px; color: #f1f5f9; }
+  header .badge { background: rgba(245,158,11,.2); color: #fcd34d; font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(245,158,11,.4); font-weight: 700; }
+  header .sp { flex: 1; }
+  header button { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
+
+  /* 툴바 */
+  .studio-bar { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .studio-bar select { border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--ink); background: #fff; max-width: 260px; }
+  .sbtn { border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .sbtn.primary { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+  .sbtn.ok { background: #059669; border-color: #059669; color: #fff; }
+  .sbtn:disabled { opacity: .45; cursor: not-allowed; }
+  .dirty-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); display: none; }
+  .dirty .dirty-dot { display: inline-block; }
+
+  /* 명령 바 */
+  .cmd-bar { margin-top: 10px; background: #0f172a; border-radius: 14px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; }
+  .cmd-bar .ico { font-size: 16px; }
+  .cmd-bar input { flex: 1; background: transparent; border: none; outline: none; color: #f1f5f9; font-size: 14.5px; font-family: inherit; }
+  .cmd-bar input::placeholder { color: #64748b; }
+  .cmd-bar button { background: #7c3aed; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .cmd-hint { margin: 6px 4px 0; font-size: 11.5px; color: #94a3b8; }
+  .cmd-hint code { background: #e2e8f0; color: #334155; border-radius: 5px; padding: 1px 6px; font-family: inherit; }
+
+  /* 경고 배너 */
+  .warn-banner { margin-top: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 10px 14px; font-size: 12.5px; color: #b91c1c; display: none; }
+  .warn-banner.show { display: block; }
+  .info-banner { margin-top: 8px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 8px 14px; font-size: 12px; color: #1d4ed8; display: none; }
+  .info-banner.show { display: block; }
+
+  /* 보드 */
+  .board { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 10px; align-items: start; }
+  .col { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .col.viol { border-color: #fca5a5; }
+  .col.droptarget { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,.18); }
+  .col.pool-col { background: #f8fafc; border-style: dashed; }
+  .col-head { padding: 10px 12px 8px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+  .col-head .nm { font-size: 14.5px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+  .col-head .nm .move-here { display: none; margin-left: auto; font-size: 10.5px; font-weight: 800; color: #fff; background: #7c3aed; border-radius: 999px; padding: 2px 8px; }
+  body.selecting .col-head .nm .move-here { display: inline-block; }
+  .col-head .stats { margin-top: 4px; font-size: 10.5px; color: var(--muted); line-height: 1.6; }
+  .col-head .stats b { color: var(--ink); }
+  .col-head .viol-tag { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 800; color: #b91c1c; background: #fee2e2; border-radius: 999px; padding: 1px 8px; }
+  .col-body { padding: 8px; min-height: 44px; display: flex; flex-direction: column; gap: 5px; }
+  .col-del { float: right; background: none; border: none; color: #cbd5e1; font-size: 12px; cursor: pointer; }
+
+  /* 학생 카드 */
+  .stu { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 10px 6px 7px; display: flex; align-items: center; gap: 7px; cursor: grab; user-select: none; font-size: 13.5px; }
+  .stu .av { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: #e2e8f0; border: 1px solid #e2e8f0; cursor: zoom-in; }
+  /* 사진 크게 보기 */
+  .photo-ovl { position: fixed; inset: 0; background: rgba(10,13,20,.88); z-index: 400; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; cursor: zoom-out; padding: 20px; }
+  .photo-ovl.show { display: flex; }
+  .photo-ovl img { max-width: min(86vw, 520px); max-height: 72vh; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.6); background: #1e293b; }
+  .photo-ovl .cap { color: #f1f5f9; font-size: 17px; font-weight: 800; }
+  .photo-ovl .cap .sub { font-size: 13px; color: #94a3b8; font-weight: 600; margin-left: 8px; }
+  .stu:active { cursor: grabbing; }
+  .stu .n { font-weight: 800; color: var(--ink); }
+  .stu .m { font-size: 11px; color: var(--muted); }
+  .stu .rt { margin-left: auto; font-size: 11px; font-weight: 800; }
+  .stu .rt.hi { color: #059669; } .stu .rt.mid { color: #b45309; } .stu .rt.lo { color: #dc2626; }
+  .stu.la { background: #fffbeb; border-color: #fde68a; }
+  .stu.la .n { color: #92400e; }
+  .stu.sel { outline: 3px solid #7c3aed; outline-offset: 1px; background: #f5f3ff; }
+  .stu.violstu { outline: 2px solid #ef4444; outline-offset: 1px; }
+  .stu.dragging { opacity: .4; }
+
+  /* 모달 */
+  .modal-ovl { position: fixed; inset: 0; background: rgba(15,23,42,.55); z-index: 300; display: none; align-items: center; justify-content: center; padding: 16px; }
+  .modal-ovl.show { display: flex; }
+  .modal { background: #fff; border-radius: 16px; padding: 20px; max-width: 520px; width: 100%; max-height: 88vh; overflow-y: auto; }
+  .modal h3 { margin: 0 0 12px; font-size: 16px; color: var(--ink); }
+  .modal label { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 10px 0 4px; }
+  .modal input[type=number], .modal input[type=text] { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 9px 11px; font-size: 14px; font-family: inherit; }
+  .modal .row { display: flex; gap: 10px; }
+  .modal .row > div { flex: 1; }
+  .modal .actions { margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end; }
+  .pair-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .pair { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 999px; padding: 4px 11px; font-size: 12px; font-weight: 700; color: #334155; }
+  .pair button { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 11px; padding: 0 0 0 4px; }
+  .pair.sepp { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+  .pair.keepp { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f172a; color: #fff; padding: 11px 20px; border-radius: 999px; font-size: 13.5px; font-weight: 700; z-index: 500; transition: transform .25s; box-shadow: 0 10px 30px rgba(0,0,0,.3); max-width: 90vw; }
+  #toast.show { transform: translateX(-50%); }
+
+  @media (max-width: 640px) {
+    body { font-size: 15px; }
+    .board { grid-template-columns: 1fr 1fr; }
+    .stu { font-size: 14px; }
+    .cmd-bar input { font-size: 15px; }
+  }
+  @media (max-width: 420px) { .board { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div style="text-align:center;margin-bottom:14px"><img src="logo-runner.svg" alt="Runners" style="width:56px;height:56px;border-radius:14px"></div>
+      <h1>🧩 편성 스튜디오</h1>
+      <p class="sub">반 편성 도구 — 교육국장단 전용</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">입장하기</button>
+      <div class="gate-err" id="gate-err"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <h1>🧩 편성 스튜디오</h1>
+      <span class="badge">👑 국장단 전용</span>
+      <span class="badge" id="my-badge" style="background:rgba(167,139,250,.2);color:#c4b5fd;border-color:rgba(167,139,250,.4)"></span>
+      <span class="sp"></span>
+      <button class="logout" onclick="logout()">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="studio-bar" id="studio-bar">
+      <select id="draft-sel" onchange="pickDraft(this.value)"></select>
+      <span class="dirty-dot" title="저장되지 않은 변경"></span>
+      <button class="sbtn primary" onclick="saveDraft(false)">💾 저장</button>
+      <button class="sbtn" onclick="saveDraft(true)">📄 다른 이름으로</button>
+      <button class="sbtn" onclick="undoMove()" id="undo-btn">↩️ 실행취소</button>
+      <button class="sbtn" onclick="openConstraints()">🔗 제약 관리</button>
+      <button class="sbtn" onclick="openAuto()">⚙️ 자동 편성</button>
+      <button class="sbtn" onclick="addClass()">➕ 반 추가</button>
+      <button class="sbtn ok" onclick="finalizeDraft()">✅ 확정</button>
+    </div>
+
+    <div class="cmd-bar">
+      <span class="ico">⌨️</span>
+      <input id="cmd-input" placeholder='명령 입력 — 예: "정태율 3반으로" · "민예원 김주하 교환" · "취소"'>
+      <button onclick="runCmd()">실행</button>
+    </div>
+    <div class="cmd-hint">
+      <code>이름 N반으로</code> 이동 · <code>이름1 이름2 교환</code> · <code>이름1 이름2 분리</code>/<code>같이</code> 제약 추가 · <code>취소</code> 실행취소 — 학생 카드를 끌어서(모바일: 탭 후 반 이름 탭) 옮길 수도 있습니다
+    </div>
+
+    <div class="warn-banner" id="warn-banner"></div>
+    <div class="info-banner" id="info-banner"></div>
+
+    <div class="board" id="board"></div>
+
+    <div style="margin:18px 2px;font-size:11.5px;color:#94a3b8">
+      카드 = 이름 · 학년/성별 · 출석%(2학기). 노란 카드 = 🤍 장결. 빨간 테두리 = 분리 제약 위반.
+      학생 상세는 <a href="students.html" target="_blank" style="color:#7c3aed;font-weight:700">👤 학생 정보</a>에서.
+    </div>
+  </div>
+</div>
+
+<!-- 자동 편성 모달 -->
+<div class="modal-ovl" id="auto-ovl">
+  <div class="modal">
+    <h3>⚙️ 자동 편성</h3>
+    <div style="font-size:12.5px;color:var(--muted)">현재 보드를 새로 편성합니다 (실행취소 가능). 분리·유지 제약과 같은 반 이력 최소화, 학년·성별·출석·장결 균형을 반영합니다.</div>
+    <div class="row">
+      <div><label>고1·2 혼합 반 수</label><input type="number" id="auto-k12" value="6" min="1" max="15"></div>
+      <div><label>고3 반 수</label><input type="number" id="auto-k3" value="4" min="0" max="8"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--ink)">
+      <input type="checkbox" id="auto-g3sep" checked style="width:16px;height:16px"> 고3 별도 반 (해제 시 전 학년 혼합)
+    </label>
+    <div class="actions">
+      <button class="sbtn" onclick="closeModal('auto-ovl')">취소</button>
+      <button class="sbtn primary" onclick="runAuto()">편성 실행</button>
+    </div>
+  </div>
+</div>
+
+<!-- 제약 관리 모달 -->
+<div class="modal-ovl" id="cons-ovl">
+  <div class="modal">
+    <h3>🔗 제약 관리</h3>
+    <label>➕ 새 제약 추가 — 학생 이름 2명 이상 입력 (공백·쉼표 구분)</label>
+    <input type="text" id="cons-input" list="cons-names" placeholder="예: 김강은 정태율">
+    <datalist id="cons-names"></datalist>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="sbtn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c" onclick="addConsFromInput('sep')">🚫 분리로 추가</button>
+      <button class="sbtn" style="background:#ecfdf5;border-color:#a7f3d0;color:#065f46" onclick="addConsFromInput('keep')">🤝 유지로 추가</button>
+    </div>
+    <label>🚫 분리 (같은 반 금지) — ✕로 삭제</label>
+    <div class="pair-list" id="sep-list"></div>
+    <label>🤝 유지 (같은 반 묶기) — ✕로 삭제</label>
+    <div class="pair-list" id="keep-list"></div>
+    <div style="font-size:11.5px;color:var(--muted);margin-top:10px">명령 바에서도 가능: <b>"이름1 이름2 분리"</b> / <b>"이름1 이름2 같이"</b>. 제약은 이 초안에 저장됩니다.</div>
+    <div class="actions"><button class="sbtn primary" onclick="closeModal('cons-ovl')">닫기</button></div>
+  </div>
+</div>
+
+<div class="photo-ovl" id="photo-ovl" onclick="this.classList.remove('show')">
+  <img src="" alt="">
+  <div class="cap"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ===== 상수 ===== */
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+const PRIVATE_KEY = 'runners2026@jesus';
+const ADMINS = ['안종범','김광현','석준원','이유성','박대철','송진우','오덕현'];
+
+const STUDENTS = {
+  '강은교':{g:2,s:'여',rt:100,c:'셀2'},
+  '고예나':{g:1,s:'여',rt:58,c:'Sp1'},
+  '곽지원':{g:3,s:'남',rt:60,c:'셀9'},
+  '권하율':{g:1,s:'남',rt:88,c:'셀1'},
+  '김강은':{g:1,s:'여',rt:100,c:'셀12'},
+  '김강희':{g:1,s:'여',rt:0,la:1,c:'Sp3'},
+  '김나현':{g:2,s:'여',rt:0,la:1,c:'셀5'},
+  '김다은':{g:3,s:'여',rt:80,c:'셀9'},
+  '김도연':{g:2,s:'여',rt:100,c:'셀5'},
+  '김도헌':{g:3,s:'남',rt:0,la:1,c:'Sp6'},
+  '김라일':{g:2,s:'남',rt:100,c:'셀3'},
+  '김민채':{g:3,s:'여',rt:0,la:1,c:'Sp1'},
+  '김유진':{g:2,s:'여',rt:0,la:1,c:'Sp3'},
+  '김은':{g:1,s:'여',rt:0,la:1,c:'셀1'},
+  '김은우':{g:3,s:'여',rt:38,c:'셀8'},
+  '김재원':{g:1,s:'남',la:1,c:'Sp3'},
+  '김정록':{g:1,s:'남',rt:100,c:'셀7'},
+  '김주하':{g:2,s:'여',rt:36,c:'셀12'},
+  '김준수':{g:3,s:'남',rt:60,c:'셀3'},
+  '김채은':{g:2,s:'여',rt:36,c:'셀12'},
+  '김한결':{g:1,s:'남',rt:100,c:'셀6'},
+  '나정인':{g:3,s:'여',rt:80,c:'셀9'},
+  '나호윤':{g:1,s:'남',rt:83,c:'셀10'},
+  '명주원':{g:3,s:'남',rt:100,c:'셀2'},
+  '민예원':{g:2,s:'여',rt:50,c:'셀5'},
+  '박동하':{g:1,s:'남',rt:18,la:1,c:'셀11'},
+  '박민주':{g:1,s:'여',rt:0,la:1,c:'Sp5'},
+  '박서연':{g:1,s:'여',c:'Sp3',ov:1},
+  '박시우':{g:1,s:'남',rt:0,la:1,c:'Sp4'},
+  '박재영':{g:1,s:'남',rt:83,c:'셀10'},
+  '박지웅':{g:1,s:'남',rt:100,c:'셀6'},
+  '박지호':{g:3,s:'여',rt:95,c:'셀3'},
+  '박진서':{g:3,s:'여',rt:12,la:1,c:'Sp4'},
+  '배유나':{g:2,s:'여',rt:0,la:1,c:'셀10'},
+  '백결':{g:3,s:'남',rt:0,la:1,c:'Sp2'},
+  '서이수':{g:3,s:'여',rt:100,c:'셀1'},
+  '송성모':{g:3,s:'남',rt:0,la:1,c:'Sp1'},
+  '송준원':{g:1,s:'남',rt:55,c:'셀11'},
+  '심희은':{g:3,s:'여',rt:88,c:'셀8'},
+  '안민혁':{g:1,s:'남',rt:80,c:'셀3'},
+  '양소희':{g:2,s:'여',rt:100,c:'셀8'},
+  '양인혁':{g:3,s:'남',rt:100,c:'셀9'},
+  '연해준':{g:2,s:'남',rt:100,c:'셀2'},
+  '오은수':{g:1,s:'여',rt:100,c:'셀8'},
+  '오현우':{g:1,s:'남',rt:100,c:'셀4'},
+  '오희수':{g:3,s:'여',rt:0,la:1,c:'Sp5'},
+  '원대연':{g:2,s:'남',rt:73,c:'셀4'},
+  '유나린':{g:2,s:'여',rt:36,c:'셀2'},
+  '유재희':{g:2,s:'여',rt:91,c:'셀12'},
+  '윤서희':{g:2,s:'여',rt:33,c:'셀5'},
+  '윤성하':{g:1,s:'남',rt:100,c:'셀10'},
+  '이가영':{g:2,s:'여',rt:91,c:'셀11'},
+  '이빛가온':{g:1,s:'남',rt:91,c:'셀4'},
+  '이서현':{g:1,s:'여',rt:9,la:1,c:'Sp6'},
+  '이서후':{g:1,s:'여',rt:100,c:'셀6'},
+  '이소민':{g:3,s:'여',rt:27,c:'Sp6'},
+  '이소현':{g:1,s:'여',rt:0,la:1,c:'셀10'},
+  '이에녹':{g:3,s:'남',rt:100,c:'셀7'},
+  '이주형':{g:1,s:'여',rt:100,c:'셀10'},
+  '이준호':{g:2,s:'남',rt:18,la:1,c:'셀4'},
+  '이하준':{g:1,s:'남',rt:0,la:1,c:'Sp6'},
+  '임소명':{g:3,s:'여',rt:25,c:'Sp4'},
+  '임태민':{g:2,s:'남',rt:0,la:1,c:'셀6'},
+  '장세민':{g:3,s:'남',rt:0,la:1,c:'Sp5'},
+  '장지현':{g:2,s:'여',rt:88,c:'셀1'},
+  '전지훈':{g:2,s:'남',rt:0,la:1,c:'셀4'},
+  '정승빈':{g:3,s:'여',rt:100,c:'셀12'},
+  '정원영':{g:3,s:'남',rt:0,la:1,c:'Sp5'},
+  '정태율':{g:1,s:'남',rt:100,c:'셀7'},
+  '조강인':{g:3,s:'남',rt:33,c:'셀7'},
+  '조인상':{g:3,s:'여',rt:100,c:'셀2'},
+  '조한나':{g:1,s:'여',rt:67,c:'셀6'},
+  '조혁준':{g:3,s:'남',rt:0,la:1,c:'Sp2'},
+  '주성':{g:3,s:'남',rt:0,la:1,c:'셀9'},
+  '최가은':{g:3,s:'여',rt:62,c:'셀8'},
+  '최민호':{g:2,s:'남',rt:67,c:'셀7'},
+  '최서윤':{g:3,s:'여',rt:10,la:1,c:'Sp2'},
+  '최수지':{g:1,s:'여',rt:95,c:'셀11'},
+  '최승아':{g:3,s:'여',rt:0,la:1,c:'Sp1'},
+  '최유현':{g:1,s:'여',rt:50,c:'셀11'},
+  '최지윤':{g:3,s:'여',rt:10,la:1,c:'Sp2'},
+  '최지은':{g:1,s:'여',rt:50,c:'셀5'},
+  '하어림':{g:1,s:'남',rt:0,la:1,c:'Sp4'},
+  '하은유':{g:1,s:'여',rt:100,c:'셀1'},
+  '한채은':{g:3,s:'여',rt:100,c:'셀3'},
+  '홍기진':{g:2,s:'남',rt:100,c:'셀1'}
+};
+
+const HIST_PAIRS = [["강은교","고예나"],["강은교","명주원"],["강은교","연해준"],["강은교","원대연"],["강은교","유나린"],["강은교","조인상"],["강은교","최승아"],["고예나","김민채"],["고예나","명주원"],["고예나","송성모"],["고예나","연해준"],["고예나","유나린"],["고예나","조인상"],["고예나","최승아"],["곽지원","김다은"],["곽지원","나정인"],["곽지원","양인혁"],["곽지원","오희수"],["곽지원","장세민"],["곽지원","주성"],["권하율","김민채"],["권하율","김은"],["권하율","서이수"],["권하율","송성모"],["권하율","장지현"],["권하율","하은유"],["권하율","홍기진"],["김강은","김주하"],["김강은","김채은"],["김강은","유재희"],["김강은","이서현"],["김강은","이소민"],["김강은","정승빈"],["김강희","김나현"],["김강희","김도연"],["김강희","김유진"],["김강희","김재원"],["김강희","민예원"],["김강희","박서연"],["김강희","백결"],["김강희","윤서희"],["김강희","조강인"],["김강희","조혁준"],["김강희","최지은"],["김나현","김도연"],["김나현","김유진"],["김나현","민예원"],["김나현","윤서희"],["김나현","최지은"],["김나현","하어림"],["김다은","나정인"],["김다은","양인혁"],["김다은","오희수"],["김다은","장세민"],["김다은","주성"],["김도연","김유진"],["김도연","김재원"],["김도연","민예원"],["김도연","윤서희"],["김도연","전지훈"],["김도연","최지은"],["김도헌","박동하"],["김도헌","송준원"],["김도헌","이가영"],["김도헌","이서현"],["김도헌","이소민"],["김도헌","이하준"],["김도헌","최수지"],["김도헌","최유현"],["김라일","김준수"],["김라일","박지호"],["김라일","안민혁"],["김라일","최서윤"],["김라일","최지윤"],["김라일","한채은"],["김민채","김은"],["김민채","서이수"],["김민채","송성모"],["김민채","장지현"],["김민채","최승아"],["김민채","하은유"],["김민채","홍기진"],["김유진","김재원"],["김유진","민예원"],["김유진","박서연"],["김유진","윤서희"],["김유진","전지훈"],["김유진","최지은"],["김은","서이수"],["김은","송성모"],["김은","장지현"],["김은","하은유"],["김은","홍기진"],["김은우","박진서"],["김은우","심희은"],["김은우","양소희"],["김은우","오은수"],["김은우","임소명"],["김은우","최가은"],["김재원","김한결"],["김재원","민예원"],["김재원","박서연"],["김재원","박지웅"],["김재원","이서후"],["김재원","임태민"],["김재원","전지훈"],["김재원","조한나"],["김정록","박시우"],["김정록","이에녹"],["김정록","정태율"],["김정록","조강인"],["김정록","최민호"],["김정록","하어림"],["김주하","김채은"],["김주하","유재희"],["김주하","이서현"],["김주하","이소민"],["김주하","정승빈"],["김준수","박지호"],["김준수","안민혁"],["김준수","최서윤"],["김준수","최지윤"],["김준수","한채은"],["김채은","박시우"],["김채은","양소희"],["김채은","유재희"],["김채은","이서현"],["김채은","이소민"],["김채은","정승빈"],["김채은","최민호"],["김한결","박서연"],["김한결","박지웅"],["김한결","이서후"],["김한결","임태민"],["김한결","조한나"],["나정인","양인혁"],["나정인","오희수"],["나정인","장세민"],["나정인","주성"],["나호윤","박민주"],["나호윤","박재영"],["나호윤","배유나"],["나호윤","윤성하"],["나호윤","이소현"],["나호윤","이주형"],["나호윤","정원영"],["명주원","연해준"],["명주원","오희수"],["명주원","유나린"],["명주원","조인상"],["명주원","최승아"],["민예원","윤서희"],["민예원","전지훈"],["민예원","최지은"],["박동하","박지호"],["박동하","송준원"],["박동하","이가영"],["박동하","이하준"],["박동하","정원영"],["박동하","주성"],["박동하","최수지"],["박동하","최유현"],["박민주","박재영"],["박민주","배유나"],["박민주","오희수"],["박민주","윤성하"],["박민주","이서후"],["박민주","이소현"],["박민주","이주형"],["박민주","임태민"],["박민주","장세민"],["박민주","정원영"],["박서연","박지웅"],["박서연","이서후"],["박서연","임태민"],["박서연","조한나"],["박시우","박진서"],["박시우","양소희"],["박시우","이에녹"],["박시우","임소명"],["박시우","정태율"],["박시우","조강인"],["박시우","최민호"],["박시우","하어림"],["박재영","배유나"],["박재영","윤성하"],["박재영","이소현"],["박재영","이주형"],["박재영","정원영"],["박지웅","이서후"],["박지웅","임태민"],["박지웅","조한나"],["박지호","안민혁"],["박지호","정원영"],["박지호","주성"],["박지호","최서윤"],["박지호","최지윤"],["박지호","한채은"],["박진서","심희은"],["박진서","양소희"],["박진서","오은수"],["박진서","임소명"],["박진서","최가은"],["박진서","하어림"],["배유나","윤성하"],["배유나","이서후"],["배유나","이소현"],["배유나","이주형"],["배유나","임태민"],["배유나","정원영"],["백결","오현우"],["백결","원대연"],["백결","이빛가온"],["백결","이준호"],["백결","전지훈"],["백결","조강인"],["백결","조혁준"],["백결","최서윤"],["백결","최지윤"],["서이수","송성모"],["서이수","장지현"],["서이수","하은유"],["서이수","홍기진"],["송성모","장지현"],["송성모","최승아"],["송성모","하은유"],["송성모","홍기진"],["송준원","이가영"],["송준원","이하준"],["송준원","최수지"],["송준원","최유현"],["심희은","양소희"],["심희은","오은수"],["심희은","임소명"],["심희은","최가은"],["안민혁","최서윤"],["안민혁","최지윤"],["안민혁","한채은"],["양소희","오은수"],["양소희","임소명"],["양소희","최가은"],["양소희","최민호"],["양인혁","오희수"],["양인혁","장세민"],["양인혁","주성"],["연해준","유나린"],["연해준","조인상"],["연해준","최승아"],["오은수","임소명"],["오은수","최가은"],["오현우","원대연"],["오현우","이빛가온"],["오현우","이준호"],["오현우","전지훈"],["오현우","조혁준"],["오희수","장세민"],["오희수","정원영"],["오희수","주성"],["원대연","이빛가온"],["원대연","이준호"],["원대연","전지훈"],["원대연","조혁준"],["유나린","조인상"],["유나린","최승아"],["유재희","이서현"],["유재희","이소민"],["유재희","정승빈"],["윤서희","최지은"],["윤성하","이소현"],["윤성하","이주형"],["윤성하","정원영"],["이가영","이하준"],["이가영","최수지"],["이가영","최유현"],["이빛가온","이준호"],["이빛가온","전지훈"],["이빛가온","조혁준"],["이서현","이소민"],["이서현","이하준"],["이서현","정승빈"],["이서후","임태민"],["이서후","조한나"],["이소민","이하준"],["이소민","정승빈"],["이소현","이주형"],["이소현","정원영"],["이에녹","정태율"],["이에녹","조강인"],["이에녹","최민호"],["이에녹","하어림"],["이주형","정원영"],["이준호","전지훈"],["이준호","조혁준"],["이하준","최수지"],["이하준","최승아"],["이하준","최유현"],["임소명","최가은"],["임소명","하어림"],["임태민","조한나"],["장세민","정원영"],["장세민","주성"],["장지현","하은유"],["장지현","홍기진"],["전지훈","조혁준"],["정원영","주성"],["정태율","조강인"],["정태율","최민호"],["정태율","하어림"],["조강인","조혁준"],["조강인","최민호"],["조강인","하어림"],["조인상","최승아"],["조혁준","최서윤"],["조혁준","최지윤"],["최민호","하어림"],["최서윤","최지윤"],["최서윤","한채은"],["최수지","최유현"],["최지윤","한채은"],["하은유","홍기진"]];
+
+const HIST = new Set(HIST_PAIRS.map(p => p[0] + '|' + p[1]));
+function wasTogether(a, b) { return HIST.has(a < b ? a + '|' + b : b + '|' + a); }
+
+/* ===== 학생 사진 (photos.html 규칙) ===== */
+const Photos = (() => {
+  const BUCKET = 'student-photos';
+  const SREST = URL_BASE + '/storage/v1';
+  let verMap = new Map();
+  function slug(name) { const b = new TextEncoder().encode(name); let h2 = ''; for (let i = 0; i < b.length; i++) h2 += b[i].toString(16).padStart(2, '0'); return h2; }
+  function publicUrl(name, ver) { let u = SREST + '/object/public/' + BUCKET + '/' + slug(name) + '.jpg'; if (ver) u += '?v=' + encodeURIComponent(ver); return u; }
+  function defaultAvatar(gender) {
+    const color = gender === '남' ? '%2360a5fa' : '%23f9a8d4';
+    return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23f1f5f9'/%3E%3Ccircle cx='32' cy='24' r='11' fill='" + color + "'/%3E%3Cellipse cx='32' cy='52' rx='19' ry='13' fill='" + color + "'/%3E%3C/svg%3E";
+  }
+  async function load() {
+    try {
+      const r = await fetch(SREST + '/object/list/' + BUCKET, { method: 'POST', headers: H, body: JSON.stringify({ prefix: '', limit: 1000 }) });
+      if (r.ok) (await r.json()).forEach(o => verMap.set(o.name.replace(/\.jpg$/, ''), o.updated_at || '1'));
+    } catch (e) { console.warn(e); }
+  }
+  function bigSrc(name) {
+    const s = STUDENTS[name] || {};
+    const ver = verMap.get(slug(name));
+    return ver ? publicUrl(name, ver) : defaultAvatar(s.s);
+  }
+  function img(name) {
+    const s = STUDENTS[name] || {};
+    return `<img class="av" src="${bigSrc(name)}" alt="" loading="lazy" title="클릭하면 크게 보기"
+      onclick="event.stopPropagation();openPhoto('${name}')" ondragstart="event.preventDefault();event.stopPropagation()"
+      onerror="this.onerror=null;this.src='${defaultAvatar(s.s)}'">`;
+  }
+  return { load, img, bigSrc, defaultAvatar };
+})();
+function openPhoto(name) {
+  const s = STUDENTS[name] || {};
+  const ovl = document.getElementById('photo-ovl');
+  ovl.querySelector('img').src = Photos.bigSrc(name);
+  ovl.querySelector('img').onerror = function () { this.onerror = null; this.src = Photos.defaultAvatar(s.s); };
+  ovl.querySelector('.cap').innerHTML = esc(name) + `<span class="sub">고${s.g} · ${s.s}${s.rt !== undefined ? ' · 출석 ' + s.rt + '%' : ''}</span>`;
+  ovl.classList.add('show');
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch(REST + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher, page }) }).catch(() => {});
+}
+
+/* ===== 상태 ===== */
+let MY = null;
+let DRAFT = null;      // { id, name, status, data }
+let UNDO = [];
+let SELECTED = null;
+let DIRTY = false;
+const POOL = '__pool__';
+
+function data() { return DRAFT.data; }
+function snapshot() { UNDO.push(JSON.stringify(DRAFT.data)); if (UNDO.length > 80) UNDO.shift(); }
+function markDirty() { DIRTY = true; document.getElementById('studio-bar').classList.add('dirty'); }
+function clearDirty() { DIRTY = false; document.getElementById('studio-bar').classList.remove('dirty'); }
+window.addEventListener('beforeunload', e => { if (DIRTY) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ===== 드래프트 IO ===== */
+async function loadDraftList(selectId) {
+  const r = await fetch(REST + '/lineup_drafts?active=eq.true&select=id,name,status,updated_at,updated_by&order=updated_at.desc', { headers: H });
+  const rows = r.ok ? await r.json() : [];
+  const sel = document.getElementById('draft-sel');
+  sel.innerHTML = rows.map(d => `<option value="${d.id}">${d.status === 'final' ? '✅ ' : ''}${esc(d.name)} (${(d.updated_at || '').substring(5, 10)} ${esc(d.updated_by || '')})</option>`).join('');
+  if (selectId) sel.value = selectId;
+  return rows;
+}
+async function pickDraft(id) {
+  if (DIRTY && !confirm('저장하지 않은 변경이 있습니다. 다른 초안을 불러올까요?')) { document.getElementById('draft-sel').value = DRAFT.id; return; }
+  const r = await fetch(REST + '/lineup_drafts?id=eq.' + encodeURIComponent(id) + '&select=*', { headers: H });
+  const rows = r.ok ? await r.json() : [];
+  if (!rows.length) { showToast('초안을 찾을 수 없습니다'); return; }
+  DRAFT = rows[0];
+  UNDO = []; SELECTED = null; clearDirty();
+  render();
+  showToast('📂 "' + DRAFT.name + '" 불러옴');
+}
+async function saveDraft(saveAs) {
+  let id = DRAFT.id, name = DRAFT.name;
+  if (saveAs || !id) {
+    name = prompt('초안 이름', (DRAFT.name || '새 초안') + ' 사본');
+    if (!name) return;
+    id = 'D' + Date.now();
+  }
+  const row = { id, name, data: DRAFT.data, status: 'draft', updated_by: MY, updated_at: new Date().toISOString(), active: true };
+  const r = await fetch(REST + '/lineup_drafts?on_conflict=id', {
+    method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H), body: JSON.stringify(row) });
+  if (!r.ok) { showToast('⚠️ 저장 실패 (' + r.status + ')'); return; }
+  DRAFT.id = id; DRAFT.name = name; DRAFT.status = 'draft';
+  clearDirty();
+  await loadDraftList(id);
+  showToast('💾 저장 완료 — ' + name);
+}
+async function finalizeDraft() {
+  if (!confirm('이 초안을 확정본으로 표시할까요?\n(다른 초안의 확정 표시는 해제됩니다)')) return;
+  if (DIRTY) await saveDraft(false);
+  await fetch(REST + '/lineup_drafts?status=eq.final', { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ status: 'draft' }) });
+  const r = await fetch(REST + '/lineup_drafts?id=eq.' + encodeURIComponent(DRAFT.id), {
+    method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ status: 'final', updated_by: MY, updated_at: new Date().toISOString() }) });
+  if (r.ok) { DRAFT.status = 'final'; await loadDraftList(DRAFT.id); showToast('✅ 확정본으로 표시했습니다'); }
+  else showToast('⚠️ 실패');
+}
+
+/* ===== 이동 로직 ===== */
+function findHome(name) {
+  for (const c of data().classes) if (c.students.includes(name)) return c.nm;
+  if (data().pool.includes(name)) return POOL;
+  return null;
+}
+function removeFrom(name) {
+  for (const c of data().classes) { const i = c.students.indexOf(name); if (i >= 0) { c.students.splice(i, 1); return; } }
+  const i = data().pool.indexOf(name); if (i >= 0) data().pool.splice(i, 1);
+}
+function moveStudent(name, target, silent) {
+  if (!STUDENTS[name]) { showToast('❓ 학생을 찾을 수 없습니다: ' + name); return false; }
+  const from = findHome(name);
+  const targetLabel = target === POOL ? '미배정' : target;
+  if (from === target) { if (!silent) showToast(name + ' — 이미 ' + targetLabel + '에 있습니다'); return false; }
+  snapshot();
+  removeFrom(name);
+  if (target === POOL) data().pool.push(name);
+  else {
+    const c = data().classes.find(c => c.nm === target);
+    if (!c) { UNDO.pop(); showToast('❓ 반을 찾을 수 없습니다: ' + target); return false; }
+    c.students.push(name);
+  }
+  markDirty();
+  if (!silent) showToast('➡️ ' + name + ' → ' + targetLabel);
+  render();
+  return true;
+}
+function swapStudents(a, b) {
+  const ha = findHome(a), hb = findHome(b);
+  if (!ha || !hb) { showToast('❓ 학생 위치를 찾을 수 없습니다'); return; }
+  if (ha === hb) { showToast('두 학생이 이미 같은 반입니다'); return; }
+  snapshot();
+  removeFrom(a); removeFrom(b);
+  const put = (n, t) => t === POOL ? data().pool.push(n) : data().classes.find(c => c.nm === t).students.push(n);
+  put(a, hb); put(b, ha);
+  markDirty();
+  showToast('🔄 ' + a + ' ↔ ' + b + ' 교환');
+  render();
+}
+function undoMove() {
+  if (!UNDO.length) { showToast('되돌릴 작업이 없습니다'); return; }
+  DRAFT.data = JSON.parse(UNDO.pop());
+  markDirty();
+  render();
+  showToast('↩️ 실행취소');
+}
+function addClass() {
+  const nm = prompt('새 반 이름 (예: 7반, 고3-5)');
+  if (!nm) return;
+  if (data().classes.some(c => c.nm === nm)) { showToast('이미 있는 반 이름입니다'); return; }
+  snapshot();
+  data().classes.push({ nm, students: [] });
+  markDirty(); render();
+}
+function removeClass(nm) {
+  const c = data().classes.find(c => c.nm === nm);
+  if (!c) return;
+  if (c.students.length) { showToast('반이 비어 있어야 삭제할 수 있습니다'); return; }
+  snapshot();
+  data().classes = data().classes.filter(x => x.nm !== nm);
+  markDirty(); render();
+}
+
+/* ===== 검증·집계 ===== */
+function classStats(students) {
+  let att = 0, la = 0, hi = 0, boys = 0; const g = { 1: 0, 2: 0, 3: 0 };
+  for (const n of students) {
+    const s = STUDENTS[n]; if (!s) continue;
+    if (s.la) la++; else att++;
+    if (!s.la && (s.rt || 0) >= 80) hi++;
+    if (s.s === '남') boys++;
+    g[s.g] = (g[s.g] || 0) + 1;
+  }
+  return { total: students.length, att, la, hi, boys, g };
+}
+function classSepViols(students) {
+  const set = new Set(students);
+  return (data().constraints.sep || []).filter(([a, b]) => set.has(a) && set.has(b));
+}
+function keepSplits() {
+  const out = [];
+  for (const grp of (data().constraints.keep || [])) {
+    const homes = new Set(grp.map(findHome).filter(h => h && h !== POOL));
+    if (homes.size > 1) out.push(grp);
+  }
+  return out;
+}
+
+/* ===== 렌더 ===== */
+function stuCard(name, violNames) {
+  const s = STUDENTS[name] || {};
+  const rtCls = (s.rt || 0) >= 80 ? 'hi' : (s.rt || 0) >= 50 ? 'mid' : 'lo';
+  return `<div class="stu ${s.la ? 'la' : ''} ${SELECTED === name ? 'sel' : ''} ${violNames.has(name) ? 'violstu' : ''}"
+    draggable="true" data-name="${esc(name)}"
+    ondragstart="dragStart(event)" ondragend="dragEnd(event)" onclick="tapStu('${esc(name)}')">
+    ${Photos.img(name)}
+    <span class="n">${esc(name)}</span>
+    <span class="m">${s.g}${s.s}${s.la ? ' 🤍' : ''}</span>
+    <span class="rt ${rtCls}">${s.rt === undefined ? '' : s.rt + '%'}</span>
+  </div>`;
+}
+function render() {
+  const board = document.getElementById('board');
+  if (!DRAFT) return;
+  const allViol = [];
+  const violNameSet = new Set();
+  for (const c of data().classes) {
+    for (const [a, b] of classSepViols(c.students)) { allViol.push(`${c.nm}: ${a}↔${b}`); violNameSet.add(a); violNameSet.add(b); }
+  }
+  const cols = data().classes.map(c => {
+    const st = classStats(c.students);
+    const viols = classSepViols(c.students);
+    return `<div class="col ${viols.length ? 'viol' : ''}" data-target="${esc(c.nm)}"
+      ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${esc(c.nm)}')">
+      <div class="col-head" onclick="tapCol('${esc(c.nm)}')">
+        <button class="col-del" onclick="event.stopPropagation();removeClass('${esc(c.nm)}')" title="빈 반 삭제">✕</button>
+        <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span><span class="move-here">여기로</span></div>
+        <div class="stats">출석 <b>${st.att}</b> · 장결 <b>${st.la}</b> · 80%+ <b>${st.hi}</b> · 남 <b>${st.boys}</b> · 학년 <b>${st.g[1] || 0}/${st.g[2] || 0}/${st.g[3] || 0}</b></div>
+        ${viols.length ? `<span class="viol-tag">🚫 분리 위반 ${viols.length}건</span>` : ''}
+      </div>
+      <div class="col-body">${c.students.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
+    </div>`;
+  });
+  const poolSt = classStats(data().pool);
+  cols.unshift(`<div class="col pool-col" data-target="${POOL}"
+    ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${POOL}')">
+    <div class="col-head" onclick="tapCol('${POOL}')">
+      <div class="nm">📥 미배정 <span style="font-size:11px;color:var(--muted);font-weight:600">${poolSt.total}명</span><span class="move-here">여기로</span></div>
+    </div>
+    <div class="col-body">${data().pool.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">없음</div>'}</div>
+  </div>`);
+  board.innerHTML = cols.join('');
+  // 배너
+  const wb = document.getElementById('warn-banner');
+  if (allViol.length) { wb.classList.add('show'); wb.innerHTML = '🚫 <b>분리 제약 위반:</b> ' + allViol.map(esc).join(' · '); }
+  else wb.classList.remove('show');
+  const ib = document.getElementById('info-banner');
+  const splits = keepSplits();
+  const missing = Object.keys(STUDENTS).filter(n => !STUDENTS[n].ov && !findHome(n));
+  const infoParts = [];
+  if (splits.length) infoParts.push('🤝 유지 그룹이 나뉘어 있음: ' + splits.map(g => g.join('+')).join(' · '));
+  if (missing.length) infoParts.push('📥 편성 누락: ' + missing.join(', '));
+  if (infoParts.length) { ib.classList.add('show'); ib.innerHTML = infoParts.map(esc).join('<br>'); }
+  else ib.classList.remove('show');
+  document.getElementById('undo-btn').disabled = !UNDO.length;
+  document.body.classList.toggle('selecting', !!SELECTED);
+}
+
+/* ===== 인터랙션 ===== */
+let DRAGGED = null;
+function dragStart(e) { DRAGGED = e.target.dataset.name; e.target.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', DRAGGED); } catch (err) {} }
+function dragEnd(e) { e.target.classList.remove('dragging'); document.querySelectorAll('.droptarget').forEach(el => el.classList.remove('droptarget')); }
+function dropOn(e, target) {
+  e.preventDefault();
+  document.querySelectorAll('.droptarget').forEach(el => el.classList.remove('droptarget'));
+  const name = DRAGGED || e.dataTransfer.getData('text/plain');
+  DRAGGED = null;
+  if (name) moveStudent(name, target);
+}
+function tapStu(name) {
+  SELECTED = SELECTED === name ? null : name;
+  render();
+}
+function tapCol(target) {
+  if (!SELECTED) return;
+  const n = SELECTED; SELECTED = null;
+  moveStudent(n, target);
+}
+
+/* ===== 명령 파서 ===== */
+function extractNames(txt) {
+  const names = [];
+  let s = txt;
+  for (const n of Object.keys(STUDENTS).sort((a, b) => b.length - a.length)) {
+    const i = s.indexOf(n);
+    if (i >= 0) { names.push(n); s = s.slice(0, i) + ' '.repeat(n.length) + s.slice(i + n.length); }
+  }
+  return names;
+}
+function matchClass(txt) {
+  const cands = data().classes.map(c => c.nm).sort((a, b) => b.length - a.length);
+  for (const nm of cands) if (txt.includes(nm)) return nm;
+  if (/미배정|풀|보류/.test(txt)) return POOL;
+  return null;
+}
+function runCmd() {
+  const inp = document.getElementById('cmd-input');
+  const txt = (inp.value || '').trim();
+  if (!txt) return;
+  if (/^(취소|되돌리기|undo)$/i.test(txt)) { undoMove(); inp.value = ''; return; }
+  const names = extractNames(txt);
+  const target = matchClass(txt);
+  if (names.length >= 2 && /(교환|서로 *바꿔|스왑|맞바꿔)/.test(txt)) { swapStudents(names[0], names[1]); inp.value = ''; return; }
+  if (names.length >= 2 && /(분리|떼어|떨어)/.test(txt)) {
+    snapshot(); data().constraints.sep.push([names[0], names[1]]); markDirty(); render();
+    showToast('🚫 분리 제약 추가: ' + names[0] + '↔' + names[1]); inp.value = ''; return;
+  }
+  if (names.length >= 2 && /(같이|함께|묶어)/.test(txt)) {
+    snapshot(); data().constraints.keep.push([names[0], names[1]]); markDirty(); render();
+    showToast('🤝 유지 제약 추가: ' + names[0] + '+' + names[1]); inp.value = ''; return;
+  }
+  if (names.length && target) {
+    let moved = 0;
+    for (const n of names) if (moveStudent(n, target, names.length > 1)) moved++;
+    if (names.length > 1) showToast('➡️ ' + moved + '명 → ' + (target === POOL ? '미배정' : target));
+    inp.value = ''; return;
+  }
+  if (names.length && !target) { showToast('❓ 옮길 반을 찾지 못했습니다 — 예: "' + names[0] + ' 3반으로"'); return; }
+  showToast('❓ 명령을 이해하지 못했습니다 — 힌트를 참고해 주세요');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('cmd-input').addEventListener('keydown', e => { if (e.key === 'Enter') runCmd(); });
+});
+
+/* ===== 제약 모달 ===== */
+function addConsFromInput(kind) {
+  const inp = document.getElementById('cons-input');
+  const names = extractNames(inp.value || '');
+  if (names.length < 2) { showToast('학생 이름을 2명 이상 정확히 입력해 주세요'); return; }
+  snapshot();
+  if (kind === 'sep') {
+    // 3명 이상이면 모든 쌍으로 등록
+    for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) data().constraints.sep.push([names[i], names[j]]);
+    showToast('🚫 분리 제약 추가: ' + names.join(' · '));
+  } else {
+    data().constraints.keep.push(names);
+    showToast('🤝 유지 제약 추가: ' + names.join('+'));
+  }
+  inp.value = '';
+  markDirty(); render(); openConstraints();
+}
+function openConstraints() {
+  const dl = document.getElementById('cons-names');
+  if (dl && !dl.children.length) dl.innerHTML = Object.keys(STUDENTS).sort((a, b) => a.localeCompare(b, 'ko')).map(n => `<option value="${n}">`).join('');
+  const sep = data().constraints.sep || [], keep = data().constraints.keep || [];
+  document.getElementById('sep-list').innerHTML = sep.map((p, i) =>
+    `<span class="pair sepp">${p.join('↔')}<button onclick="delCons('sep',${i})">✕</button></span>`).join('') || '<span style="font-size:12px;color:var(--muted)">없음</span>';
+  document.getElementById('keep-list').innerHTML = keep.map((p, i) =>
+    `<span class="pair keepp">${p.join('+')}<button onclick="delCons('keep',${i})">✕</button></span>`).join('') || '<span style="font-size:12px;color:var(--muted)">없음</span>';
+  document.getElementById('cons-ovl').classList.add('show');
+}
+function delCons(kind, i) {
+  snapshot();
+  data().constraints[kind].splice(i, 1);
+  markDirty(); render(); openConstraints();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+/* ===== 자동 편성 ===== */
+function openAuto() { document.getElementById('auto-ovl').classList.add('show'); }
+function autoPartition(pool, k, useHist) {
+  // KEEP 클러스터를 유닛으로 병합
+  const keep = (data().constraints.keep || []).map(g => g.filter(n => pool.includes(n))).filter(g => g.length > 1);
+  const inUnit = new Set(keep.flat());
+  const units = keep.map(g => [...g]);
+  for (const n of pool) if (!inUnit.has(n)) units.push([n]);
+  const sep = data().constraints.sep || [];
+  const sepBad = (n, arr) => arr.some(x => sep.some(([a, b]) => (a === n && b === x) || (b === n && a === x)));
+  const size = Math.ceil(pool.length / k);
+  const bins = Array.from({ length: k }, () => []);
+  const conf = (n, arr) => useHist ? arr.reduce((s, x) => s + (wasTogether(n, x) ? 1 : 0), 0) : 0;
+  const isHi = n => !STUDENTS[n].la && (STUDENTS[n].rt || 0) >= 80;
+  // 유닛 큰 것부터, 장결·성별·학년 균형 고려 배치
+  const cmpArr = (x, y) => { for (let i = 0; i < x.length; i++) { if (x[i] !== y[i]) return x[i] - y[i]; } return 0; };
+  units.sort((a, b) => b.length - a.length || (STUDENTS[a[0]].la ? 1 : 0) - (STUDENTS[b[0]].la ? 1 : 0));
+  for (const u of units) {
+    let best = null;
+    for (let i = 0; i < k; i++) {
+      const b = bins[i];
+      if (b.length + u.length > size + 1) continue;
+      if (u.some(n => sepBad(n, b.concat(u.filter(x => x !== n))))) continue;
+      const c = u.reduce((s, n) => s + conf(n, b), 0);
+      const la = b.filter(n => STUDENTS[n].la).length;
+      const hi = b.filter(isHi).length;
+      const boys = b.filter(n => STUDENTS[n].s === '남').length;
+      const g1 = b.filter(n => STUDENTS[n].g === 1).length;
+      const uLa = u.filter(n => STUDENTS[n].la).length;
+      const uHi = u.filter(isHi).length;
+      const score = [c, uLa ? la : 0, uHi ? hi : 0, Math.abs(boys - b.length / 2) + Math.abs(g1 - b.length / 2), b.length];
+      if (!best || cmpArr(score, best.score) < 0) best = { i, score };
+    }
+    if (!best) { // 사이즈 제한 완화 재시도
+      for (let i = 0; i < k; i++) {
+        const b = bins[i];
+        if (u.some(n => sepBad(n, b))) continue;
+        if (!best || b.length < bins[best.i].length) best = { i, score: [0] };
+      }
+    }
+    if (best) bins[best.i].push(...u);
+  }
+  // 개선 스왑 (이력 겹침 감소)
+  if (useHist) {
+    const unitMembers = new Set(keep.flat());
+    const totalConf = () => bins.reduce((s, b) => { let c = 0; for (let i = 0; i < b.length; i++) for (let j = i + 1; j < b.length; j++) if (wasTogether(b[i], b[j])) c++; return s + c; }, 0);
+    let improved = true, guard = 0;
+    while (improved && guard++ < 200) {
+      improved = false;
+      outer:
+      for (let i = 0; i < k; i++) for (let j = i + 1; j < k; j++) {
+        for (const a of [...bins[i]]) {
+          if (unitMembers.has(a)) continue;
+          for (const b2 of [...bins[j]]) {
+            if (unitMembers.has(b2)) continue;
+            const before = totalConf();
+            bins[i] = bins[i].filter(x => x !== a); bins[j] = bins[j].filter(x => x !== b2);
+            if (!sepBad(a, bins[j]) && !sepBad(b2, bins[i])) {
+              bins[j].push(a); bins[i].push(b2);
+              if (totalConf() < before) { improved = true; break outer; }
+              bins[j] = bins[j].filter(x => x !== a); bins[i] = bins[i].filter(x => x !== b2);
+            }
+            bins[i].push(a); bins[j].push(b2);
+          }
+        }
+      }
+    }
+  }
+  return bins;
+}
+function runAuto() {
+  const k12 = Math.max(1, +document.getElementById('auto-k12').value || 6);
+  const k3 = Math.max(0, +document.getElementById('auto-k3').value || 4);
+  const g3sep = document.getElementById('auto-g3sep').checked;
+  const all = Object.keys(STUDENTS).filter(n => !STUDENTS[n].ov);
+  snapshot();
+  let classes = [];
+  if (g3sep && k3 > 0) {
+    const g12 = all.filter(n => STUDENTS[n].g !== 3);
+    const g3 = all.filter(n => STUDENTS[n].g === 3);
+    autoPartition(g12, k12, true).forEach((b, i) => classes.push({ nm: (i + 1) + '반', students: sortRoster(b) }));
+    autoPartition(g3, k3, false).forEach((b, i) => classes.push({ nm: '고3-' + (i + 1), students: sortRoster(b) }));
+  } else {
+    autoPartition(all, k12, true).forEach((b, i) => classes.push({ nm: (i + 1) + '반', students: sortRoster(b) }));
+  }
+  DRAFT.data = { classes, pool: [], constraints: data().constraints };
+  markDirty();
+  closeModal('auto-ovl');
+  render();
+  showToast('⚙️ 자동 편성 완료 — 실행취소 가능');
+}
+function sortRoster(arr) {
+  return arr.slice().sort((a, b) => (STUDENTS[a].la ? 1 : 0) - (STUDENTS[b].la ? 1 : 0) || STUDENTS[a].g - STUDENTS[b].g || a.localeCompare(b, 'ko'));
+}
+
+/* ===== 인증 ===== */
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>' + ADMINS.slice().sort((a, b) => a.localeCompare(b, 'ko')).map(t => `<option value="${t}">${t}</option>`).join('');
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved && ADMINS.includes(saved)) sel.value = saved;
+}
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  const err = document.getElementById('gate-err');
+  if (pin !== PRIVATE_KEY) { err.textContent = '❌ 접근 코드가 일치하지 않습니다'; return; }
+  if (!name) { err.textContent = '❌ 본인 이름을 선택해 주세요'; return; }
+  if (!ADMINS.includes(name)) { err.textContent = '🔒 이 페이지는 교육국장단만 사용할 수 있습니다.'; return; }
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+function logout() { localStorage.removeItem('mock_teacher'); location.reload(); }
+async function showApp() {
+  MY = localStorage.getItem('mock_teacher');
+  if (!MY || !ADMINS.includes(MY)) { document.getElementById('gate-root').style.display = ''; document.getElementById('app-root').style.display = 'none'; return; }
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('my-badge').textContent = MY;
+  logAccess(MY, 'lineup-studio');
+  await Photos.load();
+  const rows = await loadDraftList();
+  if (rows.length) await pickDraft(rows.find(d => d.status === 'final')?.id || rows[0].id);
+  else { DRAFT = { id: null, name: '새 초안', status: 'draft', data: { classes: [{ nm: '1반', students: [] }], pool: Object.keys(STUDENTS).filter(n => !STUDENTS[n].ov), constraints: { sep: [], keep: [] } } }; render(); }
+}
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && ADMINS.includes(savedName)) showApp();
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') mockLogin(); });
+</script>
+</body>
+</html>
