@@ -305,7 +305,7 @@ const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const REST = URL_BASE + '/rest/v1';
 const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
 const PRIVATE_KEY = 'runners2026@jesus';
-const ADMINS = ['안종범','김광현','석준원','이유성','박대철','송진우','오덕현'];
+const ADMINS = ['안종범','김광현','석준원','이유성','오덕현','양지현','송진우'];
 
 const STUDENTS = {
   '강은교':{g:2,s:'여',rt:100,c:'셀2'},
@@ -861,7 +861,7 @@ function extractNames(txt) {
   let s = txt;
   for (const n of Object.keys(STUDENTS).sort((a, b) => b.length - a.length)) {
     const i = s.indexOf(n);
-    if (i >= 0) { names.push(n); s = s.slice(0, i) + ' '.repeat(n.length) + s.slice(i + n.length); }
+    if (i >= 0) { names.push(n); s = s.slice(0, i) + ' '.repeat(n.length) + s.slice(i + n.length); }
   }
   return names;
 }
