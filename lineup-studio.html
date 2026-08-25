@@ -149,6 +149,10 @@
   .app-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
   .app-table th, .app-table td { text-align: left; padding: 7px 6px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
   .app-table th { color: var(--muted); font-size: 11px; white-space: nowrap; }
+  .st-tag { font-size: 11px; font-weight: 800; padding: 2px 9px; border-radius: 999px; white-space: nowrap; display: inline-block; }
+  .st-tag.st-ok { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .st-tag.st-rest { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+  .st-tag.st-talk { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
 
   @media (max-width: 640px) {
     body { font-size: 15px; }
@@ -208,6 +212,7 @@
       <button class="sbtn" onclick="openConstraints()">🔗 제약 관리</button>
       <button class="sbtn" onclick="openApps()">🙋 지망 현황</button>
       <button class="sbtn" onclick="openAuto()">⚙️ 자동 편성</button>
+      <button class="sbtn primary" onclick="confirmAutoAssignTeachers()">👨‍🏫 교사 자동배치</button>
       <button class="sbtn" onclick="addClass()">➕ 반 추가</button>
       <button class="sbtn ok" onclick="finalizeDraft()">✅ 확정</button>
     </div>
@@ -279,6 +284,19 @@
     <div style="font-size:12px;color:var(--muted)">★ = 이 반 1지망 · ☆ = 2·3지망 · (배치됨) = 다른 반에 이미 배치</div>
     <div class="tpick" id="tch-pick"></div>
     <div class="actions"><button class="sbtn" onclick="closeModal('tch-ovl')">닫기</button></div>
+  </div>
+</div>
+
+<!-- 교사 자동배치 결과 리포트 -->
+<div class="modal-ovl" id="tchreport-ovl">
+  <div class="modal" style="max-width:640px">
+    <h3>👨‍🏫 교사 자동배치 결과</h3>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px">우선순위: ① 본인 1·2·3지망 → ② 상호 지명(서로 동역자로 적은 경우) → ③ 강점·도움 보완 및 성향 궁합. 아래는 참고용 초안입니다 — 반 카드의 [+ 교사]나 명령으로 언제든 조정할 수 있습니다.</div>
+    <div id="tchreport-body"></div>
+    <div class="actions">
+      <button class="sbtn" onclick="undoMove();closeModal('tchreport-ovl')">↩️ 되돌리기</button>
+      <button class="sbtn primary" onclick="closeModal('tchreport-ovl')">확인</button>
+    </div>
   </div>
 </div>
 
@@ -463,6 +481,178 @@ const TEACHER_NAMES = TEACHER_POOL.map(x => x.n);
 // 교사↔학생 분리 (해당 학생이 있는 반에 배치 시 경고)
 const TEACHER_SEP = [['오은규', '오은수'], ['김주영', '홍기진']];
 let APPS = []; // lineup_applications
+
+/* ═══ 교사 자동배치 알고리즘 ═══
+   우선순위: ① 본인 1·2·3지망 → ② 상호 지명(서로를 동역자로 적은 경우) → ③ 강점/도움 보완·성향 궁합
+   가중치를 계층적으로 설계(①≫②≫③)해 순서를 지키되, ②·③이 근소한 지망 차이는 뒤집을 수 있게 함(예: 3지망 vs 무지망) */
+const T_SCORE = { c1: 100, c2: 55, c3: 25, mutualPartner: 40, oneWayPartner: 12, needMatch: 4, traitCombo: 6 };
+const TRAIT_COMPLEMENT = [['p_lead', 'p_support'], ['p_energy', 'p_steady'], ['p_listen', 'p_action']]; // 협업 성향 상호보완 궁합
+const COLLAB_CONSISTENT = ['c_role', 'c_together', 'c_freq', 'c_simple']; // 협업 방식 일치 시 소폭 가점
+function parsePartnerNames(s) { return (s || '').split(/[,·]+/).map(x => x.trim()).filter(Boolean); }
+function setOf(s) { return new Set((s || '').split(',').filter(Boolean)); }
+function choiceScore(app, cls) {
+  if (!app) return 0;
+  if (app.choice1 === cls) return T_SCORE.c1;
+  if (app.choice2 === cls) return T_SCORE.c2;
+  if (app.choice3 === cls) return T_SCORE.c3;
+  return 0;
+}
+function choiceRank(app, cls) {
+  if (!app || !cls) return '무지망';
+  if (app.choice1 === cls) return '1지망'; if (app.choice2 === cls) return '2지망'; if (app.choice3 === cls) return '3지망';
+  return '무지망';
+}
+function partnerBonus(a, appA, b, appB) {
+  const aWantsB = appA && parsePartnerNames(appA.partner).includes(b);
+  const bWantsA = appB && parsePartnerNames(appB.partner).includes(a);
+  if (aWantsB && bWantsA) return T_SCORE.mutualPartner;
+  if (aWantsB || bWantsA) return T_SCORE.oneWayPartner;
+  return 0;
+}
+function isMutual(a, appA, b, appB) {
+  return !!(appA && appB && parsePartnerNames(appA.partner).includes(b) && parsePartnerNames(appB.partner).includes(a));
+}
+function pairComplementScore(a, b) {
+  if (!a || !b) return 0;
+  let s = 0;
+  const aNeeds = setOf(a.needs), bNeeds = setOf(b.needs), aStr = setOf(a.strengths), bStr = setOf(b.strengths);
+  for (const n of aNeeds) if (bStr.has(n)) s += T_SCORE.needMatch;
+  for (const n of bNeeds) if (aStr.has(n)) s += T_SCORE.needMatch;
+  const aTr = setOf(a.partner_traits), bTr = setOf(b.partner_traits);
+  for (const [x, y] of TRAIT_COMPLEMENT) if ((aTr.has(x) && bTr.has(y)) || (aTr.has(y) && bTr.has(x))) s += T_SCORE.traitCombo;
+  const aCo = setOf(a.collab_types), bCo = setOf(b.collab_types);
+  if ((aCo.has('c_mentor') && bCo.has('c_mentee')) || (aCo.has('c_mentee') && bCo.has('c_mentor'))) s += T_SCORE.traitCombo;
+  for (const c of COLLAB_CONSISTENT) if (aCo.has(c) && bCo.has(c)) s += T_SCORE.traitCombo / 2;
+  return s;
+}
+function teacherHardOk(t, cls) {
+  const stuSet = new Set(cls.students);
+  return !TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss));
+}
+function classCapacities(classes, poolLen) {
+  const cap = {};
+  for (const c of classes) cap[c.nm] = c.nm.startsWith('고3') ? 1 : 2;
+  const base = Object.values(cap).reduce((a, b) => a + b, 0);
+  const extra = Math.max(0, poolLen - base);
+  if (extra > 0) {
+    const g3 = classes.filter(c => c.nm.startsWith('고3'))
+      .map(c => ({ nm: c.nm, la: c.students.filter(n => STUDENTS[n] && STUDENTS[n].la).length }))
+      .sort((a, b) => b.la - a.la);
+    for (let i = 0; i < extra && i < g3.length; i++) cap[g3[i].nm]++;
+  }
+  return cap;
+}
+function autoAssignTeachers() {
+  snapshot();
+  const classes = data().classes;
+  const appMap = {}; APPS.forEach(a => { appMap[a.teacher] = a; });
+  const cap = classCapacities(classes, TEACHER_NAMES.length);
+  for (const c of classes) c.teachers = [];
+  const remaining = {}; for (const c of classes) remaining[c.nm] = cap[c.nm];
+
+  // 1) 상호 지명 쌍을 먼저 단위(unit)로 묶기 — ② 우선순위를 배치 순서에도 반영
+  const used = new Set(), units = [];
+  for (const t of TEACHER_NAMES) {
+    if (used.has(t)) continue;
+    const app = appMap[t];
+    const names = app ? parsePartnerNames(app.partner) : [];
+    let paired = false;
+    for (const p of names) {
+      if (used.has(p) || p === t || !TEACHER_NAMES.includes(p)) continue;
+      if (isMutual(t, app, p, appMap[p])) { units.push({ members: [t, p], mutual: true }); used.add(t); used.add(p); paired = true; break; }
+    }
+    if (!paired) { units.push({ members: [t], mutual: false }); used.add(t); }
+  }
+  units.sort((a, b) => (b.mutual - a.mutual));
+
+  function unitScore(unit, cls) {
+    const [m1, m2] = unit.members, a1 = appMap[m1];
+    let score = choiceScore(a1, cls.nm);
+    if (m2) { const a2 = appMap[m2]; score += choiceScore(a2, cls.nm) + partnerBonus(m1, a1, m2, a2) + pairComplementScore(a1, a2); }
+    return score;
+  }
+  const failedUnits = [];
+  for (const unit of units) {
+    const need = unit.members.length;
+    let best = null;
+    for (const c of classes) {
+      if (remaining[c.nm] < need) continue;
+      if (!unit.members.every(m => teacherHardOk(m, c))) continue;
+      const sc = unitScore(unit, c);
+      if (!best || sc > best.score) best = { cls: c, score: sc };
+    }
+    if (!best) { failedUnits.push(unit.members); continue; }
+    best.cls.teachers.push(...unit.members);
+    remaining[best.cls.nm] -= need;
+  }
+
+  // 2) ③ 강점보완·성향 궁합까지 반영한 전체 점수를 스왑으로 개선 (①②를 해치지 않는 한도에서)
+  function totalScore() {
+    let s = 0;
+    for (const c of classes) {
+      const ts = c.teachers;
+      for (let i = 0; i < ts.length; i++) {
+        s += choiceScore(appMap[ts[i]], c.nm);
+        for (let j = i + 1; j < ts.length; j++) s += partnerBonus(ts[i], appMap[ts[i]], ts[j], appMap[ts[j]]) + pairComplementScore(appMap[ts[i]], appMap[ts[j]]);
+      }
+    }
+    return s;
+  }
+  const mutualMembers = new Set(units.filter(u => u.mutual).map(u => u.members).flat());
+  let improved = true, guard = 0;
+  while (improved && guard++ < 300) {
+    improved = false;
+    outer:
+    for (const c1 of classes) for (const c2 of classes) {
+      if (c1 === c2) continue;
+      for (const t1 of c1.teachers.slice()) {
+        if (mutualMembers.has(t1)) continue;
+        for (const t2 of c2.teachers.slice()) {
+          if (mutualMembers.has(t2)) continue;
+          if (!teacherHardOk(t1, c2) || !teacherHardOk(t2, c1)) continue;
+          const before = totalScore();
+          c1.teachers = c1.teachers.filter(x => x !== t1).concat([t2]);
+          c2.teachers = c2.teachers.filter(x => x !== t2).concat([t1]);
+          if (totalScore() > before) { improved = true; break outer; }
+          c1.teachers = c1.teachers.filter(x => x !== t2).concat([t1]);
+          c2.teachers = c2.teachers.filter(x => x !== t1).concat([t2]);
+        }
+      }
+    }
+  }
+
+  markDirty(); render();
+  showTeacherReport(appMap, failedUnits);
+}
+function confirmAutoAssignTeachers() {
+  if (!confirm('현재 반의 교사 배치를 모두 지우고, 지망·상호지명·강점보완 기준으로 새로 자동배치할까요?\n(실행취소 가능)')) return;
+  autoAssignTeachers();
+}
+function showTeacherReport(appMap, failedUnits) {
+  const rankCount = { '1지망': 0, '2지망': 0, '3지망': 0, '무지망': 0 };
+  const rows = [];
+  for (const c of data().classes) {
+    for (const t of c.teachers) {
+      const a = appMap[t];
+      const rank = choiceRank(a, c.nm);
+      rankCount[rank]++;
+      const mates = c.teachers.filter(x => x !== t);
+      const mutualWith = mates.filter(m => isMutual(t, a, m, appMap[m]));
+      rows.push({ teacher: t, cls: c.nm, rank, mutualWith });
+    }
+  }
+  rows.sort((a, b) => a.cls.localeCompare(b.cls, 'ko') || a.teacher.localeCompare(b.teacher, 'ko'));
+  const rankBadge = { '1지망': 'ok', '2지망': 'ok', '3지망': 'rest', '무지망': 'talk' };
+  const body = document.getElementById('tchreport-body');
+  body.innerHTML = `
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">지망 달성: 1지망 <b>${rankCount['1지망']}</b> · 2지망 <b>${rankCount['2지망']}</b> · 3지망 <b>${rankCount['3지망']}</b> · 무지망 <b>${rankCount['무지망']}</b> (총 ${rows.length}명)</div>
+    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>배치</th><th>지망 순위</th><th>상호 지명</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td style="font-weight:800;color:var(--ink)">${esc(r.teacher)}</td><td>${esc(r.cls)}</td>
+      <td><span class="st-tag st-${rankBadge[r.rank]}">${r.rank}</span></td>
+      <td>${r.mutualWith.length ? '🤝 ' + r.mutualWith.map(esc).join(', ') : ''}</td></tr>`).join('')}</tbody></table></div>
+    ${failedUnits && failedUnits.length ? `<div class="warn-banner show" style="margin-top:10px">⚠️ 자리가 부족해 배치 실패: ${failedUnits.map(u => u.join('+')).join(' · ')} — 반 추가 또는 정원 조정이 필요합니다.</div>` : ''}`;
+  document.getElementById('tchreport-ovl').classList.add('show');
+}
 
 /* ===== 상태 ===== */
 let MY = null;
