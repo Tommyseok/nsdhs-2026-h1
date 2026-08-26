@@ -244,6 +244,7 @@
       <span class="dirty-dot" title="저장되지 않은 변경"></span>
       <button class="sbtn primary" onclick="saveDraft(false)">💾 저장</button>
       <button class="sbtn" onclick="saveDraft(true)">📄 다른 이름으로</button>
+      <button class="sbtn ok" onclick="publishDraftUrl()">🔗 URL 발행</button>
       <button class="sbtn" onclick="toggleStudioExtra()" id="studio-extra-toggle">▸ 라인업 기능 펼치기</button>
     </div>
     <div class="studio-bar" id="studio-extra" style="display:none">
@@ -780,6 +781,20 @@ function copyBoardViewUrl() {
   const url = boardViewUrl();
   (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
     () => showToast('🔗 반 편성표 링크 복사됨 — 전체 교사에게 공유하세요 (읽기 전용, 확정본만 표시)'),
+    () => { prompt('아래 링크를 복사하세요', url); });
+}
+async function publishDraftUrl() {
+  if (!DRAFT) { showToast('❓ 불러온 초안이 없습니다'); return; }
+  if (DIRTY) { if (!confirm('저장하지 않은 변경이 있습니다. 저장 후 발행할까요?')) return; await saveDraft(false); }
+  await fetch(REST + '/lineup_drafts?status=eq.final', { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ status: 'draft' }) });
+  const r = await fetch(REST + '/lineup_drafts?id=eq.' + encodeURIComponent(DRAFT.id), {
+    method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ status: 'final', updated_by: MY, updated_at: new Date().toISOString() }) });
+  if (!r.ok) { showToast('⚠️ 발행 실패 (' + r.status + ')'); return; }
+  DRAFT.status = 'final';
+  await loadDraftList(DRAFT.id);
+  const url = boardViewUrl() + '?d=' + encodeURIComponent(DRAFT.id);
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
+    () => showToast('🔗 "' + DRAFT.name + '" 공개 링크 복사됨 — 전체 교사에게 공유하세요'),
     () => { prompt('아래 링크를 복사하세요', url); });
 }
 function renderHub() {

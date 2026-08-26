@@ -94,6 +94,7 @@
     <div class="container">
       <h1>🧩 반 편성표</h1>
       <span class="badge ro">👀 읽기 전용</span>
+      <span class="badge" id="ver-badge" style="display:none"></span>
       <span class="badge" id="my-badge"></span>
       <button class="logout" onclick="logout()">로그아웃</button>
     </div>
@@ -274,8 +275,14 @@ function renderBoard(data) {
 }
 async function loadBoard() {
   try {
-    const r = await fetch(REST + '/lineup_drafts?active=eq.true&status=eq.final&select=data&order=updated_at.desc&limit=1', { headers: H });
+    const pinnedId = new URLSearchParams(location.search).get('d');
+    const q = pinnedId
+      ? '/lineup_drafts?id=eq.' + encodeURIComponent(pinnedId) + '&select=name,data'
+      : '/lineup_drafts?active=eq.true&status=eq.final&select=name,data&order=updated_at.desc&limit=1';
+    const r = await fetch(REST + q, { headers: H });
     const rows = r.ok ? await r.json() : [];
+    const vb = document.getElementById('ver-badge');
+    if (pinnedId && rows[0]) { vb.textContent = '📌 ' + rows[0].name; vb.style.display = ''; }
     renderBoard(rows[0] ? rows[0].data : null);
   } catch (e) { renderBoard(null); }
 }
