@@ -505,9 +505,9 @@ const CARE_ONLY = new Set(TEACHER_POOL.filter(x => x.careOnly).map(x => x.n));
 // 교사↔학생 분리 (해당 학생이 있는 반에 배치 시 경고)
 const TEACHER_SEP = [['오은규', '오은수'], ['김주영', '홍기진']];
 let APPS = []; // lineup_applications
-const TCH_EXPANDED = new Set(); // 펼쳐진 반 이름들 (기본: 전체 접힘)
+const TCH_COLLAPSED = new Set(); // 접힌 반 이름들 (기본: 전체 펼침)
 function toggleTchDetails(clsNm) {
-  TCH_EXPANDED.has(clsNm) ? TCH_EXPANDED.delete(clsNm) : TCH_EXPANDED.add(clsNm);
+  TCH_COLLAPSED.has(clsNm) ? TCH_COLLAPSED.delete(clsNm) : TCH_COLLAPSED.add(clsNm);
   render();
 }
 
@@ -1035,7 +1035,7 @@ function render() {
       return `<span class="tch ${warn ? 'warn' : ''}" title="${warn ? '⚠️ 분리 필요 학생과 같은 반' : ''}">👨‍🏫 ${esc(t)}${first.includes(t) ? ' ★' : ''}<button class="x" onclick="event.stopPropagation();unassignTeacher('${esc(t)}')">✕</button></span>`;
     }).join('');
     const tViol = (c.teachers || []).some(t => TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss)));
-    const tchExpanded = TCH_EXPANDED.has(c.nm);
+    const tchExpanded = !TCH_COLLAPSED.has(c.nm);
     const tchCards = (c.teachers || []).map(t => {
       const a = APPS.find(x => x.teacher === t);
       const rank = choiceRank(a, c.nm);
