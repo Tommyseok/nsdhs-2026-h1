@@ -134,17 +134,17 @@
 
   /* ===== 교사 슬롯 ===== */
   .tch-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center; }
-  .tch-toggle { margin-top: 6px; font-size: 10.5px; font-weight: 800; color: #7c3aed; cursor: pointer; display: inline-block; }
+  .tch-toggle { margin-top: 6px; font-size: 12.5px; font-weight: 800; color: #7c3aed; cursor: pointer; display: inline-block; }
   .tch-toggle:hover { text-decoration: underline; }
-  .tch-details { margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
-  .tch-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 7px 9px 8px; }
-  .tch-card-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-  .tch-card-head b { color: var(--ink); font-size: 12.5px; }
-  .tch-rank { font-size: 9.5px; font-weight: 800; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .tch-details { margin-top: 7px; display: flex; flex-direction: column; gap: 8px; }
+  .tch-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 9px 11px 10px; }
+  .tch-card-head { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
+  .tch-card-head b { color: var(--ink); font-size: 14.5px; }
+  .tch-rank { font-size: 11px; font-weight: 800; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
   .tch-rank.hi { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
   .tch-rank.mid { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
   .tch-rank.lo { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; }
-  .tch-card-row { display: flex; gap: 6px; font-size: 10.5px; line-height: 1.5; margin-top: 2px; }
+  .tch-card-row { display: flex; gap: 7px; font-size: 12.5px; line-height: 1.6; margin-top: 3px; }
   .tch-card-row .lbl { flex-shrink: 0; font-weight: 800; white-space: nowrap; }
   .tch-card-row .val { color: var(--ink); }
   .tch-card-row.str .lbl { color: #7c3aed; }
@@ -497,9 +497,9 @@ const TEACHER_NAMES = TEACHER_POOL.map(x => x.n);
 // 교사↔학생 분리 (해당 학생이 있는 반에 배치 시 경고)
 const TEACHER_SEP = [['오은규', '오은수'], ['김주영', '홍기진']];
 let APPS = []; // lineup_applications
-const TCH_COLLAPSED = new Set(); // 접힌 상태의 반 이름들 (기본: 전체 펼침)
+const TCH_EXPANDED = new Set(); // 펼쳐진 반 이름들 (기본: 전체 접힘)
 function toggleTchDetails(clsNm) {
-  TCH_COLLAPSED.has(clsNm) ? TCH_COLLAPSED.delete(clsNm) : TCH_COLLAPSED.add(clsNm);
+  TCH_EXPANDED.has(clsNm) ? TCH_EXPANDED.delete(clsNm) : TCH_EXPANDED.add(clsNm);
   render();
 }
 
@@ -1019,7 +1019,7 @@ function render() {
       return `<span class="tch ${warn ? 'warn' : ''}" title="${warn ? '⚠️ 분리 필요 학생과 같은 반' : ''}">👨‍🏫 ${esc(t)}${first.includes(t) ? ' ★' : ''}<button class="x" onclick="event.stopPropagation();unassignTeacher('${esc(t)}')">✕</button></span>`;
     }).join('');
     const tViol = (c.teachers || []).some(t => TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss)));
-    const tchCollapsed = TCH_COLLAPSED.has(c.nm);
+    const tchExpanded = TCH_EXPANDED.has(c.nm);
     const tchCards = (c.teachers || []).map(t => {
       const a = APPS.find(x => x.teacher === t);
       const rank = choiceRank(a, c.nm);
@@ -1041,7 +1041,7 @@ function render() {
         <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span><span class="move-here">여기로</span></div>
         <div class="stats">출석 <b>${st.att}</b> · 장결 <b>${st.la}</b> · 80%+ <b>${st.hi}</b> · 남 <b>${st.boys}</b> · 학년 <b>${st.g[1] || 0}/${st.g[2] || 0}/${st.g[3] || 0}</b></div>
         <div class="tch-row">${tchHtml}<button class="tch-add" onclick="event.stopPropagation();openTeacherPick('${esc(c.nm)}')">+ 교사</button></div>
-        ${tchCards ? `<div class="tch-toggle" onclick="event.stopPropagation();toggleTchDetails('${esc(c.nm)}')">${tchCollapsed ? '▸ 교사 상세 보기' : '▾ 교사 상세 접기'}</div>${!tchCollapsed ? `<div class="tch-details">${tchCards}</div>` : ''}` : ''}
+        ${tchCards ? `<div class="tch-toggle" onclick="event.stopPropagation();toggleTchDetails('${esc(c.nm)}')">${tchExpanded ? '▾ 교사 상세 접기' : '▸ 교사 상세 보기'}</div>${tchExpanded ? `<div class="tch-details">${tchCards}</div>` : ''}` : ''}
         ${viols.length ? `<span class="viol-tag">🚫 분리 위반 ${viols.length}건</span>` : ''}
       </div>
       <div class="col-body">${c.students.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
