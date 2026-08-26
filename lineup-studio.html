@@ -1079,7 +1079,8 @@ function sortStudents(names) {
     const sa = STUDENTS[a] || {}, sb = STUDENTS[b] || {};
     const laA = sa.la ? 1 : 0, laB = sb.la ? 1 : 0;
     if (laA !== laB) return laA - laB;
-    return (sa.g || 0) - (sb.g || 0);
+    if (laA) return (sb.rt || 0) - (sa.rt || 0); // 장결자: 출석률 높은 순
+    return (sa.g || 0) - (sb.g || 0); // 출석자: 학년순
   });
 }
 function stuCard(name, violNames) {
