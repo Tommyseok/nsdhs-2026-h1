@@ -34,6 +34,8 @@
   header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
 
   /* 툴바 */
+  .special-role-tag { margin-top: 12px; background: #fdf4ff; border: 1px solid #f0abfc; border-radius: 12px; padding: 9px 14px; font-size: 12.5px; font-weight: 700; color: #86198f; }
+  .special-role-tag span { font-weight: 600; color: #a21caf; }
   .studio-bar { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .studio-bar select { border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--ink); background: #fff; max-width: 260px; }
   .sbtn { border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
@@ -219,6 +221,7 @@
 
   <!-- ===== 편성 보드 ===== -->
   <div class="container" id="board-root" style="display:none">
+    <div id="special-roles-banner"></div>
     <div class="studio-bar" id="studio-bar">
       <select id="draft-sel" onchange="pickDraft(this.value)"></select>
       <span class="dirty-dot" title="저장되지 않은 변경"></span>
@@ -489,11 +492,16 @@ const TEACHER_POOL = [
   { n: '김광현', t: '역할 무관' }, { n: '송진우', t: '역할 무관' }, { n: '석준원', t: '역할 무관' },
   { n: '김희원', t: '역할 무관' }, { n: '이윤정', t: '역할 무관 · 고3 사양' }, { n: '양지현', t: '역할 무관' },
   { n: '이규리', t: '역할 무관' }, { n: '고은솔', t: '역할 무관 · 고3 사양' }, { n: '오은규', t: '역할 무관' },
-  { n: '박해니', t: '케어 선호' }, { n: '오덕현', t: '케어 선호' },
+  { n: '박해니', t: '케어 선호' },
   { n: '최희승', t: '섬김 확정' },
   // 박진호·송가원은 다음 텀 합류 — 이번 텀 배치 풀 제외
+  // 오덕현은 이번 텀 🎵 찬양팀 지도교사로 섬김 — 반 배정 풀에서 제외 (아래 SPECIAL_ROLES 참고)
 ];
+// 반 배정과 무관한 특별 사역 — 허브·보드 상단에 안내용으로만 표시
+const SPECIAL_ROLES = [{ n: '오덕현', role: '🎵 찬양팀 지도교사', note: '이번 텀 한정' }];
 const TEACHER_NAMES = TEACHER_POOL.map(x => x.n);
+// 케어 전담(담임 제외) — 이 반의 유일한 교사가 되어서는 안 됨
+const CARE_ONLY = new Set(TEACHER_POOL.filter(x => x.careOnly).map(x => x.n));
 // 교사↔학생 분리 (해당 학생이 있는 반에 배치 시 경고)
 const TEACHER_SEP = [['오은규', '오은수'], ['김주영', '홍기진']];
 let APPS = []; // lineup_applications
@@ -507,14 +515,16 @@ function toggleTchDetails(clsNm) {
    우선순위: ① 본인 1·2·3지망 → ② 상호 지명(서로를 동역자로 적은 경우) → ③ 강점/도움 보완·성향 궁합
    mutualPartner=55: 상대가 최소 2지망(55)은 받는 상황에서만 "함께"가 "각자 1지망"을 이김.
    상대가 무지망(0)이 되어야 함께할 수 있는 상황에서는 "각자 1지망"이 항상 이겨 ①이 ②를 압도하도록 함. */
-const T_SCORE = { c1: 100, c2: 55, c3: 25, mutualPartner: 55, oneWayPartner: 15, needMatch: 4, traitCombo: 6 };
+const T_SCORE = { c1: 100, c2: 55, c3: 25, mutualPartner: 55, oneWayPartner: 15, needMatch: 4, traitCombo: 6, onlyChoice: 12 };
 const TRAIT_COMPLEMENT = [['p_lead', 'p_support'], ['p_energy', 'p_steady'], ['p_listen', 'p_action']]; // 협업 성향 상호보완 궁합
 const COLLAB_CONSISTENT = ['c_role', 'c_together', 'c_freq', 'c_simple']; // 협업 방식 일치 시 소폭 가점
 function parsePartnerNames(s) { return (s || '').split(/[,·]+/).map(x => x.trim()).filter(Boolean); }
 function setOf(s) { return new Set((s || '').split(',').filter(Boolean)); }
+// 1지망끼리 정면 충돌(같은 반을 둘 다 1지망)할 때, 2·3지망 등 대안이 전혀 없는 사람(단일지망)을
+// 대안이 있는 사람보다 우선하기 위한 소폭 가점. c1-c2 격차(45)보다 훨씬 작아 지망 등급 순위는 절대 안 뒤집음.
 function choiceScore(app, cls) {
   if (!app) return 0;
-  if (app.choice1 === cls) return T_SCORE.c1;
+  if (app.choice1 === cls) return T_SCORE.c1 + ((!app.choice2 && !app.choice3) ? T_SCORE.onlyChoice : 0);
   if (app.choice2 === cls) return T_SCORE.c2;
   if (app.choice3 === cls) return T_SCORE.c3;
   return 0;
@@ -705,7 +715,13 @@ function setView(v) {
   document.getElementById('hub-root').style.display = v === 'hub' ? '' : 'none';
   document.getElementById('board-root').style.display = v === 'board' ? '' : 'none';
   if (v === 'hub') renderHub();
+  if (v === 'board') renderSpecialRoles();
   window.scrollTo({ top: 0 });
+}
+function renderSpecialRoles() {
+  const el = document.getElementById('special-roles-banner');
+  if (!el) return;
+  el.innerHTML = SPECIAL_ROLES.map(r => `<div class="special-role-tag">${r.role} — <b>${esc(r.n)}</b> <span>(${esc(r.note)}, 반 배정 대상 아님)</span></div>`).join('');
 }
 function applyUrl() { return location.origin + location.pathname.replace(/[^/]*$/, '') + 'lineup-apply.html'; }
 function copyApplyUrl() {
