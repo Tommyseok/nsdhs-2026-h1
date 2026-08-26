@@ -226,6 +226,14 @@ function classStats(students) {
   }
   return { total: students.length, att, la, hi, boys, g };
 }
+function sortStudents(names) {
+  return names.slice().sort((a, b) => {
+    const sa = STUDENTS[a] || {}, sb = STUDENTS[b] || {};
+    const laA = sa.la ? 1 : 0, laB = sb.la ? 1 : 0;
+    if (laA !== laB) return laA - laB;
+    return (sa.g || 0) - (sb.g || 0);
+  });
+}
 function stuCard(name) {
   const s = STUDENTS[name] || {};
   const rtCls = (s.rt || 0) >= 80 ? 'hi' : (s.rt || 0) >= 50 ? 'mid' : 'lo';
@@ -244,7 +252,7 @@ function classCol(c) {
       <div class="stats">출석 <b>${st.att}</b> · 장결 <b>${st.la}</b> · 80%+ <b>${st.hi}</b> · 남 <b>${st.boys}</b> · 학년 <b>${st.g[1] || 0}/${st.g[2] || 0}/${st.g[3] || 0}</b></div>
       <div class="tch-row">${tchHtml}</div>
     </div>
-    <div class="col-body">${c.students.map(stuCard).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
+    <div class="col-body">${sortStudents(c.students).map(stuCard).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
   </div>`;
 }
 function renderBoard(data) {

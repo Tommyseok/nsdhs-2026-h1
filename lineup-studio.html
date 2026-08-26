@@ -166,6 +166,7 @@
   .tch-card-row { display: flex; gap: 7px; font-size: 12.5px; line-height: 1.6; margin-top: 3px; }
   .tch-card-row .lbl { flex-shrink: 0; font-weight: 800; white-space: nowrap; }
   .tch-card-row .val { color: var(--ink); }
+  .tch-card-row.pref .lbl { color: #be185d; }
   .tch-card-row.str .lbl { color: #7c3aed; }
   .tch-card-row.need .lbl { color: #0891b2; }
   .tch-card-row.trait .lbl { color: #b45309; }
@@ -578,6 +579,8 @@ function choiceRank(app, cls) {
   if (app.choice1 === cls) return '1지망'; if (app.choice2 === cls) return '2지망'; if (app.choice3 === cls) return '3지망';
   return '무지망';
 }
+// 지망 목록에 없는 반에 배치된 경우, "무지망"(달성 실패처럼 보임) 대신 "이 배치는 의도된 지정 배치"임을 알리는 표시로 보여줌
+function rankLabel(rank) { return rank === '무지망' ? '지정 배치' : rank; }
 function partnerBonus(a, appA, b, appB) {
   const aWantsB = appA && parsePartnerNames(appA.partner).includes(b);
   const bWantsA = appB && parsePartnerNames(appB.partner).includes(a);
@@ -732,10 +735,10 @@ function showTeacherReport(appMap, failedUnits) {
   const rankBadge = { '1지망': 'ok', '2지망': 'ok', '3지망': 'rest', '무지망': 'talk' };
   const body = document.getElementById('tchreport-body');
   body.innerHTML = `
-    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">지망 달성: 1지망 <b>${rankCount['1지망']}</b> · 2지망 <b>${rankCount['2지망']}</b> · 3지망 <b>${rankCount['3지망']}</b> · 무지망 <b>${rankCount['무지망']}</b> (총 ${rows.length}명)</div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">지망 달성: 1지망 <b>${rankCount['1지망']}</b> · 2지망 <b>${rankCount['2지망']}</b> · 3지망 <b>${rankCount['3지망']}</b> · 지정 배치 <b>${rankCount['무지망']}</b> (총 ${rows.length}명)</div>
     <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>배치</th><th>지망</th><th>상호 지명</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 협업 성향</th></tr></thead>
     <tbody>${rows.map(r => { const a = appMap[r.teacher]; return `<tr><td style="font-weight:800;color:var(--ink);white-space:nowrap">${esc(r.teacher)}</td><td style="white-space:nowrap">${esc(r.cls)}</td>
-      <td><span class="st-tag st-${rankBadge[r.rank]}">${r.rank}</span></td>
+      <td><span class="st-tag st-${rankBadge[r.rank]}">${rankLabel(r.rank)}</span></td>
       <td>${r.mutualWith.length ? '🤝 ' + r.mutualWith.map(esc).join(', ') : ''}</td>
       <td>${a ? esc(traitNames(a.strengths)) : ''}</td>
       <td>${a ? esc(traitNames(a.needs)) : ''}</td>
@@ -1071,6 +1074,14 @@ function keepSplits() {
 }
 
 /* ===== 렌더 ===== */
+function sortStudents(names) {
+  return names.slice().sort((a, b) => {
+    const sa = STUDENTS[a] || {}, sb = STUDENTS[b] || {};
+    const laA = sa.la ? 1 : 0, laB = sb.la ? 1 : 0;
+    if (laA !== laB) return laA - laB;
+    return (sa.g || 0) - (sb.g || 0);
+  });
+}
 function stuCard(name, violNames) {
   const s = STUDENTS[name] || {};
   const rtCls = (s.rt || 0) >= 80 ? 'hi' : (s.rt || 0) >= 50 ? 'mid' : 'lo';
@@ -1097,8 +1108,7 @@ function render() {
     const stuSet = new Set(c.students);
     const tchHtml = (c.teachers || []).map(t => {
       const warn = TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss));
-      const { first } = appStars(c.nm);
-      return `<span class="tch ${warn ? 'warn' : ''}" title="${warn ? '⚠️ 분리 필요 학생과 같은 반' : ''}">👨‍🏫 ${esc(t)}${first.includes(t) ? ' ★' : ''}<button class="x" onclick="event.stopPropagation();unassignTeacher('${esc(t)}')">✕</button></span>`;
+      return `<span class="tch ${warn ? 'warn' : ''}" title="${warn ? '⚠️ 분리 필요 학생과 같은 반' : ''}">👨‍🏫 ${esc(t)}<button class="x" onclick="event.stopPropagation();unassignTeacher('${esc(t)}')">✕</button></span>`;
     }).join('');
     const tViol = (c.teachers || []).some(t => TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss)));
     const tchExpanded = TCH_EXPANDED.has(c.nm);
@@ -1106,13 +1116,16 @@ function render() {
       const a = APPS.find(x => x.teacher === t);
       const rank = choiceRank(a, c.nm);
       const rankCls = rank === '1지망' ? 'hi' : rank === '무지망' ? 'lo' : 'mid';
+      const choiceChain = a && (a.choice1 || a.choice2 || a.choice3)
+        ? [a.choice1, a.choice2, a.choice3].filter(Boolean).map(esc).join(' → ') : '';
       const rows = [
+        choiceChain ? `<div class="tch-card-row pref"><span class="lbl">🙋 지망</span><span class="val">${choiceChain}</span></div>` : '',
         a && a.strengths ? `<div class="tch-card-row str"><span class="lbl">💪 강점</span><span class="val">${esc(traitNames(a.strengths))}</span></div>` : '',
         a && a.needs ? `<div class="tch-card-row need"><span class="lbl">🙏 도움받고 싶어요</span><span class="val">${esc(traitNames(a.needs))}</span></div>` : '',
         a && a.partner_traits ? `<div class="tch-card-row trait"><span class="lbl">🤝 협업 성향</span><span class="val">${esc(traitNames(a.partner_traits))}</span></div>` : '',
       ].filter(Boolean).join('');
       return `<div class="tch-card">
-        <div class="tch-card-head"><b>${esc(t)}</b><span class="tch-rank ${rankCls}">${rank}</span></div>
+        <div class="tch-card-head"><b>${esc(t)}</b><span class="tch-rank ${rankCls}">${rankLabel(rank)}</span></div>
         ${rows || '<div class="tch-card-row"><span class="val" style="color:var(--muted)">지망 응답 없음</span></div>'}
       </div>`;
     }).join('');
@@ -1127,7 +1140,7 @@ function render() {
         ${tchCards ? `<div class="tch-toggle" onclick="event.stopPropagation();toggleTchDetails('${esc(c.nm)}')">${tchExpanded ? '▾ 교사 상세 접기' : '▸ 교사 상세 보기'}</div>${tchExpanded ? `<div class="tch-details">${tchCards}</div>` : ''}` : ''}
         ${viols.length ? `<span class="viol-tag">🚫 분리 위반 ${viols.length}건</span>` : ''}
       </div>
-      <div class="col-body">${c.students.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
+      <div class="col-body">${sortStudents(c.students).map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
     </div>` };
   });
   const grouped = {}; for (const id of FAMILY_ORDER) grouped[id] = [];
@@ -1148,7 +1161,7 @@ function render() {
     <div class="col-head" onclick="tapCol('${POOL}')">
       <div class="nm">📥 미배정 <span style="font-size:11px;color:var(--muted);font-weight:600">${poolSt.total}명</span><span class="move-here">여기로</span></div>
     </div>
-    <div class="col-body">${data().pool.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">없음</div>'}</div>
+    <div class="col-body">${sortStudents(data().pool).map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">없음</div>'}</div>
   </div></div>`;
   board.innerHTML = boardHtml;
   // 배너 (학생 분리 + 교사 하드제약)
