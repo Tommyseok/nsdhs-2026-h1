@@ -579,8 +579,8 @@ function choiceRank(app, cls) {
   if (app.choice1 === cls) return '1지망'; if (app.choice2 === cls) return '2지망'; if (app.choice3 === cls) return '3지망';
   return '무지망';
 }
-// 지망 목록에 없는 반에 배치된 경우, "무지망"(달성 실패처럼 보임) 대신 "이 배치는 의도된 지정 배치"임을 알리는 표시로 보여줌
-function rankLabel(rank) { return rank === '무지망' ? '지정 배치' : rank; }
+// 지망 목록에 없는 반에 배치된 경우, "무지망"(달성 실패처럼 보임) 대신 "이 배치는 의도된 학생지정 배치"임을 알리는 표시로 보여줌
+function rankLabel(rank) { return rank === '무지망' ? '학생지정 배치' : rank; }
 function partnerBonus(a, appA, b, appB) {
   const aWantsB = appA && parsePartnerNames(appA.partner).includes(b);
   const bWantsA = appB && parsePartnerNames(appB.partner).includes(a);
@@ -735,7 +735,7 @@ function showTeacherReport(appMap, failedUnits) {
   const rankBadge = { '1지망': 'ok', '2지망': 'ok', '3지망': 'rest', '무지망': 'talk' };
   const body = document.getElementById('tchreport-body');
   body.innerHTML = `
-    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">지망 달성: 1지망 <b>${rankCount['1지망']}</b> · 2지망 <b>${rankCount['2지망']}</b> · 3지망 <b>${rankCount['3지망']}</b> · 지정 배치 <b>${rankCount['무지망']}</b> (총 ${rows.length}명)</div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">지망 달성: 1지망 <b>${rankCount['1지망']}</b> · 2지망 <b>${rankCount['2지망']}</b> · 3지망 <b>${rankCount['3지망']}</b> · 학생지정 배치 <b>${rankCount['무지망']}</b> (총 ${rows.length}명)</div>
     <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>배치</th><th>지망</th><th>상호 지명</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 협업 성향</th></tr></thead>
     <tbody>${rows.map(r => { const a = appMap[r.teacher]; return `<tr><td style="font-weight:800;color:var(--ink);white-space:nowrap">${esc(r.teacher)}</td><td style="white-space:nowrap">${esc(r.cls)}</td>
       <td><span class="st-tag st-${rankBadge[r.rank]}">${rankLabel(r.rank)}</span></td>
