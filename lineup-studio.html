@@ -167,6 +167,16 @@
   .tch-card-row .lbl { flex-shrink: 0; font-weight: 800; white-space: nowrap; }
   .tch-card-row .val { color: var(--ink); }
   .tch-card-row.pref .lbl { color: #be185d; }
+  .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .match-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 14px; }
+  .match-head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
+  .match-head b { font-size: 14.5px; color: var(--ink); }
+  .match-want { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+  .match-list { display: flex; flex-direction: column; gap: 6px; }
+  .match-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; background: #f8fafc; border-radius: 8px; padding: 6px 9px; }
+  .match-row .mn { font-weight: 800; color: var(--ink); white-space: nowrap; }
+  .match-row .mp { color: #7c3aed; font-weight: 600; text-align: right; }
+  .match-empty { font-size: 12px; color: #cbd5e1; }
   .tch-card-row.str .lbl { color: #7c3aed; }
   .tch-card-row.need .lbl { color: #0891b2; }
   .tch-card-row.trait .lbl { color: #b45309; }
@@ -225,6 +235,7 @@
       <button onclick="setView('hub')" id="view-hub-btn">🗺 프로세스</button>
       <button onclick="setView('board')" id="view-board-btn">🧩 편성 보드</button>
       <button onclick="setView('apps')" id="view-apps-btn">🙋 지망 현황</button>
+      <button onclick="setView('match')" id="view-match-btn">🧬 성향 매칭</button>
       <button class="logout" onclick="logout()">로그아웃</button>
     </div>
   </header>
@@ -291,6 +302,15 @@
     <div class="hub-sub">선생님들이 제출한 반 지망·강점·도움·동역자·심방·학생 코멘트를 한눈에 확인합니다.</div>
   </div>
   <div id="apps-body"></div>
+</div>
+
+<!-- ===== 성향 매칭 분석 ===== -->
+<div class="container" id="match-root" style="display:none">
+  <div class="hub-title">
+    <h2>🧬 선생님 성향 매칭 분석 <span style="font-size:13px;color:var(--muted);font-weight:600">국장단만 열람</span></h2>
+    <div class="hub-sub">선생님이 원하는 동역자 성향과, 그 성향과 궁합이 좋은(상호보완) 다른 선생님을 계산해 보여줍니다. 배치 참고용이며 강제 규칙은 아닙니다.</div>
+  </div>
+  <div id="match-body"></div>
 </div>
 
 <!-- 자동 편성 모달 -->
@@ -736,7 +756,7 @@ function showTeacherReport(appMap, failedUnits) {
   const body = document.getElementById('tchreport-body');
   body.innerHTML = `
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">지망 달성: 1지망 <b>${rankCount['1지망']}</b> · 2지망 <b>${rankCount['2지망']}</b> · 3지망 <b>${rankCount['3지망']}</b> · 학생지정 배치 <b>${rankCount['무지망']}</b> (총 ${rows.length}명)</div>
-    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>배치</th><th>지망</th><th>상호 지명</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 협업 성향</th></tr></thead>
+    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>배치</th><th>지망</th><th>상호 지명</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 원하는 동역자</th></tr></thead>
     <tbody>${rows.map(r => { const a = appMap[r.teacher]; return `<tr><td style="font-weight:800;color:var(--ink);white-space:nowrap">${esc(r.teacher)}</td><td style="white-space:nowrap">${esc(r.cls)}</td>
       <td><span class="st-tag st-${rankBadge[r.rank]}">${rankLabel(r.rank)}</span></td>
       <td>${r.mutualWith.length ? '🤝 ' + r.mutualWith.map(esc).join(', ') : ''}</td>
@@ -762,9 +782,11 @@ function setView(v) {
   document.getElementById('hub-root').style.display = v === 'hub' ? '' : 'none';
   document.getElementById('board-root').style.display = v === 'board' ? '' : 'none';
   document.getElementById('apps-root').style.display = v === 'apps' ? '' : 'none';
+  document.getElementById('match-root').style.display = v === 'match' ? '' : 'none';
   if (v === 'hub') renderHub();
   if (v === 'board') renderSpecialRoles();
   if (v === 'apps') renderApps();
+  if (v === 'match') renderMatch();
   window.scrollTo({ top: 0 });
 }
 function renderSpecialRoles() {
@@ -858,6 +880,35 @@ const TRAIT_LBL = {
   word: '📖 말씀·GBS', one2one: '🤝 원투원', visit: '🏠 심방', parent: '👨‍👩‍👧 학부모', newbie: '🌱 새친구', pray: '🙏 기도', event: '🎉 행사기획', worship: '🎵 찬양', admin: '📋 행정',
 };
 function traitNames(csv) { return (csv || '').split(',').filter(Boolean).map(k => TRAIT_LBL[k] || k).join(' '); }
+function traitMatches(traitsA, traitsB) {
+  const aT = setOf(traitsA), bT = setOf(traitsB);
+  const out = [];
+  for (const [x, y] of TRAIT_COMPLEMENT) {
+    if (aT.has(x) && bT.has(y)) out.push([TRAIT_LBL[x], TRAIT_LBL[y]]);
+    if (aT.has(y) && bT.has(x)) out.push([TRAIT_LBL[y], TRAIT_LBL[x]]);
+  }
+  return out;
+}
+function renderMatch() {
+  const body = document.getElementById('match-body');
+  const withTraits = APPS.filter(a => a.partner_traits).sort((a, b) => a.teacher.localeCompare(b.teacher, 'ko'));
+  const legend = TRAIT_COMPLEMENT.map(([x, y]) => `${TRAIT_LBL[x]} ↔ ${TRAIT_LBL[y]}`).join(' · ');
+  const cards = withTraits.map(a => {
+    const matches = APPS.filter(b => b.teacher !== a.teacher && b.partner_traits)
+      .map(b => ({ teacher: b.teacher, pairs: traitMatches(a.partner_traits, b.partner_traits) }))
+      .filter(m => m.pairs.length)
+      .sort((x, y) => y.pairs.length - x.pairs.length);
+    return `<div class="match-card">
+      <div class="match-head"><b>${esc(a.teacher)}</b><span class="match-want">원하는 동역자: ${traitNames(a.partner_traits)}</span></div>
+      ${matches.length
+        ? `<div class="match-list">${matches.map(m => `<div class="match-row"><span class="mn">${esc(m.teacher)}</span><span class="mp">${m.pairs.map(([x, y]) => `${x}↔${y}`).join(', ')}</span></div>`).join('')}</div>`
+        : `<div class="match-empty">궁합이 맞는 선생님 없음(현재 제출 기준)</div>`}
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">궁합 기준(상호보완): ${legend}</div>
+    <div class="match-grid">${cards || '<div style="color:var(--muted)">아직 원하는 동역자 성향을 제출한 선생님이 없습니다</div>'}</div>`;
+}
 function renderApps() {
   const body = document.getElementById('apps-body');
   const submitted = new Set(APPS.map(a => a.teacher));
@@ -872,7 +923,7 @@ function renderApps() {
     <td style="white-space:nowrap">${esc(a.choice1 || '')}${a.choice2 ? ' → ' + esc(a.choice2) : ''}${a.choice3 ? ' → ' + esc(a.choice3) : ''}</td>
     <td>${traitNames(a.strengths)}</td>
     <td>${traitNames(a.needs)}</td>
-    <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">성향: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab_types ? '<br><span style="color:var(--muted)">방식: ' + traitNames(a.collab_types) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
+    <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">원하는 동역자: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab_types ? '<br><span style="color:var(--muted)">운영 방식: ' + traitNames(a.collab_types) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
     <td>${a.visit_avail ? traitNames(a.visit_avail) : ''}${a.visit_types ? '<br><span style="color:var(--muted)">' + traitNames(a.visit_types) + '</span>' : ''}${a.visit_etc ? '<br><span style="color:var(--muted)">기타: ' + esc(a.visit_etc) + '</span>' : ''}</td>
     <td>${esc(a.wish || '')}${a.wish && a.comment ? '<br>' : ''}${esc(a.comment || '')}</td></tr>`).join('');
   body.innerHTML = `
@@ -1123,7 +1174,7 @@ function render() {
         choiceChain ? `<div class="tch-card-row pref"><span class="lbl">🙋 지망</span><span class="val">${choiceChain}</span></div>` : '',
         a && a.strengths ? `<div class="tch-card-row str"><span class="lbl">💪 강점</span><span class="val">${esc(traitNames(a.strengths))}</span></div>` : '',
         a && a.needs ? `<div class="tch-card-row need"><span class="lbl">🙏 도움받고 싶어요</span><span class="val">${esc(traitNames(a.needs))}</span></div>` : '',
-        a && a.partner_traits ? `<div class="tch-card-row trait"><span class="lbl">🤝 협업 성향</span><span class="val">${esc(traitNames(a.partner_traits))}</span></div>` : '',
+        a && a.partner_traits ? `<div class="tch-card-row trait"><span class="lbl">🤝 원하는 동역자</span><span class="val">${esc(traitNames(a.partner_traits))}</span></div>` : '',
       ].filter(Boolean).join('');
       return `<div class="tch-card">
         <div class="tch-card-head"><b>${esc(t)}</b><span class="tch-rank ${rankCls}">${rankLabel(rank)}</span></div>
