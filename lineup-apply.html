@@ -94,6 +94,16 @@
   #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f172a; color: #fff; padding: 11px 20px; border-radius: 999px; font-size: 13.5px; font-weight: 700; z-index: 500; transition: transform .25s; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
   #toast.show { transform: translateX(-50%); }
 
+  /* 반배정 참고 메모 */
+  .vault-lock { text-align: center; padding: 14px 0; }
+  .vault-lock input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; width: 60%; min-width: 180px; display: inline-block; }
+  .vault-lock button { background: #7c3aed; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit; margin-left: 6px; }
+  .vault-err { color: #dc2626; font-size: 12px; min-height: 16px; margin-top: 8px; }
+  .placement-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-top: 8px; }
+  .placement-name { font-size: 13.5px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+  .placement-row { font-size: 13px; color: var(--body); line-height: 1.6; margin-top: 3px; }
+  .placement-src { font-size: 11px; color: var(--muted); font-weight: 700; margin-left: 4px; }
+
   @media (max-width: 640px) {
     body { font-size: 16px; }
     .cls .roster { font-size: 13px; }
@@ -191,6 +201,13 @@
         <span id="app-state" class="pending-tag">⏳ 아직 제출 전입니다</span>
       </div>
       <div style="margin-top:10px;font-size:12px;color:var(--muted)">마감 전까지 다시 제출하면 수정됩니다.</div>
+    </div>
+
+    <div class="sec">
+      <h2>🧭 반배정 참고 — 학생 특성 메모</h2>
+      <div class="lead">선생님들이 남겨주신 학생별 관찰을 반배정 논의에 참고하실 수 있도록 모아뒀습니다. (담임 지망 등 개인 의견은 제외, 성향·관계 관찰만)</div>
+      <div class="priv">🔒 암호화되어 저장되며, 교적부 코드를 입력하면 이 기기에서 열람할 수 있습니다.</div>
+      <div id="placement-body"></div>
     </div>
   </div>
 </div>
@@ -621,6 +638,80 @@ async function showApp() {
   renderClasses();
   const hasApp = await loadMine();
   if (!hasApp) await prefillFromSurvey();
+  await Vault.tryRestore();
+  renderPlacementNotes();
+}
+
+/* ===== 반배정 참고 메모 (Vault, 열람 전용) ===== */
+const Vault = (() => {
+  const SALT = 'nsdhs-vault-2026', ITER = 150000;
+  let key = null;
+  const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  async function derive(code) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: new TextEncoder().encode(SALT), iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  }
+  async function unlock(code) {
+    const k = await derive(code);
+    const r = await fetch(REST + '/student_vault?name=eq.__check__&select=cipher,iv', { headers: H });
+    const rows = r.ok ? await r.json() : [];
+    if (!rows.length) throw new Error('vault 미설정');
+    await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(rows[0].iv) }, k, unb64(rows[0].cipher));
+    key = k;
+    try { sessionStorage.setItem('vault_code', code); } catch (e) {}
+  }
+  async function tryRestore() {
+    let code = null; try { code = sessionStorage.getItem('vault_code'); } catch (e) {}
+    if (!code) return false;
+    try { await unlock(code); return true; } catch (e) { try { sessionStorage.removeItem('vault_code'); } catch (e2) {} return false; }
+  }
+  async function dec(cipher, iv) {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(iv) }, key, unb64(cipher));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+  return { unlock, tryRestore, dec, unlocked: () => !!key };
+})();
+async function renderPlacementNotes() {
+  const body = document.getElementById('placement-body');
+  if (!body) return;
+  if (!Vault.unlocked()) {
+    body.innerHTML = `
+      <div class="vault-lock">
+        <input type="password" id="placement-code" placeholder="🔑 교적부 코드" autocomplete="off">
+        <button onclick="unlockPlacement()">열람하기</button>
+        <div class="vault-err" id="placement-err"></div>
+      </div>`;
+    const inp = document.getElementById('placement-code');
+    if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') unlockPlacement(); });
+    return;
+  }
+  body.innerHTML = '<div style="font-size:12.5px;color:var(--muted)">불러오는 중...</div>';
+  try {
+    const r = await fetch(REST + '/student_notes?active=eq.true&select=*&order=name.asc', { headers: H });
+    const rows = r.ok ? await r.json() : [];
+    const byStudent = {};
+    for (const row of rows) {
+      try {
+        const o = await Vault.dec(row.cipher, row.iv);
+        if (o.t !== 'placement') continue;
+        (byStudent[row.name] = byStudent[row.name] || []).push({ m: o.m, author: row.author });
+      } catch (e) {}
+    }
+    const names = Object.keys(byStudent).sort((a, b) => a.localeCompare(b, 'ko'));
+    body.innerHTML = names.length ? names.map(n => `
+      <div class="placement-card">
+        <div class="placement-name">${esc(n)}</div>
+        ${byStudent[n].map(x => `<div class="placement-row">${esc(x.m)}<span class="placement-src">— ${esc(x.author || '')}</span></div>`).join('')}
+      </div>`).join('') : '<div style="font-size:13px;color:var(--muted)">아직 등록된 참고 메모가 없습니다.</div>';
+  } catch (e) { console.error(e); body.innerHTML = '<div style="color:#dc2626;font-size:13px">불러오기 실패 — 다시 시도해 주세요</div>'; }
+}
+async function unlockPlacement() {
+  const code = (document.getElementById('placement-code').value || '').trim();
+  const err = document.getElementById('placement-err');
+  if (!code) { err.textContent = '코드를 입력해 주세요'; return; }
+  err.textContent = '확인 중...';
+  try { await Vault.unlock(code); await renderPlacementNotes(); }
+  catch (e) { err.textContent = '❌ 코드가 올바르지 않습니다'; }
 }
 fillSelect();
 const savedPin = localStorage.getItem('access_pin');
