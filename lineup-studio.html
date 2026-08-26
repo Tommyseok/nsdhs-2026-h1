@@ -167,15 +167,18 @@
   .tch-card-row .lbl { flex-shrink: 0; font-weight: 800; white-space: nowrap; }
   .tch-card-row .val { color: var(--ink); }
   .tch-card-row.pref .lbl { color: #be185d; }
-  .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
   .match-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 14px; }
   .match-head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
   .match-head b { font-size: 14.5px; color: var(--ink); }
   .match-want { font-size: 11.5px; color: var(--muted); font-weight: 600; }
-  .match-list { display: flex; flex-direction: column; gap: 6px; }
-  .match-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; background: #f8fafc; border-radius: 8px; padding: 6px 9px; }
-  .match-row .mn { font-weight: 800; color: var(--ink); white-space: nowrap; }
-  .match-row .mp { color: #7c3aed; font-weight: 600; text-align: right; }
+  .match-list { display: flex; flex-direction: column; gap: 8px; }
+  .match-row { font-size: 12.5px; background: #f8fafc; border-radius: 8px; padding: 7px 10px; }
+  .match-row-head { margin-bottom: 3px; }
+  .match-row .mn { font-weight: 800; color: var(--ink); }
+  .match-line { display: flex; gap: 6px; align-items: flex-start; margin-top: 2px; line-height: 1.5; }
+  .match-line .mi { flex-shrink: 0; }
+  .match-line.need { color: #0891b2; font-weight: 600; }
   .match-empty { font-size: 12px; color: #cbd5e1; }
   .tch-card-row.str .lbl { color: #7c3aed; }
   .tch-card-row.need .lbl { color: #0891b2; }
@@ -308,7 +311,7 @@
 <div class="container" id="match-root" style="display:none">
   <div class="hub-title">
     <h2>🧬 선생님 성향 매칭 분석 <span style="font-size:13px;color:var(--muted);font-weight:600">국장단만 열람</span></h2>
-    <div class="hub-sub">선생님이 함께하고 싶은 동역자 성향과, 그 성향과 궁합이 좋은(상호보완) 다른 선생님을 계산해 보여줍니다. 배치 참고용이며 강제 규칙은 아닙니다.</div>
+    <div class="hub-sub">선생님별 강점·도움받고 싶은 부분과, 그 도움을 채워줄 수 있는 다른 선생님을 계산해 보여줍니다. 배치 참고용이며 강제 규칙은 아닙니다.</div>
   </div>
   <div id="match-body"></div>
 </div>
@@ -880,34 +883,42 @@ const TRAIT_LBL = {
   word: '📖 말씀·GBS', one2one: '🤝 원투원', visit: '🏠 심방', parent: '👨‍👩‍👧 학부모', newbie: '🌱 새친구', pray: '🙏 기도', event: '🎉 행사기획', worship: '🎵 찬양', admin: '📋 행정',
 };
 function traitNames(csv) { return (csv || '').split(',').filter(Boolean).map(k => TRAIT_LBL[k] || k).join(' '); }
-function traitMatches(traitsA, traitsB) {
-  const aT = setOf(traitsA), bT = setOf(traitsB);
-  const out = [];
-  for (const [x, y] of TRAIT_COMPLEMENT) {
-    if (aT.has(x) && bT.has(y)) out.push([TRAIT_LBL[x], TRAIT_LBL[y]]);
-    if (aT.has(y) && bT.has(x)) out.push([TRAIT_LBL[y], TRAIT_LBL[x]]);
-  }
-  return out;
+// a의 도움필요를 b의 강점이 채워주는 항목(bHelpsA), 반대로 a의 강점이 b의 도움필요를 채워주는 항목(aHelpsB)
+function needMatches(a, b) {
+  const aN = setOf(a.needs), bN = setOf(b.needs), aS = setOf(a.strengths), bS = setOf(b.strengths);
+  const bHelpsA = [...aN].filter(n => bS.has(n)).map(k => TRAIT_LBL[k] || k);
+  const aHelpsB = [...bN].filter(n => aS.has(n)).map(k => TRAIT_LBL[k] || k);
+  return { bHelpsA, aHelpsB };
 }
 function renderMatch() {
   const body = document.getElementById('match-body');
-  const withTraits = APPS.filter(a => a.partner_traits).sort((a, b) => a.teacher.localeCompare(b.teacher, 'ko'));
-  const legend = TRAIT_COMPLEMENT.map(([x, y]) => `${TRAIT_LBL[x]} ↔ ${TRAIT_LBL[y]}`).join(' · ');
-  const cards = withTraits.map(a => {
-    const matches = APPS.filter(b => b.teacher !== a.teacher && b.partner_traits)
-      .map(b => ({ teacher: b.teacher, pairs: traitMatches(a.partner_traits, b.partner_traits) }))
-      .filter(m => m.pairs.length)
-      .sort((x, y) => y.pairs.length - x.pairs.length);
+  const candidates = APPS.filter(a => a.partner_traits || a.strengths || a.needs).sort((a, b) => a.teacher.localeCompare(b.teacher, 'ko'));
+  const cards = candidates.map(a => {
+    const matches = APPS.filter(b => b.teacher !== a.teacher).map(b => {
+      const { bHelpsA, aHelpsB } = needMatches(a, b);
+      const score = bHelpsA.length + aHelpsB.length;
+      return { teacher: b.teacher, bHelpsA, aHelpsB, score };
+    }).filter(m => m.score > 0).sort((x, y) => y.score - x.score);
+    const rowsHtml = matches.map(m => {
+      const lines = [
+        m.bHelpsA.length ? `<div class="match-line need"><span class="mi">🙏💪</span>${esc(m.teacher)}의 강점이 내 도움필요(${m.bHelpsA.map(esc).join(', ')})를 채워줘요</div>` : '',
+        m.aHelpsB.length ? `<div class="match-line need"><span class="mi">💪🙏</span>내 강점이 ${esc(m.teacher)}의 도움필요(${m.aHelpsB.map(esc).join(', ')})를 채워줘요</div>` : '',
+      ].filter(Boolean).join('');
+      return `<div class="match-row"><div class="match-row-head"><span class="mn">${esc(m.teacher)}</span></div>${lines}</div>`;
+    }).join('');
     return `<div class="match-card">
-      <div class="match-head"><b>${esc(a.teacher)}</b><span class="match-want">함께하고 싶은 동역자: ${traitNames(a.partner_traits)}</span></div>
-      ${matches.length
-        ? `<div class="match-list">${matches.map(m => `<div class="match-row"><span class="mn">${esc(m.teacher)}</span><span class="mp">${m.pairs.map(([x, y]) => `${x}↔${y}`).join(', ')}</span></div>`).join('')}</div>`
-        : `<div class="match-empty">궁합이 맞는 선생님 없음(현재 제출 기준)</div>`}
+      <div class="match-head">
+        <b>${esc(a.teacher)}</b>
+        ${a.strengths ? `<span class="match-want">💪 강점: ${traitNames(a.strengths)}</span>` : ''}
+        ${a.needs ? `<span class="match-want">🙏 도움받고 싶어요: ${traitNames(a.needs)}</span>` : ''}
+        ${a.partner_traits ? `<span class="match-want">🤝 함께하고 싶은 동역자: ${traitNames(a.partner_traits)}</span>` : ''}
+      </div>
+      ${matches.length ? `<div class="match-list">${rowsHtml}</div>` : `<div class="match-empty">강점·도움이 맞아떨어지는 선생님 없음(현재 제출 기준)</div>`}
     </div>`;
   }).join('');
   body.innerHTML = `
-    <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">궁합 기준(상호보완): ${legend}</div>
-    <div class="match-grid">${cards || '<div style="color:var(--muted)">아직 함께하고 싶은 동역자 성향을 제출한 선생님이 없습니다</div>'}</div>`;
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">🙏💪 매칭 기준: 한쪽의 "도움받고 싶어요"를 다른쪽 "강점"이 채워주는 경우만 계산합니다. "함께하고 싶은 동역자"는 본인이 원하는 유형일 뿐 실제 성향을 뜻하지 않아 매칭 계산에는 포함하지 않고 정보로만 표시합니다.</div>
+    <div class="match-grid">${cards || '<div style="color:var(--muted)">아직 제출한 선생님이 없습니다</div>'}</div>`;
 }
 function renderApps() {
   const body = document.getElementById('apps-body');
