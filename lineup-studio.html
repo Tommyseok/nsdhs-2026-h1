@@ -530,6 +530,12 @@ function openPhoto(name) {
 }
 
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function josaEul(word) {
+  if (!word) return '를';
+  const code = word.charCodeAt(word.length - 1) - 0xAC00;
+  if (code < 0 || code > 11171) return '를';
+  return code % 28 === 0 ? '를' : '을';
+}
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
 function logAccess(teacher, page) {
   if (!teacher) return;
@@ -902,8 +908,8 @@ function renderMatch() {
     }).filter(m => m.score > 0).sort((x, y) => y.score - x.score);
     const rowsHtml = matches.map(m => {
       const lines = [
-        m.bHelpsA.length ? `<div class="match-line receive"><span class="mi">🙏💪</span>${esc(m.teacher)}의 강점이 내 도움필요(${m.bHelpsA.map(esc).join(', ')})를 채워줘요</div>` : '',
-        m.aHelpsB.length ? `<div class="match-line give"><span class="mi">💪🙏</span>내 강점이 ${esc(m.teacher)}의 도움필요(${m.aHelpsB.map(esc).join(', ')})를 채워줘요</div>` : '',
+        m.bHelpsA.length ? `<div class="match-line receive"><span class="mi">🙏💪</span>${esc(m.teacher)}의 강점(${m.bHelpsA.map(esc).join(', ')})이 나를 채워줘요</div>` : '',
+        m.aHelpsB.length ? `<div class="match-line give"><span class="mi">💪🙏</span>나의 강점(${m.aHelpsB.map(esc).join(', ')})이 ${esc(m.teacher)}${josaEul(m.teacher)} 도와줄 수 있어요</div>` : '',
       ].filter(Boolean).join('');
       return `<div class="match-row"><div class="match-row-head"><span class="mn">${esc(m.teacher)}</span></div>${lines}</div>`;
     }).join('');
