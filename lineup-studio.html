@@ -40,15 +40,19 @@
   .famgroup-banner .main { font-size: 17px; font-weight: 900; color: #92400e; }
   .famgroup-banner .main b { color: #b45309; }
   .famgroup-banner .sub { margin-top: 4px; font-size: 12px; font-weight: 600; color: #a16207; }
-  .fam-tag { font-size: 10px; font-weight: 800; border-radius: 999px; padding: 2px 8px; margin-left: 4px; white-space: nowrap; }
-  .col.fam-a { border-top: 4px solid #f472b6; }
-  .col.fam-b { border-top: 4px solid #60a5fa; }
-  .col.fam-c { border-top: 4px solid #34d399; }
-  .col.fam-d { border-top: 4px solid #a78bfa; }
-  .fam-tag.fam-a { background: #fce7f3; color: #be185d; }
-  .fam-tag.fam-b { background: #dbeafe; color: #1d4ed8; }
-  .fam-tag.fam-c { background: #d1fae5; color: #047857; }
-  .fam-tag.fam-d { background: #ede9fe; color: #6d28d9; }
+  .fam-group { border-radius: 20px; padding: 14px 14px 16px; margin-bottom: 16px; }
+  .fam-group.fam-a { background: rgba(244,114,182,.07); border: 2.5px solid rgba(244,114,182,.4); }
+  .fam-group.fam-b { background: rgba(96,165,250,.07); border: 2.5px solid rgba(96,165,250,.4); }
+  .fam-group.fam-c { background: rgba(52,211,153,.07); border: 2.5px solid rgba(52,211,153,.4); }
+  .fam-group.fam-d { background: rgba(167,139,250,.07); border: 2.5px solid rgba(167,139,250,.4); }
+  .fam-heading { font-size: 21px; font-weight: 900; margin: 2px 4px 12px; display: flex; align-items: baseline; gap: 10px; }
+  .fam-heading .fam-sub { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+  .fam-heading.fam-a { color: #be185d; }
+  .fam-heading.fam-b { color: #1d4ed8; }
+  .fam-heading.fam-c { color: #047857; }
+  .fam-heading.fam-d { color: #6d28d9; }
+  .fam-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 10px; align-items: start; }
+  .pool-section { margin-top: 4px; max-width: 320px; }
   .studio-bar { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .studio-bar select { border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--ink); background: #fff; max-width: 260px; }
   .sbtn { border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
@@ -74,7 +78,7 @@
   .info-banner.show { display: block; }
 
   /* 보드 */
-  .board { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 10px; align-items: start; }
+  .board { margin-top: 12px; }
   .col { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
   .col.viol { border-color: #fca5a5; }
   .col.droptarget { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,.18); }
@@ -187,11 +191,11 @@
 
   @media (max-width: 640px) {
     body { font-size: 15px; }
-    .board { grid-template-columns: 1fr 1fr; }
+    .fam-cards { grid-template-columns: 1fr 1fr; }
     .stu { font-size: 14px; }
     .cmd-bar input { font-size: 15px; }
   }
-  @media (max-width: 420px) { .board { grid-template-columns: 1fr; } }
+  @media (max-width: 420px) { .fam-cards { grid-template-columns: 1fr; } .pool-section { max-width: none; } }
 </style>
 </head>
 <body>
@@ -235,16 +239,14 @@
 
   <!-- ===== 편성 보드 ===== -->
   <div class="container" id="board-root" style="display:none">
-    <div id="special-roles-banner"></div>
-    <div class="famgroup-banner">
-      <div class="main">🏠 이번 텀은 <b>대가족</b>이 <b>2개 반 · 4명 교사</b>로 구성됩니다</div>
-      <div class="sub">1·2반 / 3·4반 / 5·6반 — 홀짝 두 반씩 한 대가족 · 고3은 4개 반 전체가 하나의 대가족</div>
-    </div>
     <div class="studio-bar" id="studio-bar">
       <select id="draft-sel" onchange="pickDraft(this.value)"></select>
       <span class="dirty-dot" title="저장되지 않은 변경"></span>
       <button class="sbtn primary" onclick="saveDraft(false)">💾 저장</button>
       <button class="sbtn" onclick="saveDraft(true)">📄 다른 이름으로</button>
+      <button class="sbtn" onclick="toggleStudioExtra()" id="studio-extra-toggle">▸ 라인업 기능 펼치기</button>
+    </div>
+    <div class="studio-bar" id="studio-extra" style="display:none">
       <button class="sbtn" onclick="undoMove()" id="undo-btn">↩️ 실행취소</button>
       <button class="sbtn" onclick="openConstraints()">🔗 제약 관리</button>
       <button class="sbtn" onclick="setView('apps')">🙋 지망 현황</button>
@@ -266,12 +268,17 @@
     <div class="warn-banner" id="warn-banner"></div>
     <div class="info-banner" id="info-banner"></div>
 
+    <div class="famgroup-banner">
+      <div class="main">🏠 이번 텀은 <b>대가족</b>이 <b>2개 반 · 4명 교사</b>로 구성됩니다</div>
+      <div class="sub">1·2반 / 3·4반 / 5·6반 — 홀짝 두 반씩 한 대가족 · 고3은 4개 반 전체가 하나의 대가족</div>
+    </div>
     <div class="board" id="board"></div>
 
     <div style="margin:18px 2px;font-size:11.5px;color:#94a3b8">
       카드 = 이름 · 학년/성별 · 출석%(2학기). 노란 카드 = 🤍 장결. 빨간 테두리 = 분리 제약 위반.
       학생 상세는 <a href="students.html" target="_blank" style="color:#7c3aed;font-weight:700">👤 학생 정보</a>에서.
     </div>
+    <div id="special-roles-banner"></div>
   </div>
 </div>
 
@@ -525,13 +532,22 @@ const FAMILIES = {
   '5반': 'c', '6반': 'c',
   '고3-1': 'd', '고3-2': 'd', '고3-3': 'd', '고3-4': 'd',
 };
-const FAMILY_LABEL = { a: '대가족A · 1·2반', b: '대가족B · 3·4반', c: '대가족C · 5·6반', d: '고3 대가족' };
+const FAMILY_LABEL = { a: '1·2반', b: '3·4반', c: '5·6반', d: '고3 전체 4개 반' };
+const FAMILY_NUM = { a: 1, b: 2, c: 3, d: 4 };
+const FAMILY_ORDER = ['a', 'b', 'c', 'd'];
 const TEACHER_NAMES = TEACHER_POOL.map(x => x.n);
 // 케어 전담(담임 제외) — 이 반의 유일한 교사가 되어서는 안 됨
 const CARE_ONLY = new Set(TEACHER_POOL.filter(x => x.careOnly).map(x => x.n));
 // 교사↔학생 분리 (해당 학생이 있는 반에 배치 시 경고)
 const TEACHER_SEP = [['오은규', '오은수'], ['김주영', '홍기진']];
 let APPS = []; // lineup_applications
+function toggleStudioExtra() {
+  const el = document.getElementById('studio-extra');
+  const btn = document.getElementById('studio-extra-toggle');
+  const open = el.style.display === 'none';
+  el.style.display = open ? '' : 'none';
+  btn.textContent = open ? '▾ 라인업 기능 접기' : '▸ 라인업 기능 펼치기';
+}
 const TCH_EXPANDED = new Set(); // 펼쳐진 반 이름들 (기본: 전체 접힘)
 function toggleTchDetails(clsNm) {
   TCH_EXPANDED.has(clsNm) ? TCH_EXPANDED.delete(clsNm) : TCH_EXPANDED.add(clsNm);
@@ -1079,28 +1095,40 @@ function render() {
       </div>`;
     }).join('');
     const fam = FAMILIES[c.nm];
-    return `<div class="col ${viols.length || tViol ? 'viol' : ''}${fam ? ' fam-' + fam : ''}" data-target="${esc(c.nm)}"
+    return { fam, html: `<div class="col ${viols.length || tViol ? 'viol' : ''}" data-target="${esc(c.nm)}"
       ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${esc(c.nm)}')">
       <div class="col-head" onclick="tapCol('${esc(c.nm)}')">
         <button class="col-del" onclick="event.stopPropagation();removeClass('${esc(c.nm)}')" title="빈 반 삭제">✕</button>
-        <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span>${fam ? `<span class="fam-tag fam-${fam}">🏠 ${esc(FAMILY_LABEL[fam])}</span>` : ''}<span class="move-here">여기로</span></div>
+        <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span><span class="move-here">여기로</span></div>
         <div class="stats">출석 <b>${st.att}</b> · 장결 <b>${st.la}</b> · 80%+ <b>${st.hi}</b> · 남 <b>${st.boys}</b> · 학년 <b>${st.g[1] || 0}/${st.g[2] || 0}/${st.g[3] || 0}</b></div>
         <div class="tch-row">${tchHtml}<button class="tch-add" onclick="event.stopPropagation();openTeacherPick('${esc(c.nm)}')">+ 교사</button></div>
         ${tchCards ? `<div class="tch-toggle" onclick="event.stopPropagation();toggleTchDetails('${esc(c.nm)}')">${tchExpanded ? '▾ 교사 상세 접기' : '▸ 교사 상세 보기'}</div>${tchExpanded ? `<div class="tch-details">${tchCards}</div>` : ''}` : ''}
         ${viols.length ? `<span class="viol-tag">🚫 분리 위반 ${viols.length}건</span>` : ''}
       </div>
       <div class="col-body">${c.students.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
-    </div>`;
+    </div>` };
   });
+  const grouped = {}; for (const id of FAMILY_ORDER) grouped[id] = [];
+  const ungrouped = [];
+  for (const col of cols) { if (col.fam) grouped[col.fam].push(col.html); else ungrouped.push(col.html); }
+  let boardHtml = '';
+  for (const id of FAMILY_ORDER) {
+    if (!grouped[id].length) continue;
+    boardHtml += `<div class="fam-group fam-${id}">
+      <div class="fam-heading fam-${id}">🏠 대가족 ${FAMILY_NUM[id]} <span class="fam-sub">${esc(FAMILY_LABEL[id])}</span></div>
+      <div class="fam-cards">${grouped[id].join('')}</div>
+    </div>`;
+  }
+  if (ungrouped.length) boardHtml += `<div class="fam-cards" style="margin-top:4px">${ungrouped.join('')}</div>`;
   const poolSt = classStats(data().pool);
-  cols.push(`<div class="col pool-col" data-target="${POOL}"
+  boardHtml += `<div class="pool-section"><div class="col pool-col" data-target="${POOL}"
     ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${POOL}')">
     <div class="col-head" onclick="tapCol('${POOL}')">
       <div class="nm">📥 미배정 <span style="font-size:11px;color:var(--muted);font-weight:600">${poolSt.total}명</span><span class="move-here">여기로</span></div>
     </div>
     <div class="col-body">${data().pool.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">없음</div>'}</div>
-  </div>`);
-  board.innerHTML = cols.join('');
+  </div></div>`;
+  board.innerHTML = boardHtml;
   // 배너 (학생 분리 + 교사 하드제약)
   const wb = document.getElementById('warn-banner');
   const tv = teacherViols();
