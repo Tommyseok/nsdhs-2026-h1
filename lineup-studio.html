@@ -36,6 +36,19 @@
   /* 툴바 */
   .special-role-tag { margin-top: 12px; background: #fdf4ff; border: 1px solid #f0abfc; border-radius: 12px; padding: 9px 14px; font-size: 12.5px; font-weight: 700; color: #86198f; }
   .special-role-tag span { font-weight: 600; color: #a21caf; }
+  .famgroup-banner { margin-top: 12px; background: linear-gradient(135deg,#fef3c7,#fde68a); border: 2px solid #f59e0b; border-radius: 14px; padding: 14px 18px; text-align: center; }
+  .famgroup-banner .main { font-size: 17px; font-weight: 900; color: #92400e; }
+  .famgroup-banner .main b { color: #b45309; }
+  .famgroup-banner .sub { margin-top: 4px; font-size: 12px; font-weight: 600; color: #a16207; }
+  .fam-tag { font-size: 10px; font-weight: 800; border-radius: 999px; padding: 2px 8px; margin-left: 4px; white-space: nowrap; }
+  .col.fam-a { border-top: 4px solid #f472b6; }
+  .col.fam-b { border-top: 4px solid #60a5fa; }
+  .col.fam-c { border-top: 4px solid #34d399; }
+  .col.fam-d { border-top: 4px solid #a78bfa; }
+  .fam-tag.fam-a { background: #fce7f3; color: #be185d; }
+  .fam-tag.fam-b { background: #dbeafe; color: #1d4ed8; }
+  .fam-tag.fam-c { background: #d1fae5; color: #047857; }
+  .fam-tag.fam-d { background: #ede9fe; color: #6d28d9; }
   .studio-bar { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .studio-bar select { border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--ink); background: #fff; max-width: 260px; }
   .sbtn { border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
@@ -206,6 +219,7 @@
       <span class="sp"></span>
       <button onclick="setView('hub')" id="view-hub-btn">🗺 프로세스</button>
       <button onclick="setView('board')" id="view-board-btn">🧩 편성 보드</button>
+      <button onclick="setView('apps')" id="view-apps-btn">🙋 지망 현황</button>
       <button class="logout" onclick="logout()">로그아웃</button>
     </div>
   </header>
@@ -222,6 +236,10 @@
   <!-- ===== 편성 보드 ===== -->
   <div class="container" id="board-root" style="display:none">
     <div id="special-roles-banner"></div>
+    <div class="famgroup-banner">
+      <div class="main">🏠 이번 텀은 <b>대가족</b>이 <b>2개 반 · 4명 교사</b>로 구성됩니다</div>
+      <div class="sub">1·2반 / 3·4반 / 5·6반 — 홀짝 두 반씩 한 대가족 · 고3은 4개 반 전체가 하나의 대가족</div>
+    </div>
     <div class="studio-bar" id="studio-bar">
       <select id="draft-sel" onchange="pickDraft(this.value)"></select>
       <span class="dirty-dot" title="저장되지 않은 변경"></span>
@@ -229,7 +247,7 @@
       <button class="sbtn" onclick="saveDraft(true)">📄 다른 이름으로</button>
       <button class="sbtn" onclick="undoMove()" id="undo-btn">↩️ 실행취소</button>
       <button class="sbtn" onclick="openConstraints()">🔗 제약 관리</button>
-      <button class="sbtn" onclick="openApps()">🙋 지망 현황</button>
+      <button class="sbtn" onclick="setView('apps')">🙋 지망 현황</button>
       <button class="sbtn" onclick="openAuto()">⚙️ 자동 편성</button>
       <button class="sbtn primary" onclick="confirmAutoAssignTeachers()">👨‍🏫 교사 자동배치</button>
       <button class="sbtn" onclick="addClass()">➕ 반 추가</button>
@@ -255,6 +273,15 @@
       학생 상세는 <a href="students.html" target="_blank" style="color:#7c3aed;font-weight:700">👤 학생 정보</a>에서.
     </div>
   </div>
+</div>
+
+<!-- ===== 지망 현황 ===== -->
+<div class="container" id="apps-root" style="display:none">
+  <div class="hub-title">
+    <h2>🙋 교사 지망 현황 <span style="font-size:13px;color:var(--muted);font-weight:600">국장단만 열람</span></h2>
+    <div class="hub-sub">선생님들이 제출한 반 지망·강점·도움·동역자·심방·학생 코멘트를 한눈에 확인합니다.</div>
+  </div>
+  <div id="apps-body"></div>
 </div>
 
 <!-- 자동 편성 모달 -->
@@ -319,14 +346,6 @@
   </div>
 </div>
 
-<!-- 지망 현황 모달 (관리자) -->
-<div class="modal-ovl" id="apps-ovl">
-  <div class="modal" style="max-width:680px">
-    <h3>🙋 교사 지망 현황 <span style="font-size:11.5px;color:var(--muted);font-weight:600">국장단만 열람</span></h3>
-    <div id="apps-body"></div>
-    <div class="actions"><button class="sbtn primary" onclick="closeModal('apps-ovl')">닫기</button></div>
-  </div>
-</div>
 
 <div class="photo-ovl" id="photo-ovl" onclick="this.classList.remove('show')">
   <img src="" alt="">
@@ -499,6 +518,14 @@ const TEACHER_POOL = [
 ];
 // 반 배정과 무관한 특별 사역 — 허브·보드 상단에 안내용으로만 표시
 const SPECIAL_ROLES = [{ n: '오덕현', role: '🎵 찬양팀 지도교사', note: '이번 텀 한정' }];
+// 대가족: 고1·2 혼합반은 홀짝 두 반씩(1·2 / 3·4 / 5·6) 한 대가족, 고3은 전체 4반이 하나의 대가족
+const FAMILIES = {
+  '1반': 'a', '2반': 'a',
+  '3반': 'b', '4반': 'b',
+  '5반': 'c', '6반': 'c',
+  '고3-1': 'd', '고3-2': 'd', '고3-3': 'd', '고3-4': 'd',
+};
+const FAMILY_LABEL = { a: '대가족A · 1·2반', b: '대가족B · 3·4반', c: '대가족C · 5·6반', d: '고3 대가족' };
 const TEACHER_NAMES = TEACHER_POOL.map(x => x.n);
 // 케어 전담(담임 제외) — 이 반의 유일한 교사가 되어서는 안 됨
 const CARE_ONLY = new Set(TEACHER_POOL.filter(x => x.careOnly).map(x => x.n));
@@ -714,8 +741,10 @@ function setView(v) {
   VIEW = v;
   document.getElementById('hub-root').style.display = v === 'hub' ? '' : 'none';
   document.getElementById('board-root').style.display = v === 'board' ? '' : 'none';
+  document.getElementById('apps-root').style.display = v === 'apps' ? '' : 'none';
   if (v === 'hub') renderHub();
   if (v === 'board') renderSpecialRoles();
+  if (v === 'apps') renderApps();
   window.scrollTo({ top: 0 });
 }
 function renderSpecialRoles() {
@@ -740,9 +769,9 @@ function renderHub() {
     { n: '2', cls: 'done', badge: ['done', '✅ 완료'], t: '초기 학생 라인업 구성', d: '반 수·특별반·특수조건(분리/유지)을 입력해 학생 라인업을 만들었습니다. (필요 시 보드에서 계속 미세 조정 가능)',
       acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button> <button class="sbtn" onclick="setView('board');setTimeout(openAuto,100)">⚙️ 자동 편성 다시 실행</button>` },
     { n: '3·4', cls: 'done', badge: ['done', '✅ 완료'], t: '교사 지망 + 지원 정보 접수', d: `선생님들이 1~3지망 반과 강점·도움·동역자·맡고 싶은 학생·코멘트를 제출했습니다. <b>비공개(국장단만 열람)</b>.<br>최종 제출: <b>${appCnt}명</b> / 대상 ${TEACHER_POOL.length}명`,
-      acts: `<a class="sbtn" href="lineup-apply.html" target="_blank">↗ 지망 페이지 열기</a> <button class="sbtn primary" onclick="openApps()">🙋 지망 현황 보기</button>` },
+      acts: `<a class="sbtn" href="lineup-apply.html" target="_blank">↗ 지망 페이지 열기</a> <button class="sbtn primary" onclick="setView('apps')">🙋 지망 현황 보기</button>` },
     { n: '5', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '교사 배치', d: '지망·지원 정보를 참고해 반마다 교사를 배치합니다 (반 카드의 [+ 교사] 또는 명령 "이름 N반 배치"). 관리자 권한으로 언제든 조정.',
-      acts: `<button class="sbtn primary" onclick="setView('board')">👨‍🏫 보드에서 배치하기</button> <button class="sbtn" onclick="openApps()">🙋 지망 참고</button>` },
+      acts: `<button class="sbtn primary" onclick="setView('board')">👨‍🏫 보드에서 배치하기</button> <button class="sbtn" onclick="setView('apps')">🙋 지망 참고</button>` },
     { n: '6', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '학생 세밀 조정', d: '교사 배치까지 된 상태에서 학생을 드래그·명령으로 미세 조정합니다.',
       acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button>` },
     { n: '7', cls: 'future', badge: ['future', '⚪ 예정'], t: '최종 배포 · 새 텀 시작', d: '확정본을 기준으로 출석 입력·학생 정보 등 전체 시스템이 새 텀으로 전환됩니다. (보드의 [✅ 확정] 후 총무와 함께 반영 — 원클릭 배포 기능 예정)',
@@ -788,7 +817,7 @@ const TRAIT_LBL = {
   word: '📖 말씀·GBS', one2one: '🤝 원투원', visit: '🏠 심방', parent: '👨‍👩‍👧 학부모', newbie: '🌱 새친구', pray: '🙏 기도', event: '🎉 행사기획', worship: '🎵 찬양', admin: '📋 행정',
 };
 function traitNames(csv) { return (csv || '').split(',').filter(Boolean).map(k => TRAIT_LBL[k] || k).join(' '); }
-function openApps() {
+function renderApps() {
   const body = document.getElementById('apps-body');
   const submitted = new Set(APPS.map(a => a.teacher));
   const notYet = TEACHER_NAMES.filter(t => !submitted.has(t));
@@ -811,7 +840,6 @@ function openApps() {
     <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>지망</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 동역자·협업</th><th>🏠 심방</th><th>학생 · 코멘트</th></tr></thead>
     <tbody>${rows || '<tr><td colspan="7" style="color:var(--muted)">아직 제출이 없습니다</td></tr>'}</tbody></table></div>
     <div style="margin-top:8px;font-size:12px;color:var(--muted)">⏳ 미제출: ${notYet.map(esc).join(' · ') || '없음'}</div>`;
-  document.getElementById('apps-ovl').classList.add('show');
 }
 
 /* ===== 교사 배치 ===== */
@@ -873,7 +901,7 @@ async function loadDraftList(selectId) {
   const r = await fetch(REST + '/lineup_drafts?active=eq.true&select=id,name,status,updated_at,updated_by&order=updated_at.desc', { headers: H });
   const rows = r.ok ? await r.json() : [];
   const sel = document.getElementById('draft-sel');
-  sel.innerHTML = rows.map(d => `<option value="${d.id}">${d.status === 'final' ? '✅ ' : ''}${esc(d.name)} (${(d.updated_at || '').substring(5, 10)} ${esc(d.updated_by || '')})</option>`).join('');
+  sel.innerHTML = rows.map(d => `<option value="${d.id}">${d.status === 'final' ? '✅ ' : ''}${esc(d.name)} (${(d.updated_at || '').substring(5, 10)})</option>`).join('');
   if (selectId) sel.value = selectId;
   return rows;
 }
@@ -1050,11 +1078,12 @@ function render() {
         ${rows || '<div class="tch-card-row"><span class="val" style="color:var(--muted)">지망 응답 없음</span></div>'}
       </div>`;
     }).join('');
-    return `<div class="col ${viols.length || tViol ? 'viol' : ''}" data-target="${esc(c.nm)}"
+    const fam = FAMILIES[c.nm];
+    return `<div class="col ${viols.length || tViol ? 'viol' : ''}${fam ? ' fam-' + fam : ''}" data-target="${esc(c.nm)}"
       ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${esc(c.nm)}')">
       <div class="col-head" onclick="tapCol('${esc(c.nm)}')">
         <button class="col-del" onclick="event.stopPropagation();removeClass('${esc(c.nm)}')" title="빈 반 삭제">✕</button>
-        <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span><span class="move-here">여기로</span></div>
+        <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span>${fam ? `<span class="fam-tag fam-${fam}">🏠 ${esc(FAMILY_LABEL[fam])}</span>` : ''}<span class="move-here">여기로</span></div>
         <div class="stats">출석 <b>${st.att}</b> · 장결 <b>${st.la}</b> · 80%+ <b>${st.hi}</b> · 남 <b>${st.boys}</b> · 학년 <b>${st.g[1] || 0}/${st.g[2] || 0}/${st.g[3] || 0}</b></div>
         <div class="tch-row">${tchHtml}<button class="tch-add" onclick="event.stopPropagation();openTeacherPick('${esc(c.nm)}')">+ 교사</button></div>
         ${tchCards ? `<div class="tch-toggle" onclick="event.stopPropagation();toggleTchDetails('${esc(c.nm)}')">${tchExpanded ? '▾ 교사 상세 접기' : '▸ 교사 상세 보기'}</div>${tchExpanded ? `<div class="tch-details">${tchCards}</div>` : ''}` : ''}
@@ -1064,7 +1093,7 @@ function render() {
     </div>`;
   });
   const poolSt = classStats(data().pool);
-  cols.unshift(`<div class="col pool-col" data-target="${POOL}"
+  cols.push(`<div class="col pool-col" data-target="${POOL}"
     ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${POOL}')">
     <div class="col-head" onclick="tapCol('${POOL}')">
       <div class="nm">📥 미배정 <span style="font-size:11px;color:var(--muted);font-weight:600">${poolSt.total}명</span><span class="move-here">여기로</span></div>
