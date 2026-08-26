@@ -775,6 +775,13 @@ function copyApplyUrl() {
     () => showToast('🔗 지망 페이지 링크 복사됨 — 카톡에 붙여넣어 공유하세요'),
     () => { prompt('아래 링크를 복사하세요', url); });
 }
+function boardViewUrl() { return location.origin + location.pathname.replace(/[^/]*$/, '') + 'lineup-board.html'; }
+function copyBoardViewUrl() {
+  const url = boardViewUrl();
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
+    () => showToast('🔗 반 편성표 링크 복사됨 — 전체 교사에게 공유하세요 (읽기 전용, 확정본만 표시)'),
+    () => { prompt('아래 링크를 복사하세요', url); });
+}
 function renderHub() {
   const el = document.getElementById('hub-steps');
   if (!el) return;
@@ -788,8 +795,8 @@ function renderHub() {
       acts: `<a class="sbtn" href="lineup-apply.html" target="_blank">↗ 지망 페이지 열기</a> <button class="sbtn primary" onclick="setView('apps')">🙋 지망 현황 보기</button>` },
     { n: '5', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '교사 배치', d: '지망·지원 정보를 참고해 반마다 교사를 배치합니다 (반 카드의 [+ 교사] 또는 명령 "이름 N반 배치"). 관리자 권한으로 언제든 조정.',
       acts: `<button class="sbtn primary" onclick="setView('board')">👨‍🏫 보드에서 배치하기</button> <button class="sbtn" onclick="setView('apps')">🙋 지망 참고</button>` },
-    { n: '6', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '학생 세밀 조정', d: '교사 배치까지 된 상태에서 학생을 드래그·명령으로 미세 조정합니다.',
-      acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button>` },
+    { n: '6', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '학생 세밀 조정', d: '교사 배치까지 된 상태에서 학생을 드래그·명령으로 미세 조정합니다. 보드에서 [✅ 확정]하면 아래 링크로 전체 교사가 확정본을 볼 수 있습니다.',
+      acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button> <button class="sbtn" onclick="copyBoardViewUrl()">🔗 반 편성표 링크 복사 (전체 교사용)</button>` },
     { n: '7', cls: 'future', badge: ['future', '⚪ 예정'], t: '최종 배포 · 새 텀 시작', d: '확정본을 기준으로 출석 입력·학생 정보 등 전체 시스템이 새 텀으로 전환됩니다. (보드의 [✅ 확정] 후 총무와 함께 반영 — 원클릭 배포 기능 예정)',
       acts: `` },
   ];
