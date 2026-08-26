@@ -505,8 +505,9 @@ function toggleTchDetails(clsNm) {
 
 /* ═══ 교사 자동배치 알고리즘 ═══
    우선순위: ① 본인 1·2·3지망 → ② 상호 지명(서로를 동역자로 적은 경우) → ③ 강점/도움 보완·성향 궁합
-   가중치를 계층적으로 설계(①≫②≫③)해 순서를 지키되, ②·③이 근소한 지망 차이는 뒤집을 수 있게 함(예: 3지망 vs 무지망) */
-const T_SCORE = { c1: 100, c2: 55, c3: 25, mutualPartner: 40, oneWayPartner: 12, needMatch: 4, traitCombo: 6 };
+   mutualPartner=55: 상대가 최소 2지망(55)은 받는 상황에서만 "함께"가 "각자 1지망"을 이김.
+   상대가 무지망(0)이 되어야 함께할 수 있는 상황에서는 "각자 1지망"이 항상 이겨 ①이 ②를 압도하도록 함. */
+const T_SCORE = { c1: 100, c2: 55, c3: 25, mutualPartner: 55, oneWayPartner: 15, needMatch: 4, traitCombo: 6 };
 const TRAIT_COMPLEMENT = [['p_lead', 'p_support'], ['p_energy', 'p_steady'], ['p_listen', 'p_action']]; // 협업 성향 상호보완 궁합
 const COLLAB_CONSISTENT = ['c_role', 'c_together', 'c_freq', 'c_simple']; // 협업 방식 일치 시 소폭 가점
 function parsePartnerNames(s) { return (s || '').split(/[,·]+/).map(x => x.trim()).filter(Boolean); }
@@ -571,43 +572,6 @@ function autoAssignTeachers() {
   for (const c of classes) c.teachers = [];
   const remaining = {}; for (const c of classes) remaining[c.nm] = cap[c.nm];
 
-  // 1) 상호 지명 쌍을 먼저 단위(unit)로 묶기 — ② 우선순위를 배치 순서에도 반영
-  const used = new Set(), units = [];
-  for (const t of TEACHER_NAMES) {
-    if (used.has(t)) continue;
-    const app = appMap[t];
-    const names = app ? parsePartnerNames(app.partner) : [];
-    let paired = false;
-    for (const p of names) {
-      if (used.has(p) || p === t || !TEACHER_NAMES.includes(p)) continue;
-      if (isMutual(t, app, p, appMap[p])) { units.push({ members: [t, p], mutual: true }); used.add(t); used.add(p); paired = true; break; }
-    }
-    if (!paired) { units.push({ members: [t], mutual: false }); used.add(t); }
-  }
-  units.sort((a, b) => (b.mutual - a.mutual));
-
-  function unitScore(unit, cls) {
-    const [m1, m2] = unit.members, a1 = appMap[m1];
-    let score = choiceScore(a1, cls.nm);
-    if (m2) { const a2 = appMap[m2]; score += choiceScore(a2, cls.nm) + partnerBonus(m1, a1, m2, a2) + pairComplementScore(a1, a2); }
-    return score;
-  }
-  const failedUnits = [];
-  for (const unit of units) {
-    const need = unit.members.length;
-    let best = null;
-    for (const c of classes) {
-      if (remaining[c.nm] < need) continue;
-      if (!unit.members.every(m => teacherHardOk(m, c))) continue;
-      const sc = unitScore(unit, c);
-      if (!best || sc > best.score) best = { cls: c, score: sc };
-    }
-    if (!best) { failedUnits.push(unit.members); continue; }
-    best.cls.teachers.push(...unit.members);
-    remaining[best.cls.nm] -= need;
-  }
-
-  // 2) ③ 강점보완·성향 궁합까지 반영한 전체 점수를 스왑으로 개선 (①②를 해치지 않는 한도에서)
   function totalScore() {
     let s = 0;
     for (const c of classes) {
@@ -619,31 +583,79 @@ function autoAssignTeachers() {
     }
     return s;
   }
-  const mutualMembers = new Set(units.filter(u => u.mutual).map(u => u.members).flat());
-  let improved = true, guard = 0;
-  while (improved && guard++ < 300) {
-    improved = false;
-    outer:
-    for (const c1 of classes) for (const c2 of classes) {
-      if (c1 === c2) continue;
-      for (const t1 of c1.teachers.slice()) {
-        if (mutualMembers.has(t1)) continue;
-        for (const t2 of c2.teachers.slice()) {
-          if (mutualMembers.has(t2)) continue;
-          if (!teacherHardOk(t1, c2) || !teacherHardOk(t2, c1)) continue;
-          const before = totalScore();
-          c1.teachers = c1.teachers.filter(x => x !== t1).concat([t2]);
-          c2.teachers = c2.teachers.filter(x => x !== t2).concat([t1]);
-          if (totalScore() > before) { improved = true; break outer; }
-          c1.teachers = c1.teachers.filter(x => x !== t2).concat([t1]);
-          c2.teachers = c2.teachers.filter(x => x !== t1).concat([t2]);
+  function marginalScore(t, cls) {
+    const a = appMap[t];
+    let s = choiceScore(a, cls.nm);
+    for (const other of cls.teachers) s += partnerBonus(t, a, other, appMap[other]) + pairComplementScore(a, appMap[other]);
+    return s;
+  }
+  // 1) 개인 단위로 순서대로 배치 — 상호 지명이라도 강제로 묶지 않음 (①본인지망이 ②상호지명보다 먼저 반영되도록).
+  //    상호 지명이 있는 사람을 먼저 처리해 그 인연이 형성될 기회를 주되, 실제 배치는 marginalScore(①②③ 합산)가 결정.
+  const hasMutualSignal = t => { const a = appMap[t]; return !!(a && parsePartnerNames(a.partner).some(p => isMutual(t, a, p, appMap[p]))); };
+  const order = TEACHER_NAMES.slice().sort((a, b) => (hasMutualSignal(b) - hasMutualSignal(a)) || ((appMap[b] ? 1 : 0) - (appMap[a] ? 1 : 0)));
+  const failed = [];
+  for (const t of order) {
+    let best = null;
+    for (const c of classes) {
+      if (remaining[c.nm] <= 0) continue;
+      if (!teacherHardOk(t, c)) continue;
+      const sc = marginalScore(t, c);
+      if (!best || sc > best.score) best = { cls: c, score: sc };
+    }
+    if (!best) { failed.push([t]); continue; }
+    best.cls.teachers.push(t);
+    remaining[best.cls.nm]--;
+  }
+
+  // 2) 지역탐색 — 전원이 스왑 대상 (본인지망이 더 크면 상호지명 짝에서도 풀려나와야 하므로 제외하지 않음)
+  function individualSwapPass() {
+    let improved = true, any = false, guard = 0;
+    while (improved && guard++ < 300) {
+      improved = false;
+      outer:
+      for (const c1 of classes) for (const c2 of classes) {
+        if (c1 === c2) continue;
+        for (const t1 of c1.teachers.slice()) {
+          for (const t2 of c2.teachers.slice()) {
+            if (!teacherHardOk(t1, c2) || !teacherHardOk(t2, c1)) continue;
+            const before = totalScore();
+            c1.teachers = c1.teachers.filter(x => x !== t1).concat([t2]);
+            c2.teachers = c2.teachers.filter(x => x !== t2).concat([t1]);
+            if (totalScore() > before) { improved = true; any = true; break outer; }
+            c1.teachers = c1.teachers.filter(x => x !== t2).concat([t1]);
+            c2.teachers = c2.teachers.filter(x => x !== t1).concat([t2]);
+          }
         }
       }
     }
+    return any;
+  }
+  function blockSwapPass() {
+    let improved = true, any = false, guard = 0;
+    while (improved && guard++ < 200) {
+      improved = false;
+      outer2:
+      for (const c1 of classes) for (const c2 of classes) {
+        if (c1 === c2) continue;
+        if (c1.teachers.length === 0 || c1.teachers.length !== c2.teachers.length) continue;
+        if (!c1.teachers.every(t => teacherHardOk(t, c2)) || !c2.teachers.every(t => teacherHardOk(t, c1))) continue;
+        const before = totalScore();
+        const tmp = c1.teachers; c1.teachers = c2.teachers; c2.teachers = tmp;
+        if (totalScore() > before) { improved = true; any = true; break outer2; }
+        const tmp2 = c1.teachers; c1.teachers = c2.teachers; c2.teachers = tmp2;
+      }
+    }
+    return any;
+  }
+  let round = 0, keepGoing = true;
+  while (keepGoing && round++ < 20) {
+    const i1 = individualSwapPass();
+    const i2 = blockSwapPass();
+    keepGoing = i1 || i2;
   }
 
   markDirty(); render();
-  showTeacherReport(appMap, failedUnits);
+  showTeacherReport(appMap, failed);
 }
 function confirmAutoAssignTeachers() {
   if (!confirm('현재 반의 교사 배치를 모두 지우고, 지망·상호지명·강점보완 기준으로 새로 자동배치할까요?\n(실행취소 가능)')) return;
