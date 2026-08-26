@@ -181,6 +181,16 @@
   .match-line.receive { color: #0891b2; font-weight: 600; }
   .match-line.give { color: #b45309; font-weight: 600; }
   .match-empty { font-size: 12px; color: #cbd5e1; }
+  .stat-wrap { margin-top: 28px; padding-top: 18px; border-top: 2px solid #f1f5f9; }
+  .stat-heading { font-size: 17px; font-weight: 900; color: var(--ink); margin-bottom: 14px; }
+  .stat-section { margin-bottom: 20px; }
+  .stat-title { font-size: 13px; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+  .stat-sub { font-size: 11px; font-weight: 600; color: var(--muted); }
+  .stat-row { display: grid; grid-template-columns: 130px 1fr 40px; align-items: center; gap: 8px; font-size: 12px; margin-top: 5px; }
+  .stat-label { color: var(--ink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat-bar { background: #f1f5f9; border-radius: 999px; height: 10px; overflow: hidden; }
+  .stat-bar-fill { background: linear-gradient(90deg, #a78bfa, #7c3aed); height: 100%; border-radius: 999px; }
+  .stat-count { color: var(--muted); font-weight: 700; text-align: right; }
   .tch-card-row.str .lbl { color: #7c3aed; }
   .tch-card-row.need .lbl { color: #0891b2; }
   .tch-card-row.trait .lbl { color: #b45309; }
@@ -925,7 +935,31 @@ function renderMatch() {
   }).join('');
   body.innerHTML = `
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">🙏💪 매칭 기준: 한쪽의 "도움받고 싶어요"를 다른쪽 "강점"이 채워주는 경우만 계산합니다. "함께하고 싶은 동역자"는 본인이 원하는 유형일 뿐 실제 성향을 뜻하지 않아 매칭 계산에는 포함하지 않고 정보로만 표시합니다.</div>
-    <div class="match-grid">${cards || '<div style="color:var(--muted)">아직 제출한 선생님이 없습니다</div>'}</div>`;
+    <div class="match-grid">${cards || '<div style="color:var(--muted)">아직 제출한 선생님이 없습니다</div>'}</div>
+    <div class="stat-wrap">
+      <div class="stat-heading">📊 전체 통계</div>
+      ${statBars('strengths', '💪', '강점이라고 한 부분 분포')}
+      ${statBars('needs', '🙏', '도움받고 싶다고 한 부분 분포')}
+      ${statBars('partner_traits', '🤝', '함께하고 싶은 동역자 분포')}
+    </div>`;
+}
+function tallyField(field) {
+  const counts = {};
+  for (const a of APPS) for (const k of setOf(a[field])) counts[k] = (counts[k] || 0) + 1;
+  return Object.entries(counts).sort((x, y) => y[1] - x[1]);
+}
+function statBars(field, icon, title) {
+  const total = APPS.filter(a => a[field]).length;
+  const tally = tallyField(field);
+  if (!tally.length) return '';
+  const max = tally[0][1];
+  const rows = tally.map(([k, n]) => `
+    <div class="stat-row">
+      <span class="stat-label">${esc(TRAIT_LBL[k] || k)}</span>
+      <div class="stat-bar"><div class="stat-bar-fill" style="width:${Math.round(n / max * 100)}%"></div></div>
+      <span class="stat-count">${n}명</span>
+    </div>`).join('');
+  return `<div class="stat-section"><div class="stat-title">${icon} ${title} <span class="stat-sub">(${total}명 제출)</span></div>${rows}</div>`;
 }
 function renderApps() {
   const body = document.getElementById('apps-body');
