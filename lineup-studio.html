@@ -134,6 +134,9 @@
 
   /* ===== 교사 슬롯 ===== */
   .tch-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center; }
+  .tch-details { margin-top: 5px; font-size: 10.5px; color: var(--muted); line-height: 1.55; }
+  .tch-details b { color: var(--ink); }
+  .tch-detail-row { margin-top: 1px; }
   .tch { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 999px; padding: 2px 8px; }
   .tch.warn { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
   .tch .x { background: none; border: none; color: #a5b4fc; cursor: pointer; font-size: 10px; padding: 0; line-height: 1; }
@@ -688,10 +691,10 @@ function renderHub() {
   const steps = [
     { n: '1', cls: 'done', badge: ['done', '✅ 이번 텀 완료'], t: '선생님 현황 파악', d: '섬김 가능 여부 설문 — 21명 응답 완료 (이번 텀 배정 가능 17명 · 박진호/송가원은 다음 텀 합류).<br>다음 텀부터: 국장이 "OO년 OO번째 텀 섬김현황 파악"을 생성 → 공유 URL 발행 → 자동 집계 (예정)',
       acts: `<a class="sbtn" href="term3-results.html" target="_blank">📊 설문 결과 보기</a>` },
-    { n: '2', cls: 'now', badge: ['now', '🔵 진행 중'], t: '초기 학생 라인업 구성', d: '반 수·특별반·특수조건(분리/유지)을 입력해 학생 라인업을 만듭니다. 자동 편성 + 수동 조정.',
-      acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button> <button class="sbtn" onclick="setView('board');setTimeout(openAuto,100)">⚙️ 자동 편성</button>` },
-    { n: '3·4', cls: 'now', badge: ['now', '🔵 접수 중'], t: '교사 지망 + 지원 정보 접수', d: `선생님들이 1~3지망 반과 역할·동역자·맡고 싶은 학생·코멘트를 제출합니다. <b>비공개(국장단만 열람)</b>.<br>현재 제출: <b>${appCnt}명</b> / 대상 ${TEACHER_POOL.length}명`,
-      acts: `<button class="sbtn primary" onclick="copyApplyUrl()">🔗 지망 페이지 링크 복사</button> <a class="sbtn" href="lineup-apply.html" target="_blank">↗ 지망 페이지 열기</a> <button class="sbtn" onclick="openApps()">🙋 지망 현황 보기</button>` },
+    { n: '2', cls: 'done', badge: ['done', '✅ 완료'], t: '초기 학생 라인업 구성', d: '반 수·특별반·특수조건(분리/유지)을 입력해 학생 라인업을 만들었습니다. (필요 시 보드에서 계속 미세 조정 가능)',
+      acts: `<button class="sbtn primary" onclick="setView('board')">🧩 편성 보드 열기</button> <button class="sbtn" onclick="setView('board');setTimeout(openAuto,100)">⚙️ 자동 편성 다시 실행</button>` },
+    { n: '3·4', cls: 'done', badge: ['done', '✅ 완료'], t: '교사 지망 + 지원 정보 접수', d: `선생님들이 1~3지망 반과 강점·도움·동역자·맡고 싶은 학생·코멘트를 제출했습니다. <b>비공개(국장단만 열람)</b>.<br>최종 제출: <b>${appCnt}명</b> / 대상 ${TEACHER_POOL.length}명`,
+      acts: `<a class="sbtn" href="lineup-apply.html" target="_blank">↗ 지망 페이지 열기</a> <button class="sbtn primary" onclick="openApps()">🙋 지망 현황 보기</button>` },
     { n: '5', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '교사 배치', d: '지망·지원 정보를 참고해 반마다 교사를 배치합니다 (반 카드의 [+ 교사] 또는 명령 "이름 N반 배치"). 관리자 권한으로 언제든 조정.',
       acts: `<button class="sbtn primary" onclick="setView('board')">👨‍🏫 보드에서 배치하기</button> <button class="sbtn" onclick="openApps()">🙋 지망 참고</button>` },
     { n: '6', cls: 'now', badge: ['now', '🔵 진행 가능'], t: '학생 세밀 조정', d: '교사 배치까지 된 상태에서 학생을 드래그·명령으로 미세 조정합니다.',
@@ -986,6 +989,14 @@ function render() {
       return `<span class="tch ${warn ? 'warn' : ''}" title="${warn ? '⚠️ 분리 필요 학생과 같은 반' : ''}">👨‍🏫 ${esc(t)}${first.includes(t) ? ' ★' : ''}<button class="x" onclick="event.stopPropagation();unassignTeacher('${esc(t)}')">✕</button></span>`;
     }).join('');
     const tViol = (c.teachers || []).some(t => TEACHER_SEP.some(([tt, ss]) => tt === t && stuSet.has(ss)));
+    const tchDetails = (c.teachers || []).map(t => {
+      const a = APPS.find(x => x.teacher === t);
+      const parts = [];
+      if (a && a.strengths) parts.push('💪 ' + traitNames(a.strengths));
+      if (a && a.needs) parts.push('🙏 ' + traitNames(a.needs));
+      if (a && a.partner_traits) parts.push('🤝 ' + traitNames(a.partner_traits));
+      return `<div class="tch-detail-row"><b>${esc(t)}</b> — ${parts.length ? esc(parts.join(' · ')) : '지망 응답 없음'}</div>`;
+    }).join('');
     return `<div class="col ${viols.length || tViol ? 'viol' : ''}" data-target="${esc(c.nm)}"
       ondragover="event.preventDefault();this.classList.add('droptarget')" ondragleave="this.classList.remove('droptarget')" ondrop="dropOn(event,'${esc(c.nm)}')">
       <div class="col-head" onclick="tapCol('${esc(c.nm)}')">
@@ -993,6 +1004,7 @@ function render() {
         <div class="nm">${esc(c.nm)} <span style="font-size:11px;color:var(--muted);font-weight:600">${st.total}명</span><span class="move-here">여기로</span></div>
         <div class="stats">출석 <b>${st.att}</b> · 장결 <b>${st.la}</b> · 80%+ <b>${st.hi}</b> · 남 <b>${st.boys}</b> · 학년 <b>${st.g[1] || 0}/${st.g[2] || 0}/${st.g[3] || 0}</b></div>
         <div class="tch-row">${tchHtml}<button class="tch-add" onclick="event.stopPropagation();openTeacherPick('${esc(c.nm)}')">+ 교사</button></div>
+        ${tchDetails ? `<div class="tch-details">${tchDetails}</div>` : ''}
         ${viols.length ? `<span class="viol-tag">🚫 분리 위반 ${viols.length}건</span>` : ''}
       </div>
       <div class="col-body">${c.students.map(n => stuCard(n, violNameSet)).join('') || '<div style="font-size:11px;color:#cbd5e1;text-align:center;padding:6px">비어 있음</div>'}</div>
