@@ -308,7 +308,7 @@
 <div class="container" id="match-root" style="display:none">
   <div class="hub-title">
     <h2>🧬 선생님 성향 매칭 분석 <span style="font-size:13px;color:var(--muted);font-weight:600">국장단만 열람</span></h2>
-    <div class="hub-sub">선생님이 원하는 동역자 성향과, 그 성향과 궁합이 좋은(상호보완) 다른 선생님을 계산해 보여줍니다. 배치 참고용이며 강제 규칙은 아닙니다.</div>
+    <div class="hub-sub">선생님이 함께하고 싶은 동역자 성향과, 그 성향과 궁합이 좋은(상호보완) 다른 선생님을 계산해 보여줍니다. 배치 참고용이며 강제 규칙은 아닙니다.</div>
   </div>
   <div id="match-body"></div>
 </div>
@@ -756,7 +756,7 @@ function showTeacherReport(appMap, failedUnits) {
   const body = document.getElementById('tchreport-body');
   body.innerHTML = `
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">지망 달성: 1지망 <b>${rankCount['1지망']}</b> · 2지망 <b>${rankCount['2지망']}</b> · 3지망 <b>${rankCount['3지망']}</b> · 학생지정 배치 <b>${rankCount['무지망']}</b> (총 ${rows.length}명)</div>
-    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>배치</th><th>지망</th><th>상호 지명</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 원하는 동역자</th></tr></thead>
+    <div style="overflow-x:auto"><table class="app-table"><thead><tr><th>선생님</th><th>배치</th><th>지망</th><th>상호 지명</th><th>💪 강점</th><th>🙏 도움 필요</th><th>🤝 함께하고 싶은 동역자</th></tr></thead>
     <tbody>${rows.map(r => { const a = appMap[r.teacher]; return `<tr><td style="font-weight:800;color:var(--ink);white-space:nowrap">${esc(r.teacher)}</td><td style="white-space:nowrap">${esc(r.cls)}</td>
       <td><span class="st-tag st-${rankBadge[r.rank]}">${rankLabel(r.rank)}</span></td>
       <td>${r.mutualWith.length ? '🤝 ' + r.mutualWith.map(esc).join(', ') : ''}</td>
@@ -899,7 +899,7 @@ function renderMatch() {
       .filter(m => m.pairs.length)
       .sort((x, y) => y.pairs.length - x.pairs.length);
     return `<div class="match-card">
-      <div class="match-head"><b>${esc(a.teacher)}</b><span class="match-want">원하는 동역자: ${traitNames(a.partner_traits)}</span></div>
+      <div class="match-head"><b>${esc(a.teacher)}</b><span class="match-want">함께하고 싶은 동역자: ${traitNames(a.partner_traits)}</span></div>
       ${matches.length
         ? `<div class="match-list">${matches.map(m => `<div class="match-row"><span class="mn">${esc(m.teacher)}</span><span class="mp">${m.pairs.map(([x, y]) => `${x}↔${y}`).join(', ')}</span></div>`).join('')}</div>`
         : `<div class="match-empty">궁합이 맞는 선생님 없음(현재 제출 기준)</div>`}
@@ -907,7 +907,7 @@ function renderMatch() {
   }).join('');
   body.innerHTML = `
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">궁합 기준(상호보완): ${legend}</div>
-    <div class="match-grid">${cards || '<div style="color:var(--muted)">아직 원하는 동역자 성향을 제출한 선생님이 없습니다</div>'}</div>`;
+    <div class="match-grid">${cards || '<div style="color:var(--muted)">아직 함께하고 싶은 동역자 성향을 제출한 선생님이 없습니다</div>'}</div>`;
 }
 function renderApps() {
   const body = document.getElementById('apps-body');
@@ -923,7 +923,7 @@ function renderApps() {
     <td style="white-space:nowrap">${esc(a.choice1 || '')}${a.choice2 ? ' → ' + esc(a.choice2) : ''}${a.choice3 ? ' → ' + esc(a.choice3) : ''}</td>
     <td>${traitNames(a.strengths)}</td>
     <td>${traitNames(a.needs)}</td>
-    <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">원하는 동역자: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab_types ? '<br><span style="color:var(--muted)">운영 방식: ' + traitNames(a.collab_types) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
+    <td>${esc(a.partner || '')}${a.partner_traits ? '<br><span style="color:var(--muted)">함께하고 싶은 동역자: ' + traitNames(a.partner_traits) + '</span>' : ''}${a.collab_types ? '<br><span style="color:var(--muted)">운영 방식: ' + traitNames(a.collab_types) + '</span>' : ''}${a.collab ? '<br><span style="color:var(--muted)">' + esc(a.collab) + '</span>' : ''}</td>
     <td>${a.visit_avail ? traitNames(a.visit_avail) : ''}${a.visit_types ? '<br><span style="color:var(--muted)">' + traitNames(a.visit_types) + '</span>' : ''}${a.visit_etc ? '<br><span style="color:var(--muted)">기타: ' + esc(a.visit_etc) + '</span>' : ''}</td>
     <td>${esc(a.wish || '')}${a.wish && a.comment ? '<br>' : ''}${esc(a.comment || '')}</td></tr>`).join('');
   body.innerHTML = `
@@ -1174,7 +1174,7 @@ function render() {
         choiceChain ? `<div class="tch-card-row pref"><span class="lbl">🙋 지망</span><span class="val">${choiceChain}</span></div>` : '',
         a && a.strengths ? `<div class="tch-card-row str"><span class="lbl">💪 강점</span><span class="val">${esc(traitNames(a.strengths))}</span></div>` : '',
         a && a.needs ? `<div class="tch-card-row need"><span class="lbl">🙏 도움받고 싶어요</span><span class="val">${esc(traitNames(a.needs))}</span></div>` : '',
-        a && a.partner_traits ? `<div class="tch-card-row trait"><span class="lbl">🤝 원하는 동역자</span><span class="val">${esc(traitNames(a.partner_traits))}</span></div>` : '',
+        a && a.partner_traits ? `<div class="tch-card-row trait"><span class="lbl">🤝 함께하고 싶은 동역자</span><span class="val">${esc(traitNames(a.partner_traits))}</span></div>` : '',
       ].filter(Boolean).join('');
       return `<div class="tch-card">
         <div class="tch-card-head"><b>${esc(t)}</b><span class="tch-rank ${rankCls}">${rankLabel(rank)}</span></div>
