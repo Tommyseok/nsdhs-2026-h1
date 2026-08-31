@@ -13,19 +13,5 @@
     "urgent": "true/false (긴급)",
     "active": "true/false"
   },
-  "items": [
-    {
-      "id": "P001",
-      "date": "2026-06-06",
-      "type": "student",
-      "student": "오신영 목사님",
-      "cell": "",
-      "family": null,
-      "teacher": "",
-      "text": "목사님의 건강 회복을 위해 기도해 주세요!",
-      "share": true,
-      "urgent": false,
-      "active": true
-    }
-  ]
+  "items": []
 }

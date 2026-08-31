@@ -78,6 +78,15 @@
   .mlist td { vertical-align:top; }
   button.mini-del { background:rgba(239,68,68,.14); border:1px solid rgba(239,68,68,.35); color:#fca5a5; border-radius:7px; padding:4px 10px; font-size:11.5px; font-weight:700; cursor:pointer; font-family:inherit; }
   button.mini-del:hover { background:rgba(239,68,68,.25); }
+  button.mini-edit { background:rgba(167,139,250,.14); border:1px solid rgba(167,139,250,.35); color:#c4b5fd; border-radius:7px; padding:4px 10px; font-size:11.5px; font-weight:700; cursor:pointer; font-family:inherit; }
+  button.mini-edit:hover { background:rgba(167,139,250,.25); }
+  .mcards { display:flex; flex-direction:column; gap:8px; margin-bottom:4px; }
+  .mcard { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
+  .mcard-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .mcard-date { font-size:11.5px; color:var(--muted); white-space:nowrap; }
+  .mcard-actions { margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .mcard-vis { display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--muted); white-space:nowrap; cursor:pointer; }
+  .mcard-body { font-size:12.5px; color:#d8dee9; margin-top:6px; white-space:pre-wrap; word-break:break-word; }
   .muted-note { font-size:11.5px; color:var(--muted); margin-top:10px; }
   .week-pick { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
   .week-pick select { background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-family:inherit; font-size:13px; }
@@ -277,25 +286,34 @@ function enterApp(){
 
 /* ============ 렌더 ============ */
 let SEL_WEEK = ymd(sundayOf(new Date()));
+let LAST_NOTICES = [], LAST_SCHEDULE = [], LAST_PRAYERS = [], LAST_NAV = [];
+let EDIT_NOTICE = null, EDIT_PRAYER = null;
 async function renderAll(){
   const body=document.getElementById('admin-body');
   body.innerHTML='<div class="card"><span class="spin"></span><span class="loading">현황을 불러오는 중…</span></div>';
-  const [logs, att, photoSet, sbNotices, sbSchedule, sbPrayers] = await Promise.all([
+  const [logs, att, photoSet, sbNotices, sbSchedule, sbPrayers, sbNav] = await Promise.all([
     Hub.select('access_log?select=teacher,page,at&order=at.desc&limit=3000'),
     Hub.loadAttendance(),
     Photos.load(),
     Hub.select('notices?select=*&active=eq.true&order=date.desc'),
     Hub.select('schedule?select=*&active=eq.true&order=date.asc'),
     Hub.select('prayers?select=*&share=eq.true&active=eq.true&order=date.desc'),
+    Hub.select('nav_settings?select=*&order=key.asc'),
   ]);
+  LAST_NOTICES = sbNotices || []; LAST_SCHEDULE = sbSchedule || []; LAST_PRAYERS = sbPrayers || []; LAST_NAV = sbNav || [];
   body.innerHTML =
     sectionAccess(logs) +
     sectionAttendance(att) +
     sectionPhotos(photoSet) +
-    sectionManage(sbNotices, sbSchedule, sbPrayers);
+    sectionManage(LAST_NOTICES, LAST_SCHEDULE, LAST_PRAYERS) +
+    sectionNav(LAST_NAV);
   // 출석 주차 선택 이벤트
   const wk=document.getElementById('wk-sel');
   if(wk) wk.addEventListener('change', e=>{ SEL_WEEK=e.target.value; document.getElementById('att-body').innerHTML=attTable(window.__ATT||{}); });
+}
+function rerenderManage(){
+  const el = document.getElementById('manage-card');
+  if (el) el.outerHTML = sectionManage(LAST_NOTICES, LAST_SCHEDULE, LAST_PRAYERS);
 }
 
 /* 1) 접속 현황 — 지난 7일 기준 */
@@ -392,13 +410,17 @@ function sectionManage(notices, schedule, prayers){
   const studentOpts = ALL_CELLS.flatMap(c=>(CELL_STUDENTS[c]||[]).map(s=>s.name)).map(n=>`<option>${esc(n)}</option>`).join('');
   const row = (mainHtml, date, table, id) =>
     `<tr><td>${mainHtml}</td><td class="c" style="white-space:nowrap;color:var(--muted)">${esc(date||'')}</td><td class="r"><button class="mini-del" onclick="removeItem('${table}','${esc(id)}')">삭제</button></td></tr>`;
-  const noticeList = (notices||[]).map(n=>row(`${n.urgent?'🚨 ':''}<b>${esc(n.title||'')}</b><div style="color:var(--muted);font-size:12px;margin-top:2px;white-space:pre-wrap">${esc(n.body||'')}</div>`, n.date, 'notices', n.id)).join('') || '<tr><td colspan="3" class="loading">등록된 공지가 없습니다.</td></tr>';
   const schedList = (schedule||[]).map(s=>row(`<b>${esc(s.title||'')}</b>${s.note?` <span style="color:var(--muted);font-size:12px">· ${esc(s.note)}</span>`:''}`, s.date, 'schedule', s.id)).join('') || '<tr><td colspan="3" class="loading">등록된 일정이 없습니다.</td></tr>';
-  const prayerList = (prayers||[]).map(p=>row(`${p.urgent?'🚨 ':''}<b>${esc(p.student||'')}</b> <span style="color:var(--muted);font-size:12.5px">${esc(p.text||'')}</span>${p.teacher?` <span class="tag muted">${esc(p.teacher)}</span>`:''}`, p.date, 'prayers', p.id)).join('') || '<tr><td colspan="3" class="loading">전체 공유 기도제목이 없습니다.</td></tr>';
+
+  const noticeCards = (notices||[]).map(n => n.id === EDIT_NOTICE ? noticeEditCard(n) : noticeViewCard(n)).join('')
+    || '<div class="loading" style="padding:10px 0">등록된 공지가 없습니다.</div>';
+  const prayerCards = (prayers||[]).map(p => p.id === EDIT_PRAYER ? prayerEditCard(p) : prayerViewCard(p)).join('')
+    || '<div class="loading" style="padding:10px 0">전체 공유 학생상황·기도가 없습니다.</div>';
+
   return `
-  <div class="card">
+  <div class="card" id="manage-card">
     <h2>📢 공지 · 📅 일정 · 🙏 전체 공유 기도 — 직접 등록</h2>
-    <div class="sub">여기서 등록하면 <b>즉시 모든 선생님 Home 화면</b>에 반영됩니다 (GitHub 편집 불필요). 삭제는 화면에서 숨김 처리.</div>
+    <div class="sub">여기서 등록하면 <b>즉시 모든 선생님 Home 화면</b>에 반영됩니다 (GitHub 편집 불필요). "메인노출"을 끄면 삭제하지 않고 Home 화면에서만 숨길 수 있습니다.</div>
 
     <h3 class="mh">📢 공지사항</h3>
     <div class="mform">
@@ -407,7 +429,7 @@ function sectionManage(notices, schedule, prayers){
       <label class="mck"><input type="checkbox" id="nc-urgent"> 🚨 긴급(강조)</label>
       <button class="mpost" onclick="postNotice()">＋ 공지 등록</button>
     </div>
-    <table class="mlist"><tbody>${noticeList}</tbody></table>
+    <div class="mcards">${noticeCards}</div>
 
     <h3 class="mh">📅 고등부 일정</h3>
     <div class="mform">
@@ -426,18 +448,70 @@ function sectionManage(notices, schedule, prayers){
       <label class="mck"><input type="checkbox" id="pr-urgent"> 🚨 긴급</label>
       <button class="mpost" onclick="postPrayer()">＋ 기도 등록</button>
     </div>
-    <table class="mlist"><tbody>${prayerList}</tbody></table>
+    <div class="mcards">${prayerCards}</div>
 
     <div class="muted-note">고급: GitHub에서 직접 편집도 가능 — <a href="${GH}/notices.json" target="_blank" style="color:#c4b5fd">공지</a> · <a href="${GH}/schedule.json" target="_blank" style="color:#c4b5fd">일정</a> · <a href="ADMIN_GUIDE.md" target="_blank" style="color:#c4b5fd">가이드</a></div>
   </div>`;
 }
 
-/* 등록/삭제 핸들러 */
+function noticeViewCard(n){
+  return `<div class="mcard">
+    <div class="mcard-head">
+      ${n.urgent?'<span class="tag danger">🚨 긴급</span>':''}
+      <b>${esc(n.title||'')}</b>
+      <span class="mcard-date">${esc(n.date||'')} · ${esc(n.author||'')}</span>
+      <div class="mcard-actions">
+        <label class="mcard-vis"><input type="checkbox" ${n.show_home!==false?'checked':''} onchange="toggleNoticeHome('${esc(n.id)}',this.checked)"> 메인노출</label>
+        <button class="mini-edit" onclick="editNotice('${esc(n.id)}')">수정</button>
+        <button class="mini-del" onclick="removeItem('notices','${esc(n.id)}')">삭제</button>
+      </div>
+    </div>
+    ${n.body?`<div class="mcard-body">${esc(n.body)}</div>`:''}
+  </div>`;
+}
+function noticeEditCard(n){
+  return `<div class="mcard">
+    <div class="mform" style="margin-bottom:0">
+      <input id="en-title" value="${esc(n.title||'')}" placeholder="공지 제목">
+      <textarea id="en-body" placeholder="공지 내용">${esc(n.body||'')}</textarea>
+      <label class="mck"><input type="checkbox" id="en-urgent" ${n.urgent?'checked':''}> 🚨 긴급(강조)</label>
+      <button class="mpost" onclick="saveNoticeEdit('${esc(n.id)}')">저장</button>
+      <button class="mini-edit" onclick="cancelEditNotice()">취소</button>
+    </div>
+  </div>`;
+}
+function prayerViewCard(p){
+  return `<div class="mcard">
+    <div class="mcard-head">
+      ${p.urgent?'<span class="tag danger">🚨 긴급</span>':''}
+      <b>${esc(p.student||'')}</b>
+      <span class="mcard-date">${esc(p.date||'')}${p.teacher?` · ${esc(p.teacher)}`:''}</span>
+      <div class="mcard-actions">
+        <label class="mcard-vis"><input type="checkbox" ${p.share!==false?'checked':''} onchange="togglePrayerShare('${esc(p.id)}',this.checked)"> 메인노출</label>
+        <button class="mini-edit" onclick="editPrayer('${esc(p.id)}')">수정</button>
+        <button class="mini-del" onclick="removeItem('prayers','${esc(p.id)}')">삭제</button>
+      </div>
+    </div>
+    ${p.text?`<div class="mcard-body">${esc(p.text)}</div>`:''}
+  </div>`;
+}
+function prayerEditCard(p){
+  return `<div class="mcard">
+    <div class="mform" style="margin-bottom:0">
+      <textarea id="ep-text" placeholder="상황·기도 내용">${esc(p.text||'')}</textarea>
+      <label class="mck"><input type="checkbox" id="ep-urgent" ${p.urgent?'checked':''}> 🚨 긴급</label>
+      <button class="mpost" onclick="savePrayerEdit('${esc(p.id)}')">저장</button>
+      <button class="mini-edit" onclick="cancelEditPrayer()">취소</button>
+    </div>
+  </div>`;
+}
+
+/* 등록/수정/삭제/노출토글 핸들러 */
 function _v(id){ const el=document.getElementById(id); return el?(el.value||'').trim():''; }
 function _ck(id){ const el=document.getElementById(id); return !!(el&&el.checked); }
 async function postNotice(){
   const title=_v('nc-title'); if(!title){ alert('공지 제목을 입력해 주세요'); return; }
-  try{ await Hub.upsert('notices', {id:'N'+Date.now(), date:ymd(new Date()), author:MY.name, title, body:_v('nc-body'), urgent:_ck('nc-urgent'), active:true}); renderAll(); }
+  try{ await Hub.upsert('notices', {id:'N'+Date.now(), date:ymd(new Date()), author:MY.name, title, body:_v('nc-body'), urgent:_ck('nc-urgent'), active:true, show_home:true}); renderAll(); }
   catch(e){ alert('등록 실패: '+(e.message||e)); }
 }
 async function postSchedule(){
@@ -455,6 +529,53 @@ async function removeItem(table, id){
   if(!confirm('삭제(숨김)하시겠습니까?')) return;
   try{ await Hub.update(table, id, {active:false}); renderAll(); }
   catch(e){ alert('삭제 실패: '+(e.message||e)); }
+}
+function editNotice(id){ EDIT_NOTICE=id; rerenderManage(); }
+function cancelEditNotice(){ EDIT_NOTICE=null; rerenderManage(); }
+async function saveNoticeEdit(id){
+  const title=_v('en-title'); if(!title){ alert('공지 제목을 입력해 주세요'); return; }
+  try{ await Hub.update('notices', id, {title, body:_v('en-body'), urgent:_ck('en-urgent')}); EDIT_NOTICE=null; renderAll(); }
+  catch(e){ alert('수정 실패: '+(e.message||e)); }
+}
+async function toggleNoticeHome(id, checked){
+  try{ await Hub.update('notices', id, {show_home:checked}); renderAll(); }
+  catch(e){ alert('변경 실패: '+(e.message||e)); }
+}
+function editPrayer(id){ EDIT_PRAYER=id; rerenderManage(); }
+function cancelEditPrayer(){ EDIT_PRAYER=null; rerenderManage(); }
+async function savePrayerEdit(id){
+  const text=_v('ep-text'); if(!text){ alert('내용을 입력해 주세요'); return; }
+  try{ await Hub.update('prayers', id, {text, urgent:_ck('ep-urgent')}); EDIT_PRAYER=null; renderAll(); }
+  catch(e){ alert('수정 실패: '+(e.message||e)); }
+}
+async function togglePrayerShare(id, checked){
+  try{ await Hub.update('prayers', id, {share:checked}); renderAll(); }
+  catch(e){ alert('변경 실패: '+(e.message||e)); }
+}
+
+/* 5) 상단 메뉴(nav) on/off 관리 */
+function sectionNav(navRows){
+  const rows = navRows||[];
+  const items = rows.map(r => `<label class="mcard-vis" style="font-size:13px;padding:6px 0">
+      <input type="checkbox" ${r.enabled!==false?'checked':''} onchange="toggleNav('${esc(r.key)}',this.checked)"> ${esc(r.label||r.key)}
+    </label>`).join('');
+  return `
+  <div class="card">
+    <h2>🧭 상단 메뉴 관리</h2>
+    <div class="sub">체크를 끄면 <b>모든 선생님</b> 화면의 상단 메뉴에서 해당 항목이 즉시 사라집니다 (Home은 항상 노출).</div>
+    <div style="display:flex;flex-direction:column">${items || '<div class="loading">메뉴 설정을 불러오는 중…</div>'}</div>
+  </div>`;
+}
+async function toggleNav(key, checked){
+  try{
+    const res = await fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/nav_settings?key=eq.' + encodeURIComponent(key), {
+      method: 'PATCH',
+      headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg', 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ enabled: checked, updated_at: new Date().toISOString() })
+    });
+    if(!res.ok) throw new Error(res.status);
+    renderAll();
+  } catch(e){ alert('변경 실패: '+(e.message||e)); }
 }
 
 /* ============ 초기화 ============ */
@@ -483,15 +604,23 @@ fillSelect();
     ['attendance-overview.html', '📊 전체 출석현황', ''],
     ['photos.html', '📸 사진 등록', ''],
     ['outings.html', '🎒 아웃팅', ''],
+    ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
   ];
   const cur = location.pathname.split('/').pop() || 'dashboard.html';
   const nav = document.createElement('nav');
   nav.className = 'site-nav';
-  nav.innerHTML = ITEMS.map(it =>
-    it[0] === '__sep__'
-      ? '<span class="site-nav-sep" aria-hidden="true"></span>'
-      : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
-  ).join('');
+  function renderNav(disabled) {
+    nav.innerHTML = ITEMS.map(it =>
+      it[0] === '__sep__'
+        ? '<span class="site-nav-sep" aria-hidden="true"></span>'
+        : (disabled && disabled.has(it[0]) ? '' : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>')
+    ).join('');
+  }
+  renderNav(null);
+  fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/nav_settings?select=key&enabled=eq.false', { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg' } })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows) { const d = new Set((rows || []).map(function (r) { return r.key; })); if (d.size) renderNav(d); })
+    .catch(function () {});
   const style = document.createElement('style');
   style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
   document.head.appendChild(style);

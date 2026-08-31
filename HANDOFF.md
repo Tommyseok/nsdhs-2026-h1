@@ -1,9 +1,8 @@
 # 내수동 고등부 2학기 시스템 — 세션 핸드오프 문서
 
 > **새 Claude 세션에서 이 프로젝트를 이어 작업할 때 가장 먼저 읽을 통합 컨텍스트 문서**
-> 마지막 업데이트: 2026-08-31 (국장단 포털 council.html 추가 · GitHub push 완료)
-> 최신 커밋: `efc0454` (국장단 포털 council.html 추가 — 회의록/공지/투표)
-> 상세 기획·설계: project/active/council-portal/ (context·plan·tasks 3파일)
+> 마지막 업데이트: 2026-08-31 (공지·기도 수정/메인노출 토글 + 상단메뉴 on/off 관리 + 라인업 스튜디오 nav 추가)
+> 상세 기획·설계(국장단 포털): project/active/council-portal/ (context·plan·tasks 3파일)
 
 ---
 
@@ -44,7 +43,7 @@
 | Supabase URL | `https://hycwzggbgnimuuhporwf.supabase.co` |
 | Storage 버킷 | `student-photos` (public read, 2MB) · `outing-photos` (아웃팅 사진, public read, 3MB, jpeg/png/webp) |
 | anon 키 | 각 HTML의 `Photos`/`Hub`/`PrayerDB`/`OutingDB`/`logAccess` 헬퍼 안에 내장 (publishable anon 키 — 공개 정상). PIN 변경과 무관 |
-| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`, `schedule`, `outings`, `council_meetings`, `council_notices`, `council_polls`, `council_votes` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
+| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`(+`show_home` 컬럼), `schedule`, `outings`, `council_meetings`, `council_notices`, `council_polls`, `council_votes`, `nav_settings` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
 
 ---
 
@@ -62,12 +61,12 @@
 | `photos.html` | PIN + 본인 선택 | 📸 학생 사진 업로드 전용 (선생님=본인 셀, 관리자=전체) |
 | `outings.html` | PIN + 본인 선택 | 🎒 월간 아웃팅 기록 — 셀별 날짜·사진(여러 장)·텍스트. 게시=담임·부담임 본인 셀/관리자 전체, 열람=**전체 공개**(셀 필터) |
 | `council.html` | PIN + 본인 선택 | 🏛 국장단 포털 — 회의록(공개범위 국장단전용/전체공개)·공지(국장단 전용 채널)·투표(안건별 익명/기명, 마감 전 참여여부만·마감 후 집계공개). 작성=국장단(admin 7인), 열람·투표참여=전체 교사 |
-| `admin.html` | PIN + 관리자 본인 선택 | 👑 **관리자 페이지** — 접속(지난 7일)·출석누락·사진 현황 + **공지·일정·전체공유 기도 직접 등록**. admin 7명만 |
+| `admin.html` | PIN + 관리자 본인 선택 | 👑 **관리자 페이지** — 접속(지난 7일)·출석누락·사진 현황 + **공지·일정·전체공유 기도 등록/수정/삭제/메인노출 토글** + **🧭 상단 메뉴 on/off 관리**(nav_settings). admin 7명만 |
 | `assignments.html` | 공개 | 🌱 공개용 편성표 (학생·학부모) |
 | `assignments.pdf` | 공개 | 공개용 PDF (인쇄용) |
 
 모든 교사 페이지 상단에 **공통 네비 바**(site-nav, 각 페이지 `</body>` 직전 스크립트가 `<header>` 뒤에 주입) 자동 표시.
-순서: `🏠 Home · 📝 출석입력 · 🙏 학생상황·기도 · 👤 학생 정보 · 🏛 국장단 포털` │ `🗂 셀편성 · 🕸 관계도 · 📊 전체출석현황 · 📸 사진등록 · 🎒 아웃팅` (가운데 구분선 `.site-nav-sep` 로 2그룹). 공개용 `assignments.html` 은 제외. **네비 항목 추가/변경 시 12개 페이지(dashboard·attendance·attendance-overview·prayer·teachers·relations·photos·admin·students·outings·term3·term3-results, +신규 council)의 ITEMS 배열을 모두 수정** (각 페이지에 복제됨).
+순서: `🏠 Home · 📝 출석입력 · 🙏 학생상황·기도 · 👤 학생 정보 · 🏛 국장단 포털` │ `🗂 셀편성 · 🕸 관계도 · 📊 전체출석현황 · 📸 사진등록 · 🎒 아웃팅 · 🧩 라인업 스튜디오` (가운데 구분선 `.site-nav-sep` 로 2그룹). 공개용 `assignments.html` 은 제외. **네비 항목 추가/변경 시 13개 페이지(dashboard·attendance·attendance-overview·prayer·teachers·relations·photos·admin·students·outings·term3·term3-results·council)의 ITEMS 배열을 모두 수정** (각 페이지에 복제됨). Home(dashboard.html) 제외한 항목은 `nav_settings` 테이블(key=파일명, enabled)로 on/off 가능 — 각 페이지 nav 스크립트가 렌더 후 `enabled=eq.false`인 항목을 비동기로 숨김. admin.html "🧭 상단 메뉴 관리"에서 토글.
 
 기존 페이지:
 - `cells.html` — tombstone 페이지 (부담임 지원 폐지)
@@ -111,7 +110,9 @@
 - **`access_log`** (id, teacher, page, at) — 로그인/입장 시 1줄 기록(브라우저별 30분 쓰로틀, localStorage `lastlog_*`). admin.html 접속 현황·미접속 명단에 사용
 - **`attendance`** (cell, week, student, status, note, teacher, updated_at · PK=week+student) — **출석 공유 원본**. attendance.html 저장 시 내가 수정한 것만 upsert(`merge-duplicates`, DIRTY 추적으로 남의 입력 보호). dashboard/attendance-overview/attendance/admin 가 로드 시 병합(`Hub.loadAttendance`) → 전 선생님 공유
 - **`prayers`** (id, date, type, student, cell, family, teacher, text, share, urgent, active) — **기도제목 전체 공유 원본**. prayer.html에서 "전체 공유 ON" 토글 시 자동 upsert(`PrayerDB.upsert`), OFF/삭제 시 share=false/active=false. dashboard "전체 공유 기도제목" 카드·prayer "다같이" 뷰·admin이 `share=true&active=true` 로드. **GitHub JSON 복사·commit 수동 단계는 폐지**(data/prayers.json은 관리자 선택 채널로만 잔존, 둘 다 병합 표시)
-- **`notices`** (id, date, author, title, body, urgent, active) / **`schedule`** (id, date, title, note, active) — **공지·일정**. admin.html "직접 등록" 폼에서 `Hub.upsert`로 즉시 등록, 삭제는 `Hub.update`(PATCH active=false). dashboard가 data/{notices,schedule}.json + Supabase 병합 표시. (GitHub JSON 편집은 고급 옵션으로만 잔존)
+- **`notices`** (id, date, author, title, body, urgent, active, **show_home**) / **`schedule`** (id, date, title, note, active) — **공지·일정**. admin.html에서 등록/수정/삭제(`Hub.upsert`/`Hub.update`) + **`show_home` 토글**로 삭제 없이 Home 노출만 껐다 켤 수 있음(대시보드 쿼리에 `show_home=eq.true` 추가됨). dashboard가 data/{notices,schedule}.json + Supabase 병합 표시. (GitHub JSON 편집은 고급 옵션으로만 잔존)
+- **`nav_settings`** (key=파일명 PK, label, enabled, updated_at) — 상단 nav 항목 on/off. admin.html "🧭 상단 메뉴 관리"에서 토글 → 각 페이지 nav 스크립트가 `enabled=eq.false` 목록을 받아 즉시 숨김.
+- ⚠️ **`prayers`의 admin 관리 목록은 `share=eq.true` (이미 공유 중인 것만) 유지** — `active=eq.true`로만 필터링하면 다른 선생님이 비공유로 남긴 개인 기도까지 admin 화면에 노출되므로 절대 풀지 말 것.
 - **`outings`** (id, cell, date, text, photos jsonb=storage 키 배열, teacher, created_at, active) — **월간 아웃팅 기록**. `outings.html`에서 등록(사진은 `outing-photos` 버킷 업로드 후 키 배열 저장), 전체 공개 갤러리. 소프트 삭제(active=false). 사진 파일은 Storage `outing-photos`(public read, 3MB, anon SEL/INS/UPD, DEL 미허용 — 학생 사진과 동일)
 - 삭제·초기화는 Supabase `execute_sql`(truncate)로. 학기 말 데이터 정리 시 사용. ⚠️ Storage 객체는 직접 SQL 삭제 불가(보호 트리거) → Storage API(HTTP DELETE) 또는 대시보드 사용
 - 관리자가 직접 보려면: admin.html (접속·출석누락·사진·기도 현황 한 화면)
