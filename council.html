@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="내수동 경주자 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Runners 2026 · 국장단 포털</title>
+<style>
+  :root {
+    --bg: #0b0f17; --bg2: #111827; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh;
+  }
+  .container { max-width: 980px; margin: 0 auto; padding: 16px; }
+
+  /* ============== Gate ============== */
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .gate-card .lock { font-size: 48px; text-align: center; margin-bottom: 16px; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: var(--muted); text-align: center; }
+  .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 4px; }
+  .gate-card .gate-note { font-size: 11.5px; color: var(--muted); margin-top: 16px; padding: 10px 12px; background: rgba(255,255,255,.03); border-radius: 6px; border-left: 2px solid var(--accent); line-height: 1.6; }
+  .gate-card .gate-note strong { color: #c4b5fd; }
+
+  /* ============== Header ============== */
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header .greeting { flex: 1; min-width: 0; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  header h1 .my-badge { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
+  header h1 .my-admin { background: rgba(245,158,11,.2); color: #fcd34d; font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(245,158,11,.4); font-weight: 700; }
+  header .header-actions { display: flex; gap: 6px; }
+  header button, header a.btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; }
+  header button:hover, header a.btn:hover { background: rgba(255,255,255,.15); }
+  header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
+
+  .intro { margin-top: 18px; padding: 14px 16px; background: linear-gradient(135deg, rgba(167,139,250,.12) 0%, rgba(124,58,237,.08) 100%); border: 1px solid rgba(167,139,250,.35); border-radius: 12px; font-size: 13px; color: #ddd6fe; line-height: 1.6; }
+  .intro strong { color: #c4b5fd; }
+
+  /* ============== Tabs ============== */
+  .tabs { display: flex; gap: 6px; margin-top: 18px; overflow-x: auto; }
+  .tab-btn { flex: 0 0 auto; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); color: #cbd5e1; border-radius: 999px; padding: 9px 18px; font-size: 13.5px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .tab-btn.active { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; border-color: #a78bfa; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ============== Form card ============== */
+  .post-card { margin-top: 18px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 16px; }
+  .post-card h2 { margin: 0 0 14px; font-size: 16px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; }
+  .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+  .field { flex: 1; min-width: 150px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 5px; }
+  .field input, .field select, .field textarea { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; }
+  .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .checkline { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #d8dee9; font-weight: 700; padding: 8px 0; }
+  .attendee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; margin-top: 6px; max-height: 180px; overflow-y: auto; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+  .attendee-grid label { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #d8dee9; font-weight: 600; }
+  .opt-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .opt-row input { flex: 1; }
+  .opt-row button { background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.35); color: #fca5a5; border-radius: 8px; padding: 0 12px; cursor: pointer; font-family: inherit; }
+  .add-opt { background: rgba(167,139,250,.15); border: 1px dashed var(--accent); color: #c4b5fd; border-radius: 8px; padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+  .save-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .save-btn { background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .save-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .save-state { font-size: 12.5px; color: var(--muted); }
+  .save-state.ok { color: var(--ok); } .save-state.err { color: #fca5a5; }
+
+  /* ============== Lists ============== */
+  .list-head { margin-top: 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .list-head h2 { margin: 0; font-size: 16px; color: #f1f5f9; }
+  #meeting-list, #notice-list, #poll-list { margin-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .item-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .ic-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 6px; }
+  .ic-title { font-size: 15px; font-weight: 800; color: #f1f5f9; }
+  .ic-date { font-size: 12.5px; color: var(--muted); }
+  .ic-badge { font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; border: 1px solid; }
+  .badge-council { background: rgba(245,158,11,.18); color: #fcd34d; border-color: rgba(245,158,11,.4); }
+  .badge-all { background: rgba(16,185,129,.18); color: #6ee7b7; border-color: rgba(16,185,129,.4); }
+  .badge-urgent { background: rgba(239,68,68,.18); color: #fca5a5; border-color: rgba(239,68,68,.4); }
+  .badge-closed { background: rgba(148,163,184,.18); color: #cbd5e1; border-color: rgba(148,163,184,.4); }
+  .badge-open { background: rgba(167,139,250,.18); color: #c4b5fd; border-color: rgba(167,139,250,.4); }
+  .ic-del { margin-left: auto; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .ic-del:hover { background: rgba(239,68,68,.25); }
+  .ic-author { font-size: 12px; color: var(--muted); }
+  .ic-body { font-size: 13.5px; color: #d8dee9; line-height: 1.65; margin: 8px 0 4px; white-space: pre-wrap; word-break: break-word; }
+  .ic-attendees { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+  .ic-attendees span { font-size: 11.5px; background: rgba(255,255,255,.06); color: #cbd5e1; padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(255,255,255,.1); }
+
+  /* ============== Poll ============== */
+  .poll-opt { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer; }
+  .poll-opt:hover { border-color: var(--accent); }
+  .poll-opt input { accent-color: var(--accent); }
+  .poll-opt.mine { border-color: var(--accent); background: rgba(167,139,250,.08); }
+  .poll-submit { margin-top: 10px; }
+  .poll-result-row { margin-bottom: 10px; }
+  .poll-result-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; }
+  .poll-bar-track { height: 10px; background: rgba(255,255,255,.06); border-radius: 999px; overflow: hidden; }
+  .poll-bar-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #a78bfa); border-radius: 999px; }
+  .poll-voters { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+  .poll-meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+
+  .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 14px; }
+  .footnote { margin-top: 28px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: rgba(255,255,255,.02); border-radius: 8px; border-left: 2px solid var(--border); }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(196,181,253,.3); border-top-color:#c4b5fd; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- =================================================== -->
+<!--  Gate (mock login)                                    -->
+<!-- =================================================== -->
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock"><img src="logo-runner.svg" alt="Runners" style="width:62px;height:62px;border-radius:16px;box-shadow:0 8px 24px rgba(124,58,237,.4)"></div>
+      <div style="text-align:center;font-weight:800;letter-spacing:1px;color:#c4b5fd;font-size:13px;margin-bottom:10px">RUNNERS 2026</div>
+      <h1>국장단 포털</h1>
+      <p class="gate-sub">회의록 · 공지 · 의사결정을 한곳에서</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px;text-align:center;letter-spacing:2px;">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">접속</button>
+      <div id="gate-err" style="color:#fca5a5;font-size:12px;margin-top:10px;min-height:16px;text-align:center;"></div>
+      <div class="gate-note">
+        <strong>📌 안내</strong><br>
+        • 접근 코드는 관리자가 카톡으로 안내합니다<br>
+        • 회의록·공지·안건 개설은 <strong>국장단</strong>만 가능, 열람·투표 참여는 <strong>모든 선생님</strong> 가능<br>
+        • 회의록은 작성 시 지정한 공개범위(국장단전용/전체공개)에 따라 노출됩니다
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!--  Main App                                             -->
+<!-- =================================================== -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <div class="greeting">
+        <h1>
+          <span>🏛 국장단 포털</span>
+          <span id="my-badge" class="my-badge"></span>
+          <span id="my-admin-badge" class="my-admin" style="display:none">👑 국장단</span>
+        </h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn" href="dashboard.html">🏠 Home</a>
+        <button onclick="location.reload()">🔄 새로고침</button>
+        <button class="logout" onclick="logout()">🚪 로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <strong>🏛 국장단 포털</strong> — 정기 회의 내용을 기록·공유하고, 전파사항을 공지하고,
+      중요한 사안은 투표로 의견을 모읍니다. 결과는 투명하게 공개됩니다.
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="meetings" onclick="switchTab('meetings')">📋 회의록</button>
+      <button class="tab-btn" data-tab="notices" onclick="switchTab('notices')">📢 공지</button>
+      <button class="tab-btn" data-tab="polls" onclick="switchTab('polls')">🗳 투표</button>
+    </div>
+
+    <!-- ============ 회의록 탭 ============ -->
+    <div class="tab-panel active" id="panel-meetings">
+      <div class="post-card" id="meeting-form-card" style="display:none">
+        <h2>📝 새 회의록 작성</h2>
+        <div class="form-row">
+          <div class="field" style="max-width:200px">
+            <label>회의 날짜</label>
+            <input id="mf-date" type="date">
+          </div>
+          <div class="field">
+            <label>제목</label>
+            <input id="mf-title" type="text" maxlength="80" placeholder="예) 8월 국장단 정기회의">
+          </div>
+        </div>
+        <div class="field">
+          <label>참석자</label>
+          <div class="attendee-grid" id="mf-attendees"></div>
+        </div>
+        <div class="field">
+          <label>회의 내용</label>
+          <textarea id="mf-body" placeholder="논의 내용, 결정 사항 등을 자유롭게 적어주세요" maxlength="4000"></textarea>
+        </div>
+        <div class="field" style="max-width:220px">
+          <label>공개범위</label>
+          <select id="mf-visibility">
+            <option value="council">🔒 국장단 전용</option>
+            <option value="all">🌐 전체 공개</option>
+          </select>
+        </div>
+        <div class="save-row">
+          <button class="save-btn" onclick="saveMeeting()">저장하기</button>
+          <span class="save-state" id="mf-state"></span>
+        </div>
+      </div>
+
+      <div class="list-head"><h2>📋 회의록 목록</h2></div>
+      <div id="meeting-list"></div>
+    </div>
+
+    <!-- ============ 공지 탭 ============ -->
+    <div class="tab-panel" id="panel-notices">
+      <div class="post-card" id="notice-form-card" style="display:none">
+        <h2>📢 새 공지 작성</h2>
+        <div class="field">
+          <label>제목</label>
+          <input id="nf-title" type="text" maxlength="80" placeholder="예) 9월 수련회 일정 안내">
+        </div>
+        <div class="field">
+          <label>내용</label>
+          <textarea id="nf-body" placeholder="전파할 내용을 적어주세요" maxlength="2000"></textarea>
+        </div>
+        <div class="checkline"><input type="checkbox" id="nf-urgent"> <label for="nf-urgent" style="margin:0">🚨 긴급 공지로 표시</label></div>
+        <div class="save-row">
+          <button class="save-btn" onclick="saveNotice()">등록하기</button>
+          <span class="save-state" id="nf-state"></span>
+        </div>
+      </div>
+
+      <div class="list-head"><h2>📢 공지 목록</h2></div>
+      <div id="notice-list"></div>
+    </div>
+
+    <!-- ============ 투표 탭 ============ -->
+    <div class="tab-panel" id="panel-polls">
+      <div class="post-card" id="poll-form-card" style="display:none">
+        <h2>🗳 새 안건 개설</h2>
+        <div class="field">
+          <label>안건 제목</label>
+          <input id="pf-title" type="text" maxlength="80" placeholder="예) 9월 수련회 장소 선정">
+        </div>
+        <div class="field">
+          <label>설명 (선택)</label>
+          <textarea id="pf-desc" style="min-height:56px" maxlength="1000" placeholder="배경 설명이나 참고 자료 링크 등"></textarea>
+        </div>
+        <div class="field">
+          <label>선택지</label>
+          <div id="pf-options"></div>
+          <button type="button" class="add-opt" onclick="addPollOption()">+ 선택지 추가</button>
+        </div>
+        <div class="form-row">
+          <div class="field" style="max-width:220px">
+            <label>마감 일시</label>
+            <input id="pf-deadline" type="datetime-local">
+          </div>
+          <div class="field">
+            <label>투표 방식</label>
+            <div class="checkline"><input type="checkbox" id="pf-anon"> <label for="pf-anon" style="margin:0">🕶 익명 투표 (마감 후에도 응답자 비공개)</label></div>
+          </div>
+        </div>
+        <div class="save-row">
+          <button class="save-btn" onclick="savePoll()">안건 개설</button>
+          <span class="save-state" id="pf-state"></span>
+        </div>
+      </div>
+
+      <div class="list-head"><h2>🗳 투표 목록</h2></div>
+      <div id="poll-list"></div>
+    </div>
+
+    <div class="footnote">
+      🔒 회의록·공지·안건 개설은 국장단만 가능합니다. 투표 결과는 마감 전에는 참여 여부만, 마감 후에는 집계 결과가 공개됩니다
+      (기명 투표는 마감 후 응답자까지 함께 공개됩니다). 문제가 있으면 총무(석준원)에게 알려주세요.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * 0. Supabase 헬퍼 (SDK 없이 REST)
+ * ============================================================ */
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST_DB = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+
+const MeetingDB = {
+  async list() { const r = await fetch(REST_DB + '/council_meetings?order=date.desc,created_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('회의록 목록 실패 (' + r.status + ')'); return r.json(); },
+  async insert(rec) { const r = await fetch(REST_DB + '/council_meetings', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); },
+  async update(id, patch) { const r = await fetch(REST_DB + '/council_meetings?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
+};
+const NoticeDB = {
+  async list() { const r = await fetch(REST_DB + '/council_notices?order=date.desc,created_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('공지 목록 실패 (' + r.status + ')'); return r.json(); },
+  async insert(rec) { const r = await fetch(REST_DB + '/council_notices', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); },
+  async update(id, patch) { const r = await fetch(REST_DB + '/council_notices?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
+};
+const PollDB = {
+  async list() { const r = await fetch(REST_DB + '/council_polls?order=created_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('투표 목록 실패 (' + r.status + ')'); return r.json(); },
+  async insert(rec) { const r = await fetch(REST_DB + '/council_polls', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); },
+  async update(id, patch) { const r = await fetch(REST_DB + '/council_polls?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
+};
+const VoteDB = {
+  async listAll() { const r = await fetch(REST_DB + '/council_votes?select=*', { headers: H }); if (!r.ok) throw new Error('투표 결과 조회 실패 (' + r.status + ')'); return r.json(); },
+  async cast(poll_id, teacher, choice) {
+    const r = await fetch(REST_DB + '/council_votes?on_conflict=poll_id,teacher', { method: 'POST',
+      headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H),
+      body: JSON.stringify({ poll_id, teacher, choice, voted_at: new Date().toISOString() }) });
+    if (!r.ok) throw new Error('투표 실패 (' + r.status + ')');
+  }
+};
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch(REST_DB + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page }) }).catch(function () {});
+}
+
+/* ============================================================
+ * 1. 선생님 데이터 (outings.html과 동일 — admin = 국장단)
+ * ============================================================ */
+const TEACHERS = [
+  {name:'안종범', cell:null,    role:'부장집사',   admin:true},
+  {name:'석준원', cell:'셀11',  role:'담임·총무',  admin:true},
+  {name:'김광현', cell:null,    role:'교육국장',   admin:true},
+  {name:'송진우', cell:'셀7',   role:'부담임·예배국장', admin:true},
+  {name:'오덕현', cell:'셀9',   role:'담임·미디어국장', admin:true},
+  {name:'이유성', cell:'셀8',   role:'담임·홍보국장',   admin:true},
+  {name:'이윤정', cell:'셀1',   role:'담임 (대가족장)'},
+  {name:'정명경', cell:'셀2',   role:'담임'},
+  {name:'전성희', cell:'셀3',   role:'담임 (대가족장)'},
+  {name:'박대철', cell:'셀4',   role:'담임'},
+  {name:'이수지', cell:'셀5',   role:'담임 (대가족장)'},
+  {name:'정유빈', cell:'셀6',   role:'담임'},
+  {name:'양지현', cell:'셀7',   role:'담임 (대가족장)'},
+  {name:'최희승', cell:'셀10',  role:'담임'},
+  {name:'고은솔', cell:'셀12',  role:'담임'},
+  {name:'이승헌', cell:'셀1',   role:'부담임'},
+  {name:'조세경', cell:'셀2',   role:'부담임'},
+  {name:'김희원', cell:'셀4',   role:'부담임'},
+  {name:'박해니', cell:'셀5',   role:'부담임'},
+  {name:'이규리', cell:'셀8',   role:'부담임'},
+  {name:'김주영', cell:'셀9',   role:'부담임'},
+  {name:'오은규', cell:'셀12',  role:'부담임'},
+  {name:'박진호', cell:null, role:'신규 교사'},
+  {name:'송가원', cell:null, role:'신규 교사'},
+];
+
+/* ============================================================
+ * 2. 인증 (PIN + 본인 선택) — 기존 페이지와 동일
+ * ============================================================ */
+const PRIVATE_KEY = 'runners2026@jesus';
+
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>';
+  const groups = [
+    {label:'👑 국장단', filter: t => t.admin},
+    {label:'🌟 셀 담임', filter: t => !t.admin && t.role.includes('담임') && !t.role.includes('부담임')},
+    {label:'🤝 부담임', filter: t => !t.admin && t.role.includes('부담임')},
+  ];
+  groups.forEach(g => {
+    const og = document.createElement('optgroup');
+    og.label = g.label;
+    TEACHERS.filter(g.filter).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.name;
+      const cellLabel = t.cell ? ' (' + t.cell + ')' : '';
+      opt.textContent = t.name + cellLabel + ' · ' + t.role;
+      og.appendChild(opt);
+    });
+    if (og.children.length > 0) sel.appendChild(og);
+  });
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved) sel.value = saved;
+}
+
+function showErr(msg) { const el = document.getElementById('gate-err'); if (el) el.textContent = msg || ''; }
+
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  if (pin !== PRIVATE_KEY) { showErr('❌ 접근 코드가 일치하지 않습니다'); return; }
+  if (!name) { showErr('❌ 본인 이름을 선택해 주세요'); return; }
+  showErr('');
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+
+function logout() {
+  localStorage.removeItem('mock_teacher');
+  document.getElementById('app-root').style.display = 'none';
+  document.getElementById('gate-root').style.display = '';
+}
+
+/* ============================================================
+ * 3. 상태
+ * ============================================================ */
+let MY = null;
+let MEETINGS = [];
+let NOTICES = [];
+let POLLS = [];
+let VOTES = [];   // council_votes 전체 { poll_id, teacher, choice, voted_at }
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtDate(d) {
+  if (!d) return '';
+  const parts = String(d).substring(0, 10).split('-');
+  if (parts.length !== 3) return d;
+  const y = +parts[0], m = +parts[1], day = +parts[2];
+  const wk = ['일','월','화','수','목','금','토'];
+  let w = ''; try { w = ' (' + wk[new Date(y, m - 1, day).getDay()] + ')'; } catch (e) {}
+  return y + '. ' + m + '. ' + day + '.' + w;
+}
+function fmtDateTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const pad = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '. ' + (d.getMonth()+1) + '. ' + d.getDate() + '. ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+/* ============================================================
+ * 4. 진입
+ * ============================================================ */
+async function showApp() {
+  const name = localStorage.getItem('mock_teacher');
+  const me = TEACHERS.find(t => t.name === name);
+  if (!me) { logout(); return; }
+  MY = me;
+  window.CURRENT_ME = me;
+  logAccess(me.name, 'council');
+
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+
+  const badge = document.getElementById('my-badge');
+  badge.textContent = me.name + (me.cell ? ' · ' + me.cell : '');
+  document.getElementById('my-admin-badge').style.display = me.admin ? '' : 'none';
+
+  const formDisplay = me.admin ? '' : 'none';
+  document.getElementById('meeting-form-card').style.display = formDisplay;
+  document.getElementById('notice-form-card').style.display = formDisplay;
+  document.getElementById('poll-form-card').style.display = formDisplay;
+  if (me.admin) {
+    setupMeetingForm();
+    setupPollForm();
+  }
+
+  await Promise.all([loadMeetings(), loadNotices(), loadPolls()]);
+}
+
+/* ============================================================
+ * 5. 탭
+ * ============================================================ */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+}
+
+/* ============================================================
+ * 6. 회의록
+ * ============================================================ */
+function setupMeetingForm() {
+  const t = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('mf-date').value = t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate());
+  const grid = document.getElementById('mf-attendees');
+  grid.innerHTML = TEACHERS.map(tc =>
+    '<label><input type="checkbox" value="' + escapeHtml(tc.name) + '"' + (tc.admin ? ' checked' : '') + '>' + escapeHtml(tc.name) + '</label>'
+  ).join('');
+}
+
+async function saveMeeting() {
+  const date = document.getElementById('mf-date').value;
+  const title = document.getElementById('mf-title').value.trim();
+  const body = document.getElementById('mf-body').value.trim();
+  const visibility = document.getElementById('mf-visibility').value;
+  const attendees = [...document.querySelectorAll('#mf-attendees input:checked')].map(el => el.value);
+  const stateEl = document.getElementById('mf-state');
+
+  if (!date) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 회의 날짜를 선택해 주세요'; return; }
+  if (!title) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 제목을 입력해 주세요'; return; }
+
+  const id = 'MTG' + Date.now();
+  stateEl.className = 'save-state'; stateEl.innerHTML = '<span class="spin"></span>저장 중…';
+  try {
+    await MeetingDB.insert({ id, date, title, attendees, body: body || null, visibility, author: MY.name });
+    document.getElementById('mf-title').value = '';
+    document.getElementById('mf-body').value = '';
+    stateEl.className = 'save-state ok'; stateEl.textContent = '✅ 저장 완료';
+    MEETINGS.unshift({ id, date, title, attendees, body: body || null, visibility, author: MY.name, active: true, created_at: new Date().toISOString() });
+    renderMeetings();
+  } catch (e) {
+    console.error(e);
+    stateEl.className = 'save-state err'; stateEl.textContent = '❌ ' + (e.message || '저장 실패');
+  }
+}
+
+async function loadMeetings() {
+  const list = document.getElementById('meeting-list');
+  list.innerHTML = '<div class="empty"><span class="spin"></span>불러오는 중…</div>';
+  try { MEETINGS = await MeetingDB.list(); } catch (e) { console.error(e); list.innerHTML = '<div class="empty">불러오지 못했어요. 새로고침 해주세요.</div>'; return; }
+  renderMeetings();
+}
+
+function visibleMeetings() {
+  return MEETINGS.filter(m => m.active !== false && (MY.admin || m.visibility === 'all'));
+}
+
+function renderMeetings() {
+  const list = document.getElementById('meeting-list');
+  const items = visibleMeetings();
+  if (!items.length) { list.innerHTML = '<div class="empty">아직 등록된 회의록이 없어요.</div>'; return; }
+  list.innerHTML = items.map(m => {
+    const badge = m.visibility === 'all'
+      ? '<span class="ic-badge badge-all">🌐 전체공개</span>'
+      : '<span class="ic-badge badge-council">🔒 국장단전용</span>';
+    const attendees = Array.isArray(m.attendees) ? m.attendees : [];
+    return '<div class="item-card">' +
+      '<div class="ic-head">' +
+        '<span class="ic-title">' + escapeHtml(m.title) + '</span>' +
+        '<span class="ic-date">' + fmtDate(m.date) + '</span>' +
+        badge +
+        (MY.admin ? '<button class="ic-del" onclick="deleteMeeting(\'' + escapeHtml(m.id) + '\')">🗑 삭제</button>' : '') +
+      '</div>' +
+      (m.author ? '<div class="ic-author">작성: ' + escapeHtml(m.author) + '</div>' : '') +
+      (attendees.length ? '<div class="ic-attendees">' + attendees.map(a => '<span>' + escapeHtml(a) + '</span>').join('') + '</div>' : '') +
+      (m.body ? '<div class="ic-body">' + escapeHtml(m.body) + '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+async function deleteMeeting(id) {
+  if (!MY.admin) return;
+  if (!confirm('이 회의록을 삭제하시겠습니까?')) return;
+  try { await MeetingDB.update(id, { active: false }); MEETINGS = MEETINGS.filter(m => m.id !== id); renderMeetings(); }
+  catch (e) { console.error(e); alert('삭제 실패 — 다시 시도해 주세요'); }
+}
+
+/* ============================================================
+ * 7. 공지
+ * ============================================================ */
+async function saveNotice() {
+  const title = document.getElementById('nf-title').value.trim();
+  const body = document.getElementById('nf-body').value.trim();
+  const urgent = document.getElementById('nf-urgent').checked;
+  const stateEl = document.getElementById('nf-state');
+  if (!title) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 제목을 입력해 주세요'; return; }
+
+  const id = 'NTC' + Date.now();
+  const today = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const date = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
+  stateEl.className = 'save-state'; stateEl.innerHTML = '<span class="spin"></span>등록 중…';
+  try {
+    await NoticeDB.insert({ id, date, author: MY.name, title, body: body || null, urgent });
+    document.getElementById('nf-title').value = '';
+    document.getElementById('nf-body').value = '';
+    document.getElementById('nf-urgent').checked = false;
+    stateEl.className = 'save-state ok'; stateEl.textContent = '✅ 등록 완료';
+    NOTICES.unshift({ id, date, author: MY.name, title, body: body || null, urgent, active: true });
+    renderNotices();
+  } catch (e) {
+    console.error(e);
+    stateEl.className = 'save-state err'; stateEl.textContent = '❌ ' + (e.message || '등록 실패');
+  }
+}
+
+async function loadNotices() {
+  const list = document.getElementById('notice-list');
+  list.innerHTML = '<div class="empty"><span class="spin"></span>불러오는 중…</div>';
+  try { NOTICES = (await NoticeDB.list()).filter(n => n.active !== false); } catch (e) { console.error(e); list.innerHTML = '<div class="empty">불러오지 못했어요. 새로고침 해주세요.</div>'; return; }
+  renderNotices();
+}
+
+function renderNotices() {
+  const list = document.getElementById('notice-list');
+  if (!NOTICES.length) { list.innerHTML = '<div class="empty">아직 등록된 공지가 없어요.</div>'; return; }
+  const sorted = NOTICES.slice().sort((a, b) => (b.urgent === a.urgent ? 0 : b.urgent ? 1 : -1));
+  list.innerHTML = sorted.map(n =>
+    '<div class="item-card">' +
+      '<div class="ic-head">' +
+        '<span class="ic-title">' + escapeHtml(n.title) + '</span>' +
+        '<span class="ic-date">' + fmtDate(n.date) + '</span>' +
+        (n.urgent ? '<span class="ic-badge badge-urgent">🚨 긴급</span>' : '') +
+        (MY.admin ? '<button class="ic-del" onclick="deleteNotice(\'' + escapeHtml(n.id) + '\')">🗑 삭제</button>' : '') +
+      '</div>' +
+      (n.author ? '<div class="ic-author">' + escapeHtml(n.author) + '</div>' : '') +
+      (n.body ? '<div class="ic-body">' + escapeHtml(n.body) + '</div>' : '') +
+    '</div>'
+  ).join('');
+}
+
+async function deleteNotice(id) {
+  if (!MY.admin) return;
+  if (!confirm('이 공지를 삭제하시겠습니까?')) return;
+  try { await NoticeDB.update(id, { active: false }); NOTICES = NOTICES.filter(n => n.id !== id); renderNotices(); }
+  catch (e) { console.error(e); alert('삭제 실패 — 다시 시도해 주세요'); }
+}
+
+/* ============================================================
+ * 8. 투표
+ * ============================================================ */
+function addPollOption(value) {
+  const wrap = document.getElementById('pf-options');
+  const row = document.createElement('div');
+  row.className = 'opt-row';
+  row.innerHTML = '<input type="text" maxlength="60" placeholder="선택지" value="' + escapeHtml(value || '') + '"><button type="button" onclick="this.parentElement.remove()">✕</button>';
+  wrap.appendChild(row);
+}
+
+function setupPollForm() {
+  document.getElementById('pf-options').innerHTML = '';
+  addPollOption(''); addPollOption('');
+}
+
+async function savePoll() {
+  const title = document.getElementById('pf-title').value.trim();
+  const description = document.getElementById('pf-desc').value.trim();
+  const options = [...document.querySelectorAll('#pf-options input')].map(el => el.value.trim()).filter(Boolean);
+  const deadlineLocal = document.getElementById('pf-deadline').value;
+  const anonymous = document.getElementById('pf-anon').checked;
+  const stateEl = document.getElementById('pf-state');
+
+  if (!title) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 안건 제목을 입력해 주세요'; return; }
+  if (options.length < 2) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 선택지를 2개 이상 입력해 주세요'; return; }
+  if (!deadlineLocal) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 마감 일시를 선택해 주세요'; return; }
+
+  const id = 'POLL' + Date.now();
+  const deadline = new Date(deadlineLocal).toISOString();
+  stateEl.className = 'save-state'; stateEl.innerHTML = '<span class="spin"></span>개설 중…';
+  try {
+    await PollDB.insert({ id, title, description: description || null, options, anonymous, deadline, author: MY.name });
+    document.getElementById('pf-title').value = '';
+    document.getElementById('pf-desc').value = '';
+    document.getElementById('pf-deadline').value = '';
+    document.getElementById('pf-anon').checked = false;
+    setupPollForm();
+    stateEl.className = 'save-state ok'; stateEl.textContent = '✅ 개설 완료';
+    POLLS.unshift({ id, title, description: description || null, options, anonymous, deadline, author: MY.name, active: true, created_at: new Date().toISOString() });
+    renderPolls();
+  } catch (e) {
+    console.error(e);
+    stateEl.className = 'save-state err'; stateEl.textContent = '❌ ' + (e.message || '개설 실패');
+  }
+}
+
+async function loadPolls() {
+  const list = document.getElementById('poll-list');
+  list.innerHTML = '<div class="empty"><span class="spin"></span>불러오는 중…</div>';
+  try {
+    const [polls, votes] = await Promise.all([PollDB.list(), VoteDB.listAll()]);
+    POLLS = polls.filter(p => p.active !== false);
+    VOTES = votes;
+  } catch (e) { console.error(e); list.innerHTML = '<div class="empty">불러오지 못했어요. 새로고침 해주세요.</div>'; return; }
+  renderPolls();
+}
+
+function pollClosed(p) { return p.deadline && new Date(p.deadline).getTime() <= Date.now(); }
+function votesFor(pollId) { return VOTES.filter(v => v.poll_id === pollId); }
+function myVote(pollId) { return VOTES.find(v => v.poll_id === pollId && v.teacher === MY.name); }
+
+async function castVote(pollId, choice) {
+  const wrap = document.getElementById('poll-vote-state-' + pollId);
+  try {
+    await VoteDB.cast(pollId, MY.name, choice);
+    VOTES = VOTES.filter(v => !(v.poll_id === pollId && v.teacher === MY.name));
+    VOTES.push({ poll_id: pollId, teacher: MY.name, choice, voted_at: new Date().toISOString() });
+    renderPolls();
+  } catch (e) {
+    console.error(e);
+    if (wrap) wrap.textContent = '❌ 투표 실패 — 다시 시도해 주세요';
+  }
+}
+
+async function closePollNow(id) {
+  if (!MY.admin) return;
+  if (!confirm('지금 즉시 이 투표를 마감하시겠습니까?')) return;
+  try { await PollDB.update(id, { deadline: new Date().toISOString() }); const p = POLLS.find(x => x.id === id); if (p) p.deadline = new Date().toISOString(); renderPolls(); }
+  catch (e) { console.error(e); alert('마감 처리 실패'); }
+}
+
+async function deletePoll(id) {
+  if (!MY.admin) return;
+  if (!confirm('이 안건을 삭제하시겠습니까?')) return;
+  try { await PollDB.update(id, { active: false }); POLLS = POLLS.filter(p => p.id !== id); renderPolls(); }
+  catch (e) { console.error(e); alert('삭제 실패 — 다시 시도해 주세요'); }
+}
+
+function renderPolls() {
+  const list = document.getElementById('poll-list');
+  if (!POLLS.length) { list.innerHTML = '<div class="empty">아직 개설된 안건이 없어요.</div>'; return; }
+
+  list.innerHTML = POLLS.map(p => {
+    const closed = pollClosed(p);
+    const mine = myVote(p.id);
+    const pv = votesFor(p.id);
+    const statusBadge = closed ? '<span class="ic-badge badge-closed">🔒 마감</span>' : '<span class="ic-badge badge-open">🗳 진행중</span>';
+    const anonBadge = p.anonymous ? '<span class="ic-badge" style="color:#cbd5e1;border-color:rgba(148,163,184,.4)">🕶 익명</span>' : '';
+
+    let body;
+    if (!closed) {
+      // 마감 전: 투표 UI만. 결과/집계는 비공개, 내 참여여부만 표시
+      const opts = (p.options || []).map((opt, i) => {
+        const checked = mine && mine.choice === opt ? ' checked' : '';
+        return '<label class="poll-opt' + (checked ? ' mine' : '') + '"><input type="radio" name="poll-' + p.id + '" value="' + escapeHtml(opt) + '"' + checked + ' onclick="castVote(\'' + p.id + '\',this.value)"> ' + escapeHtml(opt) + '</label>';
+      }).join('');
+      body = '<div class="poll-meta">마감: ' + fmtDateTime(p.deadline) + (mine ? ' · ✅ 참여 완료' : ' · 아직 참여하지 않았어요') + '</div>' +
+        opts + '<div class="save-state" id="poll-vote-state-' + p.id + '"></div>';
+    } else {
+      // 마감 후: 집계 공개 (+기명이면 응답자 명단)
+      const total = pv.length || 0;
+      body = '<div class="poll-meta">마감: ' + fmtDateTime(p.deadline) + ' · 총 ' + total + '표</div>' +
+        (p.options || []).map(opt => {
+          const optVotes = pv.filter(v => v.choice === opt);
+          const pct = total ? Math.round(optVotes.length / total * 100) : 0;
+          const voters = (!p.anonymous && optVotes.length) ? '<div class="poll-voters">' + optVotes.map(v => escapeHtml(v.teacher)).join(', ') + '</div>' : '';
+          return '<div class="poll-result-row"><div class="poll-result-label"><span>' + escapeHtml(opt) + '</span><span>' + optVotes.length + '표 (' + pct + '%)</span></div><div class="poll-bar-track"><div class="poll-bar-fill" style="width:' + pct + '%"></div></div>' + voters + '</div>';
+        }).join('');
+    }
+
+    return '<div class="item-card">' +
+      '<div class="ic-head">' +
+        '<span class="ic-title">' + escapeHtml(p.title) + '</span>' +
+        statusBadge + anonBadge +
+        (MY.admin && !closed ? '<button class="ic-del" style="margin-left:auto" onclick="closePollNow(\'' + p.id + '\')">⏹ 지금 마감</button>' : '') +
+        (MY.admin ? '<button class="ic-del" onclick="deletePoll(\'' + p.id + '\')">🗑 삭제</button>' : '') +
+      '</div>' +
+      (p.author ? '<div class="ic-author">개설: ' + escapeHtml(p.author) + '</div>' : '') +
+      (p.description ? '<div class="ic-body">' + escapeHtml(p.description) + '</div>' : '') +
+      body +
+    '</div>';
+  }).join('');
+}
+
+/* ============================================================
+ * 9. 초기화
+ * ============================================================ */
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && TEACHERS.find(t => t.name === savedName)) {
+  showApp();
+}
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') mockLogin();
+});
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 (현재 페이지=국장단 포털) */
+(function () {
+  const KEY = 'runners2026@jesus';
+  const ITEMS = [
+    ['term3.html', '🗳 새학기 편성', ''],
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['students.html', '👤 학생 정보', ''],
+    ['council.html', '🏛 국장단 포털', ''],
+    ['__sep__'],
+    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+    ['relations.html', '🕸 관계도', '?key=' + KEY],
+    ['attendance-overview.html', '📊 전체 출석현황', ''],
+    ['photos.html', '📸 사진 등록', ''],
+    ['outings.html', '🎒 아웃팅', ''],
+  ];
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.innerHTML = ITEMS.map(it =>
+    it[0] === '__sep__'
+      ? '<span class="site-nav-sep" aria-hidden="true"></span>'
+      : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>'
+  ).join('');
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+  else document.body.insertBefore(nav, document.body.firstChild);
+})();
+</script>
+</body>
+</html>
