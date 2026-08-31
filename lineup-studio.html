@@ -30,7 +30,8 @@
   header h1 { margin: 0; font-size: 17px; color: #f1f5f9; }
   header .badge { background: rgba(245,158,11,.2); color: #fcd34d; font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(245,158,11,.4); font-weight: 700; }
   header .sp { flex: 1; }
-  header button { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  header button, header a.btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; }
+  header a.btn:hover { background: rgba(255,255,255,.15); }
   header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
 
   /* 툴바 */
@@ -250,6 +251,7 @@
       <button onclick="setView('board')" id="view-board-btn">🧩 편성 보드</button>
       <button onclick="setView('apps')" id="view-apps-btn">🙋 지망 현황</button>
       <button onclick="setView('match')" id="view-match-btn">🧬 성향 매칭</button>
+      <a class="btn" href="dashboard.html">🏠 Home</a>
       <button class="logout" onclick="logout()">로그아웃</button>
     </div>
   </header>
