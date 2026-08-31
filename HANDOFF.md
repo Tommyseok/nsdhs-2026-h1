@@ -1,8 +1,9 @@
 # 내수동 고등부 2학기 시스템 — 세션 핸드오프 문서
 
 > **새 Claude 세션에서 이 프로젝트를 이어 작업할 때 가장 먼저 읽을 통합 컨텍스트 문서**
-> 마지막 업데이트: 2026-06-06 (월간 아웃팅 기록 기능 outings.html 추가 · GitHub push 완료)
-> 최신 커밋: `e4e0aa7` (월간 아웃팅 기록 기능 outings.html 추가)
+> 마지막 업데이트: 2026-08-31 (국장단 포털 council.html 추가 · GitHub push 완료)
+> 최신 커밋: `efc0454` (국장단 포털 council.html 추가 — 회의록/공지/투표)
+> 상세 기획·설계: project/active/council-portal/ (context·plan·tasks 3파일)
 
 ---
 
@@ -43,7 +44,7 @@
 | Supabase URL | `https://hycwzggbgnimuuhporwf.supabase.co` |
 | Storage 버킷 | `student-photos` (public read, 2MB) · `outing-photos` (아웃팅 사진, public read, 3MB, jpeg/png/webp) |
 | anon 키 | 각 HTML의 `Photos`/`Hub`/`PrayerDB`/`OutingDB`/`logAccess` 헬퍼 안에 내장 (publishable anon 키 — 공개 정상). PIN 변경과 무관 |
-| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`, `schedule`, `outings` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
+| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`, `schedule`, `outings`, `council_meetings`, `council_notices`, `council_polls`, `council_votes` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
 
 ---
 
@@ -60,12 +61,13 @@
 | `attendance-overview.html` | PIN | 📊 전체 출석현황 (모든 선생님 접근) |
 | `photos.html` | PIN + 본인 선택 | 📸 학생 사진 업로드 전용 (선생님=본인 셀, 관리자=전체) |
 | `outings.html` | PIN + 본인 선택 | 🎒 월간 아웃팅 기록 — 셀별 날짜·사진(여러 장)·텍스트. 게시=담임·부담임 본인 셀/관리자 전체, 열람=**전체 공개**(셀 필터) |
+| `council.html` | PIN + 본인 선택 | 🏛 국장단 포털 — 회의록(공개범위 국장단전용/전체공개)·공지(국장단 전용 채널)·투표(안건별 익명/기명, 마감 전 참여여부만·마감 후 집계공개). 작성=국장단(admin 7인), 열람·투표참여=전체 교사 |
 | `admin.html` | PIN + 관리자 본인 선택 | 👑 **관리자 페이지** — 접속(지난 7일)·출석누락·사진 현황 + **공지·일정·전체공유 기도 직접 등록**. admin 7명만 |
 | `assignments.html` | 공개 | 🌱 공개용 편성표 (학생·학부모) |
 | `assignments.pdf` | 공개 | 공개용 PDF (인쇄용) |
 
 모든 교사 페이지 상단에 **공통 네비 바**(site-nav, 각 페이지 `</body>` 직전 스크립트가 `<header>` 뒤에 주입) 자동 표시.
-순서: `🏠 Home · 📝 출석입력 · 🙏 학생상황·기도` │ `🗂 셀편성 · 🕸 관계도 · 📊 전체출석현황 · 📸 사진등록 · 🎒 아웃팅` (가운데 구분선 `.site-nav-sep` 로 2그룹). 공개용 `assignments.html` 은 제외. **네비 항목 추가/변경 시 8개 페이지(dashboard·attendance·attendance-overview·prayer·teachers·relations·photos·admin)의 ITEMS 배열을 모두 수정** (각 페이지에 복제됨).
+순서: `🏠 Home · 📝 출석입력 · 🙏 학생상황·기도 · 👤 학생 정보 · 🏛 국장단 포털` │ `🗂 셀편성 · 🕸 관계도 · 📊 전체출석현황 · 📸 사진등록 · 🎒 아웃팅` (가운데 구분선 `.site-nav-sep` 로 2그룹). 공개용 `assignments.html` 은 제외. **네비 항목 추가/변경 시 12개 페이지(dashboard·attendance·attendance-overview·prayer·teachers·relations·photos·admin·students·outings·term3·term3-results, +신규 council)의 ITEMS 배열을 모두 수정** (각 페이지에 복제됨).
 
 기존 페이지:
 - `cells.html` — tombstone 페이지 (부담임 지원 폐지)
