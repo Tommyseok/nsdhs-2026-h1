@@ -43,7 +43,7 @@
 | Supabase URL | `https://hycwzggbgnimuuhporwf.supabase.co` |
 | Storage 버킷 | `student-photos` (public read, 2MB) · `outing-photos` (아웃팅 사진, public read, 3MB, jpeg/png/webp) |
 | anon 키 | 각 HTML의 `Photos`/`Hub`/`PrayerDB`/`OutingDB`/`logAccess` 헬퍼 안에 내장 (publishable anon 키 — 공개 정상). PIN 변경과 무관 |
-| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`(+`show_home` 컬럼), `schedule`, `outings`, `council_meetings`, `council_notices`, `council_polls`, `council_votes`, `nav_settings` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
+| Supabase 테이블 | `access_log`, `attendance`, `prayers`, `notices`(+`show_home` 컬럼), `schedule`, `outings`, `council_meetings`, `council_notices`, `council_polls`, `council_votes`, `nav_settings`, `lineup_stages` (모두 RLS: anon SEL/INS/UPD, DEL 미허용) |
 
 ---
 
@@ -112,6 +112,7 @@
 - **`prayers`** (id, date, type, student, cell, family, teacher, text, share, urgent, active) — **기도제목 전체 공유 원본**. prayer.html에서 "전체 공유 ON" 토글 시 자동 upsert(`PrayerDB.upsert`), OFF/삭제 시 share=false/active=false. dashboard "전체 공유 기도제목" 카드·prayer "다같이" 뷰·admin이 `share=true&active=true` 로드. **GitHub JSON 복사·commit 수동 단계는 폐지**(data/prayers.json은 관리자 선택 채널로만 잔존, 둘 다 병합 표시)
 - **`notices`** (id, date, author, title, body, urgent, active, **show_home**) / **`schedule`** (id, date, title, note, active) — **공지·일정**. admin.html에서 등록/수정/삭제(`Hub.upsert`/`Hub.update`) + **`show_home` 토글**로 삭제 없이 Home 노출만 껐다 켤 수 있음(대시보드 쿼리에 `show_home=eq.true` 추가됨). dashboard가 data/{notices,schedule}.json + Supabase 병합 표시. (GitHub JSON 편집은 고급 옵션으로만 잔존)
 - **`nav_settings`** (key=파일명 PK, label, enabled, updated_at) — 상단 nav 항목 on/off. admin.html "🧭 상단 메뉴 관리"에서 토글 → 각 페이지 nav 스크립트가 `enabled=eq.false` 목록을 받아 즉시 숨김.
+- **`lineup_stages`** (key='1'|'2'|'3·4'|'5'|'6'|'7', status='future'|'now'|'done') — lineup-studio.html 프로세스 허브 단계 진행 상태. 각 단계 카드의 [✅ 이 단계 확정] 버튼으로 done 전환 + `STAGE_NEXT`/`STAGE_REQUIRES` 의존관계에 따라 다음 단계 자동으로 now 오픈(7은 5·6 모두 done이어야 now). [↩️ 확정 취소]로 done→now 되돌리기 가능(future로는 못 돌아감, 필요 시 SQL로).
 - ⚠️ **`prayers`의 admin 관리 목록은 `share=eq.true` (이미 공유 중인 것만) 유지** — `active=eq.true`로만 필터링하면 다른 선생님이 비공유로 남긴 개인 기도까지 admin 화면에 노출되므로 절대 풀지 말 것.
 - **`outings`** (id, cell, date, text, photos jsonb=storage 키 배열, teacher, created_at, active) — **월간 아웃팅 기록**. `outings.html`에서 등록(사진은 `outing-photos` 버킷 업로드 후 키 배열 저장), 전체 공개 갤러리. 소프트 삭제(active=false). 사진 파일은 Storage `outing-photos`(public read, 3MB, anon SEL/INS/UPD, DEL 미허용 — 학생 사진과 동일)
 - 삭제·초기화는 Supabase `execute_sql`(truncate)로. 학기 말 데이터 정리 시 사용. ⚠️ Storage 객체는 직접 SQL 삭제 불가(보호 트리거) → Storage API(HTTP DELETE) 또는 대시보드 사용
