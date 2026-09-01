@@ -303,6 +303,10 @@ const MeetingDB = {
   async insert(rec) { const r = await fetch(REST_DB + '/council_meetings', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); },
   async update(id, patch) { const r = await fetch(REST_DB + '/council_meetings?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
 };
+const HistoryDB = {
+  async list(meetingId) { const r = await fetch(REST_DB + '/council_meeting_history?meeting_id=eq.' + encodeURIComponent(meetingId) + '&order=edited_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('이력 조회 실패 (' + r.status + ')'); return r.json(); },
+  async insert(rec) { const r = await fetch(REST_DB + '/council_meeting_history', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('이력 저장 실패 (' + r.status + ')'); }
+};
 const NoticeDB = {
   async list() { const r = await fetch(REST_DB + '/council_notices?order=date.desc,created_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('공지 목록 실패 (' + r.status + ')'); return r.json(); },
   async insert(rec) { const r = await fetch(REST_DB + '/council_notices', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); },
@@ -522,27 +526,110 @@ function visibleMeetings() {
   return MEETINGS.filter(m => m.active !== false && (MY.admin || m.visibility === 'all'));
 }
 
+let EDIT_MEETING = null;
+const OPEN_HISTORY = new Set();
+const HISTORY_CACHE = {};
+
 function renderMeetings() {
   const list = document.getElementById('meeting-list');
   const items = visibleMeetings();
   if (!items.length) { list.innerHTML = '<div class="empty">아직 등록된 회의록이 없어요.</div>'; return; }
-  list.innerHTML = items.map(m => {
-    const badge = m.visibility === 'all'
-      ? '<span class="ic-badge badge-all">🌐 전체공개</span>'
-      : '<span class="ic-badge badge-council">🔒 국장단전용</span>';
-    const attendees = Array.isArray(m.attendees) ? m.attendees : [];
-    return '<div class="item-card">' +
-      '<div class="ic-head">' +
-        '<span class="ic-title">' + escapeHtml(m.title) + '</span>' +
-        '<span class="ic-date">' + fmtDate(m.date) + '</span>' +
-        badge +
-        (MY.admin ? '<button class="ic-del" onclick="deleteMeeting(\'' + escapeHtml(m.id) + '\')">🗑 삭제</button>' : '') +
-      '</div>' +
-      (m.author ? '<div class="ic-author">작성: ' + escapeHtml(m.author) + '</div>' : '') +
-      (attendees.length ? '<div class="ic-attendees">' + attendees.map(a => '<span>' + escapeHtml(a) + '</span>').join('') + '</div>' : '') +
-      (m.body ? '<div class="ic-body">' + escapeHtml(m.body) + '</div>' : '') +
-    '</div>';
-  }).join('');
+  list.innerHTML = items.map(m => m.id === EDIT_MEETING ? meetingEditCard(m) : meetingViewCard(m)).join('');
+}
+
+function meetingViewCard(m) {
+  const badge = m.visibility === 'all'
+    ? '<span class="ic-badge badge-all">🌐 전체공개</span>'
+    : '<span class="ic-badge badge-council">🔒 국장단전용</span>';
+  const attendees = Array.isArray(m.attendees) ? m.attendees : [];
+  const edited = m.updated_at && m.created_at && (new Date(m.updated_at).getTime() - new Date(m.created_at).getTime() > 60000);
+  return '<div class="item-card">' +
+    '<div class="ic-head">' +
+      '<span class="ic-title">' + escapeHtml(m.title) + '</span>' +
+      '<span class="ic-date">' + fmtDate(m.date) + '</span>' +
+      badge +
+      (MY.admin ? '<button class="ic-del" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="editMeeting(\'' + escapeHtml(m.id) + '\')">✏️ 수정</button>' : '') +
+      (MY.admin ? '<button class="ic-del" onclick="deleteMeeting(\'' + escapeHtml(m.id) + '\')">🗑 삭제</button>' : '') +
+    '</div>' +
+    (m.author ? '<div class="ic-author">작성: ' + escapeHtml(m.author) + (edited ? ' · 수정됨' : '') + '</div>' : '') +
+    (attendees.length ? '<div class="ic-attendees">' + attendees.map(a => '<span>' + escapeHtml(a) + '</span>').join('') + '</div>' : '') +
+    (m.body ? '<div class="ic-body">' + escapeHtml(m.body) + '</div>' : '') +
+    '<div style="margin-top:8px"><button class="ic-del" style="background:none;border:none;color:var(--muted);padding:0;text-decoration:underline;cursor:pointer" onclick="toggleHistory(\'' + escapeHtml(m.id) + '\')">🕘 수정 이력 ' + (OPEN_HISTORY.has(m.id) ? '숨기기' : '보기') + '</button></div>' +
+    (OPEN_HISTORY.has(m.id) ? historyPanel(m.id) : '') +
+  '</div>';
+}
+
+function historyPanel(id) {
+  const rows = HISTORY_CACHE[id];
+  if (!rows) return '<div class="ic-author" style="margin-top:6px"><span class="spin"></span>이력 불러오는 중…</div>';
+  if (!rows.length) return '<div class="ic-author" style="margin-top:6px">이전 수정 이력이 없어요 (작성 후 아직 수정된 적 없음).</div>';
+  return '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:8px">' +
+    rows.map(h => '<div style="font-size:12px;color:var(--muted)">' +
+      '<div>📝 ' + escapeHtml(h.edited_by || '알 수 없음') + ' · ' + fmtDateTime(h.edited_at) + ' 수정 전 버전</div>' +
+      '<div style="color:#cbd5e1;margin-top:2px"><b>' + escapeHtml(h.title || '') + '</b>' + (h.body ? ' — ' + escapeHtml(h.body) : '') + '</div>' +
+    '</div>').join('') +
+  '</div>';
+}
+
+async function toggleHistory(id) {
+  if (OPEN_HISTORY.has(id)) { OPEN_HISTORY.delete(id); renderMeetings(); return; }
+  OPEN_HISTORY.add(id);
+  renderMeetings();
+  if (!HISTORY_CACHE[id]) {
+    try { HISTORY_CACHE[id] = await HistoryDB.list(id); } catch (e) { console.error(e); HISTORY_CACHE[id] = []; }
+    renderMeetings();
+  }
+}
+
+function meetingEditCard(m) {
+  const attendees = Array.isArray(m.attendees) ? m.attendees : [];
+  return '<div class="item-card">' +
+    '<div class="field" style="max-width:200px"><label>회의 날짜</label><input id="em-date" type="date" value="' + escapeHtml(m.date || '') + '"></div>' +
+    '<div class="field"><label>제목</label><input id="em-title" type="text" maxlength="80" value="' + escapeHtml(m.title || '') + '"></div>' +
+    '<div class="field"><label>참석자</label><div class="attendee-grid" id="em-attendees">' +
+      TEACHERS.map(tc => '<label><input type="checkbox" value="' + escapeHtml(tc.name) + '"' + (attendees.includes(tc.name) ? ' checked' : '') + '>' + escapeHtml(tc.name) + '</label>').join('') +
+    '</div></div>' +
+    '<div class="field"><label>회의 내용</label><textarea id="em-body" maxlength="4000">' + escapeHtml(m.body || '') + '</textarea></div>' +
+    '<div class="field" style="max-width:220px"><label>공개범위</label><select id="em-visibility">' +
+      '<option value="council"' + (m.visibility !== 'all' ? ' selected' : '') + '>🔒 국장단 전용</option>' +
+      '<option value="all"' + (m.visibility === 'all' ? ' selected' : '') + '>🌐 전체 공개</option>' +
+    '</select></div>' +
+    '<div class="save-row">' +
+      '<button class="save-btn" onclick="saveMeetingEdit(\'' + escapeHtml(m.id) + '\')">저장</button>' +
+      '<button class="ic-del" onclick="cancelEditMeeting()">취소</button>' +
+      '<span class="save-state" id="em-state"></span>' +
+    '</div>' +
+  '</div>';
+}
+
+function editMeeting(id) { EDIT_MEETING = id; renderMeetings(); }
+function cancelEditMeeting() { EDIT_MEETING = null; renderMeetings(); }
+
+async function saveMeetingEdit(id) {
+  const m = MEETINGS.find(x => x.id === id);
+  if (!m) return;
+  const date = document.getElementById('em-date').value;
+  const title = document.getElementById('em-title').value.trim();
+  const body = document.getElementById('em-body').value.trim();
+  const visibility = document.getElementById('em-visibility').value;
+  const attendees = [...document.querySelectorAll('#em-attendees input:checked')].map(el => el.value);
+  const stateEl = document.getElementById('em-state');
+  if (!date) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 회의 날짜를 선택해 주세요'; return; }
+  if (!title) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 제목을 입력해 주세요'; return; }
+
+  stateEl.className = 'save-state'; stateEl.innerHTML = '<span class="spin"></span>저장 중…';
+  try {
+    await HistoryDB.insert({ meeting_id: id, title: m.title, body: m.body, attendees: m.attendees, visibility: m.visibility, edited_by: MY.name });
+    const now = new Date().toISOString();
+    await MeetingDB.update(id, { date, title, body: body || null, visibility, attendees, updated_at: now });
+    Object.assign(m, { date, title, body: body || null, visibility, attendees, updated_at: now });
+    delete HISTORY_CACHE[id];
+    EDIT_MEETING = null;
+    renderMeetings();
+  } catch (e) {
+    console.error(e);
+    stateEl.className = 'save-state err'; stateEl.textContent = '❌ ' + (e.message || '저장 실패');
+  }
 }
 
 async function deleteMeeting(id) {
@@ -763,33 +850,54 @@ document.getElementById('pin-input').addEventListener('keydown', e => {
 </script>
 
 <script>
-/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 (현재 페이지=국장단 포털) */
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 (B안: 자주쓰는 4개 + 더보기 그룹) */
 (function () {
   const KEY = 'runners2026@jesus';
-  const ITEMS = [
-    ['term3.html', '🗳 새학기 편성', ''],
+  const PRIMARY = [
     ['dashboard.html', '🏠 Home', ''],
     ['attendance.html', '📝 출석 입력', ''],
     ['prayer.html', '🙏 학생상황·기도', ''],
     ['students.html', '👤 학생 정보', ''],
-    ['council.html', '🏛 국장단 포털', ''],
-    ['__sep__'],
-    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
-    ['relations.html', '🕸 관계도', '?key=' + KEY],
-    ['attendance-overview.html', '📊 전체 출석현황', ''],
-    ['photos.html', '📸 사진 등록', ''],
-    ['outings.html', '🎒 아웃팅', ''],
-    ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
   ];
+  const GROUPS = [
+    { label: '운영', items: [
+      ['council.html', '🏛 국장단 포털', ''],
+      ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
+      ['term3.html', '🗳 새학기 편성', ''],
+    ] },
+    { label: '자료', items: [
+      ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+      ['relations.html', '🕸 관계도', '?key=' + KEY],
+      ['attendance-overview.html', '📊 전체 출석현황', ''],
+      ['photos.html', '📸 사진 등록', ''],
+      ['outings.html', '🎒 아웃팅', ''],
+    ] },
+  ];
+  const ALL_ITEMS = PRIMARY.concat(GROUPS.flatMap(function (g) { return g.items; }));
   const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const curItem = ALL_ITEMS.find(function (it) { return it[0] === cur; });
+  const curInGroup = GROUPS.some(function (g) { return g.items.some(function (it) { return it[0] === cur; }); });
+
+  function link(it, disabled) {
+    if (disabled && disabled.has(it[0])) return '';
+    return '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>';
+  }
   const nav = document.createElement('nav');
   nav.className = 'site-nav';
   function renderNav(disabled) {
-    nav.innerHTML = ITEMS.map(it =>
-      it[0] === '__sep__'
-        ? '<span class="site-nav-sep" aria-hidden="true"></span>'
-        : (disabled && disabled.has(it[0]) ? '' : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>')
-    ).join('');
+    const primaryHtml = PRIMARY.map(function (it) { return link(it, disabled); }).join('');
+    const moreLabel = curInGroup && curItem ? '📍 ' + curItem[1] : '더보기';
+    const groupsHtml = GROUPS.map(function (g) {
+      const itemsHtml = g.items.map(function (it) { return link(it, disabled); }).join('');
+      return itemsHtml ? '<div class="site-nav-group"><span class="site-nav-group-label">' + g.label + '</span>' + itemsHtml + '</div>' : '';
+    }).join('');
+    nav.innerHTML =
+      '<div class="site-nav-row">' + primaryHtml +
+        '<button type="button" class="site-nav-more' + (curInGroup ? ' active' : '') + '" id="site-nav-more-btn">' + moreLabel + ' <span class="site-nav-caret">▾</span></button>' +
+      '</div>' +
+      '<div class="site-nav-panel" id="site-nav-panel">' + groupsHtml + '</div>';
+    const btn = nav.querySelector('#site-nav-more-btn');
+    if (btn) btn.addEventListener('click', function () { nav.querySelector('#site-nav-panel').classList.toggle('show'); });
   }
   renderNav(null);
   fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/nav_settings?select=key&enabled=eq.false', { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg' } })
@@ -797,7 +905,7 @@ document.getElementById('pin-input').addEventListener('keydown', e => {
     .then(function (rows) { const d = new Set((rows || []).map(function (r) { return r.key; })); if (d.size) renderNav(d); })
     .catch(function () {});
   const style = document.createElement('style');
-  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  style.textContent = '.site-nav{background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22)}.site-nav-row{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;scrollbar-width:thin}.site-nav-row::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}.site-nav-more{flex-shrink:0;white-space:nowrap;margin-left:auto;cursor:pointer;font-size:12.5px;font-weight:700;color:#fcd34d;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-more:hover{background:rgba(245,158,11,.22)}.site-nav-more.active{background:rgba(167,139,250,.18);color:#c4b5fd;border-color:#a78bfa}.site-nav-caret{font-size:10px}.site-nav-panel{display:none;flex-wrap:wrap;gap:14px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.08)}.site-nav-panel.show{display:flex}.site-nav-group{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.site-nav-group-label{font-size:11px;color:#64748b;margin-right:2px;white-space:nowrap}';
   document.head.appendChild(style);
   const header = document.querySelector('header');
   if (header) header.insertAdjacentElement('afterend', nav);

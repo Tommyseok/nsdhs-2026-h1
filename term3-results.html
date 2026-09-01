@@ -248,30 +248,51 @@ document.getElementById('pin-input').addEventListener('keydown', e => { if (e.ke
 /* 공통 페이지 네비게이션 */
 (function () {
   const KEY = 'runners2026@jesus';
-  const ITEMS = [
-    ['term3.html', '🗳 새학기 편성', ''],
+  const PRIMARY = [
     ['dashboard.html', '🏠 Home', ''],
     ['attendance.html', '📝 출석 입력', ''],
     ['prayer.html', '🙏 학생상황·기도', ''],
     ['students.html', '👤 학생 정보', ''],
-    ['council.html', '🏛 국장단 포털', ''],
-    ['__sep__'],
-    ['teachers.html', '🗂 셀편성', '?key=' + KEY],
-    ['relations.html', '🕸 관계도', '?key=' + KEY],
-    ['attendance-overview.html', '📊 전체 출석현황', ''],
-    ['photos.html', '📸 사진 등록', ''],
-    ['outings.html', '🎒 아웃팅', ''],
-    ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
   ];
+  const GROUPS = [
+    { label: '운영', items: [
+      ['council.html', '🏛 국장단 포털', ''],
+      ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
+      ['term3.html', '🗳 새학기 편성', ''],
+    ] },
+    { label: '자료', items: [
+      ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+      ['relations.html', '🕸 관계도', '?key=' + KEY],
+      ['attendance-overview.html', '📊 전체 출석현황', ''],
+      ['photos.html', '📸 사진 등록', ''],
+      ['outings.html', '🎒 아웃팅', ''],
+    ] },
+  ];
+  const ALL_ITEMS = PRIMARY.concat(GROUPS.flatMap(function (g) { return g.items; }));
   const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const curItem = ALL_ITEMS.find(function (it) { return it[0] === cur; });
+  const curInGroup = GROUPS.some(function (g) { return g.items.some(function (it) { return it[0] === cur; }); });
+
+  function link(it, disabled) {
+    if (disabled && disabled.has(it[0])) return '';
+    return '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>';
+  }
   const nav = document.createElement('nav');
   nav.className = 'site-nav';
   function renderNav(disabled) {
-    nav.innerHTML = ITEMS.map(it =>
-      it[0] === '__sep__'
-        ? '<span class="site-nav-sep" aria-hidden="true"></span>'
-        : (disabled && disabled.has(it[0]) ? '' : '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>')
-    ).join('');
+    const primaryHtml = PRIMARY.map(function (it) { return link(it, disabled); }).join('');
+    const moreLabel = curInGroup && curItem ? '📍 ' + curItem[1] : '더보기';
+    const groupsHtml = GROUPS.map(function (g) {
+      const itemsHtml = g.items.map(function (it) { return link(it, disabled); }).join('');
+      return itemsHtml ? '<div class="site-nav-group"><span class="site-nav-group-label">' + g.label + '</span>' + itemsHtml + '</div>' : '';
+    }).join('');
+    nav.innerHTML =
+      '<div class="site-nav-row">' + primaryHtml +
+        '<button type="button" class="site-nav-more' + (curInGroup ? ' active' : '') + '" id="site-nav-more-btn">' + moreLabel + ' <span class="site-nav-caret">▾</span></button>' +
+      '</div>' +
+      '<div class="site-nav-panel" id="site-nav-panel">' + groupsHtml + '</div>';
+    const btn = nav.querySelector('#site-nav-more-btn');
+    if (btn) btn.addEventListener('click', function () { nav.querySelector('#site-nav-panel').classList.toggle('show'); });
   }
   renderNav(null);
   fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/nav_settings?select=key&enabled=eq.false', { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg' } })
@@ -279,7 +300,7 @@ document.getElementById('pin-input').addEventListener('keydown', e => { if (e.ke
     .then(function (rows) { const d = new Set((rows || []).map(function (r) { return r.key; })); if (d.size) renderNav(d); })
     .catch(function () {});
   const style = document.createElement('style');
-  style.textContent = '.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22);scrollbar-width:thin}.site-nav::-webkit-scrollbar{height:4px}.site-nav-sep{flex:0 0 auto;width:1px;align-self:stretch;min-height:20px;background:rgba(255,255,255,.2);margin:0 5px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}';
+  style.textContent = '.site-nav{background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22)}.site-nav-row{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;scrollbar-width:thin}.site-nav-row::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}.site-nav-more{flex-shrink:0;white-space:nowrap;margin-left:auto;cursor:pointer;font-size:12.5px;font-weight:700;color:#fcd34d;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-more:hover{background:rgba(245,158,11,.22)}.site-nav-more.active{background:rgba(167,139,250,.18);color:#c4b5fd;border-color:#a78bfa}.site-nav-caret{font-size:10px}.site-nav-panel{display:none;flex-wrap:wrap;gap:14px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.08)}.site-nav-panel.show{display:flex}.site-nav-group{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.site-nav-group-label{font-size:11px;color:#64748b;margin-right:2px;white-space:nowrap}';
   document.head.appendChild(style);
   const header = document.querySelector('header');
   if (header) header.insertAdjacentElement('afterend', nav);
