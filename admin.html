@@ -206,8 +206,8 @@ const TEACHERS = [
   {name:'이규리', cell:'고3-1', role:'담임'},
   {name:'김주영', cell:'5반', role:'교사'},
   {name:'오은규', cell:'6반', role:'교사'},
-  {name:'박진호', cell:null, role:'신규 교사'},
-  {name:'송가원', cell:null, role:'신규 교사'},
+  {name:'박진호', cell:null, role:'(27년 섬김)'},
+  {name:'송가원', cell:null, role:'(27년 섬김)'},
 ];
 const CELL_TEACHERS = {
   '1반':{homeroom:'이유성',sub:'고은솔'}, '2반':{homeroom:'이윤정',sub:'박해니'},
@@ -233,8 +233,8 @@ const ALL_CELLS = CELL_ORDER;
 
 /* ============ 유틸 ============ */
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-const SABBATICAL = new Set(['조세경','이수지','이승헌','정명경']);
-function sabTag(name){ return SABBATICAL.has(name) ? ' (안식)' : ''; }
+const ROLE_TAGS = { '조세경':' (안식)', '이수지':' (안식)', '이승헌':' (안식)', '정명경':' (안식)', '박진호':' (27년 섬김)', '송가원':' (27년 섬김)' };
+function roleTag(name){ return ROLE_TAGS[name] || ''; }
 function sundayOf(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate()-x.getDay()); return x; }
 function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function fmtWk(w){ const d=new Date(w+'T00:00:00'); return (d.getMonth()+1)+'/'+d.getDate(); }
@@ -251,7 +251,7 @@ function fillSelect(){
   TEACHERS.filter(t=>t.admin).forEach(t=>{ const o=document.createElement('option'); o.value=t.name; o.textContent=t.name+' · '+t.role; og.appendChild(o); });
   sel.appendChild(og);
   const other=document.createElement('optgroup'); other.label='그 외 (관리자 아님)';
-  TEACHERS.filter(t=>!t.admin).forEach(t=>{ const o=document.createElement('option'); o.value=t.name; o.textContent=t.name+sabTag(t.name); other.appendChild(o); });
+  TEACHERS.filter(t=>!t.admin).forEach(t=>{ const o=document.createElement('option'); o.value=t.name; o.textContent=t.name+roleTag(t.name); other.appendChild(o); });
   sel.appendChild(other);
   const saved=localStorage.getItem('mock_teacher'); if(saved) sel.value=saved;
 }
@@ -331,7 +331,7 @@ function sectionAccess(logs){
       <div class="kpi ${notWeek.length?'danger':'ok'}"><div class="n">${notWeek.length}</div><div class="l">이번 주 미접속</div></div>
       <div class="kpi info"><div class="n">${TEACHERS.length}</div><div class="l">전체 선생님</div></div>
     </div>
-    ${notWeek.length?`<div style="margin-bottom:12px"><b style="color:#fca5a5">지난 7일 미접속:</b><div class="chips" style="margin-top:6px">${notWeek.map(t=>{const seen=by[t.name]?` · 마지막 ${relTime(by[t.name].lastAll)}`:' · 기록 없음';return `<span class="chip danger" title="${t.admin?'관리자':esc(t.cell||t.role)}${seen}">${esc(t.name)}${t.cell?' ('+esc(t.cell)+')':''}${esc(sabTag(t.name))}</span>`;}).join('')}</div></div>`:'<div class="tag ok" style="margin-bottom:12px">🎉 지난 7일간 전원 접속!</div>'}
+    ${notWeek.length?`<div style="margin-bottom:12px"><b style="color:#fca5a5">지난 7일 미접속:</b><div class="chips" style="margin-top:6px">${notWeek.map(t=>{const seen=by[t.name]?` · 마지막 ${relTime(by[t.name].lastAll)}`:' · 기록 없음';return `<span class="chip danger" title="${t.admin?'관리자':esc(t.cell||t.role)}${seen}">${esc(t.name)}${t.cell?' ('+esc(t.cell)+')':''}${esc(roleTag(t.name))}</span>`;}).join('')}</div></div>`:'<div class="tag ok" style="margin-bottom:12px">🎉 지난 7일간 전원 접속!</div>'}
     <table><thead><tr><th>선생님</th><th>소속</th><th>최근 접속</th><th class="r">7일 횟수</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="loading">지난 7일간 접속 기록이 없습니다.</td></tr>'}</tbody></table>
   </div>`;
 }
