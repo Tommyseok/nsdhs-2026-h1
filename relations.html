@@ -314,12 +314,12 @@
   </div>
 </div>
 
-<!-- 1학기 / 2학기 토글 바 -->
+<!-- 1학기 / 3학기 토글 바 (2026-09-01: 기존 "2학기" 라벨이 실제로는 3학기였음이 확인되어 표기만 정정) -->
 <div class="term-bar" id="term-bar" style="display:none">
   <span class="label">📅 학기</span>
   <div class="term-toggle">
     <button id="term-1" class="active" onclick="setTerm('h1')">1학기 (1~5월, 17반)</button>
-    <button id="term-2" onclick="setTerm('h2')">2학기 (6~8월, 12셀+Sp)</button>
+    <button id="term-2" onclick="setTerm('h2')">3학기 (6~8월, 12셀+Sp)</button>
   </div>
   <a class="back-link" href="teachers.html">← 셀편성으로</a>
 </div>
@@ -368,7 +368,7 @@ function checkGate() {
     <h1>내수동 고등부 관계도</h1>
     <span class="subtitle">2026 1학기</span>
   </div>
-  <a class="icon-btn" href="./cells.html" aria-label="2학기 셀편성" title="2학기 셀편성" style="width:auto;padding:0 12px;font-size:13px;gap:4px;display:flex;text-decoration:none;background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%);border-color:#a78bfa;color:#fff">🧩 <span class="visit-btn-label">2학기 셀편성</span></a>
+  <a class="icon-btn" href="./cells.html" aria-label="3학기 셀편성" title="3학기 셀편성" style="width:auto;padding:0 12px;font-size:13px;gap:4px;display:flex;text-decoration:none;background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%);border-color:#a78bfa;color:#fff">🧩 <span class="visit-btn-label">3학기 셀편성</span></a>
   <button class="icon-btn" id="visit-btn" aria-label="심방 일지" title="목사 심방 일지" style="width:auto;padding:0 12px;font-size:13px;gap:4px;display:flex">📋 <span class="visit-btn-label">심방 일지</span></button>
 </header>
 
@@ -635,13 +635,13 @@ const students = [
   {id:'이에녹', grade:3, gender:'남', cls:'14', cls2:'셀07', school:'중앙고', birthday:'09-26', attRate:1.0, star:true, notes:'INFJ. 결이 안 맞는 친구들과는 정색. 진중하게 마음 읽어줄 교사 필요. 형들 좋아함. 석준원과 케미 좋음. 김희원 부담임과 서로 힘들어함'},
   {id:'장세민', grade:3, gender:'남', cls:'14', cls2:'Sp5', school:'성동공고', birthday:'', attRate:0.22, notes:'반에서 가장 안 섞임. 카톡 가장 먼저 답. 곽지원·정원영 친한 그룹'},
 
-  // ===== 2학기 신규 / 정규 합류 학생 =====
-  {id:'김은', grade:1, gender:'여', cls:'신규', cls2:'셀01', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 2학기 신규 등록'},
-  {id:'윤서희', grade:2, gender:'여', cls:'신규', cls2:'셀05', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 2학기 신규 등록'},
-  {id:'박재영', grade:1, gender:'남', cls:'신규', cls2:'셀10', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 2학기 신규 등록 (9반→10반 이동)'},
-  {id:'최민호', grade:2, gender:'남', cls:'08', cls2:'셀07', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 1학기 새신자(태준이 친구)로 합류, 2학기 정규 편성'},
-  {id:'이소현', grade:1, gender:'여', cls:'14', cls2:'셀10', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 1학기 새신자(이소민 동생)로 합류, 2학기 정규 편성'},
-  {id:'주성', grade:3, gender:'남', cls:'09', cls2:'셀09', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 1학기 새신자로 합류, 2학기 정규 편성'},
+  // ===== 3학기 신규 / 정규 합류 학생 =====
+  {id:'김은', grade:1, gender:'여', cls:'신규', cls2:'셀01', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 3학기 신규 등록'},
+  {id:'윤서희', grade:2, gender:'여', cls:'신규', cls2:'셀05', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 3학기 신규 등록'},
+  {id:'박재영', grade:1, gender:'남', cls:'신규', cls2:'셀10', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 3학기 신규 등록 (9반→10반 이동)'},
+  {id:'최민호', grade:2, gender:'남', cls:'08', cls2:'셀07', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 1학기 새신자(태준이 친구)로 합류, 3학기 정규 편성'},
+  {id:'이소현', grade:1, gender:'여', cls:'14', cls2:'셀10', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 1학기 새신자(이소민 동생)로 합류, 3학기 정규 편성'},
+  {id:'주성', grade:3, gender:'남', cls:'09', cls2:'셀09', school:'', birthday:'', attRate:'', attLevel:0, notes:'🆕 1학기 새신자로 합류, 3학기 정규 편성'},
 ];
 
 const teachers = [
@@ -789,7 +789,7 @@ visitLogs.forEach(log => {
 
 /* ===== 유틸 ===== */
 
-/* ===== 학기 토글 (1학기 / 2학기) ===== */
+/* ===== 학기 토글 (1학기 / 3학기) ===== */
 let CURRENT_TERM = 'h1';  // 'h1' | 'h2'
 const TERM_CONFIG = {
   h1: {
@@ -798,8 +798,8 @@ const TERM_CONFIG = {
     label: c => {
       if (c === '국장단') return '👑 국장단 (담임 외)';
       if (c === '헬퍼') return '🤝 헬퍼';
-      if (c === '미편성') return '🚪 2학기 미편성 (떠남·정보 부족)';
-      if (c === '신규') return '🆕 2학기 신규 학생';
+      if (c === '미편성') return '🚪 3학기 미편성 (떠남·정보 부족)';
+      if (c === '신규') return '🆕 3학기 신규 학생';
       return c + '반';
     },
   },
@@ -809,7 +809,7 @@ const TERM_CONFIG = {
     label: c => {
       if (c === '국장단') return '👑 국장단';
       if (c === '헬퍼') return '🤝 헬퍼';
-      if (c === '미편성') return '🚪 2학기 미편성';
+      if (c === '미편성') return '🚪 3학기 미편성';
       if (c.startsWith('셀')) return `소그룹반 ${parseInt(c.slice(1),10)}`;
       if (c.startsWith('Sp')) return `💛 더 자주 보고 싶은 친구들`;
       return c;
@@ -871,7 +871,7 @@ function setTerm(t) {
   document.getElementById('term-2').classList.toggle('active', t === 'h2');
   // 헤더 부제 갱신
   const sub = document.querySelector('header .subtitle');
-  if (sub) sub.textContent = t === 'h1' ? '2026 1학기 · 17반 편성' : '2026 2학기 · 12 소그룹 + 보고 싶은 친구들 6';
+  if (sub) sub.textContent = t === 'h1' ? '2026 1학기 · 17반 편성' : '2026 3학기 · 12 소그룹 + 보고 싶은 친구들 6';
   if (typeof rebuild === 'function') rebuild();
   else { if (typeof buildGroups==='function') buildGroups(); if (typeof buildIndex==='function') buildIndex(); }
 }

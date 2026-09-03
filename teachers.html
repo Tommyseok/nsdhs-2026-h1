@@ -889,12 +889,12 @@
 <div id="app-root" style="display:none">
   <header>
     <div class="container">
-      <h1>🔒 내수동 고등부 2학기 셀편성
+      <h1>🔒 내수동 고등부 4학기 셀편성
         <span class="badge-private">🔐 교사용 비공개</span>
       </h1>
-      <div class="subtitle">2026년 3학기 · 4 대가족 · 10개 반(혼합 6 + 고3 4) · 총 85명 · 학생별 케어 정보 포함</div>
+      <div class="subtitle">2026년 4학기 · 4 대가족 · 10개 반(혼합 6 + 고3 4) · 총 85명 · 학생별 케어 정보 포함</div>
       <div class="nav-row">
-        <a class="nav-link relations" href="relations.html?key=runners2026@jesus" target="_blank">🕸 관계도 (1·2학기 토글)</a>
+        <a class="nav-link relations" href="relations.html?key=runners2026@jesus" target="_blank">🕸 관계도 (1·3학기 토글)</a>
         <a class="nav-link public" href="assignments.html" target="_blank">🌱 공개용 편성표</a>
         <a class="nav-link attend" href="attendance-overview.html">📊 출석현황</a>
         <a class="nav-link logout" href="javascript:void(0)" onclick="logout()">🚪 로그아웃</a>
@@ -919,7 +919,7 @@
 
   <footer>
     <div class="church">내수동교회 고등부 · 교사용</div>
-    <div>2026년 2학기 (6–8월) 편성 · 교사 비공개 v1</div>
+    <div>2026년 4학기 (9월~) 편성 · 교사 비공개 v1</div>
   </footer>
 </div>
 
@@ -1163,10 +1163,78 @@ const PREV_INFO = {
   '이소민':   {cell:'14반',h:'석준원',s:'고은솔'},'이에녹':   {cell:'14반',h:'석준원',s:'고은솔', size:'L'},
   '장세민':{cell:'14반',h:'석준원',s:'고은솔'},
   '이소현':   {cell:'14반',h:'석준원',s:'고은솔',note:'1학기 새신자로 합류 (이소민 동생)'},
-  // 2학기 신규
-  '김은':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
-  '윤서희':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
-  '박재영':{cell:null,h:null,s:null,note:'2학기 신규 등록'},
+  // 3학기 신규
+  '김은':{cell:null,h:null,s:null,note:'3학기 신규 등록'},
+  '윤서희':{cell:null,h:null,s:null,note:'3학기 신규 등록'},
+  '박재영':{cell:null,h:null,s:null,note:'3학기 신규 등록'},
+};
+
+/* ====================================================================
+ * 3-B. 3학기 담임 정보 (학생 → 3학기 소그룹반·담임 · 2026-09-01 폐지된 구 구조 기록용)
+ *    출처: 4학기 배포 전 teachers.html FAMILY_GROUPS/HOMEROOM_TEACHERS (git 4ac745d~1)
+ * ==================================================================== */
+const PREV3_INFO = {
+  // 소그룹반1 (이윤정)
+  '권하율':{cell:'소그룹반1',h:'이윤정'},'하은유':{cell:'소그룹반1',h:'이윤정'},
+  '홍기진':{cell:'소그룹반1',h:'이윤정'},'서이수':{cell:'소그룹반1',h:'이윤정'},
+  '장지현':{cell:'소그룹반1',h:'이윤정'},'김은':{cell:'소그룹반1',h:'이윤정'},
+  // 소그룹반2 (정명경)
+  '강은교':{cell:'소그룹반2',h:'정명경'},'명주원':{cell:'소그룹반2',h:'정명경'},
+  '조인상':{cell:'소그룹반2',h:'정명경'},'연해준':{cell:'소그룹반2',h:'정명경'},
+  '유나린':{cell:'소그룹반2',h:'정명경'},
+  // 소그룹반3 (전성희)
+  '박지호':{cell:'소그룹반3',h:'전성희'},'한채은':{cell:'소그룹반3',h:'전성희'},
+  '김준수':{cell:'소그룹반3',h:'전성희'},'김라일':{cell:'소그룹반3',h:'전성희'},
+  '안민혁':{cell:'소그룹반3',h:'전성희'},
+  // 소그룹반4 (박대철)
+  '원대연':{cell:'소그룹반4',h:'박대철'},'이준호':{cell:'소그룹반4',h:'박대철'},
+  '전지훈':{cell:'소그룹반4',h:'박대철'},'오현우':{cell:'소그룹반4',h:'박대철'},
+  '이빛가온':{cell:'소그룹반4',h:'박대철'},
+  // 소그룹반5 (이수지)
+  '민예원':{cell:'소그룹반5',h:'이수지'},'김도연':{cell:'소그룹반5',h:'이수지'},
+  '최지은':{cell:'소그룹반5',h:'이수지'},'김나현':{cell:'소그룹반5',h:'이수지'},
+  '윤서희':{cell:'소그룹반5',h:'이수지'},
+  // 소그룹반6 (정유빈)
+  '조한나':{cell:'소그룹반6',h:'정유빈'},'김한결':{cell:'소그룹반6',h:'정유빈'},
+  '이서후':{cell:'소그룹반6',h:'정유빈'},'임태민':{cell:'소그룹반6',h:'정유빈'},
+  '박지웅':{cell:'소그룹반6',h:'정유빈'},
+  // 소그룹반7 (양지현)
+  '조강인':{cell:'소그룹반7',h:'양지현'},'이에녹':{cell:'소그룹반7',h:'양지현'},
+  '최민호':{cell:'소그룹반7',h:'양지현'},'김정록':{cell:'소그룹반7',h:'양지현'},
+  '정태율':{cell:'소그룹반7',h:'양지현'},
+  // 소그룹반8 (이유성)
+  '심희은':{cell:'소그룹반8',h:'이유성'},'김은우':{cell:'소그룹반8',h:'이유성'},
+  '최가은':{cell:'소그룹반8',h:'이유성'},'양소희':{cell:'소그룹반8',h:'이유성'},
+  '오은수':{cell:'소그룹반8',h:'이유성'},
+  // 소그룹반9 (오덕현)
+  '나정인':{cell:'소그룹반9',h:'오덕현'},'주성':{cell:'소그룹반9',h:'오덕현'},
+  '곽지원':{cell:'소그룹반9',h:'오덕현'},'양인혁':{cell:'소그룹반9',h:'오덕현'},
+  '김다은':{cell:'소그룹반9',h:'오덕현'},
+  // 소그룹반10 (최희승)
+  '이주형':{cell:'소그룹반10',h:'최희승'},'윤성하':{cell:'소그룹반10',h:'최희승'},
+  '나호윤':{cell:'소그룹반10',h:'최희승'},'이소현':{cell:'소그룹반10',h:'최희승'},
+  '배유나':{cell:'소그룹반10',h:'최희승'},'박재영':{cell:'소그룹반10',h:'최희승'},
+  // 소그룹반11 (석준원)
+  '최유현':{cell:'소그룹반11',h:'석준원'},'이가영':{cell:'소그룹반11',h:'석준원'},
+  '최수지':{cell:'소그룹반11',h:'석준원'},'박동하':{cell:'소그룹반11',h:'석준원'},
+  '송준원':{cell:'소그룹반11',h:'석준원'},
+  // 소그룹반12 (고은솔)
+  '정승빈':{cell:'소그룹반12',h:'고은솔'},'김주하':{cell:'소그룹반12',h:'고은솔'},
+  '김채은':{cell:'소그룹반12',h:'고은솔'},'유재희':{cell:'소그룹반12',h:'고은솔'},
+  '김강은':{cell:'소그룹반12',h:'고은솔'},
+  // 더 자주 보고 싶은 친구들 (Sp1~6, 대가족별 · 담임 없이 대가족 선생님들이 순환 케어)
+  '고예나':{cell:'더 자주 보고 싶은 친구들'},'김민채':{cell:'더 자주 보고 싶은 친구들'},
+  '송성모':{cell:'더 자주 보고 싶은 친구들'},'최승아':{cell:'더 자주 보고 싶은 친구들'},
+  '최지윤':{cell:'더 자주 보고 싶은 친구들'},'최서윤':{cell:'더 자주 보고 싶은 친구들'},
+  '백결':{cell:'더 자주 보고 싶은 친구들'},'조혁준':{cell:'더 자주 보고 싶은 친구들'},
+  '김재원':{cell:'더 자주 보고 싶은 친구들'},'김유진':{cell:'더 자주 보고 싶은 친구들'},
+  '김강희':{cell:'더 자주 보고 싶은 친구들'},'박서연':{cell:'더 자주 보고 싶은 친구들'},
+  '박시우':{cell:'더 자주 보고 싶은 친구들'},'하어림':{cell:'더 자주 보고 싶은 친구들'},
+  '박진서':{cell:'더 자주 보고 싶은 친구들'},'임소명':{cell:'더 자주 보고 싶은 친구들'},
+  '오희수':{cell:'더 자주 보고 싶은 친구들'},'박민주':{cell:'더 자주 보고 싶은 친구들'},
+  '장세민':{cell:'더 자주 보고 싶은 친구들'},'정원영':{cell:'더 자주 보고 싶은 친구들'},
+  '이서현':{cell:'더 자주 보고 싶은 친구들'},'이소민':{cell:'더 자주 보고 싶은 친구들'},
+  '김도헌':{cell:'더 자주 보고 싶은 친구들'},'이하준':{cell:'더 자주 보고 싶은 친구들'},
 };
 
 /* ====================================================================
@@ -1392,6 +1460,18 @@ function studentHtml(s, sameCellNames, splitWithinCell, keepWithinCell) {
     }
   }
 
+  const prev3 = PREV3_INFO[s.name];
+  let prev3Html = '';
+  if (prev3) {
+    prev3Html = `
+      <div class="prev-row">
+        <span class="prev-label">3학기:</span>
+        <span class="prev-cell">${escapeHtml(prev3.cell)}</span>
+        ${prev3.h ? `<span class="prev-teacher">담임 ${escapeHtml(prev3.h)}</span>` : ''}
+      </div>
+    `;
+  }
+
   const notesHtml = notes.map(n => `<li class="${escapeHtml(n.t)}">${escapeHtml(n.m)}</li>`).join('');
 
   let warnHtml = '';
@@ -1413,6 +1493,7 @@ function studentHtml(s, sameCellNames, splitWithinCell, keepWithinCell) {
         ${labelInfo ? `<span class="pill label-${s.label}" title="${escapeHtml(labelInfo.title)}">${labelInfo.text}</span>` : ''}
       </div>
       ${prevHtml}
+      ${prev3Html}
       ${notes.length > 0 ? `<ul class="notes">${notesHtml}</ul>` : ''}
       ${warnHtml}
       ${keepHtml}
@@ -1822,7 +1903,7 @@ function copyAllShare() {
       lines.push(plainTextForCell(family.special.name, '', '', sorted));
     }
   });
-  const text = '내수동 고등부 2026 2학기 셀편성\n' + lines.join('\n');
+  const text = '내수동 고등부 2026 4학기 셀편성\n' + lines.join('\n');
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.querySelector('.copy-all');
     if (btn) {

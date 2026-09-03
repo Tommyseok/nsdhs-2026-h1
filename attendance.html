@@ -778,9 +778,10 @@ function renderWeek() {
   const label = document.getElementById('week-label');
   const sub = document.getElementById('week-sub');
   const isHistorical = HISTORICAL_WEEKS.includes(CURRENT_WEEK);
+  const TERM4_START = '2026-09-06'; // 4학기(새 반편성) 시작 주
   const termTag = isHistorical
     ? '<span class="term-tag">🗓️ 1학기</span>'
-    : '<span class="term-tag h2">2학기</span>';
+    : (CURRENT_WEEK >= TERM4_START ? '<span class="term-tag h2">4학기</span>' : '<span class="term-tag h2">3학기</span>');
   label.innerHTML = fmtKor(d) + ' ' + termTag;
   if (ymd(d) === thisSunday()) {
     label.innerHTML = fmtKor(d) + ' <span class="today-mark">· 이번 주</span> ' + termTag;
