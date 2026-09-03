@@ -616,52 +616,49 @@ const PRIVATE_KEY = 'runners2026@jesus';
 
 /* ===== 데이터 ===== */
 const TEACHERS = [
-  // 관리자 7명 — 학생별 모아보기 전체 학생 볼 수 있음
+  // 관리자 6명 — 학생별 모아보기 전체 학생 볼 수 있음
   {name:'안종범', cell:null,    role:'부장집사',    admin:true},
-  {name:'석준원', cell:'셀11', role:'담임 · 총무',  admin:true},
-  {name:'김광현', cell:null,    role:'교육국장',    admin:true},
-  {name:'송진우', cell:'셀7',  role:'부담임 · 예배국장', admin:true},
-  {name:'오덕현', cell:'셀9',  role:'담임 · 미디어국장', admin:true},
-  {name:'이유성', cell:'셀8',  role:'담임 · 홍보국장', admin:true},
+  {name:'석준원', cell:'6반',   role:'담임 · 총무',  admin:true},
+  {name:'김광현', cell:'5반',   role:'담임 · 교육국장', admin:true},
+  {name:'송진우', cell:'3반',   role:'부담임 · 예배국장', admin:true},
+  {name:'오덕현', cell:null,    role:'찬양팀 지도 · 미디어국장', admin:true},
+  {name:'이유성', cell:'1반',   role:'담임 · 홍보국장', admin:true},
   // 담임/부담임 — 학생별 모아보기는 본인 대가족만
-  {name:'이윤정', cell:'셀1',  role:'담임'},{name:'이승헌', cell:'셀1',  role:'부담임'},
-  {name:'정명경', cell:'셀2',  role:'담임'},{name:'조세경', cell:'셀2',  role:'부담임'},
-  {name:'전성희', cell:'셀3',  role:'담임'},
-  {name:'박대철', cell:'셀4',  role:'담임'},{name:'김희원', cell:'셀4',  role:'부담임'},
-  {name:'이수지', cell:'셀5',  role:'담임'},{name:'박해니', cell:'셀5',  role:'부담임'},
-  {name:'정유빈', cell:'셀6',  role:'담임'},
-  {name:'양지현', cell:'셀7',  role:'담임'},
-  {name:'이규리', cell:'셀8',  role:'부담임'},
-  {name:'김주영', cell:'셀9',  role:'부담임'},
-  {name:'최희승', cell:'셀10', role:'담임'},
-  {name:'고은솔', cell:'셀12', role:'담임'},{name:'오은규', cell:'셀12', role:'부담임'},
+  {name:'이윤정', cell:'2반',   role:'담임'},{name:'박해니', cell:'2반',   role:'부담임'},
+  {name:'정명경', cell:null,    role:'담임'},{name:'조세경', cell:null,    role:'부담임'},
+  {name:'전성희', cell:'고3-2', role:'담임'},
+  {name:'박대철', cell:'4반',   role:'담임'},{name:'김희원', cell:'4반',   role:'부담임'},
+  {name:'이수지', cell:null,    role:'담임'},
+  {name:'정유빈', cell:'3반',   role:'담임'},
+  {name:'양지현', cell:'고3-4', role:'담임'},
+  {name:'이규리', cell:'고3-1', role:'담임'},
+  {name:'김주영', cell:'5반',   role:'부담임'},
+  {name:'최희승', cell:'고3-3', role:'담임'},
+  {name:'고은솔', cell:'1반',   role:'부담임'},{name:'오은규', cell:'6반',   role:'부담임'},
+  {name:'이승헌', cell:null, role:'부담임'},
   {name:'박진호', cell:null, role:'신규 교사'},
   {name:'송가원', cell:null, role:'신규 교사'},
 ];
 
 const CELL_STUDENTS = {
-  '셀1':['권하율','하은유','홍기진','서이수','장지현','김은'],
-  '셀2':['강은교','명주원','조인상','연해준','유나린'],
-  '셀3':['박지호','한채은','김준수','김라일','안민혁'],
-  '셀4':['원대연','이준호','전지훈','오현우','이빛가온'],
-  '셀5':['민예원','김도연','최지은','김나현','윤서희'],
-  '셀6':['조한나','김한결','이서후','임태민','박지웅'],
-  '셀7':['조강인','이에녹','최민호','김정록','정태율'],
-  '셀8':['심희은','김은우','최가은','양소희','오은수'],
-  '셀9':['나정인','주성','곽지원','양인혁','김다은'],
-  '셀10':['이주형','윤성하','나호윤','이소현','배유나','박재영'],
-  '셀11':['최유현','이가영','최수지','박동하','송준원'],
-  '셀12':['정승빈','김주하','김채은','유재희','김강은'],
+  '1반':   ['오은수','김나현','김채은','박지웅','이가영','민예원','이서현','이소현','김라일'],
+  '2반':   ['김정록','안민혁','박민주','전지훈','이주형','박동하','김강은','원대연','유재희'],
+  '3반':   ['김한결','최지은','최민호','김강희','배유나','박재영','조한나','하은유','장지현'],
+  '4반':   ['고예나','이빛가온','최수지','윤서희','김재원','하어림','오현우','연해준','송준원'],
+  '5반':   ['윤성하','김은','김유진','임태민','강은교','유나린','권하율','김주하','정태율'],
+  '6반':   ['나호윤','이서후','최유현','김도연','양소희','홍기진','이준호','박시우','이하준'],
+  '고3-1': ['송성모','김도헌','이소민','박지호','한채은','김준수','박진서','임소명'],
+  '고3-2': ['이에녹','백결','조혁준','최승아','조강인','정승빈','서이수','김민채'],
+  '고3-3': ['곽지원','김다은','장세민','정원영','주성','나정인','명주원'],
+  '고3-4': ['최가은','김은우','최지윤','최서윤','오희수','심희은','조인상','양인혁'],
 };
 
-// 셀 → 대가족 매핑 (대가족장 셀 + 옆 셀 + Special)
+// 반 → 대가족 매핑 (1+2반, 3+4반, 5+6반, 고3 전체)
 const CELL_FAMILY = {
-  '셀1':1,'셀2':1,'Sp1':1,
-  '셀3':2,'셀4':2,'Sp2':2,
-  '셀5':3,'셀6':3,'Sp3':3,
-  '셀7':4,'셀8':4,'Sp4':4,
-  '셀9':5,'셀10':5,'Sp5':5,
-  '셀11':6,'셀12':6,'Sp6':6,
+  '1반':1,'2반':1,
+  '3반':2,'4반':2,
+  '5반':3,'6반':3,
+  '고3-1':4,'고3-2':4,'고3-3':4,'고3-4':4,
 };
 
 function myFamily(me) {
@@ -671,24 +668,11 @@ function familyCells(famNum) {
   return Object.keys(CELL_FAMILY).filter(c => CELL_FAMILY[c] === famNum);
 }
 
-/* ===== 장결자(더 자주 보고 싶은 친구들) 배정 셀 — PPT 라인업 기준 ===== */
-const HOME_CELL = {
-  '김민채':'셀1','송성모':'셀1','최승아':'셀2','고예나':'셀2',
-  '최서윤':'셀3','최지윤':'셀3','백결':'셀4','조혁준':'셀4',
-  '김유진':'셀5','김강희':'셀5','김재원':'셀6','박서연':'셀6',
-  '박시우':'셀7','하어림':'셀7','박진서':'셀8','임소명':'셀8',
-  '오희수':'셀9','장세민':'셀9','정원영':'셀10','박민주':'셀10',
-  '김도헌':'셀11','이하준':'셀11','이서현':'셀12','이소민':'셀12',
-};
-const SPECIAL_SET = new Set(Object.keys(HOME_CELL));
-const specialsOfCell = c => Object.keys(HOME_CELL).filter(n => HOME_CELL[n] === c);
-function specialTag(name, ctxCell) {
-  if (!SPECIAL_SET.has(name)) return '';
-  const home = HOME_CELL[name];
-  const inHome = ctxCell === home;
-  const txt = inHome ? '💛 보고 싶은 친구' : '🏠 소그룹반 ' + home.slice(1);
-  const bg = inHome ? '#fce7f3' : '#fef3c7', fg = inHome ? '#9d174d' : '#92400e';
-  return `<span title="${inHome ? '더 자주 보고 싶은 친구(장결자) · 이 반 소속' : '배정 반(장결자 소속) → ' + home}" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:${bg};color:${fg};margin-left:5px;white-space:nowrap;vertical-align:middle">${txt}</span>`;
+// 장결(장기결석) 케어 대상 — Sp 특별반은 폐지했지만 라벨로 표시 (students.html STUDENTS의 la:1과 동일 명단)
+const JANGGYEOL = new Set(['김강희','김나현','김도헌','김민채','김유진','김은','김재원','박동하','박민주','박시우','박진서','배유나','백결','오희수','이서현','이소현','이준호','이하준','임소명','임태민','장세민','전지훈','정원영','조혁준','최서윤','최승아','최지윤']);
+function specialTag(name) {
+  if (!JANGGYEOL.has(name)) return '';
+  return '<span title="장기결석(장결) 케어 대상" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:#fce7f3;color:#9d174d;margin-left:5px;white-space:nowrap;vertical-align:middle">🤍 장결</span>';
 }
 
 /* ===== 상태 ===== */
@@ -703,8 +687,6 @@ const ALL_STUDENTS_FLAT = [];
 Object.entries(CELL_STUDENTS).forEach(([cell, list]) => {
   list.forEach(name => ALL_STUDENTS_FLAT.push({name, cell}));
 });
-// 장결자(보고 싶은 친구들) — 배정 셀로 합류 (학생별 모아보기·기도 기록 대상)
-Object.keys(HOME_CELL).forEach(n => ALL_STUDENTS_FLAT.push({name: n, cell: HOME_CELL[n]}));
 
 /* ===== 로그인 ===== */
 function fillSelect() {
@@ -931,10 +913,8 @@ function fillStudentSelect() {
   if (!MY || !MY.cell) return;
   const sel = document.getElementById('form-student');
   const students = CELL_STUDENTS[MY.cell] || [];
-  const sp = specialsOfCell(MY.cell);
   sel.innerHTML = '<option value="">— 학생 선택 —</option>' +
-    students.map(s => `<option value="${s}">${s}</option>`).join('') +
-    sp.map(s => `<option value="${s}">💛 ${s} (보고 싶은 친구)</option>`).join('');
+    students.map(s => `<option value="${s}">${s}</option>`).join('');
 }
 
 function allPrayers() {

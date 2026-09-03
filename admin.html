@@ -185,60 +185,51 @@ const GH = 'https://github.com/Tommyseok/nsdhs-2026-h1/edit/main/publish/data';
 /* ============ 데이터 (dashboard.html 과 동일) ============ */
 const TEACHERS = [
   {name:'안종범', cell:null, role:'부장집사', admin:true},
-  {name:'석준원', cell:'셀11', role:'담임·총무', admin:true},
-  {name:'김광현', cell:null, role:'교육국장', admin:true},
-  {name:'송진우', cell:'셀7', role:'부담임·예배국장', admin:true},
-  {name:'오덕현', cell:'셀9', role:'담임·미디어국장', admin:true},
-  {name:'이유성', cell:'셀8', role:'담임·홍보국장', admin:true},
-  {name:'이윤정', cell:'셀1', role:'담임 (대가족장)'},
-  {name:'정명경', cell:'셀2', role:'담임'},
-  {name:'전성희', cell:'셀3', role:'담임 (대가족장)'},
-  {name:'박대철', cell:'셀4', role:'담임'},
-  {name:'이수지', cell:'셀5', role:'담임 (대가족장)'},
-  {name:'정유빈', cell:'셀6', role:'담임'},
-  {name:'양지현', cell:'셀7', role:'담임 (대가족장)'},
-  {name:'최희승', cell:'셀10', role:'담임'},
-  {name:'고은솔', cell:'셀12', role:'담임'},
-  {name:'이승헌', cell:'셀1', role:'부담임'},
-  {name:'조세경', cell:'셀2', role:'부담임'},
-  {name:'김희원', cell:'셀4', role:'부담임'},
-  {name:'박해니', cell:'셀5', role:'부담임'},
-  {name:'이규리', cell:'셀8', role:'부담임'},
-  {name:'김주영', cell:'셀9', role:'부담임'},
-  {name:'오은규', cell:'셀12', role:'부담임'},
+  {name:'석준원', cell:'6반', role:'담임·총무', admin:true},
+  {name:'김광현', cell:'5반', role:'담임·교육국장', admin:true},
+  {name:'송진우', cell:'3반', role:'부담임·예배국장', admin:true},
+  {name:'오덕현', cell:null, role:'찬양팀 지도·미디어국장', admin:true},
+  {name:'이유성', cell:'1반', role:'담임·홍보국장', admin:true},
+  {name:'이윤정', cell:'2반', role:'담임'},
+  {name:'정명경', cell:null, role:'담임'},
+  {name:'전성희', cell:'고3-2', role:'담임'},
+  {name:'박대철', cell:'4반', role:'담임'},
+  {name:'이수지', cell:null, role:'담임'},
+  {name:'정유빈', cell:'3반', role:'담임'},
+  {name:'양지현', cell:'고3-4', role:'담임'},
+  {name:'최희승', cell:'고3-3', role:'담임'},
+  {name:'고은솔', cell:'1반', role:'부담임'},
+  {name:'이승헌', cell:null, role:'부담임'},
+  {name:'조세경', cell:null, role:'부담임'},
+  {name:'김희원', cell:'4반', role:'부담임'},
+  {name:'박해니', cell:'2반', role:'부담임'},
+  {name:'이규리', cell:'고3-1', role:'담임'},
+  {name:'김주영', cell:'5반', role:'부담임'},
+  {name:'오은규', cell:'6반', role:'부담임'},
   {name:'박진호', cell:null, role:'신규 교사'},
   {name:'송가원', cell:null, role:'신규 교사'},
 ];
 const CELL_TEACHERS = {
-  '셀1':{homeroom:'이윤정',sub:'이승헌'}, '셀2':{homeroom:'정명경',sub:'조세경'},
-  '셀3':{homeroom:'전성희',sub:''}, '셀4':{homeroom:'박대철',sub:'김희원'},
-  '셀5':{homeroom:'이수지',sub:'박해니'}, '셀6':{homeroom:'정유빈',sub:''},
-  '셀7':{homeroom:'양지현',sub:'송진우'}, '셀8':{homeroom:'이유성',sub:'이규리'},
-  '셀9':{homeroom:'오덕현',sub:'김주영'}, '셀10':{homeroom:'최희승',sub:''},
-  '셀11':{homeroom:'석준원',sub:''}, '셀12':{homeroom:'고은솔',sub:'오은규'},
+  '1반':{homeroom:'이유성',sub:'고은솔'}, '2반':{homeroom:'이윤정',sub:'박해니'},
+  '3반':{homeroom:'정유빈',sub:'송진우'}, '4반':{homeroom:'박대철',sub:'김희원'},
+  '5반':{homeroom:'김광현',sub:'김주영'}, '6반':{homeroom:'석준원',sub:'오은규'},
+  '고3-1':{homeroom:'이규리',sub:''}, '고3-2':{homeroom:'전성희',sub:''},
+  '고3-3':{homeroom:'최희승',sub:''}, '고3-4':{homeroom:'양지현',sub:''},
 };
 const CELL_STUDENTS = {
-  '셀1':[{name:'권하율',grade:1,gender:'남'},{name:'하은유',grade:1,gender:'여'},{name:'홍기진',grade:2,gender:'남'},{name:'서이수',grade:3,gender:'여'},{name:'장지현',grade:2,gender:'여'},{name:'김은',grade:1,gender:'여'}],
-  '셀2':[{name:'강은교',grade:2,gender:'여'},{name:'명주원',grade:3,gender:'남'},{name:'조인상',grade:3,gender:'여'},{name:'연해준',grade:2,gender:'남'},{name:'유나린',grade:2,gender:'여'}],
-  '셀3':[{name:'박지호',grade:3,gender:'여'},{name:'한채은',grade:3,gender:'여'},{name:'김준수',grade:3,gender:'남'},{name:'김라일',grade:2,gender:'남'},{name:'안민혁',grade:1,gender:'남'}],
-  '셀4':[{name:'원대연',grade:2,gender:'남'},{name:'이준호',grade:2,gender:'남'},{name:'전지훈',grade:2,gender:'남'},{name:'오현우',grade:1,gender:'남'},{name:'이빛가온',grade:1,gender:'남'}],
-  '셀5':[{name:'민예원',grade:2,gender:'여'},{name:'김도연',grade:2,gender:'여'},{name:'최지은',grade:1,gender:'여'},{name:'김나현',grade:2,gender:'여'},{name:'윤서희',grade:2,gender:'여'}],
-  '셀6':[{name:'조한나',grade:1,gender:'여'},{name:'김한결',grade:1,gender:'남'},{name:'이서후',grade:1,gender:'여'},{name:'임태민',grade:2,gender:'남'},{name:'박지웅',grade:1,gender:'남'}],
-  '셀7':[{name:'조강인',grade:3,gender:'남'},{name:'이에녹',grade:3,gender:'남'},{name:'최민호',grade:2,gender:'남'},{name:'김정록',grade:1,gender:'남'},{name:'정태율',grade:1,gender:'남'}],
-  '셀8':[{name:'심희은',grade:3,gender:'여'},{name:'김은우',grade:3,gender:'여'},{name:'최가은',grade:3,gender:'여'},{name:'양소희',grade:2,gender:'여'},{name:'오은수',grade:1,gender:'여'}],
-  '셀9':[{name:'나정인',grade:3,gender:'여'},{name:'주성',grade:3,gender:'남'},{name:'곽지원',grade:3,gender:'남'},{name:'양인혁',grade:3,gender:'남'},{name:'김다은',grade:3,gender:'여'}],
-  '셀10':[{name:'이주형',grade:1,gender:'여'},{name:'윤성하',grade:1,gender:'남'},{name:'나호윤',grade:1,gender:'남'},{name:'이소현',grade:1,gender:'여'},{name:'배유나',grade:2,gender:'여'},{name:'박재영',grade:1,gender:'남'}],
-  '셀11':[{name:'최유현',grade:1,gender:'여'},{name:'이가영',grade:2,gender:'여'},{name:'최수지',grade:1,gender:'여'},{name:'박동하',grade:1,gender:'남'},{name:'송준원',grade:1,gender:'남'}],
-  '셀12':[{name:'정승빈',grade:3,gender:'여'},{name:'김주하',grade:2,gender:'여'},{name:'김채은',grade:2,gender:'여'},{name:'유재희',grade:2,gender:'여'},{name:'김강은',grade:1,gender:'여'}],
-  'Sp1':[{name:'고예나',grade:1,gender:'여'},{name:'김민채',grade:3,gender:'여'},{name:'송성모',grade:3,gender:'남'},{name:'최승아',grade:3,gender:'여'}],
-  'Sp2':[{name:'최지윤',grade:3,gender:'여'},{name:'최서윤',grade:3,gender:'여'},{name:'백결',grade:3,gender:'남'},{name:'조혁준',grade:3,gender:'남'}],
-  'Sp3':[{name:'김재원',grade:1,gender:'남'},{name:'김유진',grade:2,gender:'여'},{name:'김강희',grade:1,gender:'여'},{name:'박서연',grade:1,gender:'여'}],
-  'Sp4':[{name:'박시우',grade:1,gender:'남'},{name:'하어림',grade:1,gender:'남'},{name:'박진서',grade:3,gender:'여'},{name:'임소명',grade:3,gender:'여'}],
-  'Sp5':[{name:'오희수',grade:3,gender:'여'},{name:'박민주',grade:1,gender:'여'},{name:'장세민',grade:3,gender:'남'},{name:'정원영',grade:3,gender:'남'}],
-  'Sp6':[{name:'이서현',grade:1,gender:'여'},{name:'이소민',grade:3,gender:'여'},{name:'김도헌',grade:3,gender:'남'},{name:'이하준',grade:1,gender:'남'}],
+  '1반':[{name:'오은수',grade:1,gender:'여'},{name:'김나현',grade:2,gender:'여'},{name:'김채은',grade:2,gender:'여'},{name:'박지웅',grade:1,gender:'남'},{name:'이가영',grade:2,gender:'여'},{name:'민예원',grade:2,gender:'여'},{name:'이서현',grade:1,gender:'여'},{name:'이소현',grade:1,gender:'여'},{name:'김라일',grade:2,gender:'남'}],
+  '2반':[{name:'김정록',grade:1,gender:'남'},{name:'안민혁',grade:1,gender:'남'},{name:'박민주',grade:1,gender:'여'},{name:'전지훈',grade:2,gender:'남'},{name:'이주형',grade:1,gender:'여'},{name:'박동하',grade:1,gender:'남'},{name:'김강은',grade:1,gender:'여'},{name:'원대연',grade:2,gender:'남'},{name:'유재희',grade:2,gender:'여'}],
+  '3반':[{name:'김한결',grade:1,gender:'남'},{name:'최지은',grade:1,gender:'여'},{name:'최민호',grade:2,gender:'남'},{name:'김강희',grade:1,gender:'여'},{name:'배유나',grade:2,gender:'여'},{name:'박재영',grade:1,gender:'남'},{name:'조한나',grade:1,gender:'여'},{name:'하은유',grade:1,gender:'여'},{name:'장지현',grade:2,gender:'여'}],
+  '4반':[{name:'고예나',grade:1,gender:'여'},{name:'이빛가온',grade:1,gender:'남'},{name:'최수지',grade:1,gender:'여'},{name:'윤서희',grade:2,gender:'여'},{name:'김재원',grade:1,gender:'남'},{name:'하어림',grade:1,gender:'남'},{name:'오현우',grade:1,gender:'남'},{name:'연해준',grade:2,gender:'남'},{name:'송준원',grade:1,gender:'남'}],
+  '5반':[{name:'윤성하',grade:1,gender:'남'},{name:'김은',grade:1,gender:'여'},{name:'김유진',grade:2,gender:'여'},{name:'임태민',grade:2,gender:'남'},{name:'강은교',grade:2,gender:'여'},{name:'유나린',grade:2,gender:'여'},{name:'권하율',grade:1,gender:'남'},{name:'김주하',grade:2,gender:'여'},{name:'정태율',grade:1,gender:'남'}],
+  '6반':[{name:'나호윤',grade:1,gender:'남'},{name:'이서후',grade:1,gender:'여'},{name:'최유현',grade:1,gender:'여'},{name:'김도연',grade:2,gender:'여'},{name:'양소희',grade:2,gender:'여'},{name:'홍기진',grade:2,gender:'남'},{name:'이준호',grade:2,gender:'남'},{name:'박시우',grade:1,gender:'남'},{name:'이하준',grade:1,gender:'남'}],
+  '고3-1':[{name:'송성모',grade:3,gender:'남'},{name:'김도헌',grade:3,gender:'남'},{name:'이소민',grade:3,gender:'여'},{name:'박지호',grade:3,gender:'여'},{name:'한채은',grade:3,gender:'여'},{name:'김준수',grade:3,gender:'남'},{name:'박진서',grade:3,gender:'여'},{name:'임소명',grade:3,gender:'여'}],
+  '고3-2':[{name:'이에녹',grade:3,gender:'남'},{name:'백결',grade:3,gender:'남'},{name:'조혁준',grade:3,gender:'남'},{name:'최승아',grade:3,gender:'여'},{name:'조강인',grade:3,gender:'남'},{name:'정승빈',grade:3,gender:'여'},{name:'서이수',grade:3,gender:'여'},{name:'김민채',grade:3,gender:'여'}],
+  '고3-3':[{name:'곽지원',grade:3,gender:'남'},{name:'김다은',grade:3,gender:'여'},{name:'장세민',grade:3,gender:'남'},{name:'정원영',grade:3,gender:'남'},{name:'주성',grade:3,gender:'남'},{name:'나정인',grade:3,gender:'여'},{name:'명주원',grade:3,gender:'남'}],
+  '고3-4':[{name:'최가은',grade:3,gender:'여'},{name:'김은우',grade:3,gender:'여'},{name:'최지윤',grade:3,gender:'여'},{name:'최서윤',grade:3,gender:'여'},{name:'오희수',grade:3,gender:'여'},{name:'심희은',grade:3,gender:'여'},{name:'조인상',grade:3,gender:'여'},{name:'양인혁',grade:3,gender:'남'}],
 };
-const CELL_ORDER = ['셀1','셀2','셀3','셀4','셀5','셀6','셀7','셀8','셀9','셀10','셀11','셀12'];
-const ALL_CELLS = CELL_ORDER.concat(['Sp1','Sp2','Sp3','Sp4','Sp5','Sp6']);
+const CELL_ORDER = ['1반','2반','3반','4반','5반','6반','고3-1','고3-2','고3-3','고3-4'];
+const ALL_CELLS = CELL_ORDER;
 
 /* ============ 유틸 ============ */
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -391,7 +382,7 @@ function sectionPhotos(photoSet){
   });
   const total=ALL_CELLS.reduce((a,c)=>a+(CELL_STUDENTS[c]||[]).length,0);
   const missTotal=total-have;
-  const missHtml=missingByCell.map(g=>`<div style="margin-top:8px"><b>${g.cell.startsWith('Sp')?'💛 보고 싶은 친구들':g.cell}</b> <span class="tag muted">${g.miss.length}명</span><div class="chips" style="margin-top:5px">${g.miss.map(s=>`<span class="chip"><img class="stu-photo-sm" src="${Photos.defaultAvatar(s.gender)}" alt="">${esc(s.name)}</span>`).join('')}</div></div>`).join('');
+  const missHtml=missingByCell.map(g=>`<div style="margin-top:8px"><b>${g.cell}</b> <span class="tag muted">${g.miss.length}명</span><div class="chips" style="margin-top:5px">${g.miss.map(s=>`<span class="chip"><img class="stu-photo-sm" src="${Photos.defaultAvatar(s.gender)}" alt="">${esc(s.name)}</span>`).join('')}</div></div>`).join('');
   return `
   <div class="card">
     <h2>📸 사진 등록 현황</h2>

@@ -403,96 +403,76 @@ const PRIVATE_KEY = 'runners2026@jesus';
 
 /* ===== 데이터 ===== */
 const CELL_STUDENTS = {
-  '셀1':[
-    {name:'권하율',g:1,s:'남'},{name:'하은유',g:1,s:'여'},{name:'홍기진',g:2,s:'남'},
-    {name:'서이수',g:3,s:'여'},{name:'장지현',g:2,s:'여'},{name:'김은',g:1,s:'여',isNew:true},
+  '1반':[
+    {name:'오은수',g:1,s:'여'},{name:'김나현',g:2,s:'여'},{name:'김채은',g:2,s:'여'},
+    {name:'박지웅',g:1,s:'남'},{name:'이가영',g:2,s:'여'},{name:'민예원',g:2,s:'여'},
+    {name:'이서현',g:1,s:'여'},{name:'이소현',g:1,s:'여',isNew:true},{name:'김라일',g:2,s:'남'},
   ],
-  '셀2':[
-    {name:'강은교',g:2,s:'여'},{name:'명주원',g:3,s:'남'},{name:'조인상',g:3,s:'여'},
-    {name:'연해준',g:2,s:'남'},{name:'유나린',g:2,s:'여'},
+  '2반':[
+    {name:'김정록',g:1,s:'남'},{name:'안민혁',g:1,s:'남'},{name:'박민주',g:1,s:'여'},
+    {name:'전지훈',g:2,s:'남'},{name:'이주형',g:1,s:'여'},{name:'박동하',g:1,s:'남'},
+    {name:'김강은',g:1,s:'여'},{name:'원대연',g:2,s:'남'},{name:'유재희',g:2,s:'여'},
   ],
-  '셀3':[
+  '3반':[
+    {name:'김한결',g:1,s:'남'},{name:'최지은',g:1,s:'여'},{name:'최민호',g:2,s:'남'},
+    {name:'김강희',g:1,s:'여'},{name:'배유나',g:2,s:'여'},{name:'박재영',g:1,s:'남',isNew:true},
+    {name:'조한나',g:1,s:'여'},{name:'하은유',g:1,s:'여'},{name:'장지현',g:2,s:'여'},
+  ],
+  '4반':[
+    {name:'고예나',g:1,s:'여'},{name:'이빛가온',g:1,s:'남'},{name:'최수지',g:1,s:'여'},
+    {name:'윤서희',g:2,s:'여',isNew:true},{name:'김재원',g:1,s:'남'},{name:'하어림',g:1,s:'남'},
+    {name:'오현우',g:1,s:'남'},{name:'연해준',g:2,s:'남'},{name:'송준원',g:1,s:'남'},
+  ],
+  '5반':[
+    {name:'윤성하',g:1,s:'남'},{name:'김은',g:1,s:'여',isNew:true},{name:'김유진',g:2,s:'여'},
+    {name:'임태민',g:2,s:'남'},{name:'강은교',g:2,s:'여'},{name:'유나린',g:2,s:'여'},
+    {name:'권하율',g:1,s:'남'},{name:'김주하',g:2,s:'여'},{name:'정태율',g:1,s:'남'},
+  ],
+  '6반':[
+    {name:'나호윤',g:1,s:'남'},{name:'이서후',g:1,s:'여'},{name:'최유현',g:1,s:'여'},
+    {name:'김도연',g:2,s:'여'},{name:'양소희',g:2,s:'여'},{name:'홍기진',g:2,s:'남'},
+    {name:'이준호',g:2,s:'남'},{name:'박시우',g:1,s:'남'},{name:'이하준',g:1,s:'남'},
+  ],
+  '고3-1':[
+    {name:'송성모',g:3,s:'남'},{name:'김도헌',g:3,s:'남'},{name:'이소민',g:3,s:'여'},
     {name:'박지호',g:3,s:'여'},{name:'한채은',g:3,s:'여'},{name:'김준수',g:3,s:'남'},
-    {name:'김라일',g:2,s:'남'},{name:'안민혁',g:1,s:'남'},
+    {name:'박진서',g:3,s:'여'},{name:'임소명',g:3,s:'여'},
   ],
-  '셀4':[
-    {name:'원대연',g:2,s:'남'},{name:'이준호',g:2,s:'남'},{name:'전지훈',g:2,s:'남'},
-    {name:'오현우',g:1,s:'남'},{name:'이빛가온',g:1,s:'남'},
+  '고3-2':[
+    {name:'이에녹',g:3,s:'남'},{name:'백결',g:3,s:'남'},{name:'조혁준',g:3,s:'남'},
+    {name:'최승아',g:3,s:'여'},{name:'조강인',g:3,s:'남'},{name:'정승빈',g:3,s:'여'},
+    {name:'서이수',g:3,s:'여'},{name:'김민채',g:3,s:'여'},
   ],
-  '셀5':[
-    {name:'민예원',g:2,s:'여'},{name:'김도연',g:2,s:'여'},{name:'최지은',g:1,s:'여'},
-    {name:'김나현',g:2,s:'여'},{name:'윤서희',g:2,s:'여',isNew:true},
+  '고3-3':[
+    {name:'곽지원',g:3,s:'남'},{name:'김다은',g:3,s:'여'},{name:'장세민',g:3,s:'남'},
+    {name:'정원영',g:3,s:'남'},{name:'주성',g:3,s:'남',isNew:true},{name:'나정인',g:3,s:'여'},
+    {name:'명주원',g:3,s:'남'},
   ],
-  '셀6':[
-    {name:'조한나',g:1,s:'여'},{name:'김한결',g:1,s:'남'},{name:'이서후',g:1,s:'여'},
-    {name:'임태민',g:2,s:'남'},{name:'박지웅',g:1,s:'남'},
+  '고3-4':[
+    {name:'최가은',g:3,s:'여'},{name:'김은우',g:3,s:'여'},{name:'최지윤',g:3,s:'여'},
+    {name:'최서윤',g:3,s:'여'},{name:'오희수',g:3,s:'여'},{name:'심희은',g:3,s:'여'},
+    {name:'조인상',g:3,s:'여'},{name:'양인혁',g:3,s:'남'},
   ],
-  '셀7':[
-    {name:'조강인',g:3,s:'남'},{name:'이에녹',g:3,s:'남'},{name:'최민호',g:2,s:'남'},
-    {name:'김정록',g:1,s:'남'},{name:'정태율',g:1,s:'남'},
-  ],
-  '셀8':[
-    {name:'심희은',g:3,s:'여'},{name:'김은우',g:3,s:'여'},{name:'최가은',g:3,s:'여'},
-    {name:'양소희',g:2,s:'여'},{name:'오은수',g:1,s:'여'},
-  ],
-  '셀9':[
-    {name:'나정인',g:3,s:'여'},{name:'주성',g:3,s:'남',isNew:true},{name:'곽지원',g:3,s:'남'},
-    {name:'양인혁',g:3,s:'남'},{name:'김다은',g:3,s:'여'},
-  ],
-  '셀10':[
-    {name:'이주형',g:1,s:'여'},{name:'윤성하',g:1,s:'남'},{name:'나호윤',g:1,s:'남'},
-    {name:'이소현',g:1,s:'여',isNew:true},{name:'배유나',g:2,s:'여'},{name:'박재영',g:1,s:'남',isNew:true},
-  ],
-  '셀11':[
-    {name:'최유현',g:1,s:'여'},{name:'이가영',g:2,s:'여'},{name:'최수지',g:1,s:'여'},
-    {name:'박동하',g:1,s:'남'},{name:'송준원',g:1,s:'남'},
-  ],
-  '셀12':[
-    {name:'정승빈',g:3,s:'여'},{name:'김주하',g:2,s:'여'},{name:'김채은',g:2,s:'여'},
-    {name:'유재희',g:2,s:'여'},{name:'김강은',g:1,s:'여'},
-  ],
-  'Sp1':[{name:'고예나',g:1,s:'여'},{name:'김민채',g:3,s:'여'},{name:'송성모',g:3,s:'남'},{name:'최승아',g:3,s:'여'}],
-  'Sp2':[{name:'최지윤',g:3,s:'여'},{name:'최서윤',g:3,s:'여'},{name:'백결',g:3,s:'남'},{name:'조혁준',g:3,s:'남'}],
-  'Sp3':[{name:'김재원',g:1,s:'남'},{name:'김유진',g:2,s:'여'},{name:'김강희',g:1,s:'여'},{name:'박서연',g:1,s:'여'}],
-  'Sp4':[{name:'박시우',g:1,s:'남'},{name:'하어림',g:1,s:'남'},{name:'박진서',g:3,s:'여'},{name:'임소명',g:3,s:'여'}],
-  'Sp5':[{name:'오희수',g:3,s:'여'},{name:'박민주',g:1,s:'여'},{name:'장세민',g:3,s:'남'},{name:'정원영',g:3,s:'남'}],
-  'Sp6':[{name:'이서현',g:1,s:'여'},{name:'이소민',g:3,s:'여'},{name:'김도헌',g:3,s:'남'},{name:'이하준',g:1,s:'남'}],
 };
 
 const CELL_TEACHERS = {
-  '셀1':{h:'이윤정',s:'이승헌'},'셀2':{h:'정명경',s:'조세경'},'셀3':{h:'전성희',s:''},
-  '셀4':{h:'박대철',s:'김희원'},'셀5':{h:'이수지',s:'박해니'},'셀6':{h:'정유빈',s:''},
-  '셀7':{h:'양지현',s:'송진우'},'셀8':{h:'이유성',s:'이규리'},'셀9':{h:'오덕현',s:'김주영'},
-  '셀10':{h:'최희승',s:''},'셀11':{h:'석준원',s:''},'셀12':{h:'고은솔',s:'오은규'},
+  '1반':{h:'이유성',s:'고은솔'},'2반':{h:'이윤정',s:'박해니'},'3반':{h:'정유빈',s:'송진우'},
+  '4반':{h:'박대철',s:'김희원'},'5반':{h:'김광현',s:'김주영'},'6반':{h:'석준원',s:'오은규'},
+  '고3-1':{h:'이규리',s:''},'고3-2':{h:'전성희',s:''},'고3-3':{h:'최희승',s:''},'고3-4':{h:'양지현',s:''},
 };
 
 const CELL_FAMILY = {
-  '셀1':1,'셀2':1,'Sp1':1,
-  '셀3':2,'셀4':2,'Sp2':2,
-  '셀5':3,'셀6':3,'Sp3':3,
-  '셀7':4,'셀8':4,'Sp4':4,
-  '셀9':5,'셀10':5,'Sp5':5,
-  '셀11':6,'셀12':6,'Sp6':6,
+  '1반':1,'2반':1,
+  '3반':2,'4반':2,
+  '5반':3,'6반':3,
+  '고3-1':4,'고3-2':4,'고3-3':4,'고3-4':4,
 };
 
-/* ===== 장결자(더 자주 보고 싶은 친구들) 배정 셀 — PPT 라인업 기준 ===== */
-const HOME_CELL = {
-  '김민채':'셀1','송성모':'셀1','최승아':'셀2','고예나':'셀2',
-  '최서윤':'셀3','최지윤':'셀3','백결':'셀4','조혁준':'셀4',
-  '김유진':'셀5','김강희':'셀5','김재원':'셀6','박서연':'셀6',
-  '박시우':'셀7','하어림':'셀7','박진서':'셀8','임소명':'셀8',
-  '오희수':'셀9','장세민':'셀9','정원영':'셀10','박민주':'셀10',
-  '김도헌':'셀11','이하준':'셀11','이서현':'셀12','이소민':'셀12',
-};
-const SPECIAL_SET = new Set(Object.keys(HOME_CELL));
-const specialsOfCell = c => Object.keys(HOME_CELL).filter(n => HOME_CELL[n] === c);
-function specialTag(name, ctxCell) {
-  if (!SPECIAL_SET.has(name)) return '';
-  const home = HOME_CELL[name];
-  const inHome = ctxCell === home;
-  const txt = inHome ? '💛 보고 싶은 친구' : '🏠 소그룹반 ' + home.slice(1);
-  const bg = inHome ? '#fce7f3' : '#fef3c7', fg = inHome ? '#9d174d' : '#92400e';
-  return `<span title="${inHome ? '더 자주 보고 싶은 친구(장결자) · 이 반 소속' : '배정 반(장결자 소속) → ' + home}" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:${bg};color:${fg};margin-left:5px;white-space:nowrap;vertical-align:middle">${txt}</span>`;
+// 장결(장기결석) 케어 대상 — Sp 특별반은 폐지했지만 라벨로 표시 (students.html STUDENTS의 la:1과 동일 명단)
+const JANGGYEOL = new Set(['김강희','김나현','김도헌','김민채','김유진','김은','김재원','박동하','박민주','박시우','박진서','배유나','백결','오희수','이서현','이소현','이준호','이하준','임소명','임태민','장세민','전지훈','정원영','조혁준','최서윤','최승아','최지윤']);
+function specialTag(name) {
+  if (!JANGGYEOL.has(name)) return '';
+  return '<span title="장기결석(장결) 케어 대상" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:#fce7f3;color:#9d174d;margin-left:5px;white-space:nowrap;vertical-align:middle">🤍 장결</span>';
 }
 
 const HISTORICAL_WEEKS = ["2026-01-11","2026-01-18","2026-01-25","2026-02-01","2026-02-08","2026-02-15","2026-02-22","2026-03-01","2026-03-08","2026-03-15","2026-03-22","2026-03-29","2026-04-05","2026-04-12","2026-04-19","2026-04-26","2026-05-03","2026-05-10","2026-05-17","2026-05-24","2026-05-31"];
@@ -658,7 +638,7 @@ function renderMatrix(search) {
   const wkLabel = w => (+w.substring(5,7)) + '/' + (+w.substring(8,10));
 
   let html = '';
-  for (let famN = 1; famN <= 6; famN++) {
+  for (let famN = 1; famN <= 4; famN++) {
     const famCells = Object.keys(CELL_FAMILY).filter(c => CELL_FAMILY[c] === famN);
     let famHtml = '';
     let famCount = 0;
@@ -668,10 +648,8 @@ function renderMatrix(search) {
       if (sts.length === 0) return;
       famCount += sts.length;
       sts.sort((a,b) => a.g !== b.g ? b.g - a.g : a.name.localeCompare(b.name,'ko'));
-      const isSp = cellName.startsWith('Sp');
       const t = CELL_TEACHERS[cellName];
-      const tHtml = isSp ? '<span class="cell-teachers">대가족 선생님이 더 자주 함께</span>'
-                        : `<span class="cell-teachers">담임 ${t?.h||''}${t?.s ? ' · 부담임 ' + t.s : ''}</span>`;
+      const tHtml = `<span class="cell-teachers">담임 ${t?.h||''}${t?.s ? ' · 부담임 ' + t.s : ''}</span>`;
 
       const rows = sts.map(s => {
         const cells = weeks.map(w => {
@@ -699,7 +677,7 @@ function renderMatrix(search) {
 
       famHtml += `<div class="matrix-card">
         <div class="cell-head">
-          <span class="cell-name">${escapeHtml(isSp ? '💛 더 자주 보고 싶은 친구들' : '소그룹반 ' + cellName.slice(1))}</span>
+          <span class="cell-name">${escapeHtml(cellName)}</span>
           ${tHtml}
           <span class="cell-teachers" style="margin-left:auto">${sts.length}명</span>
         </div>
@@ -791,7 +769,7 @@ function renderAll() {
       if (families[s.fam] && families[s.fam][s.cell]) families[s.fam][s.cell].push(s);
     });
     let html = '';
-    for (let famN = 1; famN <= 6; famN++) {
+    for (let famN = 1; famN <= 4; famN++) {
       const fam = families[famN];
       if (!fam) continue;
       const totalStudents = Object.values(fam).flat();
@@ -807,16 +785,14 @@ function renderAll() {
       Object.keys(fam).forEach(cellName => {
         const sts = fam[cellName];
         if (sts.length === 0) return;
-        const isSp = cellName.startsWith('Sp');
         const t = CELL_TEACHERS[cellName];
-        const tHtml = isSp ? '<span class="cell-teachers">대가족 선생님이 더 자주 함께</span>'
-                          : `<span class="cell-teachers">담임 ${t?.h||''}${t?.s ? ' · 부담임 ' + t.s : ''}</span>`;
+        const tHtml = `<span class="cell-teachers">담임 ${t?.h||''}${t?.s ? ' · 부담임 ' + t.s : ''}</span>`;
         const cellAvg = sts.filter(s => s.cum !== null).reduce((sum, s) => sum + s.cum, 0)
                       / Math.max(1, sts.filter(s => s.cum !== null).length);
         const cellRateCls = rateCls(cellAvg);
         html += `<div class="cell-card">
           <div class="cell-head">
-            <span class="cell-name">${escapeHtml(cellName.startsWith('Sp') ? '💛 더 자주 보고 싶은 친구들' : '소그룹반 '+cellName.slice(1))}</span>
+            <span class="cell-name">${escapeHtml(cellName)}</span>
             ${tHtml}
             <span class="cell-rate ${cellRateCls}">${Math.round(cellAvg)}%</span>
           </div>`;

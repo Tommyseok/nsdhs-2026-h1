@@ -321,41 +321,40 @@ function logAccess(teacher, page) {
  * ============================================================ */
 const TEACHERS = [
   {name:'안종범', cell:null,    role:'부장집사',   admin:true},
-  {name:'석준원', cell:'셀11',  role:'담임·총무',  admin:true},
-  {name:'김광현', cell:null,    role:'교육국장',   admin:true},
-  {name:'송진우', cell:'셀7',   role:'부담임·예배국장', admin:true},
-  {name:'오덕현', cell:'셀9',   role:'담임·미디어국장', admin:true},
-  {name:'이유성', cell:'셀8',   role:'담임·홍보국장',   admin:true},
-  {name:'이윤정', cell:'셀1',   role:'담임 (대가족장)'},
-  {name:'정명경', cell:'셀2',   role:'담임'},
-  {name:'전성희', cell:'셀3',   role:'담임 (대가족장)'},
-  {name:'박대철', cell:'셀4',   role:'담임'},
-  {name:'이수지', cell:'셀5',   role:'담임 (대가족장)'},
-  {name:'정유빈', cell:'셀6',   role:'담임'},
-  {name:'양지현', cell:'셀7',   role:'담임 (대가족장)'},
-  {name:'최희승', cell:'셀10',  role:'담임'},
-  {name:'고은솔', cell:'셀12',  role:'담임'},
-  {name:'이승헌', cell:'셀1',   role:'부담임'},
-  {name:'조세경', cell:'셀2',   role:'부담임'},
-  {name:'김희원', cell:'셀4',   role:'부담임'},
-  {name:'박해니', cell:'셀5',   role:'부담임'},
-  {name:'이규리', cell:'셀8',   role:'부담임'},
-  {name:'김주영', cell:'셀9',   role:'부담임'},
-  {name:'오은규', cell:'셀12',  role:'부담임'},
+  {name:'석준원', cell:'6반',   role:'담임·총무',  admin:true},
+  {name:'김광현', cell:'5반',   role:'담임·교육국장', admin:true},
+  {name:'송진우', cell:'3반',   role:'부담임·예배국장', admin:true},
+  {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', admin:true},
+  {name:'이유성', cell:'1반',   role:'담임·홍보국장',   admin:true},
+  {name:'이윤정', cell:'2반',   role:'담임'},
+  {name:'정명경', cell:null,    role:'담임'},
+  {name:'전성희', cell:'고3-2', role:'담임'},
+  {name:'박대철', cell:'4반',   role:'담임'},
+  {name:'이수지', cell:null,    role:'담임'},
+  {name:'정유빈', cell:'3반',   role:'담임'},
+  {name:'양지현', cell:'고3-4', role:'담임'},
+  {name:'최희승', cell:'고3-3', role:'담임'},
+  {name:'고은솔', cell:'1반',   role:'부담임'},
+  {name:'이승헌', cell:null,    role:'부담임'},
+  {name:'조세경', cell:null,    role:'부담임'},
+  {name:'김희원', cell:'4반',   role:'부담임'},
+  {name:'박해니', cell:'2반',   role:'부담임'},
+  {name:'이규리', cell:'고3-1', role:'담임'},
+  {name:'김주영', cell:'5반',   role:'부담임'},
+  {name:'오은규', cell:'6반',   role:'부담임'},
   {name:'박진호', cell:null, role:'신규 교사'},
   {name:'송가원', cell:null, role:'신규 교사'},
 ];
 
 const CELL_TEACHERS = {
-  '셀1':{homeroom:'이윤정',sub:'이승헌'}, '셀2':{homeroom:'정명경',sub:'조세경'},
-  '셀3':{homeroom:'전성희',sub:''}, '셀4':{homeroom:'박대철',sub:'김희원'},
-  '셀5':{homeroom:'이수지',sub:'박해니'}, '셀6':{homeroom:'정유빈',sub:''},
-  '셀7':{homeroom:'양지현',sub:'송진우'}, '셀8':{homeroom:'이유성',sub:'이규리'},
-  '셀9':{homeroom:'오덕현',sub:'김주영'}, '셀10':{homeroom:'최희승',sub:''},
-  '셀11':{homeroom:'석준원',sub:''}, '셀12':{homeroom:'고은솔',sub:'오은규'},
+  '1반':{homeroom:'이유성',sub:'고은솔'}, '2반':{homeroom:'이윤정',sub:'박해니'},
+  '3반':{homeroom:'정유빈',sub:'송진우'}, '4반':{homeroom:'박대철',sub:'김희원'},
+  '5반':{homeroom:'김광현',sub:'김주영'}, '6반':{homeroom:'석준원',sub:'오은규'},
+  '고3-1':{homeroom:'이규리',sub:''}, '고3-2':{homeroom:'전성희',sub:''},
+  '고3-3':{homeroom:'최희승',sub:''}, '고3-4':{homeroom:'양지현',sub:''},
 };
 
-const OUTING_CELLS = ['셀1','셀2','셀3','셀4','셀5','셀6','셀7','셀8','셀9','셀10','셀11','셀12'];
+const OUTING_CELLS = ['1반','2반','3반','4반','5반','6반','고3-1','고3-2','고3-3','고3-4'];
 
 /* ============================================================
  * 2. 인증 (PIN + 본인 선택)

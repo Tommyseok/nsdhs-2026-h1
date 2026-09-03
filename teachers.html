@@ -892,7 +892,7 @@
       <h1>🔒 내수동 고등부 2학기 셀편성
         <span class="badge-private">🔐 교사용 비공개</span>
       </h1>
-      <div class="subtitle">2026년 6–8월 · 6 대가족반 · 12 소그룹반 + 더 자주 보고 싶은 친구들 · 총 86명 · 학생별 케어 정보 포함</div>
+      <div class="subtitle">2026년 3학기 · 4 대가족 · 10개 반(혼합 6 + 고3 4) · 총 85명 · 학생별 케어 정보 포함</div>
       <div class="nav-row">
         <a class="nav-link relations" href="relations.html?key=runners2026@jesus" target="_blank">🕸 관계도 (1·2학기 토글)</a>
         <a class="nav-link public" href="assignments.html" target="_blank">🌱 공개용 편성표</a>
@@ -1050,31 +1050,30 @@ function authorize() {
  * 1. 데이터 — 교사·셀편성
  * ==================================================================== */
 const HOMEROOM_TEACHERS = {
-  '소그룹반1': '이윤정', '소그룹반2': '정명경', '소그룹반3': '전성희',
-  '소그룹반4': '박대철', '소그룹반5': '이수지', '소그룹반6': '정유빈',
-  '소그룹반7': '양지현', '소그룹반8': '이유성', '소그룹반9': '오덕현',
-  '소그룹반10': '최희승', '소그룹반11': '석준원', '소그룹반12': '고은솔',
+  '1반': '이유성', '2반': '이윤정', '3반': '정유빈', '4반': '박대철',
+  '5반': '김광현', '6반': '석준원',
+  '고3-1': '이규리', '고3-2': '전성희', '고3-3': '최희승', '고3-4': '양지현',
 };
 const SUB_TEACHERS = {
-  '소그룹반1': '이승헌', '소그룹반2': '조세경', '소그룹반3': '',
-  '소그룹반4': '김희원', '소그룹반5': '박해니', '소그룹반6': '',
-  '소그룹반7': '송진우', '소그룹반8': '이규리', '소그룹반9': '김주영',
-  '소그룹반10': '', '소그룹반11': '', '소그룹반12': '오은규',
+  '1반': '고은솔', '2반': '박해니', '3반': '송진우', '4반': '김희원',
+  '5반': '김주영', '6반': '오은규',
+  '고3-1': '', '고3-2': '', '고3-3': '', '고3-4': '',
 };
 const FAMILY_LEADERS = {
-  '대가족반1': { name: '이윤정', from: '소그룹반 1' },
-  '대가족반2': { name: '전성희', from: '소그룹반 3' },
-  '대가족반3': { name: '이수지', from: '소그룹반 5' },
-  '대가족반4': { name: '양지현', from: '소그룹반 7' },
-  '대가족반5': { name: '오덕현', from: '소그룹반 9' },
-  '대가족반6': { name: '석준원', from: '소그룹반 11' },
+  '대가족1': { name: '이윤정', from: '2반' },
+  '대가족2': { name: '박대철', from: '4반' },
+  '대가족3': { name: '석준원', from: '6반' },
+  '대가족4': { name: '전성희', from: '고3-2' },
 };
 
 const LABELS = {
-  new:    { text: '🆕 새신자',    title: '첫 출석한 신규 학생' },
-  rejoin: { text: '🔄 정규합류',  title: '장결자에서 정규 셀로 전환' },
-  urgent: { text: '🚨 즉시접촉',  title: '담당 사역자 직접 케어 필요' },
+  new:      { text: '🆕 새신자',  title: '첫 출석한 신규 학생' },
+  rejoin:   { text: '🔄 정규합류', title: '장결자에서 정규 셀로 전환' },
+  urgent:   { text: '🚨 즉시접촉', title: '담당 사역자 직접 케어 필요' },
+  jangkyeol:{ text: '🤍 장결',    title: '장기결석 케어 대상' },
 };
+// 장결(장기결석) 케어 대상 — students.html STUDENTS의 la:1과 동일 명단
+const JANGGYEOL = new Set(['김강희','김나현','김도헌','김민채','김유진','김은','김재원','박동하','박민주','박시우','박진서','배유나','백결','오희수','이서현','이소현','이준호','이하준','임소명','임태민','장세민','전지훈','정원영','조혁준','최서윤','최승아','최지윤']);
 
 /* ====================================================================
  * 2. 출석률 (1학기 6/21 기준, %)
@@ -1262,102 +1261,80 @@ async function tryVaultRestore() {
  * 6. 편성 (assignments.html과 동일 데이터)
  * ==================================================================== */
 const FAMILY_GROUPS = [
-  { name: "대가족반 1", cells: [
-    { name: "소그룹반 1", students: [
-      {name:"권하율", grade:1, gender:"남"},{name:"하은유", grade:1, gender:"여"},
-      {name:"홍기진", grade:2, gender:"남"},{name:"서이수", grade:3, gender:"여"},
-      {name:"장지현", grade:2, gender:"여"},{name:"김은", grade:1, gender:"여", label:'new'},
+  { name: "대가족 1", cells: [
+    { name: "1반", students: [
+      {name:"오은수", grade:1, gender:"여"},{name:"김나현", grade:2, gender:"여"},
+      {name:"김채은", grade:2, gender:"여"},{name:"박지웅", grade:1, gender:"남"},
+      {name:"이가영", grade:2, gender:"여"},{name:"민예원", grade:2, gender:"여"},
+      {name:"이서현", grade:1, gender:"여"},{name:"이소현", grade:1, gender:"여"},
+      {name:"김라일", grade:2, gender:"남"},
     ]},
-    { name: "소그룹반 2", students: [
-      {name:"강은교", grade:2, gender:"여"},{name:"명주원", grade:3, gender:"남"},
-      {name:"조인상", grade:3, gender:"여"},{name:"연해준", grade:2, gender:"남"},
-      {name:"유나린", grade:2, gender:"여"},
+    { name: "2반", students: [
+      {name:"김정록", grade:1, gender:"남"},{name:"안민혁", grade:1, gender:"남"},
+      {name:"박민주", grade:1, gender:"여"},{name:"전지훈", grade:2, gender:"남"},
+      {name:"이주형", grade:1, gender:"여"},{name:"박동하", grade:1, gender:"남"},
+      {name:"김강은", grade:1, gender:"여"},{name:"원대연", grade:2, gender:"남"},
+      {name:"유재희", grade:2, gender:"여"},
     ]},
-  ], special: { name: "더 자주 보고 싶은 친구들", students: [
-    {name:"고예나", grade:1, gender:"여"},{name:"김민채", grade:3, gender:"여"},
-    {name:"송성모", grade:3, gender:"남"},{name:"최승아", grade:3, gender:"여"},
-  ]}},
-  { name: "대가족반 2", cells: [
-    { name: "소그룹반 3", students: [
-      {name:"박지호", grade:3, gender:"여"},{name:"한채은", grade:3, gender:"여"},
-      {name:"김준수", grade:3, gender:"남"},{name:"김라일", grade:2, gender:"남"},
-      {name:"안민혁", grade:1, gender:"남"},
+  ]},
+  { name: "대가족 2", cells: [
+    { name: "3반", students: [
+      {name:"김한결", grade:1, gender:"남"},{name:"최지은", grade:1, gender:"여"},
+      {name:"최민호", grade:2, gender:"남"},{name:"김강희", grade:1, gender:"여"},
+      {name:"배유나", grade:2, gender:"여"},{name:"박재영", grade:1, gender:"남"},
+      {name:"조한나", grade:1, gender:"여"},{name:"하은유", grade:1, gender:"여"},
+      {name:"장지현", grade:2, gender:"여"},
     ]},
-    { name: "소그룹반 4", students: [
-      {name:"원대연", grade:2, gender:"남"},{name:"이준호", grade:2, gender:"남"},
-      {name:"전지훈", grade:2, gender:"남"},{name:"오현우", grade:1, gender:"남"},
-      {name:"이빛가온", grade:1, gender:"남"},
-    ]},
-  ], special: { name: "더 자주 보고 싶은 친구들", students: [
-    {name:"최지윤", grade:3, gender:"여"},{name:"최서윤", grade:3, gender:"여"},
-    {name:"백결",   grade:3, gender:"남"},{name:"조혁준", grade:3, gender:"남"},
-  ]}},
-  { name: "대가족반 3", cells: [
-    { name: "소그룹반 5", students: [
-      {name:"민예원", grade:2, gender:"여"},{name:"김도연", grade:2, gender:"여"},
-      {name:"최지은", grade:1, gender:"여"},
-      {name:"김나현", grade:2, gender:"여", label:'rejoin'},
-      {name:"윤서희", grade:2, gender:"여", label:'new'},
-    ]},
-    { name: "소그룹반 6", students: [
-      {name:"조한나", grade:1, gender:"여"},{name:"김한결", grade:1, gender:"남"},
-      {name:"이서후", grade:1, gender:"여"},{name:"임태민", grade:2, gender:"남"},
-      {name:"박지웅", grade:1, gender:"남"},
-    ]},
-  ], special: { name: "더 자주 보고 싶은 친구들", students: [
-    {name:"김재원", grade:1, gender:"남", label:'urgent'},
-    {name:"김유진", grade:2, gender:"여"},{name:"김강희", grade:1, gender:"여"},
-    {name:"박서연", grade:1, gender:"여"},
-  ]}},
-  { name: "대가족반 4", cells: [
-    { name: "소그룹반 7", students: [
-      {name:"조강인", grade:3, gender:"남"},{name:"이에녹", grade:3, gender:"남"},
-      {name:"최민호", grade:2, gender:"남", label:'new'},
-      {name:"김정록", grade:1, gender:"남"},{name:"정태율", grade:1, gender:"남"},
-    ]},
-    { name: "소그룹반 8", students: [
-      {name:"심희은", grade:3, gender:"여"},{name:"김은우", grade:3, gender:"여"},
-      {name:"최가은", grade:3, gender:"여"},{name:"양소희", grade:2, gender:"여"},
-      {name:"오은수", grade:1, gender:"여"},
-    ]},
-  ], special: { name: "더 자주 보고 싶은 친구들", students: [
-    {name:"박시우", grade:1, gender:"남", label:'urgent'},
-    {name:"하어림", grade:1, gender:"남"},{name:"박진서", grade:3, gender:"여"},
-    {name:"임소명", grade:3, gender:"여"},
-  ]}},
-  { name: "대가족반 5", cells: [
-    { name: "소그룹반 9", students: [
-      {name:"나정인", grade:3, gender:"여"},
-      {name:"주성",   grade:3, gender:"남", label:'new'},
-      {name:"곽지원", grade:3, gender:"남"},{name:"양인혁", grade:3, gender:"남"},
-      {name:"김다은", grade:3, gender:"여"},
-    ]},
-    { name: "소그룹반 10", students: [
-      {name:"이주형", grade:1, gender:"여"},{name:"윤성하", grade:1, gender:"남"},
-      {name:"나호윤", grade:1, gender:"남"},
-      {name:"이소현", grade:1, gender:"여", label:'new'},
-      {name:"배유나", grade:2, gender:"여", label:'rejoin'},
-      {name:"박재영", grade:1, gender:"남", label:'new'},
-    ]},
-  ], special: { name: "더 자주 보고 싶은 친구들", students: [
-    {name:"오희수", grade:3, gender:"여"},{name:"박민주", grade:1, gender:"여"},
-    {name:"장세민", grade:3, gender:"남"},{name:"정원영", grade:3, gender:"남"},
-  ]}},
-  { name: "대가족반 6", cells: [
-    { name: "소그룹반 11", students: [
-      {name:"최유현", grade:1, gender:"여"},{name:"이가영", grade:2, gender:"여"},
-      {name:"최수지", grade:1, gender:"여"},{name:"박동하", grade:1, gender:"남"},
+    { name: "4반", students: [
+      {name:"고예나", grade:1, gender:"여"},{name:"이빛가온", grade:1, gender:"남"},
+      {name:"최수지", grade:1, gender:"여"},{name:"윤서희", grade:2, gender:"여"},
+      {name:"김재원", grade:1, gender:"남"},{name:"하어림", grade:1, gender:"남"},
+      {name:"오현우", grade:1, gender:"남"},{name:"연해준", grade:2, gender:"남"},
       {name:"송준원", grade:1, gender:"남"},
     ]},
-    { name: "소그룹반 12", students: [
-      {name:"정승빈", grade:3, gender:"여"},{name:"김주하", grade:2, gender:"여"},
-      {name:"김채은", grade:2, gender:"여"},{name:"유재희", grade:2, gender:"여"},
-      {name:"김강은", grade:1, gender:"여"},
+  ]},
+  { name: "대가족 3", cells: [
+    { name: "5반", students: [
+      {name:"윤성하", grade:1, gender:"남"},{name:"김은", grade:1, gender:"여"},
+      {name:"김유진", grade:2, gender:"여"},{name:"임태민", grade:2, gender:"남"},
+      {name:"강은교", grade:2, gender:"여"},{name:"유나린", grade:2, gender:"여"},
+      {name:"권하율", grade:1, gender:"남"},{name:"김주하", grade:2, gender:"여"},
+      {name:"정태율", grade:1, gender:"남"},
     ]},
-  ], special: { name: "더 자주 보고 싶은 친구들", students: [
-    {name:"이서현", grade:1, gender:"여"},{name:"이소민", grade:3, gender:"여"},
-    {name:"김도헌", grade:3, gender:"남"},{name:"이하준", grade:1, gender:"남"},
-  ]}},
+    { name: "6반", students: [
+      {name:"나호윤", grade:1, gender:"남"},{name:"이서후", grade:1, gender:"여"},
+      {name:"최유현", grade:1, gender:"여"},{name:"김도연", grade:2, gender:"여"},
+      {name:"양소희", grade:2, gender:"여"},{name:"홍기진", grade:2, gender:"남"},
+      {name:"이준호", grade:2, gender:"남"},{name:"박시우", grade:1, gender:"남"},
+      {name:"이하준", grade:1, gender:"남"},
+    ]},
+  ]},
+  { name: "대가족 4", cells: [
+    { name: "고3-1", students: [
+      {name:"송성모", grade:3, gender:"남"},{name:"김도헌", grade:3, gender:"남"},
+      {name:"이소민", grade:3, gender:"여"},{name:"박지호", grade:3, gender:"여"},
+      {name:"한채은", grade:3, gender:"여"},{name:"김준수", grade:3, gender:"남"},
+      {name:"박진서", grade:3, gender:"여"},{name:"임소명", grade:3, gender:"여"},
+    ]},
+    { name: "고3-2", students: [
+      {name:"이에녹", grade:3, gender:"남"},{name:"백결", grade:3, gender:"남"},
+      {name:"조혁준", grade:3, gender:"남"},{name:"최승아", grade:3, gender:"여"},
+      {name:"조강인", grade:3, gender:"남"},{name:"정승빈", grade:3, gender:"여"},
+      {name:"서이수", grade:3, gender:"여"},{name:"김민채", grade:3, gender:"여"},
+    ]},
+    { name: "고3-3", students: [
+      {name:"곽지원", grade:3, gender:"남"},{name:"김다은", grade:3, gender:"여"},
+      {name:"장세민", grade:3, gender:"남"},{name:"정원영", grade:3, gender:"남"},
+      {name:"주성", grade:3, gender:"남"},{name:"나정인", grade:3, gender:"여"},
+      {name:"명주원", grade:3, gender:"남"},
+    ]},
+    { name: "고3-4", students: [
+      {name:"최가은", grade:3, gender:"여"},{name:"김은우", grade:3, gender:"여"},
+      {name:"최지윤", grade:3, gender:"여"},{name:"최서윤", grade:3, gender:"여"},
+      {name:"오희수", grade:3, gender:"여"},{name:"심희은", grade:3, gender:"여"},
+      {name:"조인상", grade:3, gender:"여"},{name:"양인혁", grade:3, gender:"남"},
+    ]},
+  ]},
 ];
 
 /* ====================================================================
@@ -1392,7 +1369,7 @@ function studentHtml(s, sameCellNames, splitWithinCell, keepWithinCell) {
   const prev = PREV_INFO[s.name];
   const notes = STUDENT_NOTES[s.name] || [];
   const genderCls = s.gender === '남' ? 'gender-m' : 'gender-f';
-  const labelInfo = s.label ? LABELS[s.label] : null;
+  const labelInfo = s.label ? LABELS[s.label] : (JANGGYEOL.has(s.name) ? LABELS.jangkyeol : null);
   let cls = 'student';
   if (s.label === 'urgent') cls += ' has-urgent';
   else if (s.label === 'new') cls += ' has-new';
@@ -1493,24 +1470,7 @@ function cellHtml(cell, familyId, sameCellNames) {
 }
 
 /* ===== 장결자(더 자주 보고 싶은 친구들) 배정 셀 — PPT 라인업 기준 ===== */
-const HOME_CELL = {
-  '김민채':'셀1','송성모':'셀1','최승아':'셀2','고예나':'셀2',
-  '최서윤':'셀3','최지윤':'셀3','백결':'셀4','조혁준':'셀4',
-  '김유진':'셀5','김강희':'셀5','김재원':'셀6','박서연':'셀6',
-  '박시우':'셀7','하어림':'셀7','박진서':'셀8','임소명':'셀8',
-  '오희수':'셀9','장세민':'셀9','정원영':'셀10','박민주':'셀10',
-  '김도헌':'셀11','이하준':'셀11','이서현':'셀12','이소민':'셀12',
-};
-const SPECIAL_SET = new Set(Object.keys(HOME_CELL));
-const specialsOfCell = c => Object.keys(HOME_CELL).filter(n => HOME_CELL[n] === c);
-function specialTag(name, ctxCell) {
-  if (!SPECIAL_SET.has(name)) return '';
-  const home = HOME_CELL[name];
-  const inHome = ctxCell === home;
-  const txt = inHome ? '💛 보고 싶은 친구' : '🏠 소그룹반 ' + home.slice(1);
-  const bg = inHome ? '#fce7f3' : '#fef3c7', fg = inHome ? '#9d174d' : '#92400e';
-  return `<span title="${inHome ? '더 자주 보고 싶은 친구(장결자) · 이 반 소속' : '배정 반(장결자 소속) → ' + home}" style="display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:${bg};color:${fg};margin-left:5px;white-space:nowrap;vertical-align:middle">${txt}</span>`;
-}
+function specialTag() { return ''; } // Sp(장결자 특별반) 폐지 — 일반 반에 흡수, 배지 없음
 
 function specialHtml(special, familyId) {
   if (!special || !special.students || special.students.length === 0) return '';
@@ -1604,7 +1564,7 @@ function contactRow(label, icon, value, isEmpty) {
 function contactStudentHtml(s) {
   const att = ATT[s.name];
   const c = CONTACT[s.name] || {};
-  const labelInfo = s.label ? LABELS[s.label] : null;
+  const labelInfo = s.label ? LABELS[s.label] : (JANGGYEOL.has(s.name) ? LABELS.jangkyeol : null);
   const genderCls = s.gender === '남' ? 'gender-m' : 'gender-f';
   let cls = 'student';
   if (s.label === 'urgent') cls += ' has-urgent';
