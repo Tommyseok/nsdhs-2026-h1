@@ -116,6 +116,21 @@
   .menu-summary-chip b { color: #fff; }
   .menu-summary-empty { margin-top: 10px; padding: 10px 14px; color: var(--muted); font-size: 12.5px; }
 
+  @media (max-width: 560px) {
+    .menu-row { flex-direction: column; align-items: stretch; gap: 8px; padding: 12px; }
+    .menu-row .menu-name { padding-top: 0; }
+    .menu-name { flex: none; width: 100%; font-size: 14.5px; white-space: normal; }
+    .menu-control { width: 100%; }
+    .menu-chip, .menu-add-btn { width: 100%; text-align: left; padding: 13px 16px; font-size: 14.5px; }
+    .menu-input { font-size: 16px; padding: 13px 14px; }
+    .menu-mini-btn { padding: 13px 16px; font-size: 14px; }
+    .menu-edit-row { flex-wrap: wrap; }
+    .menu-edit-row .menu-input { flex: 1 1 100%; }
+    .menu-mini-btn.save, .menu-mini-btn.cancel { flex: 1; }
+    .menu-quickpicks { max-height: 180px; padding: 10px; }
+    .menu-pick-btn { padding: 10px 14px; font-size: 13.5px; }
+  }
+
   .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 14px; }
   .footnote { margin-top: 28px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: rgba(255,255,255,.02); border-radius: 8px; border-left: 2px solid var(--border); }
   .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(196,181,253,.3); border-top-color:#c4b5fd; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:6px; }
@@ -398,7 +413,9 @@ function focusSessionFromUrl() {
   setTimeout(() => {
     try {
       const card = document.querySelector('[data-session-card="' + CSS.escape(id) + '"]');
-      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!card) return;
+      const mine = MY && card.querySelector('.menu-row.mine');
+      (mine || card).scrollIntoView({ behavior: 'smooth', block: mine ? 'center' : 'start' });
     } catch (e) {}
   }, 60);
 }
@@ -413,7 +430,8 @@ function sessionCard(s) {
   if (s.id === EDIT_SESSION) return sessionEditCard(s);
   const isOpen = OPEN_SESSIONS.has(s.id);
   const itemsMap = ITEMS[s.id] || {};
-  const filled = TEACHERS.filter(t => itemsMap[t.name] && (itemsMap[t.name].item || '').trim()).length;
+  const roster = activeTeachers();
+  const filled = roster.filter(t => itemsMap[t.name] && (itemsMap[t.name].item || '').trim()).length;
   const statusBadge = s.closed
     ? '<span class="ic-badge badge-closed">🔒 마감됨</span>'
     : '<span class="ic-badge badge-open">🟢 진행중</span>';
@@ -422,7 +440,7 @@ function sessionCard(s) {
       '<span class="ic-title">' + (isOpen ? '▾' : '▸') + ' ' + escapeHtml(s.title) + '</span>' +
       '<span class="ic-date">' + fmtDate(s.created_at) + '</span>' +
       statusBadge +
-      '<span class="ic-count">' + filled + '/' + TEACHERS.length + '명 작성</span>' +
+      '<span class="ic-count">' + filled + '/' + roster.length + '명 작성</span>' +
       '<button class="ic-del" style="margin-left:auto;background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.3);color:#6ee7b7" onclick="event.stopPropagation();shareSession(\'' + escapeHtml(s.id) + '\')">🔗 카톡 공유</button>' +
       '<button class="ic-del" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="event.stopPropagation();editSessionTitle(\'' + escapeHtml(s.id) + '\')">✏️ 수정</button>' +
       '<button class="ic-del" onclick="event.stopPropagation();toggleClose(\'' + escapeHtml(s.id) + '\')">' + (s.closed ? '🔓 마감취소' : '🔒 마감') + '</button>' +
@@ -454,9 +472,11 @@ function summaryHtml(s) {
 
 let EDIT_ITEM = null; // { sessionId, teacher }
 
+function activeTeachers() { return TEACHERS.filter(t => !ROLE_TAGS[t.name]); }
+
 function menuTableHtml(s) {
   const itemsMap = ITEMS[s.id] || {};
-  const rows = TEACHERS.map(t => {
+  const rows = activeTeachers().map(t => {
     const rec = itemsMap[t.name];
     const val = rec ? (rec.item || '') : '';
     const isMe = MY && MY.name === t.name;
@@ -472,7 +492,7 @@ function menuTableHtml(s) {
       control = '<button class="menu-add-btn" onclick="startEditItem(\'' + escapeHtml(s.id) + '\',\'' + escapeHtml(t.name) + '\')">＋ 입력</button>';
     }
     return '<div class="menu-row' + (isMe ? ' mine' : '') + '">' +
-      '<span class="menu-name">' + (isMe ? '⭐ ' : '') + escapeHtml(t.name) + '<span style="color:var(--muted);font-weight:600">' + escapeHtml(roleTag(t.name)) + '</span></span>' +
+      '<span class="menu-name">' + (isMe ? '⭐ ' : '') + escapeHtml(t.name) + '</span>' +
       '<div class="menu-control">' + control + '</div>' +
     '</div>';
   }).join('');
@@ -619,8 +639,9 @@ async function shareSession(id) {
   if (!s) return;
   const url = location.origin + location.pathname + '?id=' + encodeURIComponent(id);
   const itemsMap = ITEMS[id] || {};
-  const filled = TEACHERS.filter(t => itemsMap[t.name] && (itemsMap[t.name].item || '').trim()).length;
-  const statusLine = (s.closed ? '🔒 마감됨' : '🟢 진행중') + ' · ' + filled + '/' + TEACHERS.length + '명 작성';
+  const roster = activeTeachers();
+  const filled = roster.filter(t => itemsMap[t.name] && (itemsMap[t.name].item || '').trim()).length;
+  const statusLine = (s.closed ? '🔒 마감됨' : '🟢 진행중') + ' · ' + filled + '/' + roster.length + '명 작성';
   const text = '🍱 ' + s.title + ' 메뉴신청\n' + statusLine + '\n' + menuSummaryText(s);
   const shareTitle = s.title + ' 메뉴신청';
 
