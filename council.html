@@ -344,16 +344,16 @@ const TEACHERS = [
   {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', admin:true},
   {name:'이유성', cell:'1반',   role:'교사·홍보국장',   admin:true},
   {name:'이윤정', cell:'2반',   role:'교사'},
-  {name:'정명경', cell:null,    role:'교사'},
+  {name:'정명경', cell:null,    role:'교사 (안식)'},
   {name:'전성희', cell:'고3-2', role:'담임'},
   {name:'박대철', cell:'4반',   role:'교사'},
-  {name:'이수지', cell:null,    role:'교사'},
+  {name:'이수지', cell:null,    role:'교사 (안식)'},
   {name:'정유빈', cell:'3반',   role:'교사'},
   {name:'양지현', cell:'고3-4', role:'담임'},
   {name:'최희승', cell:'고3-3', role:'담임'},
   {name:'고은솔', cell:'1반',   role:'교사'},
-  {name:'이승헌', cell:null,    role:'교사'},
-  {name:'조세경', cell:null,    role:'교사'},
+  {name:'이승헌', cell:null,    role:'교사 (안식)'},
+  {name:'조세경', cell:null,    role:'교사 (안식)'},
   {name:'김희원', cell:'4반',   role:'교사'},
   {name:'박해니', cell:'2반',   role:'교사'},
   {name:'이규리', cell:'고3-1', role:'담임'},
@@ -423,6 +423,8 @@ let VOTES = [];   // council_votes 전체 { poll_id, teacher, choice, voted_at }
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+const SABBATICAL = new Set(['조세경','이수지','이승헌','정명경']);
+function sabTag(name) { return SABBATICAL.has(name) ? ' (안식)' : ''; }
 function fmtDate(d) {
   if (!d) return '';
   const parts = String(d).substring(0, 10).split('-');
@@ -486,7 +488,7 @@ function setupMeetingForm() {
   document.getElementById('mf-date').value = t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate());
   const grid = document.getElementById('mf-attendees');
   grid.innerHTML = TEACHERS.map(tc =>
-    '<label><input type="checkbox" value="' + escapeHtml(tc.name) + '"' + (tc.admin ? ' checked' : '') + '>' + escapeHtml(tc.name) + '</label>'
+    '<label><input type="checkbox" value="' + escapeHtml(tc.name) + '"' + (tc.admin ? ' checked' : '') + '>' + escapeHtml(tc.name) + escapeHtml(sabTag(tc.name)) + '</label>'
   ).join('');
 }
 
@@ -562,7 +564,7 @@ function meetingViewCard(m) {
     '</div>' +
     (m.author ? '<div class="ic-author">작성: ' + escapeHtml(m.author) + (edited ? ' · 수정됨' : '') + '</div>' : '') +
     (isOpen ? (
-      (attendees.length ? '<div class="ic-attendees">' + attendees.map(a => '<span>' + escapeHtml(a) + '</span>').join('') + '</div>' : '') +
+      (attendees.length ? '<div class="ic-attendees">' + attendees.map(a => '<span>' + escapeHtml(a) + escapeHtml(sabTag(a)) + '</span>').join('') + '</div>' : '') +
       (m.body ? '<div class="ic-body">' + escapeHtml(m.body) + '</div>' : '') +
       '<div style="margin-top:8px"><button class="ic-del" style="background:none;border:none;color:var(--muted);padding:0;text-decoration:underline;cursor:pointer" onclick="toggleHistory(\'' + escapeHtml(m.id) + '\')">🕘 수정 이력 ' + (OPEN_HISTORY.has(m.id) ? '숨기기' : '보기') + '</button></div>' +
       (OPEN_HISTORY.has(m.id) ? historyPanel(m.id) : '')
@@ -598,7 +600,7 @@ function meetingEditCard(m) {
     '<div class="field" style="max-width:200px"><label>회의 날짜</label><input id="em-date" type="date" value="' + escapeHtml(m.date || '') + '"></div>' +
     '<div class="field"><label>제목</label><input id="em-title" type="text" maxlength="80" value="' + escapeHtml(m.title || '') + '"></div>' +
     '<div class="field"><label>참석자</label><div class="attendee-grid" id="em-attendees">' +
-      TEACHERS.map(tc => '<label><input type="checkbox" value="' + escapeHtml(tc.name) + '"' + (attendees.includes(tc.name) ? ' checked' : '') + '>' + escapeHtml(tc.name) + '</label>').join('') +
+      TEACHERS.map(tc => '<label><input type="checkbox" value="' + escapeHtml(tc.name) + '"' + (attendees.includes(tc.name) ? ' checked' : '') + '>' + escapeHtml(tc.name) + escapeHtml(sabTag(tc.name)) + '</label>').join('') +
     '</div></div>' +
     '<div class="field"><label>회의 내용</label><textarea id="em-body" maxlength="4000">' + escapeHtml(m.body || '') + '</textarea></div>' +
     '<div class="field" style="max-width:220px"><label>공개범위</label><select id="em-visibility">' +

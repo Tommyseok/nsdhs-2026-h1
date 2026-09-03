@@ -87,7 +87,7 @@
   .menu-table { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
   .menu-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.02); }
   .menu-row.mine { background: rgba(167,139,250,.14); border: 1px solid rgba(167,139,250,.4); }
-  .menu-name { flex: 0 0 96px; font-size: 13px; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-name { flex: 0 0 118px; font-size: 13px; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .menu-control { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
   .menu-input { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; font-family: inherit; min-width: 0; }
   .menu-input:disabled { opacity: .6; }
@@ -229,16 +229,16 @@ const TEACHERS = [
   {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', admin:true},
   {name:'이유성', cell:'1반',   role:'교사·홍보국장',   admin:true},
   {name:'이윤정', cell:'2반',   role:'교사'},
-  {name:'정명경', cell:null,    role:'교사'},
+  {name:'정명경', cell:null,    role:'교사 (안식)'},
   {name:'전성희', cell:'고3-2', role:'담임'},
   {name:'박대철', cell:'4반',   role:'교사'},
-  {name:'이수지', cell:null,    role:'교사'},
+  {name:'이수지', cell:null,    role:'교사 (안식)'},
   {name:'정유빈', cell:'3반',   role:'교사'},
   {name:'양지현', cell:'고3-4', role:'담임'},
   {name:'최희승', cell:'고3-3', role:'담임'},
   {name:'고은솔', cell:'1반',   role:'교사'},
-  {name:'이승헌', cell:null,    role:'교사'},
-  {name:'조세경', cell:null,    role:'교사'},
+  {name:'이승헌', cell:null,    role:'교사 (안식)'},
+  {name:'조세경', cell:null,    role:'교사 (안식)'},
   {name:'김희원', cell:'4반',   role:'교사'},
   {name:'박해니', cell:'2반',   role:'교사'},
   {name:'이규리', cell:'고3-1', role:'담임'},
@@ -299,6 +299,8 @@ function logout() {
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+const SABBATICAL = new Set(['조세경','이수지','이승헌','정명경']);
+function sabTag(name) { return SABBATICAL.has(name) ? ' (안식)' : ''; }
 function fmtDate(d) {
   if (!d) return '';
   const parts = String(d).substring(0, 10).split('-');
@@ -439,7 +441,7 @@ function menuTableHtml(s) {
       control = '<button class="menu-add-btn" onclick="startEditItem(\'' + escapeHtml(s.id) + '\',\'' + escapeHtml(t.name) + '\')">＋ 입력</button>';
     }
     return '<div class="menu-row' + (isMe ? ' mine' : '') + '">' +
-      '<span class="menu-name">' + (isMe ? '⭐ ' : '') + escapeHtml(t.name) + '</span>' +
+      '<span class="menu-name">' + (isMe ? '⭐ ' : '') + escapeHtml(t.name) + '<span style="color:var(--muted);font-weight:600">' + escapeHtml(sabTag(t.name)) + '</span></span>' +
       '<div class="menu-control">' + control + '</div>' +
     '</div>';
   }).join('');
