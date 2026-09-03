@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="내수동 경주자 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Runners 2026 · 메뉴신청</title>
+<style>
+  :root {
+    --bg: #0b0f17; --bg2: #111827; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh;
+  }
+  .container { max-width: 980px; margin: 0 auto; padding: 16px; }
+
+  /* ============== Gate ============== */
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .gate-card .lock { font-size: 48px; text-align: center; margin-bottom: 16px; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: var(--muted); text-align: center; }
+  .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 4px; }
+  .gate-card .gate-note { font-size: 11.5px; color: var(--muted); margin-top: 16px; padding: 10px 12px; background: rgba(255,255,255,.03); border-radius: 6px; border-left: 2px solid var(--accent); line-height: 1.6; }
+  .gate-card .gate-note strong { color: #c4b5fd; }
+
+  /* ============== Header ============== */
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header .greeting { flex: 1; min-width: 0; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  header h1 .my-badge { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
+  header .header-actions { display: flex; gap: 6px; }
+  header button, header a.btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; }
+  header button:hover, header a.btn:hover { background: rgba(255,255,255,.15); }
+  header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
+
+  .intro { margin-top: 18px; padding: 14px 16px; background: linear-gradient(135deg, rgba(167,139,250,.12) 0%, rgba(124,58,237,.08) 100%); border: 1px solid rgba(167,139,250,.35); border-radius: 12px; font-size: 13px; color: #ddd6fe; line-height: 1.6; }
+  .intro strong { color: #c4b5fd; }
+
+  /* ============== Form card ============== */
+  .post-card { margin-top: 18px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 16px; }
+  .post-card h2 { margin: 0 0 14px; font-size: 16px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; }
+  .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+  .field { flex: 1; min-width: 150px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 5px; }
+  .field input, .field select, .field textarea { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; }
+
+  .save-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .save-btn { background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .save-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .save-state { font-size: 12.5px; color: var(--muted); }
+  .save-state.ok { color: var(--ok); } .save-state.err { color: #fca5a5; }
+
+  /* ============== List ============== */
+  .list-head { margin-top: 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .list-head h2 { margin: 0; font-size: 16px; color: #f1f5f9; }
+  #session-list { margin-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .item-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .ic-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 6px; }
+  .ic-title { font-size: 15px; font-weight: 800; color: #f1f5f9; }
+  .ic-date { font-size: 12.5px; color: var(--muted); }
+  .ic-badge { font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; border: 1px solid; }
+  .badge-closed { background: rgba(148,163,184,.18); color: #cbd5e1; border-color: rgba(148,163,184,.4); }
+  .badge-open { background: rgba(16,185,129,.18); color: #6ee7b7; border-color: rgba(16,185,129,.4); }
+  .ic-count { font-size: 11.5px; color: var(--muted); }
+  .ic-del { margin-left: auto; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .ic-del:hover { background: rgba(239,68,68,.25); }
+  .ic-author { font-size: 12px; color: var(--muted); }
+
+  .menu-table { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .menu-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.02); }
+  .menu-row.mine { background: rgba(167,139,250,.14); border: 1px solid rgba(167,139,250,.4); }
+  .menu-name { flex: 0 0 96px; font-size: 13px; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-control { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .menu-input { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; font-family: inherit; min-width: 0; }
+  .menu-input:disabled { opacity: .6; }
+  .menu-chip { background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.4); color: #6ee7b7; border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .menu-chip:hover { background: rgba(16,185,129,.25); }
+  .menu-chip:disabled { cursor: default; opacity: .8; }
+  .menu-add-btn { background: rgba(167,139,250,.1); border: 1px dashed var(--accent); color: #c4b5fd; border-radius: 999px; padding: 7px 14px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
+  .menu-add-btn:hover { background: rgba(167,139,250,.2); }
+  .menu-empty { color: var(--muted); font-size: 13px; }
+  .menu-mini-btn { border-radius: 8px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,.05); color: #e2e8f0; }
+  .menu-mini-btn.save { background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); border: none; color: #fff; }
+  .menu-mini-btn.cancel { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.3); color: #fca5a5; }
+
+  .menu-summary { margin-top: 10px; padding: 12px 14px; background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.3); border-radius: 12px; }
+  .menu-summary-title { font-size: 12.5px; font-weight: 800; color: #fcd34d; margin-bottom: 8px; }
+  .menu-summary-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .menu-summary-chip { background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35); color: #fde68a; border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 700; }
+  .menu-summary-chip b { color: #fff; }
+  .menu-summary-empty { margin-top: 10px; padding: 10px 14px; color: var(--muted); font-size: 12.5px; }
+
+  .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 14px; }
+  .footnote { margin-top: 28px; font-size: 11.5px; color: var(--muted); line-height: 1.6; padding: 12px; background: rgba(255,255,255,.02); border-radius: 8px; border-left: 2px solid var(--border); }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(196,181,253,.3); border-top-color:#c4b5fd; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- =================================================== -->
+<!--  Gate (mock login)                                    -->
+<!-- =================================================== -->
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock"><img src="logo-runner.svg" alt="Runners" style="width:62px;height:62px;border-radius:16px;box-shadow:0 8px 24px rgba(124,58,237,.4)"></div>
+      <div style="text-align:center;font-weight:800;letter-spacing:1px;color:#c4b5fd;font-size:13px;margin-bottom:10px">RUNNERS 2026</div>
+      <h1>🍱 메뉴신청</h1>
+      <p class="gate-sub">모임별 식사·음료 주문을 한곳에서</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px;text-align:center;letter-spacing:2px;">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">접속</button>
+      <div id="gate-err" style="color:#fca5a5;font-size:12px;margin-top:10px;min-height:16px;text-align:center;"></div>
+      <div class="gate-note">
+        <strong>📌 안내</strong><br>
+        • 모임은 <strong>누구나</strong> 만들 수 있어요<br>
+        • 항목 입력·수정·마감도 <strong>누구나</strong> 가능합니다<br>
+        • 마감된 모임은 항목 입력이 잠깁니다 (마감취소로 다시 열 수 있음)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!--  Main App                                             -->
+<!-- =================================================== -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <div class="greeting">
+        <h1>
+          <span>🍱 메뉴신청</span>
+          <span id="my-badge" class="my-badge"></span>
+        </h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn" href="dashboard.html">🏠 Home</a>
+        <button onclick="location.reload()">🔄 새로고침</button>
+        <button class="logout" onclick="logout()">🚪 로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <strong>🍱 메뉴신청</strong> — 모임(예: 수련회, 회식, 야식)을 만들고, 그 안에서 각자 원하는 식사·음료를 적어주세요.
+      모임 생성·항목 입력/수정·마감은 <strong>모든 선생님</strong>이 자유롭게 할 수 있어요.
+    </div>
+
+    <div class="post-card">
+      <h2>➕ 새 모임 만들기</h2>
+      <div class="form-row">
+        <div class="field">
+          <label>모임명</label>
+          <input id="ms-title" type="text" maxlength="60" placeholder="예) 9월 국장단 회식">
+        </div>
+      </div>
+      <div class="save-row">
+        <button class="save-btn" onclick="createSession()">만들기</button>
+        <span class="save-state" id="ms-state"></span>
+      </div>
+    </div>
+
+    <div class="list-head"><h2>📋 모임 목록</h2></div>
+    <div id="session-list"></div>
+
+    <div class="footnote">
+      🍱 모임을 클릭하면 펼쳐져서 각자 이름 옆에 식사·음료를 적을 수 있어요 (본인 줄은 강조 표시). 마감하면 더 이상 수정할 수 없어요 — 실수로 마감했다면 같은 버튼으로 다시 열 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * 0. Supabase 헬퍼 (SDK 없이 REST)
+ * ============================================================ */
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST_DB = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+
+const SessionDB = {
+  async list() { const r = await fetch(REST_DB + '/menu_sessions?order=created_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('모임 목록 실패 (' + r.status + ')'); return r.json(); },
+  async insert(rec) { const r = await fetch(REST_DB + '/menu_sessions', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('생성 실패 (' + r.status + ')'); },
+  async update(id, patch) { const r = await fetch(REST_DB + '/menu_sessions?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
+};
+const ItemDB = {
+  async listAll() { const r = await fetch(REST_DB + '/menu_items?select=*', { headers: H }); if (!r.ok) throw new Error('항목 조회 실패 (' + r.status + ')'); return r.json(); },
+  async upsert(rec) {
+    const r = await fetch(REST_DB + '/menu_items?on_conflict=session_id,teacher', { method: 'POST',
+      headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H),
+      body: JSON.stringify(rec) });
+    if (!r.ok) throw new Error('저장 실패 (' + r.status + ')');
+  }
+};
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch(REST_DB + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page }) }).catch(function () {});
+}
+
+/* ============================================================
+ * 1. 선생님 데이터 (council.html과 동일)
+ * ============================================================ */
+const TEACHERS = [
+  {name:'안종범', cell:null,    role:'부장집사',   admin:true},
+  {name:'석준원', cell:'6반',   role:'교사·총무',  admin:true},
+  {name:'김광현', cell:'5반',   role:'교사·교육국장', admin:true},
+  {name:'송진우', cell:'3반',   role:'교사·예배국장', admin:true},
+  {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', admin:true},
+  {name:'이유성', cell:'1반',   role:'교사·홍보국장',   admin:true},
+  {name:'이윤정', cell:'2반',   role:'교사'},
+  {name:'정명경', cell:null,    role:'교사'},
+  {name:'전성희', cell:'고3-2', role:'담임'},
+  {name:'박대철', cell:'4반',   role:'교사'},
+  {name:'이수지', cell:null,    role:'교사'},
+  {name:'정유빈', cell:'3반',   role:'교사'},
+  {name:'양지현', cell:'고3-4', role:'담임'},
+  {name:'최희승', cell:'고3-3', role:'담임'},
+  {name:'고은솔', cell:'1반',   role:'교사'},
+  {name:'이승헌', cell:null,    role:'교사'},
+  {name:'조세경', cell:null,    role:'교사'},
+  {name:'김희원', cell:'4반',   role:'교사'},
+  {name:'박해니', cell:'2반',   role:'교사'},
+  {name:'이규리', cell:'고3-1', role:'담임'},
+  {name:'김주영', cell:'5반',   role:'교사'},
+  {name:'오은규', cell:'6반',   role:'교사'},
+  {name:'박진호', cell:null, role:'신규 교사'},
+  {name:'송가원', cell:null, role:'신규 교사'},
+];
+
+/* ============================================================
+ * 2. 인증 (PIN + 본인 선택)
+ * ============================================================ */
+const PRIVATE_KEY = 'runners2026@jesus';
+
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>';
+  const groups = [
+    {label:'👑 국장단', filter: t => t.admin},
+    {label:'📚 고3 담임', filter: t => !t.admin && t.role.includes('담임')},
+    {label:'🌟 교사', filter: t => !t.admin && !t.role.includes('담임')},
+  ];
+  groups.forEach(g => {
+    const og = document.createElement('optgroup');
+    og.label = g.label;
+    TEACHERS.filter(g.filter).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.name;
+      const cellLabel = t.cell ? ' (' + t.cell + ')' : '';
+      opt.textContent = t.name + cellLabel + ' · ' + t.role;
+      og.appendChild(opt);
+    });
+    if (og.children.length > 0) sel.appendChild(og);
+  });
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved) sel.value = saved;
+}
+
+function showErr(msg) { const el = document.getElementById('gate-err'); if (el) el.textContent = msg || ''; }
+
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  if (pin !== PRIVATE_KEY) { showErr('❌ 접근 코드가 일치하지 않습니다'); return; }
+  if (!name) { showErr('❌ 본인 이름을 선택해 주세요'); return; }
+  showErr('');
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+
+function logout() {
+  localStorage.removeItem('mock_teacher');
+  document.getElementById('app-root').style.display = 'none';
+  document.getElementById('gate-root').style.display = '';
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtDate(d) {
+  if (!d) return '';
+  const parts = String(d).substring(0, 10).split('-');
+  if (parts.length !== 3) return d;
+  const y = +parts[0], m = +parts[1], day = +parts[2];
+  const wk = ['일','월','화','수','목','금','토'];
+  let w = ''; try { w = ' (' + wk[new Date(y, m - 1, day).getDay()] + ')'; } catch (e) {}
+  return y + '. ' + m + '. ' + day + '.' + w;
+}
+
+/* ============================================================
+ * 3. 진입
+ * ============================================================ */
+let MY = null;
+
+async function showApp() {
+  const name = localStorage.getItem('mock_teacher');
+  const me = TEACHERS.find(t => t.name === name);
+  if (!me) { logout(); return; }
+  MY = me;
+  window.CURRENT_ME = me;
+  logAccess(me.name, 'menu');
+
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('my-badge').textContent = me.name + (me.cell ? ' · ' + me.cell : '');
+
+  await loadSessions();
+}
+
+/* ============================================================
+ * 4. 모임 목록 / 항목
+ * ============================================================ */
+let SESSIONS = [];
+let ITEMS = {};       // session_id -> { teacher: { item } }
+const OPEN_SESSIONS = new Set();
+let EDIT_SESSION = null;
+
+async function loadSessions() {
+  const list = document.getElementById('session-list');
+  list.innerHTML = '<div class="empty"><span class="spin"></span>불러오는 중…</div>';
+  try {
+    const [sessions, items] = await Promise.all([SessionDB.list(), ItemDB.listAll()]);
+    SESSIONS = (sessions || []).filter(s => s.active !== false);
+    ITEMS = {};
+    (items || []).forEach(it => { (ITEMS[it.session_id] = ITEMS[it.session_id] || {})[it.teacher] = { item: it.item }; });
+  } catch (e) {
+    console.error(e);
+    list.innerHTML = '<div class="empty">불러오지 못했어요. 새로고침 해주세요.</div>';
+    return;
+  }
+  renderSessions();
+}
+
+function renderSessions() {
+  const list = document.getElementById('session-list');
+  if (!SESSIONS.length) { list.innerHTML = '<div class="empty">아직 등록된 모임이 없어요. 위에서 새로 만들어 보세요.</div>'; return; }
+  list.innerHTML = SESSIONS.map(sessionCard).join('');
+}
+
+function sessionCard(s) {
+  if (s.id === EDIT_SESSION) return sessionEditCard(s);
+  const isOpen = OPEN_SESSIONS.has(s.id);
+  const itemsMap = ITEMS[s.id] || {};
+  const filled = TEACHERS.filter(t => itemsMap[t.name] && (itemsMap[t.name].item || '').trim()).length;
+  const statusBadge = s.closed
+    ? '<span class="ic-badge badge-closed">🔒 마감됨</span>'
+    : '<span class="ic-badge badge-open">🟢 진행중</span>';
+  return '<div class="item-card" data-session-card="' + escapeHtml(s.id) + '">' +
+    '<div class="ic-head" style="cursor:pointer" onclick="toggleSessionOpen(\'' + escapeHtml(s.id) + '\')">' +
+      '<span class="ic-title">' + (isOpen ? '▾' : '▸') + ' ' + escapeHtml(s.title) + '</span>' +
+      '<span class="ic-date">' + fmtDate(s.created_at) + '</span>' +
+      statusBadge +
+      '<span class="ic-count">' + filled + '/' + TEACHERS.length + '명 작성</span>' +
+      '<button class="ic-del" style="margin-left:auto;background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="event.stopPropagation();editSessionTitle(\'' + escapeHtml(s.id) + '\')">✏️ 수정</button>' +
+      '<button class="ic-del" onclick="event.stopPropagation();toggleClose(\'' + escapeHtml(s.id) + '\')">' + (s.closed ? '🔓 마감취소' : '🔒 마감') + '</button>' +
+    '</div>' +
+    (s.created_by ? '<div class="ic-author">만든 사람: ' + escapeHtml(s.created_by) + '</div>' : '') +
+    (s.closed ? summaryHtml(s) : '') +
+    (isOpen ? menuTableHtml(s) : '') +
+  '</div>';
+}
+
+function summaryHtml(s) {
+  const itemsMap = ITEMS[s.id] || {};
+  const counts = {};
+  Object.values(itemsMap).forEach(rec => {
+    const v = ((rec && rec.item) || '').trim();
+    if (!v) return;
+    counts[v] = (counts[v] || 0) + 1;
+  });
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  if (!entries.length) return '<div class="menu-summary-empty">📊 집계할 항목이 없어요.</div>';
+  const total = entries.reduce((sum, e) => sum + e[1], 0);
+  return '<div class="menu-summary">' +
+    '<div class="menu-summary-title">📊 취합 결과 (총 ' + total + '건)</div>' +
+    '<div class="menu-summary-chips">' +
+      entries.map(([name, count]) => '<span class="menu-summary-chip">' + escapeHtml(name) + ' <b>×' + count + '</b></span>').join('') +
+    '</div>' +
+  '</div>';
+}
+
+let EDIT_ITEM = null; // { sessionId, teacher }
+
+function menuTableHtml(s) {
+  const itemsMap = ITEMS[s.id] || {};
+  const rows = TEACHERS.map(t => {
+    const rec = itemsMap[t.name];
+    const val = rec ? (rec.item || '') : '';
+    const isMe = MY && MY.name === t.name;
+    const isEditingThis = !s.closed && EDIT_ITEM && EDIT_ITEM.sessionId === s.id && EDIT_ITEM.teacher === t.name;
+    let control;
+    if (isEditingThis) {
+      control =
+        '<input id="item-input-active" type="text" class="menu-input" value="' + escapeHtml(val) + '" placeholder="예) 김밥, 아메리카노" onkeydown="if(event.key===\'Enter\'){saveEditItem(\'' + escapeHtml(s.id) + '\',\'' + escapeHtml(t.name) + '\')}else if(event.key===\'Escape\'){cancelEditItem()}">' +
+        '<button class="menu-mini-btn save" onclick="saveEditItem(\'' + escapeHtml(s.id) + '\',\'' + escapeHtml(t.name) + '\')">입력</button>' +
+        '<button class="menu-mini-btn cancel" onclick="cancelEditItem()">취소</button>';
+    } else if (val) {
+      control = '<button class="menu-chip" ' + (s.closed ? 'disabled' : '') + ' onclick="startEditItem(\'' + escapeHtml(s.id) + '\',\'' + escapeHtml(t.name) + '\')">🍽️ ' + escapeHtml(val) + '</button>';
+    } else if (s.closed) {
+      control = '<span class="menu-empty">—</span>';
+    } else {
+      control = '<button class="menu-add-btn" onclick="startEditItem(\'' + escapeHtml(s.id) + '\',\'' + escapeHtml(t.name) + '\')">＋ 입력</button>';
+    }
+    return '<div class="menu-row' + (isMe ? ' mine' : '') + '">' +
+      '<span class="menu-name">' + (isMe ? '⭐ ' : '') + escapeHtml(t.name) + '</span>' +
+      '<div class="menu-control">' + control + '</div>' +
+    '</div>';
+  }).join('');
+  return '<div class="menu-table">' + rows + '</div>';
+}
+
+function startEditItem(sessionId, teacher) {
+  EDIT_ITEM = { sessionId, teacher };
+  renderSessions();
+  setTimeout(() => {
+    const el = document.getElementById('item-input-active');
+    if (el) { el.focus(); el.select(); }
+  }, 20);
+}
+
+function cancelEditItem() { EDIT_ITEM = null; renderSessions(); }
+
+async function saveEditItem(sessionId, teacher) {
+  const el = document.getElementById('item-input-active');
+  const item = el ? el.value.trim() : '';
+  const id = sessionId + '__' + teacher;
+  try {
+    await ItemDB.upsert({ id, session_id: sessionId, teacher, item: item || null });
+    ITEMS[sessionId] = ITEMS[sessionId] || {};
+    ITEMS[sessionId][teacher] = { item };
+    EDIT_ITEM = null;
+    renderSessions();
+  } catch (e) {
+    console.error(e);
+    alert('저장 실패 — 다시 시도해 주세요');
+  }
+}
+
+function sessionEditCard(s) {
+  return '<div class="item-card">' +
+    '<div class="field"><label>모임명</label><input id="es-title" type="text" maxlength="60" value="' + escapeHtml(s.title || '') + '"></div>' +
+    '<div class="save-row">' +
+      '<button class="save-btn" onclick="saveSessionTitle(\'' + escapeHtml(s.id) + '\')">저장</button>' +
+      '<button class="ic-del" onclick="cancelEditSessionTitle()">취소</button>' +
+    '</div>' +
+  '</div>';
+}
+
+async function createSession() {
+  const title = document.getElementById('ms-title').value.trim();
+  const stateEl = document.getElementById('ms-state');
+  if (!title) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 모임명을 입력해 주세요'; return; }
+
+  const id = 'MENU' + Date.now();
+  stateEl.className = 'save-state'; stateEl.innerHTML = '<span class="spin"></span>생성 중…';
+  try {
+    await SessionDB.insert({ id, title, created_by: MY.name, closed: false, active: true });
+    document.getElementById('ms-title').value = '';
+    stateEl.className = 'save-state ok'; stateEl.textContent = '✅ 생성 완료';
+    SESSIONS.unshift({ id, title, created_by: MY.name, created_at: new Date().toISOString(), closed: false, active: true });
+    OPEN_SESSIONS.add(id);
+    renderSessions();
+  } catch (e) {
+    console.error(e);
+    stateEl.className = 'save-state err'; stateEl.textContent = '❌ ' + (e.message || '생성 실패');
+  }
+}
+
+function toggleSessionOpen(id) {
+  if (OPEN_SESSIONS.has(id)) OPEN_SESSIONS.delete(id); else OPEN_SESSIONS.add(id);
+  renderSessions();
+  if (OPEN_SESSIONS.has(id) && MY) {
+    setTimeout(() => {
+      try {
+        const card = document.querySelector('[data-session-card="' + CSS.escape(id) + '"]');
+        const row = card && card.querySelector('.menu-row.mine');
+        if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (e) {}
+    }, 30);
+  }
+}
+
+function editSessionTitle(id) { EDIT_SESSION = id; renderSessions(); }
+function cancelEditSessionTitle() { EDIT_SESSION = null; renderSessions(); }
+
+async function saveSessionTitle(id) {
+  const title = document.getElementById('es-title').value.trim();
+  if (!title) { alert('모임명을 입력해 주세요'); return; }
+  try {
+    await SessionDB.update(id, { title });
+    const s = SESSIONS.find(x => x.id === id); if (s) s.title = title;
+    EDIT_SESSION = null;
+    renderSessions();
+  } catch (e) { console.error(e); alert('수정 실패 — 다시 시도해 주세요'); }
+}
+
+async function toggleClose(id) {
+  const s = SESSIONS.find(x => x.id === id);
+  if (!s) return;
+  const next = !s.closed;
+  if (next && !confirm('이 모임을 마감하시겠습니까? 마감하면 항목 입력이 잠깁니다.')) return;
+  try {
+    await SessionDB.update(id, { closed: next });
+    s.closed = next;
+    renderSessions();
+  } catch (e) { console.error(e); alert('변경 실패 — 다시 시도해 주세요'); }
+}
+
+/* ============================================================
+ * 5. 초기화
+ * ============================================================ */
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && TEACHERS.find(t => t.name === savedName)) {
+  showApp();
+}
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') mockLogin();
+});
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 (B안: 자주쓰는 4개 + 더보기 그룹) */
+(function () {
+  const KEY = 'runners2026@jesus';
+  const PRIMARY = [
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['students.html', '👤 학생 정보', ''],
+  ];
+  const GROUPS = [
+    { label: '운영', items: [
+      ['council.html', '🏛 국장단 포털', ''],
+      ['menu.html', '🍱 메뉴신청', ''],
+      ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
+      ['term3.html', '🗳 새학기 편성', ''],
+    ] },
+    { label: '자료', items: [
+      ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+      ['relations.html', '🕸 관계도', '?key=' + KEY],
+      ['attendance-overview.html', '📊 전체 출석현황', ''],
+      ['photos.html', '📸 사진 등록', ''],
+      ['outings.html', '🎒 아웃팅', ''],
+    ] },
+  ];
+  const ALL_ITEMS = PRIMARY.concat(GROUPS.flatMap(function (g) { return g.items; }));
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const curItem = ALL_ITEMS.find(function (it) { return it[0] === cur; });
+  const curInGroup = GROUPS.some(function (g) { return g.items.some(function (it) { return it[0] === cur; }); });
+
+  function link(it, disabled) {
+    if (disabled && disabled.has(it[0])) return '';
+    return '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>';
+  }
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  function renderNav(disabled) {
+    const primaryHtml = PRIMARY.map(function (it) { return link(it, disabled); }).join('');
+    const moreLabel = curInGroup && curItem ? '📍 ' + curItem[1] : '더보기';
+    const groupsHtml = GROUPS.map(function (g) {
+      const itemsHtml = g.items.map(function (it) { return link(it, disabled); }).join('');
+      return itemsHtml ? '<div class="site-nav-group"><span class="site-nav-group-label">' + g.label + '</span>' + itemsHtml + '</div>' : '';
+    }).join('');
+    nav.innerHTML =
+      '<div class="site-nav-row">' + primaryHtml +
+        '<button type="button" class="site-nav-more' + (curInGroup ? ' active' : '') + '" id="site-nav-more-btn">' + moreLabel + ' <span class="site-nav-caret">▾</span></button>' +
+      '</div>' +
+      '<div class="site-nav-panel" id="site-nav-panel">' + groupsHtml + '</div>';
+    const btn = nav.querySelector('#site-nav-more-btn');
+    if (btn) btn.addEventListener('click', function () { nav.querySelector('#site-nav-panel').classList.toggle('show'); });
+  }
+  renderNav(null);
+  fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/nav_settings?select=key&enabled=eq.false', { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg' } })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows) { const d = new Set((rows || []).map(function (r) { return r.key; })); if (d.size) renderNav(d); })
+    .catch(function () {});
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22)}.site-nav-row{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;scrollbar-width:thin}.site-nav-row::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}.site-nav-more{flex-shrink:0;white-space:nowrap;margin-left:auto;cursor:pointer;font-size:12.5px;font-weight:700;color:#fcd34d;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-more:hover{background:rgba(245,158,11,.22)}.site-nav-more.active{background:rgba(167,139,250,.18);color:#c4b5fd;border-color:#a78bfa}.site-nav-caret{font-size:10px}.site-nav-panel{display:none;flex-wrap:wrap;gap:14px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.08)}.site-nav-panel.show{display:flex}.site-nav-group{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.site-nav-group-label{font-size:11px;color:#64748b;margin-right:2px;white-space:nowrap}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+})();
+</script>
+
+</body>
+</html>
