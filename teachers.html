@@ -1516,6 +1516,7 @@ function cellHtml(cell, familyId, sameCellNames) {
   const cellId = cell.name.replace(/\s/g,'');
   const homeroom = HOMEROOM_TEACHERS[cellId] || '';
   const sub = SUB_TEACHERS[cellId] || '';
+  const isG3 = cellId.startsWith('고3');
   const leader = FAMILY_LEADERS[familyId];
   const isLeaderCell = leader && leader.name === homeroom;
   const sorted = cell.students.slice().sort((a,b) => {
@@ -1530,15 +1531,16 @@ function cellHtml(cell, familyId, sameCellNames) {
       <div class="cell-head">
         <div class="cell-name">${escapeHtml(cell.name)}<span class="count">${cell.students.length}명</span></div>
         <div class="teacher-row homeroom">
-          <span class="label">담임</span>
+          <span class="label">${isG3 ? '담임' : '교사1'}</span>
           ${homeroom
             ? `<span class="name">${escapeHtml(homeroom)}</span>${isLeaderCell ? '<span class="leader-badge">🌟 대가족장</span>' : ''}`
             : `<span class="name tba">미정</span>`}
         </div>
+        ${isG3 ? '' : `
         <div class="teacher-row sub">
-          <span class="label">부담임</span>
+          <span class="label">교사2</span>
           ${sub ? `<span class="name">${escapeHtml(sub)}</span>` : `<span class="name tba">미정</span>`}
-        </div>
+        </div>`}
       </div>
       <div class="student-list">
         ${sorted.map(s => {
@@ -1600,7 +1602,7 @@ function familyHtml(family) {
           <div class="family-role-row">
             <span class="role-label leader">🌟 대가족장</span>
             <span class="role-name">${escapeHtml(leader.name)}</span>
-            <span class="role-note">(${escapeHtml(leader.from)} 담임 겸임)</span>
+            <span class="role-note">(${escapeHtml(leader.from)} ${leader.from.startsWith('고3') ? '담임' : '교사'} 겸임)</span>
           </div>
         ` : ''}
       </div>
@@ -1681,6 +1683,7 @@ function contactCellHtml(cell, familyId) {
   const cellId = cell.name.replace(/\s/g,'');
   const homeroom = HOMEROOM_TEACHERS[cellId] || '';
   const sub = SUB_TEACHERS[cellId] || '';
+  const isG3 = cellId.startsWith('고3');
   const leader = FAMILY_LEADERS[familyId];
   const isLeaderCell = leader && leader.name === homeroom;
   const sorted = cell.students.slice().sort((a,b) => {
@@ -1692,15 +1695,16 @@ function contactCellHtml(cell, familyId) {
       <div class="cell-head">
         <div class="cell-name">${escapeHtml(cell.name)}<span class="count">${cell.students.length}명</span></div>
         <div class="teacher-row homeroom">
-          <span class="label">담임</span>
+          <span class="label">${isG3 ? '담임' : '교사1'}</span>
           ${homeroom
             ? `<span class="name">${escapeHtml(homeroom)}</span>${isLeaderCell ? '<span class="leader-badge">🌟 대가족장</span>' : ''}`
             : `<span class="name tba">미정</span>`}
         </div>
+        ${isG3 ? '' : `
         <div class="teacher-row sub">
-          <span class="label">부담임</span>
+          <span class="label">교사2</span>
           ${sub ? `<span class="name">${escapeHtml(sub)}</span>` : `<span class="name tba">미정</span>`}
-        </div>
+        </div>`}
       </div>
       <div class="student-list">
         ${sorted.map(contactStudentHtml).join('')}
@@ -1778,7 +1782,7 @@ function renderContact() {
 }
 
 /* ====================================================================
- * 7-D. Share 탭 렌더링 (학생 공유용 — 이름·학년·성별·담임·부담임)
+ * 7-D. Share 탭 렌더링 (학생 공유용 — 이름·학년·성별·교사1·교사2, 고3은 담임만)
  * ==================================================================== */
 function shareStudentHtml(s) {
   const genderCls = s.gender === '남' ? 'male' : 'female';
@@ -1795,20 +1799,21 @@ function shareCellHtml(cell, familyId) {
   const cellId = cell.name.replace(/\s/g,'');
   const homeroom = HOMEROOM_TEACHERS[cellId] || '';
   const sub = SUB_TEACHERS[cellId] || '';
+  const isG3 = cellId.startsWith('고3');
   const leader = FAMILY_LEADERS[familyId];
   const isLeaderCell = leader && leader.name === homeroom;
   const sorted = cell.students.slice().sort((a,b) => {
     if (a.grade !== b.grade) return b.grade - a.grade;
     return a.name.localeCompare(b.name, 'ko');
   });
-  const teacherText = homeroom + (isLeaderCell ? '🌟' : '') + (sub ? ` · ${sub}` : '');
+  const teacherText = homeroom + (isLeaderCell ? '🌟' : '') + (!isG3 && sub ? ` · ${sub}` : '');
   const copyId = 'copy-' + cellId;
   return `
     <div class="share-card" data-copy-target="${copyId}">
       <div class="share-head">
         <span class="share-cell-name">${escapeHtml(cell.name)}</span>
         <span class="share-cell-count">${cell.students.length}명</span>
-        <span class="share-teachers" title="담임 · 부담임">${escapeHtml(teacherText)}</span>
+        <span class="share-teachers" title="${isG3 ? '담임' : '교사1 · 교사2'}">${escapeHtml(teacherText)}</span>
         <button class="copy-cell-btn" onclick="copyCellText(this, ${JSON.stringify(cell.name).replace(/"/g,'&quot;')}, ${JSON.stringify(homeroom).replace(/"/g,'&quot;')}, ${JSON.stringify(sub).replace(/"/g,'&quot;')}, ${JSON.stringify(sorted).replace(/"/g,'&quot;')})">📋 복사</button>
       </div>
       <div class="share-students" id="${copyId}">
@@ -1858,14 +1863,15 @@ function shareFamilyHtml(family) {
 function shareBannerHtml() {
   return `
     <div class="share-banner">
-      <strong>🌱 학생 공유용</strong> 이름 · 학년 · 성별 · 담임 · 부담임만 표시합니다. (출석률·메모·연락처 비공개)
+      <strong>🌱 학생 공유용</strong> 이름 · 학년 · 성별 · 교사1 · 교사2만 표시합니다(고3은 담임만). (출석률·메모·연락처 비공개)
       <button class="copy-all" onclick="copyAllShare()">📋 전체 복사 (텍스트)</button>
     </div>
   `;
 }
 
 function plainTextForCell(cellName, homeroom, sub, students) {
-  const teacherLine = homeroom ? `담임 ${homeroom}${sub ? ` · 부담임 ${sub}` : ''}` : '';
+  const isG3 = cellName.replace(/\s/g,'').startsWith('고3');
+  const teacherLine = homeroom ? `${isG3 ? '담임' : '교사1'} ${homeroom}${!isG3 && sub ? ` · 교사2 ${sub}` : ''}` : '';
   const lines = [`[${cellName}]`];
   if (teacherLine) lines.push(teacherLine);
   students.forEach(s => lines.push(`• ${s.name} (${s.grade}학년 ${s.gender})`));

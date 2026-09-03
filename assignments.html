@@ -949,6 +949,7 @@ function cellHtml(cell, familyId) {
   const cellId = cell.name.replace(/\s/g,'');
   const homeroom = HOMEROOM_TEACHERS[cellId] || '';
   const sub = SUB_TEACHERS[cellId] || '';
+  const isG3 = cellId.startsWith('고3');
   const leader = FAMILY_LEADERS[familyId];
   const isLeaderCell = leader && leader.name === homeroom; // 이 소그룹반 담임이 가족장 겸임
   // 학년→이름 가나다 순으로 정렬: 3학년 → 2학년 → 1학년, 같은 학년이면 이름 가나다
@@ -961,17 +962,18 @@ function cellHtml(cell, familyId) {
       <div class="cell-head">
         <div class="cell-name">${escapeHtml(cell.name)}<span class="count">${cell.students.length}명</span></div>
         <div class="teacher-row homeroom">
-          <span class="label">담임</span>
+          <span class="label">${isG3 ? '담임' : '교사1'}</span>
           ${homeroom
             ? `<span class="name">${escapeHtml(homeroom)}</span>${isLeaderCell ? '<span class="leader-badge">🌟 대가족장</span>' : ''}`
             : `<span class="name tba">미정</span>`}
         </div>
+        ${isG3 ? '' : `
         <div class="teacher-row sub">
-          <span class="label">부담임</span>
+          <span class="label">교사2</span>
           ${sub
             ? `<span class="name">${escapeHtml(sub)}</span>`
             : `<span class="name tba">미정</span>`}
-        </div>
+        </div>`}
       </div>
       <div class="members">
         <div class="members-title">학생 명단</div>
@@ -1022,7 +1024,7 @@ function familyHtml(family) {
           <div class="family-role-row">
             <span class="role-label leader">🌟 대가족장</span>
             <span class="role-name">${escapeHtml(leader.name)}</span>
-            <span class="role-note">(${escapeHtml(leader.from)} 담임 겸임)</span>
+            <span class="role-note">(${escapeHtml(leader.from)} ${leader.from.startsWith('고3') ? '담임' : '교사'} 겸임)</span>
           </div>
         ` : ''}
         ${helper ? `

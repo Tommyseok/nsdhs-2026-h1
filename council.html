@@ -308,9 +308,10 @@ const HistoryDB = {
   async insert(rec) { const r = await fetch(REST_DB + '/council_meeting_history', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('이력 저장 실패 (' + r.status + ')'); }
 };
 const NoticeDB = {
-  async list() { const r = await fetch(REST_DB + '/council_notices?order=date.desc,created_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('공지 목록 실패 (' + r.status + ')'); return r.json(); },
-  async insert(rec) { const r = await fetch(REST_DB + '/council_notices', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); },
-  async update(id, patch) { const r = await fetch(REST_DB + '/council_notices?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
+  // 2026-09: 국장단 전용 별도 채널(council_notices)이 아니라, Home 화면과 공유하는 사이트 전체 공지(notices) 테이블을 그대로 사용
+  async list() { const r = await fetch(REST_DB + '/notices?order=date.desc,updated_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('공지 목록 실패 (' + r.status + ')'); return r.json(); },
+  async insert(rec) { const r = await fetch(REST_DB + '/notices', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(rec) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); },
+  async update(id, patch) { const r = await fetch(REST_DB + '/notices?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
 };
 const PollDB = {
   async list() { const r = await fetch(REST_DB + '/council_polls?order=created_at.desc&select=*', { headers: H }); if (!r.ok) throw new Error('투표 목록 실패 (' + r.status + ')'); return r.json(); },
@@ -337,27 +338,27 @@ function logAccess(teacher, page) {
  * ============================================================ */
 const TEACHERS = [
   {name:'안종범', cell:null,    role:'부장집사',   admin:true},
-  {name:'석준원', cell:'6반',   role:'담임·총무',  admin:true},
-  {name:'김광현', cell:'5반',   role:'담임·교육국장', admin:true},
-  {name:'송진우', cell:'3반',   role:'부담임·예배국장', admin:true},
+  {name:'석준원', cell:'6반',   role:'교사·총무',  admin:true},
+  {name:'김광현', cell:'5반',   role:'교사·교육국장', admin:true},
+  {name:'송진우', cell:'3반',   role:'교사·예배국장', admin:true},
   {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', admin:true},
-  {name:'이유성', cell:'1반',   role:'담임·홍보국장',   admin:true},
-  {name:'이윤정', cell:'2반',   role:'담임'},
-  {name:'정명경', cell:null,    role:'담임'},
+  {name:'이유성', cell:'1반',   role:'교사·홍보국장',   admin:true},
+  {name:'이윤정', cell:'2반',   role:'교사'},
+  {name:'정명경', cell:null,    role:'교사'},
   {name:'전성희', cell:'고3-2', role:'담임'},
-  {name:'박대철', cell:'4반',   role:'담임'},
-  {name:'이수지', cell:null,    role:'담임'},
-  {name:'정유빈', cell:'3반',   role:'담임'},
+  {name:'박대철', cell:'4반',   role:'교사'},
+  {name:'이수지', cell:null,    role:'교사'},
+  {name:'정유빈', cell:'3반',   role:'교사'},
   {name:'양지현', cell:'고3-4', role:'담임'},
   {name:'최희승', cell:'고3-3', role:'담임'},
-  {name:'고은솔', cell:'1반',   role:'부담임'},
-  {name:'이승헌', cell:null,    role:'부담임'},
-  {name:'조세경', cell:null,    role:'부담임'},
-  {name:'김희원', cell:'4반',   role:'부담임'},
-  {name:'박해니', cell:'2반',   role:'부담임'},
+  {name:'고은솔', cell:'1반',   role:'교사'},
+  {name:'이승헌', cell:null,    role:'교사'},
+  {name:'조세경', cell:null,    role:'교사'},
+  {name:'김희원', cell:'4반',   role:'교사'},
+  {name:'박해니', cell:'2반',   role:'교사'},
   {name:'이규리', cell:'고3-1', role:'담임'},
-  {name:'김주영', cell:'5반',   role:'부담임'},
-  {name:'오은규', cell:'6반',   role:'부담임'},
+  {name:'김주영', cell:'5반',   role:'교사'},
+  {name:'오은규', cell:'6반',   role:'교사'},
   {name:'박진호', cell:null, role:'신규 교사'},
   {name:'송가원', cell:null, role:'신규 교사'},
 ];
@@ -372,8 +373,8 @@ function fillSelect() {
   sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>';
   const groups = [
     {label:'👑 국장단', filter: t => t.admin},
-    {label:'🌟 셀 담임', filter: t => !t.admin && t.role.includes('담임') && !t.role.includes('부담임')},
-    {label:'🤝 부담임', filter: t => !t.admin && t.role.includes('부담임')},
+    {label:'📚 고3 담임', filter: t => !t.admin && t.role.includes('담임')},
+    {label:'🌟 교사', filter: t => !t.admin && !t.role.includes('담임')},
   ];
   groups.forEach(g => {
     const og = document.createElement('optgroup');
@@ -537,25 +538,35 @@ function renderMeetings() {
   list.innerHTML = items.map(m => m.id === EDIT_MEETING ? meetingEditCard(m) : meetingViewCard(m)).join('');
 }
 
+const OPEN_MEETINGS = new Set();
+
+function toggleMeetingOpen(id) {
+  if (OPEN_MEETINGS.has(id)) OPEN_MEETINGS.delete(id); else OPEN_MEETINGS.add(id);
+  renderMeetings();
+}
+
 function meetingViewCard(m) {
   const badge = m.visibility === 'all'
     ? '<span class="ic-badge badge-all">🌐 전체공개</span>'
     : '<span class="ic-badge badge-council">🔒 국장단전용</span>';
   const attendees = Array.isArray(m.attendees) ? m.attendees : [];
   const edited = m.updated_at && m.created_at && (new Date(m.updated_at).getTime() - new Date(m.created_at).getTime() > 60000);
+  const isOpen = OPEN_MEETINGS.has(m.id);
   return '<div class="item-card">' +
-    '<div class="ic-head">' +
-      '<span class="ic-title">' + escapeHtml(m.title) + '</span>' +
+    '<div class="ic-head" style="cursor:pointer" onclick="toggleMeetingOpen(\'' + escapeHtml(m.id) + '\')">' +
+      '<span class="ic-title">' + (isOpen ? '▾' : '▸') + ' ' + escapeHtml(m.title) + '</span>' +
       '<span class="ic-date">' + fmtDate(m.date) + '</span>' +
       badge +
-      (MY.admin ? '<button class="ic-del" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="editMeeting(\'' + escapeHtml(m.id) + '\')">✏️ 수정</button>' : '') +
-      (MY.admin ? '<button class="ic-del" onclick="deleteMeeting(\'' + escapeHtml(m.id) + '\')">🗑 삭제</button>' : '') +
+      (MY.admin ? '<button class="ic-del" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="event.stopPropagation();editMeeting(\'' + escapeHtml(m.id) + '\')">✏️ 수정</button>' : '') +
+      (MY.admin ? '<button class="ic-del" onclick="event.stopPropagation();deleteMeeting(\'' + escapeHtml(m.id) + '\')">🗑 삭제</button>' : '') +
     '</div>' +
     (m.author ? '<div class="ic-author">작성: ' + escapeHtml(m.author) + (edited ? ' · 수정됨' : '') + '</div>' : '') +
-    (attendees.length ? '<div class="ic-attendees">' + attendees.map(a => '<span>' + escapeHtml(a) + '</span>').join('') + '</div>' : '') +
-    (m.body ? '<div class="ic-body">' + escapeHtml(m.body) + '</div>' : '') +
-    '<div style="margin-top:8px"><button class="ic-del" style="background:none;border:none;color:var(--muted);padding:0;text-decoration:underline;cursor:pointer" onclick="toggleHistory(\'' + escapeHtml(m.id) + '\')">🕘 수정 이력 ' + (OPEN_HISTORY.has(m.id) ? '숨기기' : '보기') + '</button></div>' +
-    (OPEN_HISTORY.has(m.id) ? historyPanel(m.id) : '') +
+    (isOpen ? (
+      (attendees.length ? '<div class="ic-attendees">' + attendees.map(a => '<span>' + escapeHtml(a) + '</span>').join('') + '</div>' : '') +
+      (m.body ? '<div class="ic-body">' + escapeHtml(m.body) + '</div>' : '') +
+      '<div style="margin-top:8px"><button class="ic-del" style="background:none;border:none;color:var(--muted);padding:0;text-decoration:underline;cursor:pointer" onclick="toggleHistory(\'' + escapeHtml(m.id) + '\')">🕘 수정 이력 ' + (OPEN_HISTORY.has(m.id) ? '숨기기' : '보기') + '</button></div>' +
+      (OPEN_HISTORY.has(m.id) ? historyPanel(m.id) : '')
+    ) : '') +
   '</div>';
 }
 
@@ -649,18 +660,18 @@ async function saveNotice() {
   const stateEl = document.getElementById('nf-state');
   if (!title) { stateEl.className = 'save-state err'; stateEl.textContent = '❌ 제목을 입력해 주세요'; return; }
 
-  const id = 'NTC' + Date.now();
+  const id = 'N' + Date.now();
   const today = new Date();
   const pad = n => String(n).padStart(2, '0');
   const date = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
   stateEl.className = 'save-state'; stateEl.innerHTML = '<span class="spin"></span>등록 중…';
   try {
-    await NoticeDB.insert({ id, date, author: MY.name, title, body: body || null, urgent });
+    await NoticeDB.insert({ id, date, author: MY.name, title, body: body || null, urgent, active: true, show_home: true });
     document.getElementById('nf-title').value = '';
     document.getElementById('nf-body').value = '';
     document.getElementById('nf-urgent').checked = false;
     stateEl.className = 'save-state ok'; stateEl.textContent = '✅ 등록 완료';
-    NOTICES.unshift({ id, date, author: MY.name, title, body: body || null, urgent, active: true });
+    NOTICES.unshift({ id, date, author: MY.name, title, body: body || null, urgent, active: true, show_home: true });
     renderNotices();
   } catch (e) {
     console.error(e);
@@ -675,22 +686,69 @@ async function loadNotices() {
   renderNotices();
 }
 
+let EDIT_NOTICE = null;
+
 function renderNotices() {
   const list = document.getElementById('notice-list');
   if (!NOTICES.length) { list.innerHTML = '<div class="empty">아직 등록된 공지가 없어요.</div>'; return; }
   const sorted = NOTICES.slice().sort((a, b) => (b.urgent === a.urgent ? 0 : b.urgent ? 1 : -1));
-  list.innerHTML = sorted.map(n =>
+  list.innerHTML = sorted.map(n => n.id === EDIT_NOTICE ? noticeEditCard(n) : noticeViewCard(n)).join('');
+}
+
+function noticeViewCard(n) {
+  return (
     '<div class="item-card">' +
       '<div class="ic-head">' +
         '<span class="ic-title">' + escapeHtml(n.title) + '</span>' +
         '<span class="ic-date">' + fmtDate(n.date) + '</span>' +
         (n.urgent ? '<span class="ic-badge badge-urgent">🚨 긴급</span>' : '') +
+        (MY.admin ? '<label class="ic-home-toggle" style="font-size:12px;color:#94a3b8;display:inline-flex;align-items:center;gap:4px;margin-left:auto"><input type="checkbox" ' + (n.show_home !== false ? 'checked' : '') + ' onchange="toggleNoticeHome(\'' + escapeHtml(n.id) + '\',this.checked)"> 메인노출</label>' : '') +
+        (MY.admin ? '<button class="ic-del" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="editNotice(\'' + escapeHtml(n.id) + '\')">✏️ 수정</button>' : '') +
         (MY.admin ? '<button class="ic-del" onclick="deleteNotice(\'' + escapeHtml(n.id) + '\')">🗑 삭제</button>' : '') +
       '</div>' +
       (n.author ? '<div class="ic-author">' + escapeHtml(n.author) + '</div>' : '') +
       (n.body ? '<div class="ic-body">' + escapeHtml(n.body) + '</div>' : '') +
     '</div>'
-  ).join('');
+  );
+}
+
+function noticeEditCard(n) {
+  return (
+    '<div class="item-card">' +
+      '<div class="field"><label>제목</label><input id="en-title" type="text" maxlength="80" value="' + escapeHtml(n.title || '') + '"></div>' +
+      '<div class="field"><label>내용</label><textarea id="en-body" maxlength="2000">' + escapeHtml(n.body || '') + '</textarea></div>' +
+      '<div class="checkline"><input type="checkbox" id="en-urgent" ' + (n.urgent ? 'checked' : '') + '> <label for="en-urgent" style="margin:0">🚨 긴급 공지로 표시</label></div>' +
+      '<div class="save-row">' +
+        '<button class="save-btn" onclick="saveNoticeEdit(\'' + escapeHtml(n.id) + '\')">저장</button>' +
+        '<button class="ic-del" onclick="cancelEditNotice()">취소</button>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+function editNotice(id) { EDIT_NOTICE = id; renderNotices(); }
+function cancelEditNotice() { EDIT_NOTICE = null; renderNotices(); }
+
+async function saveNoticeEdit(id) {
+  const title = document.getElementById('en-title').value.trim();
+  const body = document.getElementById('en-body').value.trim();
+  const urgent = document.getElementById('en-urgent').checked;
+  if (!title) { alert('제목을 입력해 주세요'); return; }
+  try {
+    await NoticeDB.update(id, { title, body: body || null, urgent });
+    const n = NOTICES.find(x => x.id === id);
+    if (n) { n.title = title; n.body = body || null; n.urgent = urgent; }
+    EDIT_NOTICE = null;
+    renderNotices();
+  } catch (e) { console.error(e); alert('수정 실패 — 다시 시도해 주세요'); }
+}
+
+async function toggleNoticeHome(id, checked) {
+  try {
+    await NoticeDB.update(id, { show_home: checked });
+    const n = NOTICES.find(x => x.id === id);
+    if (n) n.show_home = checked;
+  } catch (e) { console.error(e); alert('변경 실패 — 다시 시도해 주세요'); renderNotices(); }
 }
 
 async function deleteNotice(id) {

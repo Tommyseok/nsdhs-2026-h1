@@ -185,27 +185,27 @@ const GH = 'https://github.com/Tommyseok/nsdhs-2026-h1/edit/main/publish/data';
 /* ============ 데이터 (dashboard.html 과 동일) ============ */
 const TEACHERS = [
   {name:'안종범', cell:null, role:'부장집사', admin:true},
-  {name:'석준원', cell:'6반', role:'담임·총무', admin:true},
-  {name:'김광현', cell:'5반', role:'담임·교육국장', admin:true},
-  {name:'송진우', cell:'3반', role:'부담임·예배국장', admin:true},
+  {name:'석준원', cell:'6반', role:'교사·총무', admin:true},
+  {name:'김광현', cell:'5반', role:'교사·교육국장', admin:true},
+  {name:'송진우', cell:'3반', role:'교사·예배국장', admin:true},
   {name:'오덕현', cell:null, role:'찬양팀 지도·미디어국장', admin:true},
-  {name:'이유성', cell:'1반', role:'담임·홍보국장', admin:true},
-  {name:'이윤정', cell:'2반', role:'담임'},
-  {name:'정명경', cell:null, role:'담임'},
+  {name:'이유성', cell:'1반', role:'교사·홍보국장', admin:true},
+  {name:'이윤정', cell:'2반', role:'교사'},
+  {name:'정명경', cell:null, role:'교사'},
   {name:'전성희', cell:'고3-2', role:'담임'},
-  {name:'박대철', cell:'4반', role:'담임'},
-  {name:'이수지', cell:null, role:'담임'},
-  {name:'정유빈', cell:'3반', role:'담임'},
+  {name:'박대철', cell:'4반', role:'교사'},
+  {name:'이수지', cell:null, role:'교사'},
+  {name:'정유빈', cell:'3반', role:'교사'},
   {name:'양지현', cell:'고3-4', role:'담임'},
   {name:'최희승', cell:'고3-3', role:'담임'},
-  {name:'고은솔', cell:'1반', role:'부담임'},
-  {name:'이승헌', cell:null, role:'부담임'},
-  {name:'조세경', cell:null, role:'부담임'},
-  {name:'김희원', cell:'4반', role:'부담임'},
-  {name:'박해니', cell:'2반', role:'부담임'},
+  {name:'고은솔', cell:'1반', role:'교사'},
+  {name:'이승헌', cell:null, role:'교사'},
+  {name:'조세경', cell:null, role:'교사'},
+  {name:'김희원', cell:'4반', role:'교사'},
+  {name:'박해니', cell:'2반', role:'교사'},
   {name:'이규리', cell:'고3-1', role:'담임'},
-  {name:'김주영', cell:'5반', role:'부담임'},
-  {name:'오은규', cell:'6반', role:'부담임'},
+  {name:'김주영', cell:'5반', role:'교사'},
+  {name:'오은규', cell:'6반', role:'교사'},
   {name:'박진호', cell:null, role:'신규 교사'},
   {name:'송가원', cell:null, role:'신규 교사'},
 ];
@@ -367,8 +367,8 @@ function attTable(att){
       <div class="kpi warn"><div class="n">${partial}</div><div class="l">일부 입력</div></div>
       <div class="kpi danger"><div class="n">${missing}</div><div class="l">미입력 셀</div></div>
     </div>
-    <table><thead><tr><th>셀</th><th>담임·부담임</th><th class="c">입력</th><th class="c">상태</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="muted-note">※ '더 자주 보고 싶은 친구들'은 출석 입력 대상이 아니라 제외했습니다. 미입력 셀 담임 선생님께 안내해 주세요.</div>`;
+    <table><thead><tr><th>셀</th><th>교사1·교사2</th><th class="c">입력</th><th class="c">상태</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="muted-note">※ '더 자주 보고 싶은 친구들'은 출석 입력 대상이 아니라 제외했습니다. 미입력 셀 담당 선생님께 안내해 주세요.</div>`;
 }
 
 /* 3) 사진 등록 현황 */

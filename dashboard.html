@@ -608,6 +608,17 @@
     font-weight: 700;
     border: 1px solid rgba(239,68,68,.3);
   }
+  .my-class-alert-list {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(239,68,68,.1);
+    border: 1px solid rgba(239,68,68,.25);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.6;
+  }
   .my-class-actions {
     margin-top: 12px;
     display: flex;
@@ -917,12 +928,12 @@ let REMOTE_ATT = {};
 const TEACHERS = [
   // 관리자 (국장단 + 부장 + 목사 + 총무)
   {name:'안종범', cell:null,    role:'부장집사',   position:'부장집사',   admin:true},
-  {name:'석준원', cell:'6반',   role:'담임·총무',  position:'총무',       admin:true},
-  {name:'김광현', cell:'5반',   role:'담임·교육국장', position:'교육국장', admin:true},
-  {name:'송진우', cell:'3반',   role:'부담임·예배국장', position:'예배국장', admin:true},
+  {name:'석준원', cell:'6반',   role:'교사·총무',  position:'총무',       admin:true},
+  {name:'김광현', cell:'5반',   role:'교사·교육국장', position:'교육국장', admin:true},
+  {name:'송진우', cell:'3반',   role:'교사·예배국장', position:'예배국장', admin:true},
   {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', position:'미디어국장', admin:true},
-  {name:'이유성', cell:'1반',   role:'담임·홍보국장',   position:'홍보국장',   admin:true},
-  // 담임
+  {name:'이유성', cell:'1반',   role:'교사·홍보국장',   position:'홍보국장',   admin:true},
+  // 담임(고3) / 교사(1~6반)
   {name:'이윤정', cell:'2반'},
   {name:'정명경', cell:null},
   {name:'전성희', cell:'고3-2'},
@@ -931,19 +942,19 @@ const TEACHERS = [
   {name:'정유빈', cell:'3반'},
   {name:'양지현', cell:'고3-4'},
   {name:'최희승', cell:'고3-3'},
-  {name:'고은솔', cell:'1반',   role:'부담임'},
-  // 부담임
+  {name:'고은솔', cell:'1반',   role:'교사'},
+  // 교사
   {name:'이승헌', cell:null},
   {name:'조세경', cell:null},
-  {name:'김희원', cell:'4반',   role:'부담임'},
-  {name:'박해니', cell:'2반',   role:'부담임'},
+  {name:'김희원', cell:'4반',   role:'교사'},
+  {name:'박해니', cell:'2반',   role:'교사'},
   {name:'이규리', cell:'고3-1'},
-  {name:'김주영', cell:'5반',   role:'부담임'},
-  {name:'오은규', cell:'6반',   role:'부담임'},
+  {name:'김주영', cell:'5반',   role:'교사'},
+  {name:'오은규', cell:'6반',   role:'교사'},
   {name:'박진호', cell:null, role:'신규 교사'},
   {name:'송가원', cell:null, role:'신규 교사'},
 ];
-TEACHERS.forEach(t => { if (!t.role) t.role = '담임'; });
+TEACHERS.forEach(t => { if (!t.role) t.role = (t.cell && t.cell.startsWith('고3')) ? '담임' : '교사'; });
 
 const CELL_TEACHERS = {
   '1반':   {homeroom:'이유성', sub:'고은솔'},
@@ -1151,8 +1162,8 @@ function fillSelect() {
   // 그룹별 정렬
   const groups = [
     {label:'👑 관리자 (국장단·목사)', filter: t => t.admin},
-    {label:'🌟 셀 담임', filter: t => !t.admin && t.role.includes('담임') && !t.role.includes('부담임')},
-    {label:'🤝 부담임', filter: t => !t.admin && t.role.includes('부담임')},
+    {label:'📚 고3 담임', filter: t => !t.admin && t.role.includes('담임')},
+    {label:'🌟 교사', filter: t => !t.admin && !t.role.includes('담임')},
   ];
   groups.forEach(g => {
     const og = document.createElement('optgroup');
@@ -1392,11 +1403,17 @@ function renderBirthdays(me) {
     const isToday = b.diff === 0;
     const ddText = isToday ? '오늘! 🎉' : `D-${b.diff}`;
     const myMark = (b.cell === myCell) ? '⭐ ' : '';
+    const t = CELL_TEACHERS[b.cell];
+    const fam = CELL_FAMILY[b.cell];
+    const isG3 = (b.cell || '').startsWith('고3');
+    const teacherText = t ? (isG3 ? `담임 ${t.homeroom}` : `교사1 ${t.homeroom}${t.sub ? ' · 교사2 ' + t.sub : ''}`) : '';
+    const famText = fam ? `대가족${fam}` : '';
+    const extra = [famText, teacherText].filter(Boolean).join(' · ');
     return `
       <div class="bd-item ${isToday ? 'today' : ''}">
         <span class="bd-icon">🎂</span>
         <span class="bd-name">${myMark}${escapeHtml(b.name)}</span>
-        <span class="bd-meta">${escapeHtml(b.cell || '?')} · ${escapeHtml(b.mmdd)} <span class="d-day">${ddText}</span></span>
+        <span class="bd-meta">${escapeHtml(b.cell || '?')}${extra ? ' · ' + escapeHtml(extra) : ''} · ${escapeHtml(b.mmdd)} <span class="d-day">${ddText}</span></span>
       </div>
     `;
   }).join('');
@@ -1469,7 +1486,7 @@ function renderMyClass(me) {
     bodyEl.innerHTML = `
       <div class="no-class">
         <div class="icon">👑</div>
-        ${escapeHtml(me.position || me.role)} 역할은 담임 셀이 따로 없습니다.<br>
+        ${escapeHtml(me.position || me.role)} 역할은 배정된 반이 따로 없습니다.<br>
         <a href="teachers.html?key=runners2026@jesus">전체 셀편성 보기 →</a>
       </div>
     `;
@@ -1501,6 +1518,7 @@ function renderMyClass(me) {
 
   const cell = SELECTED_CELL;
   const isSp = false;
+  const isG3 = (cell || '').startsWith('고3');
   const teachers = CELL_TEACHERS[cell] || {homeroom:'(대가족 선생님 함께)', sub:''};
   const cellTitle = cell;
   const students = (CELL_STUDENTS[cell] || []).slice().sort((a,b) => {
@@ -1545,7 +1563,12 @@ function renderMyClass(me) {
       if (c === '●') sum4w++;
       else if (c === '◐') sum4w += 0.5;
     });
-    if (att === '○○○○') alerts.push(s.name + ' 4주 연속 결석');
+    let absentStreak = 0;
+    for (let i = att.length - 1; i >= 0; i--) {
+      if (att[i] === '○') absentStreak++;
+      else break;
+    }
+    if (absentStreak >= 2) alerts.push(`${s.name} 학생이 ${absentStreak}주 이상 안 나오고 있어요`);
   });
   const rate = total4w > 0 ? Math.round(sum4w / total4w * 100) : null;
 
@@ -1556,10 +1579,11 @@ function renderMyClass(me) {
       <span class="stat"><strong style="color:#f1f5f9">${escapeHtml(cellTitle)}</strong></span>
       <span class="stat"><span class="stat-num">${students.length}</span>명</span>
       <span class="stat">최근 4주: <span class="stat-num">${rate !== null ? rate + '%' : '—'}</span></span>
-      ${!isSp ? `<span class="stat">담임 <span style="color:#fcd34d;font-weight:700">${escapeHtml(teachers.homeroom||'')}</span></span>` : ''}
-      ${!isSp && teachers.sub ? `<span class="stat">부담임 <span style="color:#7dd3fc;font-weight:700">${escapeHtml(teachers.sub)}</span></span>` : ''}
-      ${alerts.length > 0 ? `<span class="my-class-alert">⚠️ ${alerts.length}건 주의</span>` : ''}
+      ${!isSp ? `<span class="stat">${isG3 ? '담임' : '교사1'} <span style="color:#fcd34d;font-weight:700">${escapeHtml(teachers.homeroom||'')}</span></span>` : ''}
+      ${!isSp && !isG3 && teachers.sub ? `<span class="stat">교사2 <span style="color:#7dd3fc;font-weight:700">${escapeHtml(teachers.sub)}</span></span>` : ''}
+      ${alerts.length > 0 ? `<span class="my-class-alert" title="${escapeHtml(alerts.join('\n'))}">⚠️ ${alerts.length}건 주의</span>` : ''}
     </div>
+    ${alerts.length > 0 ? `<div class="my-class-alert-list">${alerts.map(a => `⚠️ ${escapeHtml(a)}`).join('<br>')}</div>` : ''}
   `;
 
   const rows = students.map(s => {
