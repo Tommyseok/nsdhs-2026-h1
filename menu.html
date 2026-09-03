@@ -351,6 +351,20 @@ async function loadSessions() {
     return;
   }
   renderSessions();
+  focusSessionFromUrl();
+}
+
+function focusSessionFromUrl() {
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id || !SESSIONS.some(s => s.id === id)) return;
+  OPEN_SESSIONS.add(id);
+  renderSessions();
+  setTimeout(() => {
+    try {
+      const card = document.querySelector('[data-session-card="' + CSS.escape(id) + '"]');
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {}
+  }, 60);
 }
 
 function renderSessions() {
@@ -373,7 +387,8 @@ function sessionCard(s) {
       '<span class="ic-date">' + fmtDate(s.created_at) + '</span>' +
       statusBadge +
       '<span class="ic-count">' + filled + '/' + TEACHERS.length + '명 작성</span>' +
-      '<button class="ic-del" style="margin-left:auto;background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="event.stopPropagation();editSessionTitle(\'' + escapeHtml(s.id) + '\')">✏️ 수정</button>' +
+      '<button class="ic-del" style="margin-left:auto;background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.3);color:#6ee7b7" onclick="event.stopPropagation();shareSession(\'' + escapeHtml(s.id) + '\')">🔗 카톡 공유</button>' +
+      '<button class="ic-del" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#c4b5fd" onclick="event.stopPropagation();editSessionTitle(\'' + escapeHtml(s.id) + '\')">✏️ 수정</button>' +
       '<button class="ic-del" onclick="event.stopPropagation();toggleClose(\'' + escapeHtml(s.id) + '\')">' + (s.closed ? '🔓 마감취소' : '🔒 마감') + '</button>' +
     '</div>' +
     (s.created_by ? '<div class="ic-author">만든 사람: ' + escapeHtml(s.created_by) + '</div>' : '') +
@@ -526,6 +541,44 @@ async function toggleClose(id) {
     s.closed = next;
     renderSessions();
   } catch (e) { console.error(e); alert('변경 실패 — 다시 시도해 주세요'); }
+}
+
+function menuSummaryText(s) {
+  const itemsMap = ITEMS[s.id] || {};
+  const counts = {};
+  Object.values(itemsMap).forEach(rec => {
+    const v = ((rec && rec.item) || '').trim();
+    if (v) counts[v] = (counts[v] || 0) + 1;
+  });
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  return entries.length ? entries.map(([n, c]) => n + ' ' + c + '개').join(', ') : '아직 입력된 항목이 없어요';
+}
+
+async function shareSession(id) {
+  const s = SESSIONS.find(x => x.id === id);
+  if (!s) return;
+  const url = location.origin + location.pathname + '?id=' + encodeURIComponent(id);
+  const itemsMap = ITEMS[id] || {};
+  const filled = TEACHERS.filter(t => itemsMap[t.name] && (itemsMap[t.name].item || '').trim()).length;
+  const statusLine = (s.closed ? '🔒 마감됨' : '🟢 진행중') + ' · ' + filled + '/' + TEACHERS.length + '명 작성';
+  const text = '🍱 ' + s.title + ' 메뉴신청\n' + statusLine + '\n' + menuSummaryText(s);
+  const shareTitle = s.title + ' 메뉴신청';
+
+  if (navigator.share) {
+    try { await navigator.share({ title: shareTitle, text, url }); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; /* 취소는 조용히, 그 외는 복사로 폴백 */ }
+  }
+  const full = text + '\n\n👉 참여/확인: ' + url;
+  try {
+    await navigator.clipboard.writeText(full);
+    alert('📋 아래 내용이 복사되었어요. 카톡에 붙여넣기 해주세요!\n\n' + full);
+    return;
+  } catch (e) {}
+  try {
+    const ok = prompt('아래 내용을 복사해서 카톡에 붙여넣어 주세요:', full);
+    if (ok !== null) return;
+  } catch (e) {}
+  alert('아래 내용을 길게 눌러 복사한 뒤 카톡에 붙여넣어 주세요:\n\n' + full);
 }
 
 /* ============================================================
