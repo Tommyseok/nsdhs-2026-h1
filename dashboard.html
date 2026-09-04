@@ -1486,11 +1486,30 @@ function dutyClassForWeek(weekDateStr) {
   const idx = ((diffWeeks % len) + len) % len;
   return DUTY_CLASSES[idx];
 }
-function loadDutyPreview() {
+const DUTY_ROLES = [
+  { label: '예배기도', field: 'prayer_people' },
+  { label: '헌금위원', field: 'offering_people' },
+  { label: '안내위원', field: 'usher_people' },
+];
+async function loadDutyPreview() {
   const week = dutyNextWeek();
   const cls = dutyClassForWeek(week);
   const md = fmtLessonMD(week);
   document.getElementById('duty-count').textContent = md + ' (다음 주)';
+
+  let row = null;
+  try {
+    const rows = await Hub.select('worship_duty?select=*&week=eq.' + week);
+    row = (rows && rows[0]) || null;
+  } catch (e) { console.warn(e); }
+
+  const detailHtml = row && row.confirmed
+    ? `<div class="lesson-body">` + DUTY_ROLES.map(r => {
+        const names = Array.isArray(row[r.field]) ? row[r.field] : [];
+        return `<div class="lesson-body-text" style="padding-top:6px"><b>${escapeHtml(r.label)}</b> · ${escapeHtml(names.length ? names.join(', ') : '미정')}</div>`;
+      }).join('') + `</div>`
+    : `<div class="lesson-body"><div class="lesson-body-empty">아직 인원이 정해지지 않았어요.</div></div>`;
+
   document.getElementById('duty-preview').innerHTML = `
     <a class="lesson-item this-week" href="worship-duty.html" style="display:block;text-decoration:none;color:inherit">
       <div class="lesson-head">
@@ -1498,6 +1517,7 @@ function loadDutyPreview() {
         <span class="lesson-title">예배기도 · 헌금위원 · 안내위원</span>
         <span class="lesson-flag">다음 주</span>
       </div>
+      ${detailHtml}
     </a>
     <a class="more-btn" href="worship-duty.html" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box">⛪ 전체 일정·인원 선택 →</a>
   `;
