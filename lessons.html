@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="내수동 경주자 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Runners 2026 · 공과공부</title>
+<style>
+  :root {
+    --bg: #0b0f17; --bg2: #111827; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+  /* ============== Gate ============== */
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .gate-card .lock { font-size: 48px; text-align: center; margin-bottom: 16px; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: var(--muted); text-align: center; }
+  .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 4px; }
+  .gate-card .gate-note { font-size: 11.5px; color: var(--muted); margin-top: 16px; padding: 10px 12px; background: rgba(255,255,255,.03); border-radius: 6px; border-left: 2px solid var(--accent); line-height: 1.6; }
+  .gate-card .gate-note strong { color: #c4b5fd; }
+
+  /* ============== Header ============== */
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header .greeting { flex: 1; min-width: 0; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  header h1 .my-badge { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
+  header .header-actions { display: flex; gap: 6px; }
+  header button, header a.btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; }
+  header button:hover, header a.btn:hover { background: rgba(255,255,255,.15); }
+  header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
+
+  .intro { margin-top: 18px; padding: 14px 16px; background: linear-gradient(135deg, rgba(167,139,250,.12) 0%, rgba(124,58,237,.08) 100%); border: 1px solid rgba(167,139,250,.35); border-radius: 12px; font-size: 13px; color: #ddd6fe; line-height: 1.6; }
+  .intro strong { color: #c4b5fd; }
+
+  /* ============== Detail card ============== */
+  .detail-card { margin-top: 18px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px 18px; }
+  .detail-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .detail-week { flex-shrink: 0; font-size: 12px; font-weight: 800; color: #c4b5fd; background: rgba(167,139,250,.15); padding: 4px 10px; border-radius: 8px; }
+  .detail-flag { font-size: 11px; font-weight: 800; color: #fca5a5; background: rgba(239,68,68,.15); padding: 3px 9px; border-radius: 999px; }
+  .detail-title { font-size: 18px; font-weight: 800; color: #f8fafc; margin: 8px 0 12px; line-height: 1.4; }
+  .detail-body-text { font-size: 14px; color: #d8dee9; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  .detail-body-empty { font-size: 13px; color: var(--muted); font-style: italic; }
+  .detail-files { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .file-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.3); color: #6ee7b7; padding: 6px 12px; border-radius: 999px; text-decoration: none; }
+  .file-chip:hover { background: rgba(16,185,129,.22); }
+  .file-remove { background: none; border: none; color: #fca5a5; cursor: pointer; font-size: 13px; padding: 0 0 0 4px; font-family: inherit; }
+  .edit-btn { margin-top: 16px; background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.3); color: #c4b5fd; border-radius: 8px; padding: 8px 16px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .edit-btn:hover { background: rgba(167,139,250,.22); }
+
+  .edit-box { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .edit-box textarea { width: 100%; min-height: 140px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 14px; font-family: inherit; resize: vertical; line-height: 1.6; }
+  .edit-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .save-btn { background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 10px; padding: 11px 20px; font-size: 13.5px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .cancel-btn { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; border-radius: 10px; padding: 11px 20px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .file-input-label { background: rgba(255,255,255,.06); border: 1px dashed rgba(255,255,255,.25); color: #cbd5e1; border-radius: 8px; padding: 9px 16px; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-block; }
+  .file-input-label:hover { background: rgba(255,255,255,.12); }
+  .upload-state { font-size: 12px; color: var(--muted); }
+
+  /* ============== Full list ============== */
+  .list-toggle { margin-top: 18px; width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); color: #cbd5e1; border-radius: 12px; padding: 12px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .list-toggle:hover { background: rgba(255,255,255,.1); }
+  .lesson-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .lesson-month { font-size: 11.5px; font-weight: 800; color: #64748b; margin: 10px 0 2px; letter-spacing: .3px; }
+  .lesson-month:first-child { margin-top: 0; }
+  .lesson-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); cursor: pointer; }
+  .lesson-row:hover { background: rgba(167,139,250,.1); border-color: rgba(167,139,250,.3); }
+  .lesson-row.selected { background: rgba(167,139,250,.16); border-color: rgba(167,139,250,.5); }
+  .lesson-row .lr-week { flex-shrink: 0; font-size: 11px; font-weight: 700; color: #c4b5fd; background: rgba(167,139,250,.15); padding: 4px 8px; border-radius: 6px; min-width: 48px; text-align: center; line-height: 1.4; }
+  .lesson-row .lr-title { flex: 1; min-width: 0; font-size: 13.5px; color: #e2e8f0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lesson-row .lr-has-body { flex-shrink: 0; font-size: 13px; }
+
+  .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 14px; }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(196,181,253,.3); border-top-color:#c4b5fd; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- =================================================== -->
+<!--  Gate (mock login)                                    -->
+<!-- =================================================== -->
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock"><img src="logo-runner.svg" alt="Runners" style="width:62px;height:62px;border-radius:16px;box-shadow:0 8px 24px rgba(124,58,237,.4)"></div>
+      <div style="text-align:center;font-weight:800;letter-spacing:1px;color:#c4b5fd;font-size:13px;margin-bottom:10px">RUNNERS 2026</div>
+      <h1>📖 공과공부</h1>
+      <p class="gate-sub">이번 주 공과부터 전체 일정까지</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px;text-align:center;letter-spacing:2px;">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">접속</button>
+      <div id="gate-err" style="color:#fca5a5;font-size:12px;margin-top:10px;min-height:16px;text-align:center;"></div>
+      <div class="gate-note">
+        <strong>📌 안내</strong><br>
+        • 열람은 모든 선생님이 가능합니다<br>
+        • 내용 입력·수정·파일 첨부는 관리자(국장단)만 가능합니다
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!--  Main App                                             -->
+<!-- =================================================== -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <div class="greeting">
+        <h1>
+          <span>📖 공과공부</span>
+          <span id="my-badge" class="my-badge"></span>
+        </h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn" href="dashboard.html">🏠 Home</a>
+        <button onclick="location.reload()">🔄 새로고침</button>
+        <button class="logout" onclick="logout()">🚪 로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <strong>📖 공과공부</strong> — 주별 공과 제목과 상세 내용, 참고 자료를 한곳에서 확인할 수 있어요.
+      내용 입력·수정·파일 첨부는 관리자(교육국 포함 국장단)가 담당합니다.
+    </div>
+
+    <div id="detail-area"></div>
+
+    <button class="list-toggle" onclick="toggleList()" id="list-toggle-btn">📋 전체 공과 목록 보기</button>
+    <div class="lesson-list" id="lesson-list" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * 0. Supabase 헬퍼 (SDK 없이 REST)
+ * ============================================================ */
+const URL_BASE = 'https://hycwzggbgnimuuhporwf.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg';
+const REST_DB = URL_BASE + '/rest/v1';
+const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+
+const LessonDB = {
+  async list() { const r = await fetch(REST_DB + '/lessons?select=*&active=eq.true&order=week.asc', { headers: H }); if (!r.ok) throw new Error('목록 실패 (' + r.status + ')'); return r.json(); },
+  async update(id, patch) { const r = await fetch(REST_DB + '/lessons?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) }); if (!r.ok) throw new Error('수정 실패 (' + r.status + ')'); }
+};
+const LessonFiles = {
+  async upload(key, file) {
+    const r = await fetch(URL_BASE + '/storage/v1/object/lesson-files/' + encodeURIComponent(key), {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'true' }, { apikey: ANON, Authorization: 'Bearer ' + ANON }),
+      body: file
+    });
+    if (!r.ok) { let t = ''; try { t = await r.text(); } catch (e) {} throw new Error('업로드 실패 (' + r.status + ') ' + t); }
+    return true;
+  },
+  publicUrl(key) { return URL_BASE + '/storage/v1/object/public/lesson-files/' + encodeURIComponent(key); }
+};
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch(REST_DB + '/access_log', { method: 'POST', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify({ teacher: teacher, page: page }) }).catch(function () {});
+}
+
+/* ============================================================
+ * 1. 선생님 데이터 (dashboard.html과 동일)
+ * ============================================================ */
+const TEACHERS = [
+  {name:'안종범', cell:null,    role:'부장집사',   admin:true},
+  {name:'석준원', cell:'6반',   role:'교사·총무',  admin:true},
+  {name:'김광현', cell:'5반',   role:'교사·교육국장', admin:true},
+  {name:'송진우', cell:'3반',   role:'교사·예배국장', admin:true},
+  {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', admin:true},
+  {name:'이유성', cell:'1반',   role:'교사·홍보국장',   admin:true},
+  {name:'이윤정', cell:'2반',   role:'교사'},
+  {name:'정명경', cell:null,    role:'교사 (안식)'},
+  {name:'전성희', cell:'고3-2', role:'담임'},
+  {name:'박대철', cell:'4반',   role:'교사'},
+  {name:'이수지', cell:null,    role:'교사 (안식)'},
+  {name:'정유빈', cell:'3반',   role:'교사'},
+  {name:'양지현', cell:'고3-4', role:'담임'},
+  {name:'최희승', cell:'고3-3', role:'담임'},
+  {name:'고은솔', cell:'1반',   role:'교사'},
+  {name:'이승헌', cell:null,    role:'교사 (안식)'},
+  {name:'조세경', cell:null,    role:'교사 (안식)'},
+  {name:'김희원', cell:'4반',   role:'교사'},
+  {name:'박해니', cell:'2반',   role:'교사'},
+  {name:'이규리', cell:'고3-1', role:'담임'},
+  {name:'김주영', cell:'5반',   role:'교사'},
+  {name:'오은규', cell:'6반',   role:'교사'},
+  {name:'박진호', cell:null, role:'(27년 섬김)'},
+  {name:'송가원', cell:null, role:'(27년 섬김)'},
+];
+
+/* ============================================================
+ * 2. 인증 (PIN + 본인 선택)
+ * ============================================================ */
+const PRIVATE_KEY = 'runners2026@jesus';
+
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>';
+  const groups = [
+    {label:'👑 관리자', filter: t => t.admin},
+    {label:'🌟 교사', filter: t => !t.admin},
+  ];
+  groups.forEach(g => {
+    const og = document.createElement('optgroup');
+    og.label = g.label;
+    TEACHERS.filter(g.filter).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.name;
+      const cellLabel = t.cell ? ' (' + t.cell + ')' : '';
+      opt.textContent = t.name + cellLabel + ' · ' + t.role;
+      og.appendChild(opt);
+    });
+    if (og.children.length > 0) sel.appendChild(og);
+  });
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved) sel.value = saved;
+}
+
+function showErr(msg) { const el = document.getElementById('gate-err'); if (el) el.textContent = msg || ''; }
+
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  if (pin !== PRIVATE_KEY) { showErr('❌ 접근 코드가 일치하지 않습니다'); return; }
+  if (!name) { showErr('❌ 본인 이름을 선택해 주세요'); return; }
+  showErr('');
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+
+function logout() {
+  localStorage.removeItem('mock_teacher');
+  document.getElementById('app-root').style.display = 'none';
+  document.getElementById('gate-root').style.display = '';
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtMD(dateStr) {
+  if (!dateStr) return '';
+  const parts = String(dateStr).substring(0, 10).split('-');
+  if (parts.length !== 3) return '';
+  return (+parts[1]) + '/' + (+parts[2]);
+}
+
+/* ============================================================
+ * 3. 진입
+ * ============================================================ */
+let MY = null;
+
+async function showApp() {
+  const name = localStorage.getItem('mock_teacher');
+  const me = TEACHERS.find(t => t.name === name);
+  if (!me) { logout(); return; }
+  MY = me;
+  logAccess(me.name, 'lessons');
+
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('my-badge').textContent = me.name + (me.cell ? ' · ' + me.cell : '');
+
+  await loadLessons();
+}
+
+/* ============================================================
+ * 4. 공과 데이터 / 렌더링
+ * ============================================================ */
+let LESSONS = [];
+let SELECTED = null;
+let EDIT_MODE = false;
+let SHOW_LIST = false;
+
+function currentWeek() {
+  const d = new Date(); d.setHours(0,0,0,0);
+  const sunday = new Date(d); sunday.setDate(d.getDate() - d.getDay());
+  const pad = n => String(n).padStart(2,'0');
+  return sunday.getFullYear() + '-' + pad(sunday.getMonth()+1) + '-' + pad(sunday.getDate());
+}
+
+async function loadLessons() {
+  const area = document.getElementById('detail-area');
+  area.innerHTML = '<div class="empty"><span class="spin"></span>불러오는 중…</div>';
+  try {
+    LESSONS = await LessonDB.list();
+  } catch (e) {
+    console.error(e);
+    area.innerHTML = '<div class="empty">불러오지 못했어요. 새로고침 해주세요.</div>';
+    return;
+  }
+  const cur = currentWeek();
+  SELECTED = LESSONS.find(l => l.week === cur) || LESSONS.find(l => l.week > cur) || LESSONS[LESSONS.length - 1] || null;
+  renderDetail();
+  renderList();
+}
+
+function renderDetail() {
+  const area = document.getElementById('detail-area');
+  if (!SELECTED) { area.innerHTML = '<div class="empty">등록된 공과 일정이 없습니다</div>'; return; }
+  const l = SELECTED;
+  const isThisWeek = l.week === currentWeek();
+  const weekNo = (l.label || '').split(' ')[1] || '';
+
+  if (EDIT_MODE) {
+    const files = Array.isArray(l.attachments) ? l.attachments : [];
+    const filesHtml = files.length
+      ? '<div class="detail-files">' + files.map(f => '<span class="file-chip">📎 ' + escapeHtml(f.name || '첨부파일') + '<button class="file-remove" onclick="removeFile(\'' + escapeHtml(f.key).replace(/'/g,"\\'") + '\')">✕</button></span>').join('') + '</div>'
+      : '';
+    area.innerHTML =
+      '<div class="detail-card">' +
+        '<div class="detail-head"><span class="detail-week">' + escapeHtml(weekNo) + ' (' + fmtMD(l.week) + ')</span>' + (isThisWeek ? '<span class="detail-flag">이번 주</span>' : '') + '</div>' +
+        '<div class="detail-title">' + escapeHtml(l.title || '') + '</div>' +
+        '<div class="edit-box">' +
+          '<textarea id="body-input" placeholder="공과 상세 내용을 적어주세요">' + escapeHtml(l.body || '') + '</textarea>' +
+          filesHtml +
+          '<div class="edit-actions">' +
+            '<label class="file-input-label">📎 파일 첨부<input type="file" style="display:none" onchange="uploadFile(this)"></label>' +
+            '<span class="upload-state" id="upload-state"></span>' +
+          '</div>' +
+          '<div class="edit-actions">' +
+            '<button class="save-btn" onclick="saveBody()">저장</button>' +
+            '<button class="cancel-btn" onclick="cancelEdit()">취소</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    return;
+  }
+
+  const files = Array.isArray(l.attachments) ? l.attachments : [];
+  const filesHtml = files.length
+    ? '<div class="detail-files">' + files.map(f => '<a class="file-chip" href="' + LessonFiles.publicUrl(f.key) + '" target="_blank" rel="noopener">📎 ' + escapeHtml(f.name || '첨부파일') + '</a>').join('') + '</div>'
+    : '';
+  const bodyHtml = l.body
+    ? '<div class="detail-body-text">' + escapeHtml(l.body) + '</div>'
+    : '<div class="detail-body-empty">아직 등록된 상세 내용이 없어요.</div>';
+  area.innerHTML =
+    '<div class="detail-card">' +
+      '<div class="detail-head"><span class="detail-week">' + escapeHtml(weekNo) + ' (' + fmtMD(l.week) + ')</span>' + (isThisWeek ? '<span class="detail-flag">이번 주</span>' : '') + '</div>' +
+      '<div class="detail-title">' + escapeHtml(l.title || '') + '</div>' +
+      bodyHtml +
+      filesHtml +
+      (MY && MY.admin ? '<button class="edit-btn" onclick="startEdit()">✏️ 내용 입력/수정</button>' : '') +
+    '</div>';
+}
+
+function renderList() {
+  const btn = document.getElementById('list-toggle-btn');
+  const list = document.getElementById('lesson-list');
+  btn.textContent = SHOW_LIST ? '📋 목록 접기' : '📋 전체 공과 목록 보기';
+  list.style.display = SHOW_LIST ? 'flex' : 'none';
+  if (!SHOW_LIST) { list.innerHTML = ''; return; }
+  let lastMonth = '';
+  list.innerHTML = LESSONS.map(l => {
+    const month = (l.label || '').split(' ')[0];
+    const monthHtml = month !== lastMonth ? '<div class="lesson-month">' + escapeHtml(month) + '</div>' : '';
+    lastMonth = month;
+    const weekNo = (l.label || '').split(' ')[1] || '';
+    const isSelected = SELECTED && SELECTED.id === l.id;
+    return monthHtml +
+      '<div class="lesson-row' + (isSelected ? ' selected' : '') + '" onclick="selectLesson(\'' + l.id + '\')">' +
+        '<span class="lr-week">' + escapeHtml(weekNo) + '<br>' + fmtMD(l.week) + '</span>' +
+        '<span class="lr-title">' + escapeHtml(l.title || '') + '</span>' +
+        (l.body ? '<span class="lr-has-body" title="상세 내용 있음">📝</span>' : '') +
+      '</div>';
+  }).join('');
+}
+
+function toggleList() { SHOW_LIST = !SHOW_LIST; renderList(); }
+
+function selectLesson(id) {
+  SELECTED = LESSONS.find(l => l.id === id) || SELECTED;
+  EDIT_MODE = false;
+  renderDetail();
+  renderList();
+  document.getElementById('detail-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function startEdit() { EDIT_MODE = true; renderDetail(); }
+function cancelEdit() { EDIT_MODE = false; renderDetail(); }
+
+async function saveBody() {
+  const el = document.getElementById('body-input');
+  const body = el ? el.value.trim() : '';
+  try {
+    await LessonDB.update(SELECTED.id, { body: body || null, updated_by: MY.name, updated_at: new Date().toISOString() });
+    SELECTED.body = body || null;
+    EDIT_MODE = false;
+    renderDetail();
+    renderList();
+  } catch (e) { console.error(e); alert('저장 실패 — 다시 시도해 주세요'); }
+}
+
+async function uploadFile(inputEl) {
+  const file = inputEl.files && inputEl.files[0];
+  if (!file) return;
+  const stateEl = document.getElementById('upload-state');
+  if (stateEl) stateEl.textContent = '업로드 중…';
+  try {
+    const safeName = file.name.replace(/[^\w.\-가-힣]/g, '_');
+    const key = SELECTED.id + '/' + Date.now() + '_' + safeName;
+    await LessonFiles.upload(key, file);
+    const attachments = (Array.isArray(SELECTED.attachments) ? SELECTED.attachments : []).concat([{ name: file.name, key }]);
+    await LessonDB.update(SELECTED.id, { attachments, updated_by: MY.name, updated_at: new Date().toISOString() });
+    SELECTED.attachments = attachments;
+    if (stateEl) stateEl.textContent = '✅ 업로드 완료';
+    renderDetail();
+  } catch (e) {
+    console.error(e);
+    alert('업로드 실패: ' + (e.message || e));
+  }
+}
+
+async function removeFile(key) {
+  if (!confirm('첨부파일을 목록에서 제거하시겠습니까?')) return;
+  try {
+    const attachments = (Array.isArray(SELECTED.attachments) ? SELECTED.attachments : []).filter(f => f.key !== key);
+    await LessonDB.update(SELECTED.id, { attachments, updated_by: MY.name, updated_at: new Date().toISOString() });
+    SELECTED.attachments = attachments;
+    renderDetail();
+  } catch (e) { console.error(e); alert('제거 실패 — 다시 시도해 주세요'); }
+}
+
+/* ============================================================
+ * 5. 초기화
+ * ============================================================ */
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && TEACHERS.find(t => t.name === savedName)) {
+  showApp();
+}
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') mockLogin();
+});
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 (B안: 자주쓰는 4개 + 더보기 그룹) */
+(function () {
+  const KEY = 'runners2026@jesus';
+  const PRIMARY = [
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['students.html', '👤 학생 정보', ''],
+  ];
+  const GROUPS = [
+    { label: '운영', items: [
+      ['council.html', '🏛 국장단 포털', ''],
+      ['menu.html', '🍱 메뉴신청', ''],
+      ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
+      ['term3.html', '🗳 새학기 편성', ''],
+    ] },
+    { label: '자료', items: [
+      ['lessons.html', '📖 공과공부', ''],
+      ['worship-duty.html', '⛪ 예배위원', ''],
+      ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+      ['relations.html', '🕸 관계도', '?key=' + KEY],
+      ['attendance-overview.html', '📊 전체 출석현황', ''],
+      ['photos.html', '📸 사진 등록', ''],
+      ['outings.html', '🎒 아웃팅', ''],
+    ] },
+  ];
+  const ALL_ITEMS = PRIMARY.concat(GROUPS.flatMap(function (g) { return g.items; }));
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const curItem = ALL_ITEMS.find(function (it) { return it[0] === cur; });
+  const curInGroup = GROUPS.some(function (g) { return g.items.some(function (it) { return it[0] === cur; }); });
+
+  function link(it, disabled) {
+    if (disabled && disabled.has(it[0])) return '';
+    return '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>';
+  }
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  function renderNav(disabled) {
+    const primaryHtml = PRIMARY.map(function (it) { return link(it, disabled); }).join('');
+    const moreLabel = curInGroup && curItem ? '📍 ' + curItem[1] : '더보기';
+    const groupsHtml = GROUPS.map(function (g) {
+      const itemsHtml = g.items.map(function (it) { return link(it, disabled); }).join('');
+      return itemsHtml ? '<div class="site-nav-group"><span class="site-nav-group-label">' + g.label + '</span>' + itemsHtml + '</div>' : '';
+    }).join('');
+    nav.innerHTML =
+      '<div class="site-nav-row">' + primaryHtml +
+        '<button type="button" class="site-nav-more' + (curInGroup ? ' active' : '') + '" id="site-nav-more-btn">' + moreLabel + ' <span class="site-nav-caret">▾</span></button>' +
+      '</div>' +
+      '<div class="site-nav-panel" id="site-nav-panel">' + groupsHtml + '</div>';
+    const btn = nav.querySelector('#site-nav-more-btn');
+    if (btn) btn.addEventListener('click', function () { nav.querySelector('#site-nav-panel').classList.toggle('show'); });
+  }
+  renderNav(null);
+  fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/nav_settings?select=key&enabled=eq.false', { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg' } })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows) { const d = new Set((rows || []).map(function (r) { return r.key; })); if (d.size) renderNav(d); })
+    .catch(function () {});
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22)}.site-nav-row{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;scrollbar-width:thin}.site-nav-row::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}.site-nav-more{flex-shrink:0;white-space:nowrap;margin-left:auto;cursor:pointer;font-size:12.5px;font-weight:700;color:#fcd34d;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-more:hover{background:rgba(245,158,11,.22)}.site-nav-more.active{background:rgba(167,139,250,.18);color:#c4b5fd;border-color:#a78bfa}.site-nav-caret{font-size:10px}.site-nav-panel{display:none;flex-wrap:wrap;gap:14px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.08)}.site-nav-panel.show{display:flex}.site-nav-group{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.site-nav-group-label{font-size:11px;color:#64748b;margin-right:2px;white-space:nowrap}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+})();
+</script>
+
+</body>
+</html>

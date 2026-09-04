@@ -398,6 +398,18 @@
     border-style: solid;
   }
 
+  /* ===== 공과공부 (이번 주 미리보기, 상세는 lessons.html) ===== */
+  .lesson-list { display: flex; flex-direction: column; gap: 8px; }
+  .lesson-item { background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.08); border-radius: 8px; overflow: hidden; }
+  .lesson-item.this-week { border-color: rgba(167,139,250,.5); background: rgba(167,139,250,.08); }
+  .lesson-head { display: flex; align-items: center; gap: 8px; padding: 9px 11px; flex-wrap: wrap; }
+  .lesson-week { flex-shrink: 0; font-size: 11px; font-weight: 700; color: #c4b5fd; background: rgba(167,139,250,.15); padding: 3px 8px; border-radius: 6px; }
+  .lesson-title { flex: 1; min-width: 0; font-size: 13.5px; color: #e2e8f0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lesson-flag { flex-shrink: 0; font-size: 10.5px; color: var(--muted); }
+  .lesson-body { padding: 0 11px 12px; border-top: 1px solid rgba(255,255,255,.06); }
+  .lesson-body-text { font-size: 13px; color: #d8dee9; line-height: 1.6; white-space: pre-wrap; word-break: break-word; padding-top: 10px; }
+  .lesson-body-empty { font-size: 12.5px; color: var(--muted); padding-top: 10px; font-style: italic; }
+
   /* 대가족 셀 토글 (내 반 위) */
   .family-tabs {
     display: flex;
@@ -783,6 +795,26 @@
         <div class="birthday-list" id="birthday-list"></div>
       </div>
 
+      <!-- ⛪ 예배위원 -->
+      <div class="card col-full">
+        <div class="card-head">
+          <span class="card-icon">⛪</span>
+          <span class="card-title">예배위원</span>
+          <span class="card-count" id="duty-count"></span>
+        </div>
+        <div class="lesson-list" id="duty-preview"></div>
+      </div>
+
+      <!-- 📖 공과공부 -->
+      <div class="card col-full">
+        <div class="card-head">
+          <span class="card-icon">📖</span>
+          <span class="card-title">공과공부</span>
+          <span class="card-count" id="lesson-count"></span>
+        </div>
+        <div class="lesson-list" id="lesson-list"></div>
+      </div>
+
       <!-- 🙏 기도제목 -->
       <div class="card col-full">
         <div class="card-head">
@@ -918,7 +950,17 @@ const Hub = (function () {
     return true;
   }
   async function select(path) { try { const r = await fetch(REST + '/' + path, { headers: H }); return r.ok ? await r.json() : []; } catch (e) { return []; } }
-  return { logAccess, loadAttendance, saveAttendance, select, REST, H };
+  async function upsert(table, row) {
+    const res = await fetch(REST + '/' + table, { method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, H), body: JSON.stringify(row) });
+    if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error('저장 실패 (' + res.status + ') ' + t); }
+    return true;
+  }
+  async function update(table, id, patch) {
+    const res = await fetch(REST + '/' + table + '?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: Object.assign({ 'Prefer': 'return=minimal' }, H), body: JSON.stringify(patch) });
+    if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error('수정 실패 (' + res.status + ') ' + t); }
+    return true;
+  }
+  return { logAccess, loadAttendance, saveAttendance, select, upsert, update, REST, H, URL_BASE };
 })();
 let REMOTE_ATT = {};
 
@@ -1239,6 +1281,8 @@ function showApp() {
 
   renderSchedule();
   renderBirthdays(me);
+  loadDutyPreview();
+  loadLessons();
   renderPrayers();
   renderMyClass(me);
   renderQuickMenu(me);
@@ -1423,6 +1467,78 @@ function renderBirthdays(me) {
         ? `<button class="more-btn" onclick="BIRTHDAY_EXPANDED=false;renderBirthdays(window.CURRENT_ME);">접기</button>`
         : '');
   list.innerHTML = itemsHtml + moreBtn;
+}
+
+/* ===== 예배위원 (다음 주 미리보기 — 전체 일정/인원 선택은 worship-duty.html) ===== */
+const DUTY_TERM_START = '2026-09-06';
+const DUTY_CLASSES = ['1반','2반','3반','4반','5반','6반','고3-1','고3-2','고3-3','고3-4'];
+function dutyNextWeek() {
+  const d = new Date(); d.setHours(0,0,0,0);
+  const sunday = new Date(d); sunday.setDate(d.getDate() - d.getDay() + 7);
+  const pad = n => String(n).padStart(2,'0');
+  return sunday.getFullYear() + '-' + pad(sunday.getMonth()+1) + '-' + pad(sunday.getDate());
+}
+function dutyClassForWeek(weekDateStr) {
+  const start = new Date(DUTY_TERM_START + 'T00:00:00');
+  const d = new Date(weekDateStr + 'T00:00:00');
+  const diffWeeks = Math.round((d - start) / (7 * 86400000));
+  const len = DUTY_CLASSES.length;
+  const idx = ((diffWeeks % len) + len) % len;
+  return DUTY_CLASSES[idx];
+}
+function loadDutyPreview() {
+  const week = dutyNextWeek();
+  const cls = dutyClassForWeek(week);
+  const md = fmtLessonMD(week);
+  document.getElementById('duty-count').textContent = md + ' (다음 주)';
+  document.getElementById('duty-preview').innerHTML = `
+    <a class="lesson-item this-week" href="worship-duty.html" style="display:block;text-decoration:none;color:inherit">
+      <div class="lesson-head">
+        <span class="lesson-week">${escapeHtml(cls)}</span>
+        <span class="lesson-title">예배기도 · 헌금위원 · 안내위원</span>
+        <span class="lesson-flag">다음 주</span>
+      </div>
+    </a>
+    <a class="more-btn" href="worship-duty.html" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box">⛪ 전체 일정·인원 선택 →</a>
+  `;
+}
+
+/* ===== 공과공부 (이번 주만 미리보기 — 전체 목록/수정은 lessons.html) ===== */
+function currentLessonWeek() {
+  const d = new Date(); d.setHours(0,0,0,0);
+  const sunday = new Date(d); sunday.setDate(d.getDate() - d.getDay());
+  const pad = n => String(n).padStart(2,'0');
+  return sunday.getFullYear() + '-' + pad(sunday.getMonth()+1) + '-' + pad(sunday.getDate());
+}
+function fmtLessonMD(dateStr) {
+  const parts = String(dateStr || '').substring(0, 10).split('-');
+  return parts.length === 3 ? (+parts[1]) + '/' + (+parts[2]) : '';
+}
+
+async function loadLessons() {
+  const list = document.getElementById('lesson-list');
+  list.innerHTML = '<div class="bd-empty">불러오는 중…</div>';
+  let lessons = [];
+  try { lessons = await Hub.select('lessons?select=*&active=eq.true&order=week.asc'); } catch (e) { console.warn(e); }
+  const cur = currentLessonWeek();
+  const hit = lessons.find(l => l.week === cur) || lessons.find(l => l.week > cur) || lessons[lessons.length - 1];
+  document.getElementById('lesson-count').textContent = hit ? hit.label : '';
+  if (!hit) { list.innerHTML = '<div class="bd-empty">등록된 공과 일정이 없습니다</div>'; return; }
+  const weekNo = (hit.label || '').split(' ')[1] || '';
+  const preview = hit.body
+    ? `<div class="lesson-body-text">${escapeHtml(hit.body.length > 90 ? hit.body.slice(0, 90) + '…' : hit.body)}</div>`
+    : '<div class="lesson-body-empty">아직 등록된 상세 내용이 없어요.</div>';
+  list.innerHTML = `
+    <a class="lesson-item this-week" href="lessons.html" style="display:block;text-decoration:none;color:inherit">
+      <div class="lesson-head">
+        <span class="lesson-week">${escapeHtml(weekNo)} (${fmtLessonMD(hit.week)})</span>
+        <span class="lesson-title">${escapeHtml(hit.title || '')}</span>
+        <span class="lesson-flag">이번 주</span>
+      </div>
+      <div class="lesson-body">${preview}</div>
+    </a>
+    <a class="more-btn" href="lessons.html" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box">📖 전체 공과 목록 보기 →</a>
+  `;
 }
 
 /* ===== 기도제목 ===== */
@@ -1753,6 +1869,8 @@ document.getElementById('pin-input').addEventListener('keydown', e => {
       ['term3.html', '🗳 새학기 편성', ''],
     ] },
     { label: '자료', items: [
+      ['lessons.html', '📖 공과공부', ''],
+      ['worship-duty.html', '⛪ 예배위원', ''],
       ['teachers.html', '🗂 셀편성', '?key=' + KEY],
       ['relations.html', '🕸 관계도', '?key=' + KEY],
       ['attendance-overview.html', '📊 전체 출석현황', ''],

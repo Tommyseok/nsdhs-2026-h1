@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<link rel="icon" type="image/svg+xml" href="logo-runner.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="내수동 경주자 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Runners 2026 · 예배위원</title>
+<style>
+  :root {
+    --bg: #0b0f17; --bg2: #111827; --card: #1e293b; --border: #334155;
+    --text: #e5e7eb; --muted: #94a3b8; --accent: #a78bfa; --accent2: #7c3aed;
+    --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body {
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: linear-gradient(180deg, #0b0f17 0%, #0a0d14 100%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif;
+    line-height: 1.55; font-size: 15px; min-height: 100vh;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+  /* ============== Gate ============== */
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background: linear-gradient(135deg, #0b0f17 0%, #1e1b3a 100%); }
+  .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 460px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .gate-card .lock { font-size: 48px; text-align: center; margin-bottom: 16px; }
+  .gate-card h1 { margin: 0 0 6px; font-size: 20px; color: #f1f5f9; text-align: center; }
+  .gate-card .gate-sub { margin: 0 0 24px; font-size: 13px; color: var(--muted); text-align: center; }
+  .gate-card select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 12px; }
+  .gate-card button { width: 100%; background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 4px; }
+  .gate-card .gate-note { font-size: 11.5px; color: var(--muted); margin-top: 16px; padding: 10px 12px; background: rgba(255,255,255,.03); border-radius: 6px; border-left: 2px solid var(--accent); line-height: 1.6; }
+  .gate-card .gate-note strong { color: #c4b5fd; }
+
+  /* ============== Header ============== */
+  header { background: linear-gradient(135deg, #1e1b3a 0%, #312e81 100%); padding: 18px 0; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  header .container { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header .greeting { flex: 1; min-width: 0; }
+  header h1 { margin: 0; font-size: 18px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  header h1 .my-badge { background: rgba(167,139,250,.2); color: #c4b5fd; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(167,139,250,.4); font-weight: 700; }
+  header .header-actions { display: flex; gap: 6px; }
+  header button, header a.btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; }
+  header button:hover, header a.btn:hover { background: rgba(255,255,255,.15); }
+  header button.logout { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.35); color: #fca5a5; }
+
+  .intro { margin-top: 18px; padding: 14px 16px; background: linear-gradient(135deg, rgba(167,139,250,.12) 0%, rgba(124,58,237,.08) 100%); border: 1px solid rgba(167,139,250,.35); border-radius: 12px; font-size: 13px; color: #ddd6fe; line-height: 1.6; }
+  .intro strong { color: #c4b5fd; }
+
+  /* ============== Detail card ============== */
+  .detail-card { margin-top: 18px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px 18px; }
+  .detail-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .detail-date { flex-shrink: 0; font-size: 12px; font-weight: 800; color: #c4b5fd; background: rgba(167,139,250,.15); padding: 4px 10px; border-radius: 8px; }
+  .detail-flag { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; }
+  .flag-next { color: #fcd34d; background: rgba(245,158,11,.15); }
+  .flag-this { color: #6ee7b7; background: rgba(16,185,129,.15); }
+  .flag-past { color: var(--muted); background: rgba(255,255,255,.06); }
+  .detail-class { font-size: 26px; font-weight: 800; color: #f8fafc; margin: 14px 0 16px; }
+  .duty-rows { display: flex; flex-direction: column; gap: 8px; }
+  .duty-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,.03); border-radius: 8px; }
+  .duty-role { flex-shrink: 0; font-size: 12.5px; font-weight: 700; color: #c4b5fd; min-width: 78px; }
+  .duty-value { font-size: 14px; font-weight: 700; color: #e2e8f0; }
+  .duty-role-block { padding: 12px; background: rgba(255,255,255,.03); border-radius: 10px; }
+  .duty-role-block .duty-role { margin-bottom: 8px; }
+  .duty-pick-section-label { font-size: 11px; font-weight: 700; color: #64748b; margin: 8px 0 5px; }
+  .duty-pick-section-label:first-of-type { margin-top: 0; }
+  .duty-pick-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .duty-pick-chip { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); color: #d8dee9; border-radius: 999px; padding: 7px 13px; font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .duty-pick-chip:hover { background: rgba(167,139,250,.15); border-color: #a78bfa; }
+  .duty-pick-chip.picked { background: rgba(16,185,129,.18); border-color: rgba(16,185,129,.5); color: #6ee7b7; font-weight: 800; }
+
+  /* ============== Full list ============== */
+  .list-toggle { margin-top: 18px; width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); color: #cbd5e1; border-radius: 12px; padding: 12px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .list-toggle:hover { background: rgba(255,255,255,.1); }
+  .duty-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; max-height: 480px; overflow-y: auto; }
+  .duty-month { font-size: 11.5px; font-weight: 800; color: #64748b; margin: 10px 0 2px; letter-spacing: .3px; }
+  .duty-month:first-child { margin-top: 0; }
+  .duty-list-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); cursor: pointer; }
+  .duty-list-row:hover { background: rgba(167,139,250,.1); border-color: rgba(167,139,250,.3); }
+  .duty-list-row.selected { background: rgba(167,139,250,.16); border-color: rgba(167,139,250,.5); }
+  .duty-list-row .dr-date { flex-shrink: 0; font-size: 11px; font-weight: 700; color: #c4b5fd; background: rgba(167,139,250,.15); padding: 3px 8px; border-radius: 6px; min-width: 44px; text-align: center; }
+  .duty-list-row .dr-class { flex: 1; font-size: 13.5px; color: #e2e8f0; font-weight: 700; }
+  .duty-list-row .dr-flag { flex-shrink: 0; font-size: 10.5px; }
+
+  .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- =================================================== -->
+<!--  Gate (mock login)                                    -->
+<!-- =================================================== -->
+<div id="gate-root">
+  <div class="gate">
+    <div class="gate-card">
+      <div class="lock"><img src="logo-runner.svg" alt="Runners" style="width:62px;height:62px;border-radius:16px;box-shadow:0 8px 24px rgba(124,58,237,.4)"></div>
+      <div style="text-align:center;font-weight:800;letter-spacing:1px;color:#c4b5fd;font-size:13px;margin-bottom:10px">RUNNERS 2026</div>
+      <h1>⛪ 예배위원</h1>
+      <p class="gate-sub">주차별 예배기도·헌금위원·안내위원 순서</p>
+      <input id="pin-input" type="password" placeholder="🔑 접근 코드" autocomplete="off" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px;text-align:center;letter-spacing:2px;">
+      <select id="teacher-select"></select>
+      <button onclick="mockLogin()">접속</button>
+      <div id="gate-err" style="color:#fca5a5;font-size:12px;margin-top:10px;min-height:16px;text-align:center;"></div>
+      <div class="gate-note">
+        <strong>📌 안내</strong><br>
+        • 1반부터 시작해서 매주 반 순서대로 자동으로 돌아갑니다<br>
+        • 해당 주 순서인 반이 예배기도·헌금위원·안내위원을 함께 섬깁니다
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!--  Main App                                             -->
+<!-- =================================================== -->
+<div id="app-root" style="display:none">
+  <header>
+    <div class="container">
+      <div class="greeting">
+        <h1>
+          <span>⛪ 예배위원</span>
+          <span id="my-badge" class="my-badge"></span>
+        </h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn" href="dashboard.html">🏠 Home</a>
+        <button onclick="location.reload()">🔄 새로고침</button>
+        <button class="logout" onclick="logout()">🚪 로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <strong>⛪ 예배위원</strong> — 예배기도·헌금위원·안내위원을 반별로 돌아가며 섬겨요.
+      4학기 시작(9/6, 1반)부터 매주 자동으로 다음 반으로 순서가 넘어갑니다.
+    </div>
+
+    <div id="detail-area"></div>
+
+    <button class="list-toggle" onclick="toggleList()" id="list-toggle-btn">📋 전체 일정 보기 (지난 순서·앞으로 순서)</button>
+    <div class="duty-list" id="duty-list" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * 1. 반 순환 (4학기 시작 9/6 · 1반부터 순서대로, DB 없이 계산)
+ * ============================================================ */
+const TERM_START = '2026-09-06';
+const DUTY_CLASSES = ['1반','2반','3반','4반','5반','6반','고3-1','고3-2','고3-3','고3-4'];
+const ROLES = [
+  { label: '예배기도', field: 'prayer_people' },
+  { label: '헌금위원', field: 'offering_people' },
+  { label: '안내위원', field: 'usher_people' },
+];
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+function toDateStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+function sundayOf(d) { const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - x.getDay()); return x; }
+
+function classForWeek(weekDateStr) {
+  const start = new Date(TERM_START + 'T00:00:00');
+  const d = new Date(weekDateStr + 'T00:00:00');
+  const diffWeeks = Math.round((d - start) / (7 * 86400000));
+  const len = DUTY_CLASSES.length;
+  const idx = ((diffWeeks % len) + len) % len;
+  return DUTY_CLASSES[idx];
+}
+function thisWeek() { return toDateStr(sundayOf(new Date())); }
+function nextWeek() { const d = sundayOf(new Date()); d.setDate(d.getDate() + 7); return toDateStr(d); }
+function fmtDate(dateStr) {
+  const parts = dateStr.split('-');
+  const y = +parts[0], m = +parts[1], day = +parts[2];
+  const wk = ['일','월','화','수','목','금','토'];
+  let w = ''; try { w = ' (' + wk[new Date(y, m-1, day).getDay()] + ')'; } catch (e) {}
+  return m + '/' + day + w;
+}
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ============================================================
+ * 2. 선생님 데이터 (dashboard.html과 동일, PIN 게이트용)
+ * ============================================================ */
+const TEACHERS = [
+  {name:'안종범', cell:null,    role:'부장집사',   admin:true},
+  {name:'석준원', cell:'6반',   role:'교사·총무',  admin:true},
+  {name:'김광현', cell:'5반',   role:'교사·교육국장', admin:true},
+  {name:'송진우', cell:'3반',   role:'교사·예배국장', admin:true},
+  {name:'오덕현', cell:null,    role:'찬양팀 지도·미디어국장', admin:true},
+  {name:'이유성', cell:'1반',   role:'교사·홍보국장',   admin:true},
+  {name:'이윤정', cell:'2반',   role:'교사'},
+  {name:'정명경', cell:null,    role:'교사 (안식)'},
+  {name:'전성희', cell:'고3-2', role:'담임'},
+  {name:'박대철', cell:'4반',   role:'교사'},
+  {name:'이수지', cell:null,    role:'교사 (안식)'},
+  {name:'정유빈', cell:'3반',   role:'교사'},
+  {name:'양지현', cell:'고3-4', role:'담임'},
+  {name:'최희승', cell:'고3-3', role:'담임'},
+  {name:'고은솔', cell:'1반',   role:'교사'},
+  {name:'이승헌', cell:null,    role:'교사 (안식)'},
+  {name:'조세경', cell:null,    role:'교사 (안식)'},
+  {name:'김희원', cell:'4반',   role:'교사'},
+  {name:'박해니', cell:'2반',   role:'교사'},
+  {name:'이규리', cell:'고3-1', role:'담임'},
+  {name:'김주영', cell:'5반',   role:'교사'},
+  {name:'오은규', cell:'6반',   role:'교사'},
+  {name:'박진호', cell:null, role:'(27년 섬김)'},
+  {name:'송가원', cell:null, role:'(27년 섬김)'},
+];
+/* ============================================================
+ * 2-B. 반별 담임/부담임 + 학생 명단 (dashboard.html과 동일 · 대체 인원/학생 선택용)
+ * ============================================================ */
+const CELL_TEACHERS = {
+  '1반':   {homeroom:'이유성', sub:'고은솔'},
+  '2반':   {homeroom:'이윤정', sub:'박해니'},
+  '3반':   {homeroom:'정유빈', sub:'송진우'},
+  '4반':   {homeroom:'박대철', sub:'김희원'},
+  '5반':   {homeroom:'김광현', sub:'김주영'},
+  '6반':   {homeroom:'석준원', sub:'오은규'},
+  '고3-1': {homeroom:'이규리', sub:''},
+  '고3-2': {homeroom:'전성희', sub:''},
+  '고3-3': {homeroom:'최희승', sub:''},
+  '고3-4': {homeroom:'양지현', sub:''},
+};
+const CELL_STUDENTS = {
+  '1반': ['오은수','김나현','김채은','박지웅','이가영','민예원','이서현','이소현','김라일'],
+  '2반': ['김정록','안민혁','박민주','전지훈','이주형','박동하','김강은','원대연','유재희'],
+  '3반': ['김한결','최지은','최민호','김강희','배유나','박재영','조한나','하은유','장지현'],
+  '4반': ['고예나','이빛가온','최수지','윤서희','김재원','하어림','오현우','연해준','송준원'],
+  '5반': ['윤성하','김은','김유진','임태민','강은교','유나린','권하율','김주하','정태율'],
+  '6반': ['나호윤','이서후','최유현','김도연','양소희','홍기진','이준호','박시우','이하준'],
+  '고3-1': ['송성모','김도헌','이소민','박지호','한채은','김준수','박진서','임소명'],
+  '고3-2': ['이에녹','백결','조혁준','최승아','조강인','정승빈','서이수','김민채'],
+  '고3-3': ['곽지원','김다은','장세민','정원영','주성','나정인','명주원'],
+  '고3-4': ['최가은','김은우','최지윤','최서윤','오희수','심희은','조인상','양인혁'],
+};
+
+/* ============================================================
+ * 2-C. 예배위원 배정 저장 (Supabase REST)
+ * ============================================================ */
+const DUTY_REST = 'https://hycwzggbgnimuuhporwf.supabase.co/rest/v1';
+const DUTY_H = { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg', Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg', 'Content-Type': 'application/json' };
+const DutyDB = {
+  async list() { const r = await fetch(DUTY_REST + '/worship_duty?select=*&active=eq.true', { headers: DUTY_H }); if (!r.ok) throw new Error('목록 실패 (' + r.status + ')'); return r.json(); },
+  async upsert(row) { const r = await fetch(DUTY_REST + '/worship_duty', { method: 'POST', headers: Object.assign({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }, DUTY_H), body: JSON.stringify(row) }); if (!r.ok) throw new Error('저장 실패 (' + r.status + ')'); }
+};
+let DUTY_MAP = {}; // week -> row
+
+const PRIVATE_KEY = 'runners2026@jesus';
+
+function fillSelect() {
+  const sel = document.getElementById('teacher-select');
+  sel.innerHTML = '<option value="">— 본인 이름 선택 —</option>';
+  const groups = [
+    {label:'👑 관리자', filter: t => t.admin},
+    {label:'🌟 교사', filter: t => !t.admin},
+  ];
+  groups.forEach(g => {
+    const og = document.createElement('optgroup');
+    og.label = g.label;
+    TEACHERS.filter(g.filter).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.name;
+      const cellLabel = t.cell ? ' (' + t.cell + ')' : '';
+      opt.textContent = t.name + cellLabel + ' · ' + t.role;
+      og.appendChild(opt);
+    });
+    if (og.children.length > 0) sel.appendChild(og);
+  });
+  const saved = localStorage.getItem('mock_teacher');
+  if (saved) sel.value = saved;
+}
+function showErr(msg) { const el = document.getElementById('gate-err'); if (el) el.textContent = msg || ''; }
+function mockLogin() {
+  const pin = (document.getElementById('pin-input').value || '').trim();
+  const name = document.getElementById('teacher-select').value;
+  if (pin !== PRIVATE_KEY) { showErr('❌ 접근 코드가 일치하지 않습니다'); return; }
+  if (!name) { showErr('❌ 본인 이름을 선택해 주세요'); return; }
+  showErr('');
+  localStorage.setItem('mock_teacher', name);
+  localStorage.setItem('access_pin', pin);
+  showApp();
+}
+function logout() {
+  localStorage.removeItem('mock_teacher');
+  document.getElementById('app-root').style.display = 'none';
+  document.getElementById('gate-root').style.display = '';
+}
+
+function logAccess(teacher, page) {
+  if (!teacher) return;
+  try { const k = 'lastlog_' + page, n = Date.now(); if (n - (+(localStorage.getItem(k) || 0)) < 1800000) return; localStorage.setItem(k, String(n)); } catch (e) {}
+  fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/access_log', {
+    method: 'POST',
+    headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg', Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg', 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ teacher: teacher, page: page })
+  }).catch(function () {});
+}
+
+/* ============================================================
+ * 3. 진입 / 렌더링
+ * ============================================================ */
+let MY = null;
+let SELECTED_WEEK = null;
+let SHOW_LIST = false;
+
+async function showApp() {
+  const name = localStorage.getItem('mock_teacher');
+  const me = TEACHERS.find(t => t.name === name);
+  if (!me) { logout(); return; }
+  MY = me;
+  logAccess(me.name, 'worship-duty');
+
+  document.getElementById('gate-root').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  document.getElementById('my-badge').textContent = me.name + (me.cell ? ' · ' + me.cell : '');
+
+  try {
+    const rows = await DutyDB.list();
+    DUTY_MAP = {};
+    rows.forEach(r => { DUTY_MAP[r.week] = r; });
+  } catch (e) { console.warn(e); }
+
+  SELECTED_WEEK = nextWeek();
+  renderDetail();
+  renderList();
+}
+
+function flagFor(week) {
+  const tw = thisWeek(), nw = nextWeek();
+  if (week === nw) return '<span class="detail-flag flag-next">다음 주</span>';
+  if (week === tw) return '<span class="detail-flag flag-this">이번 주</span>';
+  if (week < tw) return '<span class="detail-flag flag-past">지난 순서</span>';
+  return '';
+}
+
+function dutyCandidatesFor(cls) {
+  const t = CELL_TEACHERS[cls] || {};
+  const students = CELL_STUDENTS[cls] || [];
+  const subs = [t.homeroom, t.sub].filter(Boolean);
+  const alts = ['목사님', '안종범(부장)'].concat(subs.map(n => n + ' (' + cls + ' 선생님)'));
+  return { students, alts };
+}
+
+function dutyPickGridHtml(field, cls, selected) {
+  const { students, alts } = dutyCandidatesFor(cls);
+  const sel = new Set(selected || []);
+  const chip = n => '<button type="button" class="duty-pick-chip' + (sel.has(n) ? ' picked' : '') + '" data-field="' + field + '" data-name="' + escapeHtml(n) + '" onclick="toggleDutyPick(this)">' + (sel.has(n) ? '✅ ' : '➕ ') + escapeHtml(n) + '</button>';
+  return '<div class="duty-pick-section-label">👥 ' + escapeHtml(cls) + ' 학생</div>' +
+    '<div class="duty-pick-grid">' + students.map(chip).join('') + '</div>' +
+    '<div class="duty-pick-section-label">🙋 대체 인원 (결석 시)</div>' +
+    '<div class="duty-pick-grid">' + alts.map(chip).join('') + '</div>';
+}
+
+function toggleDutyPick(btn) {
+  const picked = btn.classList.toggle('picked');
+  btn.textContent = (picked ? '✅ ' : '➕ ') + btn.dataset.name;
+}
+
+let DUTY_EDIT_MODE = false;
+
+function renderDetail() {
+  const area = document.getElementById('detail-area');
+  const week = SELECTED_WEEK;
+  const cls = classForWeek(week);
+  const row = DUTY_MAP[week] || {};
+  const isEditing = DUTY_EDIT_MODE || !row.confirmed;
+
+  if (isEditing) {
+    area.innerHTML =
+      '<div class="detail-card">' +
+        '<div class="detail-head"><span class="detail-date">' + escapeHtml(fmtDate(week)) + '</span>' + flagFor(week) + '</div>' +
+        '<div class="detail-class">' + escapeHtml(cls) + '</div>' +
+        '<div class="duty-rows">' +
+          ROLES.map(r =>
+            '<div class="duty-role-block">' +
+              '<div class="duty-role">' + escapeHtml(r.label) + '</div>' +
+              dutyPickGridHtml(r.field, cls, row[r.field]) +
+            '</div>'
+          ).join('') +
+        '</div>' +
+        '<div class="edit-actions" style="margin-top:14px">' +
+          '<button class="save-btn" onclick="confirmDuty()">✅ 완료</button>' +
+          (row.confirmed ? '<button class="cancel-btn" onclick="cancelEditDuty()">취소</button>' : '') +
+        '</div>' +
+      '</div>';
+  } else {
+    area.innerHTML =
+      '<div class="detail-card">' +
+        '<div class="detail-head"><span class="detail-date">' + escapeHtml(fmtDate(week)) + '</span>' + flagFor(week) + '<span class="detail-flag" style="color:#6ee7b7;background:rgba(16,185,129,.15)">✅ 완료</span></div>' +
+        '<div class="detail-class">' + escapeHtml(cls) + '</div>' +
+        '<div class="duty-rows">' +
+          ROLES.map(r => {
+            const names = Array.isArray(row[r.field]) ? row[r.field] : [];
+            return '<div class="duty-row">' +
+              '<span class="duty-role">' + escapeHtml(r.label) + '</span>' +
+              '<span class="duty-value">' + escapeHtml(names.length ? names.join(', ') : '미정') + '</span>' +
+            '</div>';
+          }).join('') +
+        '</div>' +
+        '<button class="edit-btn" onclick="startEditDuty()">✏️ 수정</button>' +
+      '</div>';
+  }
+}
+
+function startEditDuty() { DUTY_EDIT_MODE = true; renderDetail(); }
+function cancelEditDuty() { DUTY_EDIT_MODE = false; renderDetail(); }
+
+async function confirmDuty() {
+  const area = document.getElementById('detail-area');
+  const week = SELECTED_WEEK;
+  const cls = classForWeek(week);
+  const patch = { id: week, week, class: cls, confirmed: true, updated_by: MY.name, updated_at: new Date().toISOString() };
+  ROLES.forEach(r => {
+    const picked = Array.from(area.querySelectorAll('.duty-pick-chip.picked[data-field="' + r.field + '"]')).map(b => b.dataset.name);
+    patch[r.field] = picked;
+  });
+  try {
+    await DutyDB.upsert(patch);
+    DUTY_MAP[week] = Object.assign({}, DUTY_MAP[week], patch);
+    DUTY_EDIT_MODE = false;
+    renderDetail();
+    renderList();
+  } catch (e) { console.error(e); alert('저장 실패 — 다시 시도해 주세요'); }
+}
+
+function renderList() {
+  const btn = document.getElementById('list-toggle-btn');
+  const list = document.getElementById('duty-list');
+  btn.textContent = SHOW_LIST ? '📋 목록 접기' : '📋 전체 일정 보기 (지난 순서·앞으로 순서)';
+  list.style.display = SHOW_LIST ? 'flex' : 'none';
+  if (!SHOW_LIST) { list.innerHTML = ''; return; }
+
+  const start = sundayOf(new Date(TERM_START + 'T00:00:00'));
+  const rows = [];
+  for (let i = -8; i < 22; i++) {
+    const d = new Date(start); d.setDate(d.getDate() + i * 7);
+    rows.push(toDateStr(d));
+  }
+  let lastMonth = '';
+  list.innerHTML = rows.map(week => {
+    const m = (+week.split('-')[1]) + '월';
+    const monthHtml = m !== lastMonth ? '<div class="duty-month">' + m + '</div>' : '';
+    lastMonth = m;
+    const cls = classForWeek(week);
+    const isSelected = week === SELECTED_WEEK;
+    const tw = thisWeek(), nw = nextWeek();
+    const flag = week === nw ? '<span class="dr-flag" style="color:#fcd34d">다음 주</span>' : (week === tw ? '<span class="dr-flag" style="color:#6ee7b7">이번 주</span>' : '');
+    return monthHtml +
+      '<div class="duty-list-row' + (isSelected ? ' selected' : '') + '" onclick="selectWeek(\'' + week + '\')">' +
+        '<span class="dr-date">' + escapeHtml(fmtDate(week).replace(/\s*\(.\)$/, '')) + '</span>' +
+        '<span class="dr-class">' + escapeHtml(cls) + '</span>' +
+        flag +
+      '</div>';
+  }).join('');
+}
+
+function toggleList() { SHOW_LIST = !SHOW_LIST; renderList(); }
+
+function selectWeek(week) {
+  SELECTED_WEEK = week;
+  DUTY_EDIT_MODE = false;
+  renderDetail();
+  renderList();
+  document.getElementById('detail-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ============================================================
+ * 4. 초기화
+ * ============================================================ */
+fillSelect();
+const savedPin = localStorage.getItem('access_pin');
+const savedName = localStorage.getItem('mock_teacher');
+if (savedPin === PRIVATE_KEY && savedName && TEACHERS.find(t => t.name === savedName)) {
+  showApp();
+}
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') mockLogin();
+});
+</script>
+
+<script>
+/* 공통 페이지 네비게이션 — 모든 교사 페이지 연결 (B안: 자주쓰는 4개 + 더보기 그룹) */
+(function () {
+  const KEY = 'runners2026@jesus';
+  const PRIMARY = [
+    ['dashboard.html', '🏠 Home', ''],
+    ['attendance.html', '📝 출석 입력', ''],
+    ['prayer.html', '🙏 학생상황·기도', ''],
+    ['students.html', '👤 학생 정보', ''],
+  ];
+  const GROUPS = [
+    { label: '운영', items: [
+      ['council.html', '🏛 국장단 포털', ''],
+      ['menu.html', '🍱 메뉴신청', ''],
+      ['lineup-studio.html', '🧩 라인업 스튜디오', ''],
+      ['term3.html', '🗳 새학기 편성', ''],
+    ] },
+    { label: '자료', items: [
+      ['lessons.html', '📖 공과공부', ''],
+      ['worship-duty.html', '⛪ 예배위원', ''],
+      ['teachers.html', '🗂 셀편성', '?key=' + KEY],
+      ['relations.html', '🕸 관계도', '?key=' + KEY],
+      ['attendance-overview.html', '📊 전체 출석현황', ''],
+      ['photos.html', '📸 사진 등록', ''],
+      ['outings.html', '🎒 아웃팅', ''],
+    ] },
+  ];
+  const ALL_ITEMS = PRIMARY.concat(GROUPS.flatMap(function (g) { return g.items; }));
+  const cur = location.pathname.split('/').pop() || 'dashboard.html';
+  const curItem = ALL_ITEMS.find(function (it) { return it[0] === cur; });
+  const curInGroup = GROUPS.some(function (g) { return g.items.some(function (it) { return it[0] === cur; }); });
+
+  function link(it, disabled) {
+    if (disabled && disabled.has(it[0])) return '';
+    return '<a class="site-nav-link' + (it[0] === cur ? ' active' : '') + '" href="' + it[0] + it[2] + '">' + it[1] + '</a>';
+  }
+  const nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  function renderNav(disabled) {
+    const primaryHtml = PRIMARY.map(function (it) { return link(it, disabled); }).join('');
+    const moreLabel = curInGroup && curItem ? '📍 ' + curItem[1] : '더보기';
+    const groupsHtml = GROUPS.map(function (g) {
+      const itemsHtml = g.items.map(function (it) { return link(it, disabled); }).join('');
+      return itemsHtml ? '<div class="site-nav-group"><span class="site-nav-group-label">' + g.label + '</span>' + itemsHtml + '</div>' : '';
+    }).join('');
+    nav.innerHTML =
+      '<div class="site-nav-row">' + primaryHtml +
+        '<button type="button" class="site-nav-more' + (curInGroup ? ' active' : '') + '" id="site-nav-more-btn">' + moreLabel + ' <span class="site-nav-caret">▾</span></button>' +
+      '</div>' +
+      '<div class="site-nav-panel" id="site-nav-panel">' + groupsHtml + '</div>';
+    const btn = nav.querySelector('#site-nav-more-btn');
+    if (btn) btn.addEventListener('click', function () { nav.querySelector('#site-nav-panel').classList.toggle('show'); });
+  }
+  renderNav(null);
+  fetch('https://hycwzggbgnimuuhporwf.supabase.co/rest/v1/nav_settings?select=key&enabled=eq.false', { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3d6Z2diZ25pbXV1aHBvcndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTQzMTAsImV4cCI6MjA5NDAzMDMxMH0.NeypbxUYf5xoBagDBUPvhit3UOp6k_-_SN32JGgbEJg' } })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows) { const d = new Set((rows || []).map(function (r) { return r.key; })); if (d.size) renderNav(d); })
+    .catch(function () {});
+  const style = document.createElement('style');
+  style.textContent = '.site-nav{background:rgba(12,16,24,.96);border-bottom:1px solid rgba(167,139,250,.22)}.site-nav-row{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 14px;scrollbar-width:thin}.site-nav-row::-webkit-scrollbar{height:4px}.site-nav-link{flex-shrink:0;white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-link:hover{background:rgba(167,139,250,.15);border-color:#a78bfa;color:#fff}.site-nav-link.active{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:#a78bfa}.site-nav-more{flex-shrink:0;white-space:nowrap;margin-left:auto;cursor:pointer;font-size:12.5px;font-weight:700;color:#fcd34d;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:999px;padding:6px 12px;font-family:inherit}.site-nav-more:hover{background:rgba(245,158,11,.22)}.site-nav-more.active{background:rgba(167,139,250,.18);color:#c4b5fd;border-color:#a78bfa}.site-nav-caret{font-size:10px}.site-nav-panel{display:none;flex-wrap:wrap;gap:14px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.08)}.site-nav-panel.show{display:flex}.site-nav-group{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.site-nav-group-label{font-size:11px;color:#64748b;margin-right:2px;white-space:nowrap}';
+  document.head.appendChild(style);
+  const header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', nav);
+})();
+</script>
+
+</body>
+</html>
