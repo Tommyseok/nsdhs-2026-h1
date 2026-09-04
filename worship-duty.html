@@ -88,7 +88,11 @@
   .duty-list-row .dr-date { flex-shrink: 0; font-size: 11px; font-weight: 700; color: #c4b5fd; background: rgba(167,139,250,.15); padding: 3px 8px; border-radius: 6px; min-width: 44px; text-align: center; }
   .duty-list-row .dr-class { flex: 1; font-size: 13.5px; color: #e2e8f0; font-weight: 700; }
   .duty-list-row .dr-flag { flex-shrink: 0; font-size: 10.5px; }
-  .dr-summary { margin-top: 6px; font-size: 11.5px; color: #6ee7b7; line-height: 1.5; }
+  .dr-summary { margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,.08); display: flex; flex-direction: column; gap: 4px; }
+  .dr-summary-line { display: flex; align-items: baseline; gap: 8px; font-size: 12px; }
+  .dr-summary-role { flex-shrink: 0; min-width: 56px; font-weight: 700; color: #c4b5fd; }
+  .dr-summary-names { color: #d8dee9; font-weight: 600; }
+  .dr-summary-empty { font-size: 11.5px; color: var(--muted); font-style: italic; }
 
   .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 14px; }
 </style>
@@ -458,11 +462,12 @@ function renderList() {
     const flag = week === nw ? '<span class="dr-flag" style="color:#fcd34d">다음 주</span>' : (week === tw ? '<span class="dr-flag" style="color:#6ee7b7">이번 주</span>' : '');
     const dutyRow = DUTY_MAP[week];
     const summary = dutyRow && dutyRow.confirmed
-      ? '<div class="dr-summary">✅ ' + ROLES.map(r => {
+      ? '<div class="dr-summary">' + ROLES.map(r => {
           const names = Array.isArray(dutyRow[r.field]) ? dutyRow[r.field] : [];
-          return names.length ? r.label + ' ' + names.join('·') : '';
-        }).filter(Boolean).join(' / ') + '</div>'
-      : '';
+          if (!names.length) return '';
+          return '<div class="dr-summary-line"><span class="dr-summary-role">' + escapeHtml(r.label) + '</span><span class="dr-summary-names">' + escapeHtml(names.join(', ')) + '</span></div>';
+        }).join('') + '</div>'
+      : (flag ? '<div class="dr-summary dr-summary-empty">아직 인원이 정해지지 않았어요</div>' : '');
     return monthHtml +
       '<div class="duty-list-row' + (isSelected ? ' selected' : '') + '" onclick="selectWeek(\'' + week + '\')" style="flex-direction:column;align-items:stretch">' +
       '<div style="display:flex;align-items:center;gap:10px">' +
