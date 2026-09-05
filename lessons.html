@@ -62,8 +62,10 @@
   .detail-title { font-size: 18px; font-weight: 800; color: #f8fafc; margin: 8px 0 12px; line-height: 1.4; }
   .detail-body-text { font-size: 14px; color: #d8dee9; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
   .detail-body-empty { font-size: 13px; color: var(--muted); font-style: italic; }
-  .video-btn { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: #fff; border-radius: 10px; padding: 11px 20px; font-size: 14px; font-weight: 800; text-decoration: none; margin: 4px 0 14px; }
+  .video-btns { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 14px; }
+  .video-btn { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: #fff; border-radius: 10px; padding: 11px 20px; font-size: 14px; font-weight: 800; text-decoration: none; }
   .video-btn:hover { filter: brightness(1.1); }
+  .video-btn-preview { background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); }
   .detail-files { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
   .file-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.3); color: #6ee7b7; padding: 6px 12px; border-radius: 999px; text-decoration: none; }
   .file-chip:hover { background: rgba(16,185,129,.22); }
@@ -342,7 +344,8 @@ function renderDetail() {
         '<div class="detail-head"><span class="detail-week">' + escapeHtml(weekNo) + ' (' + fmtMD(l.week) + ')</span>' + (isThisWeek ? '<span class="detail-flag">이번 주</span>' : '') + '</div>' +
         '<div class="detail-title">' + escapeHtml(l.title || '') + '</div>' +
         '<div class="edit-box">' +
-          '<input id="video-input" type="url" placeholder="🎬 유튜브 강의 링크 (예: https://youtu.be/...)" value="' + escapeHtml(l.video_url || '') + '">' +
+          '<input id="preview-video-input" type="url" placeholder="📚 선행학습 영상 링크 (예: https://youtu.be/...)" value="' + escapeHtml(l.preview_video_url || '') + '">' +
+          '<input id="lecture-video-input" type="url" placeholder="🎥 강의보기 영상 링크 (예: https://youtu.be/...)" value="' + escapeHtml(l.lecture_video_url || '') + '">' +
           '<textarea id="body-input" placeholder="공과 상세 내용을 적어주세요">' + escapeHtml(l.body || '') + '</textarea>' +
           filesHtml +
           '<div class="edit-actions">' +
@@ -365,9 +368,10 @@ function renderDetail() {
   const bodyHtml = l.body
     ? '<div class="detail-body-text">' + escapeHtml(l.body) + '</div>'
     : '<div class="detail-body-empty">아직 등록된 상세 내용이 없어요.</div>';
-  const videoHtml = l.video_url
-    ? '<a class="video-btn" href="' + escapeHtml(l.video_url) + '" target="_blank" rel="noopener">▶️ 강의보기</a>'
-    : '';
+  const videoButtons =
+    (l.preview_video_url ? '<a class="video-btn video-btn-preview" href="' + escapeHtml(l.preview_video_url) + '" target="_blank" rel="noopener">📚 선행학습</a>' : '') +
+    (l.lecture_video_url ? '<a class="video-btn" href="' + escapeHtml(l.lecture_video_url) + '" target="_blank" rel="noopener">▶️ 강의보기</a>' : '');
+  const videoHtml = videoButtons ? '<div class="video-btns">' + videoButtons + '</div>' : '';
   area.innerHTML =
     '<div class="detail-card">' +
       '<div class="detail-head"><span class="detail-week">' + escapeHtml(weekNo) + ' (' + fmtMD(l.week) + ')</span>' + (isThisWeek ? '<span class="detail-flag">이번 주</span>' : '') + '</div>' +
@@ -396,7 +400,8 @@ function renderList() {
       '<div class="lesson-row' + (isSelected ? ' selected' : '') + '" onclick="selectLesson(\'' + l.id + '\')">' +
         '<span class="lr-week">' + escapeHtml(weekNo) + '<br>' + fmtMD(l.week) + '</span>' +
         '<span class="lr-title">' + escapeHtml(l.title || '') + '</span>' +
-        (l.video_url ? '<span class="lr-has-body" title="강의 영상 있음">▶️</span>' : '') +
+        (l.preview_video_url ? '<span class="lr-has-body" title="선행학습 영상 있음">📚</span>' : '') +
+        (l.lecture_video_url ? '<span class="lr-has-body" title="강의 영상 있음">▶️</span>' : '') +
         (l.body ? '<span class="lr-has-body" title="상세 내용 있음">📝</span>' : '') +
       '</div>';
   }).join('');
@@ -417,13 +422,16 @@ function cancelEdit() { EDIT_MODE = false; renderDetail(); }
 
 async function saveBody() {
   const el = document.getElementById('body-input');
-  const videoEl = document.getElementById('video-input');
+  const previewEl = document.getElementById('preview-video-input');
+  const lectureEl = document.getElementById('lecture-video-input');
   const body = el ? el.value.trim() : '';
-  const video_url = videoEl ? videoEl.value.trim() : '';
+  const preview_video_url = previewEl ? previewEl.value.trim() : '';
+  const lecture_video_url = lectureEl ? lectureEl.value.trim() : '';
   try {
-    await LessonDB.update(SELECTED.id, { body: body || null, video_url: video_url || null, updated_by: MY.name, updated_at: new Date().toISOString() });
+    await LessonDB.update(SELECTED.id, { body: body || null, preview_video_url: preview_video_url || null, lecture_video_url: lecture_video_url || null, updated_by: MY.name, updated_at: new Date().toISOString() });
     SELECTED.body = body || null;
-    SELECTED.video_url = video_url || null;
+    SELECTED.preview_video_url = preview_video_url || null;
+    SELECTED.lecture_video_url = lecture_video_url || null;
     EDIT_MODE = false;
     renderDetail();
     renderList();
