@@ -554,6 +554,11 @@
 
     <div id="family-filter-bar" style="display:none"></div>
 
+    <div class="filter-bar" id="view-toggle-row" style="display:none">
+      <button class="filter-btn active" id="vt-week" onclick="setItemView('week')">📅 주차별</button>
+      <button class="filter-btn" id="vt-student" onclick="setItemView('byStudentGroup')">👤 학생별</button>
+    </div>
+
     <!-- 학생별 모아보기 - 학생 선택기 -->
     <div class="student-picker" id="student-picker" style="display:none">
       <input type="search" id="student-search" placeholder="🔍 학생 이름으로 검색..." oninput="renderStudentPicker()">
@@ -729,6 +734,7 @@ let CURRENT_TYPE = 'student';
 let PICKED_STUDENT = null; // 학생별 모아보기에서 선택된 학생
 let SHARED_PRAYERS = null; // GitHub data/prayers.json fetch 결과
 let FAMILY_CELL_FILTER = null; // 우리 대가족 탭 반별 필터 (null=전체)
+let ITEM_VIEW = 'week'; // 우리 셀/우리 대가족 탭 표시 방식: 'week'(주차별) | 'byStudentGroup'(학생별)
 
 // 모든 학생 + 셀 매핑
 const ALL_STUDENTS_FLAT = [];
@@ -829,7 +835,7 @@ function addPrayer() {
   const prayers = loadPrayers();
   const newP = {
     id: 'P' + Date.now(),
-    date: new Date().toISOString().substring(0, 10),
+    date: localDateStr(),
     type: CURRENT_TYPE,
     student,
     cell,
@@ -885,11 +891,16 @@ function toggleShare(id) {
 
 /* ===== 이번 주 체크리스트 (한 명씩 돌아가며 입력/수정) ===== */
 let WC_OPEN = null;
+// 주의: new Date().toISOString()는 UTC 기준이라 한국시간 오전 9시 이전엔 하루 전 날짜로 밀리는 버그가 있었음 — 반드시 로컬 기준으로 계산
+function localDateStr(d) {
+  d = d || new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
 function currentSunday() {
   const d = new Date(); d.setHours(0, 0, 0, 0);
   d.setDate(d.getDate() - d.getDay());
-  const pad = n => String(n).padStart(2, '0');
-  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  return localDateStr(d);
 }
 function weekEntryFor(name, week) {
   return allPrayers().find(p => p.student === name && p.type !== 'teacher' && p.date === week);
@@ -1139,6 +1150,20 @@ function familyFilterBarHtml(famCells) {
     `</div>`;
 }
 function setFamilyCellFilter(c) { FAMILY_CELL_FILTER = c; renderPrayers(); }
+function setItemView(v) { ITEM_VIEW = v; renderPrayers(); }
+function renderByStudentGroup(items, listEl) {
+  const groups = {};
+  items.forEach(p => { (groups[p.student] = groups[p.student] || []).push(p); });
+  const names = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ko'));
+  let html = '<div class="timeline">';
+  names.forEach(name => {
+    const g = groups[name].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    html += `<div class="timeline-group">👤 ${escapeHtml(name)} <span style="opacity:.7">(${g.length}건)</span></div>`;
+    g.forEach(p => { html += `<div class="timeline-item">${prayerCardHtml(p)}</div>`; });
+  });
+  html += '</div>';
+  listEl.innerHTML = html;
+}
 
 function renderPrayers() {
   if (!MY) return;
@@ -1151,17 +1176,21 @@ function renderPrayers() {
   const pickedEl = document.getElementById('picked-student');
   const pickerEl = document.getElementById('student-picker');
   const famFilterEl = document.getElementById('family-filter-bar');
+  const viewToggleEl = document.getElementById('view-toggle-row');
   famFilterEl.style.display = 'none';
+  viewToggleEl.style.display = 'none';
 
   if (CURRENT_TAB === 'mine') {
     pickerEl.style.display = 'none';
     pickedEl.style.display = 'none';
+    viewToggleEl.style.display = '';
     items = all.filter(p =>
       p.cell === MY.cell || (p.type === 'teacher' && p.author === MY.name)
     );
   } else if (CURRENT_TAB === 'family') {
     pickerEl.style.display = 'none';
     pickedEl.style.display = 'none';
+    viewToggleEl.style.display = '';
     if (famCells.length > 1) {
       famFilterEl.style.display = '';
       famFilterEl.innerHTML = familyFilterBarHtml(famCells);
@@ -1201,6 +1230,11 @@ function renderPrayers() {
     `;
   }
 
+  if (CURRENT_TAB === 'mine' || CURRENT_TAB === 'family') {
+    document.getElementById('vt-week').classList.toggle('active', ITEM_VIEW === 'week');
+    document.getElementById('vt-student').classList.toggle('active', ITEM_VIEW === 'byStudentGroup');
+  }
+
   if (!items || items.length === 0) {
     if (CURRENT_TAB === 'byStudent') {
       list.innerHTML = '<div class="empty">이 학생의 기록이 아직 없습니다.<br>우리 셀 탭에서 추가해 주세요.</div>';
@@ -1213,7 +1247,12 @@ function renderPrayers() {
     return;
   }
 
-  // 모든 탭 공통: 최신 주차순 정렬 + 주차별 그룹 헤더 표시
+  if ((CURRENT_TAB === 'mine' || CURRENT_TAB === 'family') && ITEM_VIEW === 'byStudentGroup') {
+    renderByStudentGroup(items, list);
+    return;
+  }
+
+  // 주차별 표시 (기본): 최신 주차순 정렬 + 날짜별 그룹 헤더
   items.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   let html = '<div class="timeline">';
   let lastDate = '';
