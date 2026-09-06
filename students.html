@@ -142,6 +142,7 @@
     <div class="container">
       <h1>👤 학생 정보</h1>
       <span class="badge" id="my-badge"></span>
+      <span class="badge" id="scope-badge"></span>
       <button onclick="location.reload()">🔄</button>
       <button class="logout" onclick="logout()">로그아웃</button>
     </div>
@@ -184,7 +185,7 @@ const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const REST = URL_BASE + '/rest/v1';
 const H = { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON, 'Content-Type': 'application/json' };
 const PRIVATE_KEY = 'runners2026@jesus';
-const ADMINS = ['안종범','김광현','석준원','이유성','오덕현','양지현','송진우'];
+const ADMINS = ['안종범','김광현','석준원','이유성','오덕현','양지현','송진우']; // 국장단(부장 안종범 포함)
 const ALL_TEACHERS = [
   '안종범','석준원','김광현','송진우','오덕현','이유성',
   '이윤정','정명경','전성희','박대철','이수지','정유빈','양지현','최희승','고은솔',
@@ -192,6 +193,30 @@ const ALL_TEACHERS = [
   '박진호','송가원',
   '김현진','안강훈','김시내','정귀희','문석주','박정향'
 ];
+
+/* ===== 반 편성 (teachers.html과 동일 원본) — 담당 반 조회용 ===== */
+const HOMEROOM_TEACHERS = {
+  '1반': '이유성', '2반': '이윤정', '3반': '정유빈', '4반': '박대철',
+  '5반': '김광현', '6반': '석준원',
+  '고3-1': '이규리', '고3-2': '전성희', '고3-3': '최희승', '고3-4': '양지현',
+};
+const SUB_TEACHERS = {
+  '1반': '고은솔', '2반': '박해니', '3반': '송진우', '4반': '김희원',
+  '5반': '김주영', '6반': '오은규',
+  '고3-1': '', '고3-2': '', '고3-3': '', '고3-4': '',
+};
+const FAMILY_LEADERS = {
+  '대가족1': { name: '이윤정', from: '2반' },
+  '대가족2': { name: '박대철', from: '4반' },
+  '대가족3': { name: '석준원', from: '6반' },
+  '대가족4': { name: '전성희', from: '고3-2' },
+};
+// 선생님 이름 → 담당 반 (교사1·교사2 모두 매핑)
+const TEACHER_CLASS = {};
+Object.entries(HOMEROOM_TEACHERS).forEach(([cls, name]) => { if (name) TEACHER_CLASS[name] = cls; });
+Object.entries(SUB_TEACHERS).forEach(([cls, name]) => { if (name) TEACHER_CLASS[name] = cls; });
+// 전체 학생 열람 권한: 국장단 + 대가족장(부장 안종범은 국장단에 포함)
+const FULL_ACCESS = new Set([...ADMINS, ...Object.values(FAMILY_LEADERS).map(l => l.name)]);
 
 const STUDENTS = {
   '강은교':{g:2,s:'여',rt:100,c:'5반'},
@@ -382,10 +407,19 @@ function rtTag(s) {
   const cls = s.rt >= 80 ? 'rt-hi' : s.rt >= 50 ? 'rt-mid' : 'rt-lo';
   return `<span class="tag ${cls}">${s.rt}%</span>`;
 }
+function myScopeClass() { return TEACHER_CLASS[MY] || null; }
+function scopedNames() {
+  const all = Object.keys(STUDENTS);
+  if (FULL_ACCESS.has(MY)) return all;
+  const cls = myScopeClass();
+  if (!cls) return []; // 담당 반이 없는 계정(총무 등)은 반 정보 없이는 학생을 볼 수 없음
+  return all.filter(n => STUDENTS[n].c === cls);
+}
 function renderGrid() {
   const q = (document.getElementById('q').value || '').trim();
   const sort = document.getElementById('sort-sel').value;
-  let names = Object.keys(STUDENTS).filter(n => {
+  const scope = scopedNames();
+  let names = scope.filter(n => {
     const s = STUDENTS[n];
     if (F.g && s.g !== F.g) return false;
     if (F.la && !s.la) return false;
@@ -397,7 +431,14 @@ function renderGrid() {
     if (sort === 'rt-asc') return (STUDENTS[a].rt ?? 999) - (STUDENTS[b].rt ?? 999) || a.localeCompare(b, 'ko');
     return a.localeCompare(b, 'ko');
   });
-  document.getElementById('count-line').textContent = `${names.length}명 표시 / 전체 ${Object.keys(STUDENTS).length}명`;
+  if (!scope.length && !FULL_ACCESS.has(MY)) {
+    document.getElementById('count-line').textContent = '담당 반 정보가 없어 열람할 수 있는 학생이 없습니다. 국장단에게 문의해 주세요.';
+    document.getElementById('grid').innerHTML = '';
+    return;
+  }
+  document.getElementById('count-line').textContent = FULL_ACCESS.has(MY)
+    ? `${names.length}명 표시 / 전체 ${Object.keys(STUDENTS).length}명`
+    : `${names.length}명 표시 / 내 반(${esc(myScopeClass())}) ${scope.length}명`;
   document.getElementById('grid').innerHTML = names.map(n => {
     const s = STUDENTS[n];
     return `<div class="scard" onclick="openPanel('${n}')">
@@ -615,6 +656,10 @@ async function showApp() {
   document.getElementById('gate-root').style.display = 'none';
   document.getElementById('app-root').style.display = '';
   document.getElementById('my-badge').textContent = MY + ' 선생님';
+  const scopeBadge = document.getElementById('scope-badge');
+  if (FULL_ACCESS.has(MY)) { scopeBadge.textContent = '🌟 전체 열람'; }
+  else if (myScopeClass()) { scopeBadge.textContent = '🔒 ' + myScopeClass() + ' 전용'; }
+  else { scopeBadge.textContent = '⚠️ 담당 반 없음'; }
   logAccess(MY, 'students');
   await Photos.load();
   Vault.tryRestore().then(() => {});

@@ -336,7 +336,9 @@ publish/
 ├── cells.html (tombstone)
 ├── make_assignment_pdf.py (공개 편성표 PDF 생성기)
 ├── make_lineup_pdf.py (라인업 1장 PDF 생성기)
-├── make_lineup_pptx.py (라인업 PPT 생성기 · python-pptx)
+├── make_lineup_pptx.py (라인업 PPT 생성기 · python-pptx, 반별 10장)
+├── make_family_lineup_pptx.py (대가족별 반 편성 1장 요약 PPT 생성기)
+├── make_room_layout_pptx.py (공과공부 반별 배치도 PPT 생성기)
 ├── docs/superpowers/specs/ (설계 문서: 학생 사진 기능 등)
 ├── dashboard_backend.gs (Apps Script — 사용 안 함, 보관용)
 └── apps_script_backend.gs (구 부담임 지원, 사용 안 함)
@@ -368,7 +370,7 @@ publish/
 - **lineup-studio.html** (신규, 국장단 7인 전용, nav 미등재): 편성 보드(반 컬럼+학생 카드+사진, DnD/모바일 탭이동), 한국어 명령 바("이름 N반으로"/"교환"/"분리"/"같이"/"취소"), 제약 관리(직접 추가·삭제), 자동 편성(JS — SEP/KEEP/이력/균형), 드래프트 저장·불러오기·확정(lineup_drafts), 사진 클릭 확대
 - **students.html** (신규, 전 교사): 학생 그리드(사진·학년·성별·현재반·출석%·장결)+검색/필터, 상세 패널(주차별 출석 스트립·연락처🔒·상황 메모 타임라인 열람/작성)
 - **신규 테이블**: lineup_drafts / student_vault / student_notes (anon SEL/INS/UPD, DELETE 미허용)
-- **🔒 교적부 암호화 체계**: 연락처·상황메모는 AES-GCM(PBKDF2 150k, salt 'nsdhs-vault-2026') 브라우저 암호화 후 저장. 키 = 교적부 코드(소스 미포함, 총무 관리·카톡 공유). 열람 시 1회 입력 → sessionStorage. 코드 변경 시 재암호화 스크립트(scratchpad/vault_migrate.mjs) 필요
+- **🔒 교적부 암호화 체계**: 연락처·상황메모는 AES-GCM(PBKDF2 150k, salt 'nsdhs-vault-2026') 브라우저 암호화 후 저장. 키 = 교적부 코드(소스 미포함, 총무 관리·카톡 공유). 열람 시 1회 입력 → sessionStorage. **코드 변경 시**: `../vault-rotate.html`(리포 밖, `publish/`와 같은 레벨의 로컬 전용 도구 — git에 커밋 안 함) 실행 → 국장단 게이트 → 기존 코드 확인 → 새 코드 입력 시 `student_vault`+`student_notes` 전량 자동 복호화→재암호화. 코드 값은 이 도구 화면에만 입력되며 대화·커밋에는 남지 않음
 - **teachers.html PII 제거**: 평문 CONTACT(86명 연락처)·STUDENT_NOTES(212건) 소스에서 삭제 → vault 로더로 대체(교적부 코드 입력 시 기존 탭 그대로 동작). ⚠️ git 히스토리에는 평문 잔존 — 완전 제거는 history rewrite 별도 결정
 - 전 페이지 nav에 '👤 학생 정보' 추가. 시드 드래프트 D-seed-v1 = 10반 확정용 초안(final-lineup-10.md)
 
@@ -386,3 +388,10 @@ publish/
 - Q6·Q7은 term3_teacher_status.note에서 자동 프리필(학생명 추출→Q6, 원문→Q7, 지망 미제출자만)
 - lineup_applications 컬럼: teacher PK, term, choice1~3, strengths, needs, partner, partner_traits, collab_types, collab, visit_avail, visit_types, visit_etc, wish, comment, updated_at, active
 - 박진호·송가원 = 다음 텀 합류 (이번 텀 배치 풀·동역자 후보 제외, 17명 기준)
+
+## 2026-09-06 — 학생 정보(students.html) 반별 열람 제한 + 교적부 코드 로테이션 도구 + 라인업/배치도 PPT 3종
+
+- **students.html 권한 세분화**: 이전엔 로그인한 모든 교사가 전체 86명 그리드를 볼 수 있었음 → **일반 교사는 본인이 담임/부담임인 반 학생만**, **국장단(ADMINS 7인) + 대가족장(FAMILY_LEADERS 4인)은 그대로 전체 열람**. `HOMEROOM_TEACHERS`/`SUB_TEACHERS`/`FAMILY_LEADERS`를 teachers.html과 동일하게 이식 + `TEACHER_CLASS`(교사→반 역맵) 신규. 헤더에 `🌟 전체 열람`/`🔒 N반 전용`/`⚠️ 담당 반 없음` 상태 배지 추가. **담당 반이 없는 계정(김현진·안강훈·김시내·정귀희·문석주·박정향 등 총무/서포트 인력)은 국장단·가족장이 아니면 학생이 0명 표시됨** — 이 인력에게도 열람 권한이 필요하면 ADMINS 또는 별도 역할 Set에 추가해야 함
+- **⚠️ 이 반별 제한은 UI 레벨(그리드 필터링)일 뿐**: `STUDENTS` 객체 자체는 여전히 모든 페이지 소스에 평문(이름·학년·성별·반·출석률)으로 박혀 있고 사이트가 공개 GitHub Pages라 페이지 소스를 열면 전체가 보임. 실제 비밀은 연락처·상황메모를 감싸는 **교적부 코드(Vault)** 뿐 — 이름/반/출석률 수준 정보의 진짜 접근 통제는 서버 사이드 없이는 불가능하다는 점 인지 필요
+- **교적부 코드 로테이션 도구 (`../vault-rotate.html`)**: `publish/`(=git 리포 루트) 바깥에 위치 — **git에 커밋되지 않고 GitHub Pages로도 배포되지 않음**. 국장단 게이트(사이트 PIN + 이름 선택 ADMINS만) → 1단계 기존 코드로 `__check__` 복호화 검증 → 2단계 새 코드 입력 시 `student_vault`+`student_notes` 전량을 기존 코드로 복호화→새 코드로 재암호화→저장→새 코드로 재검증까지 자동 수행. 코드 값은 이 로컬 화면에만 입력되고 어디에도 로그·저장되지 않음(대화·커밋 금지 원칙 준수)
+- **PPT 3종 추가/개편**: `make_lineup_pptx.py`를 4학기 10반 구조로 전면 재작성(타이틀+반별 10장, 3열 학생카드), `make_family_lineup_pptx.py`(신규, 대가족 1~4를 한 장에 압축 요약), `make_room_layout_pptx.py`(신규, 공과공부 반별 배치도 — 강당(대가족1·2·3, 6개반)/유리방·교사방·준2층(대가족4, 고3-1~4)에 대가족 단위로 묶어 배치). 셋 다 python-pptx, PowerPoint COM으로 렌더 QA 거침(room-layout.pptx는 최초 버전에서 유리방 칩 텍스트 겹침 버그 발견→방별 높이를 헤더+반 개수 가중치로 재계산해 수정)
