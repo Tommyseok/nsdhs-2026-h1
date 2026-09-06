@@ -822,12 +822,13 @@ function renderAll() {
   const matchN = filtered.length;
   const ok85 = allStudents.filter(s => s.cum !== null && s.cum >= 85).length;
   const low50 = allStudents.filter(s => s.cum !== null && s.cum < 50).length;
-  const absent4 = allStudents.filter(s => recent4String(s.name) === '○○○○').length;
+  const _attData = userAtt();
+  const absent3plus = allStudents.filter(s => !JANGGYEOL.has(s.name) && currentAbsentStreak(s.name, _attData) >= 3).length;
   document.getElementById('top-stats').innerHTML = `
     <div class="stat-card"><span class="stat-num">${totalN}</span><span class="stat-label">총 학생 수</span></div>
     <div class="stat-card"><span class="stat-num" style="color:#6ee7b7">${ok85}</span><span class="stat-label">85%+ 안정 출석</span></div>
     <div class="stat-card"><span class="stat-num" style="color:#fca5a5">${low50}</span><span class="stat-label">50% 미만</span></div>
-    <div class="stat-card"><span class="stat-num" style="color:#f97316">${absent4}</span><span class="stat-label">최근 4주 연속 결석</span></div>
+    <div class="stat-card"><span class="stat-num" style="color:#f97316">${absent3plus}</span><span class="stat-label">3주+ 연속결석 (장결 제외)</span></div>
   `;
 
   renderRiskSection();
